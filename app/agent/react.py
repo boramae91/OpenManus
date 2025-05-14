@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Union
 
 from pydantic import Field
 
 from app.agent.base import BaseAgent
 from app.llm import LLM
 from app.schema import AgentState, Memory
+from app.memory import ValidatedMemory
 
 
 class ReActAgent(BaseAgent, ABC):
@@ -16,7 +17,7 @@ class ReActAgent(BaseAgent, ABC):
     next_step_prompt: Optional[str] = None
 
     llm: Optional[LLM] = Field(default_factory=LLM)
-    memory: Memory = Field(default_factory=Memory)
+    memory: Union[Memory, ValidatedMemory] = Field(default_factory=Memory)
     state: AgentState = AgentState.IDLE
 
     max_steps: int = 10

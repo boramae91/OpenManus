@@ -687,6 +687,35 @@ class LLM:
             else:
                 messages = self.format_messages(messages, supports_images)
 
+            # 메시지 유효성 검사: 'tool' 역할 메시지가 'tool_calls'가 있는 메시지 다음에 와야 함
+            tool_call_ids = {}  # 현재 유효한 tool_call_id 목록 {id: assistant_message_index}
+            
+            # 먼저 모든 assistant 메시지에서 tool_call_id를 수집
+            for i, msg in enumerate(messages):
+                if msg.get("role") == "assistant" and msg.get("tool_calls"):
+                    for tool_call in msg["tool_calls"]:
+                        if isinstance(tool_call, dict) and "id" in tool_call:
+                            tool_call_ids[tool_call["id"]] = i
+            
+            # 이제 tool 메시지를 검증하고 정리
+            messages_to_keep = []
+            for i, msg in enumerate(messages):
+                if msg.get("role") == "tool":
+                    tool_call_id = msg.get("tool_call_id")
+                    # tool_call_id가 있고 이전에 수집된 ID 목록에 있는지 확인
+                    if tool_call_id and tool_call_id in tool_call_ids:
+                        # 또한 이 tool 메시지가 해당 assistant 메시지 뒤에 있는지 확인
+                        if i > tool_call_ids[tool_call_id]:
+                            messages_to_keep.append(msg)
+                        else:
+                            logger.warning(f"Removing tool message at position {i} that appears before its assistant message: {msg}")
+                    else:
+                        logger.warning(f"Removing invalid tool message at position {i} with unknown tool_call_id: {msg}")
+                else:
+                    messages_to_keep.append(msg)
+            
+            messages = messages_to_keep
+
             # Calculate input token count
             input_tokens = self.count_message_tokens(messages)
 

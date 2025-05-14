@@ -7,6 +7,7 @@ from pydantic import Field
 from app.agent.react import ReActAgent
 from app.exceptions import TokenLimitExceeded
 from app.logger import logger
+from app.memory import ValidatedMemory
 from app.prompt.toolcall import NEXT_STEP_PROMPT, SYSTEM_PROMPT
 from app.schema import TOOL_CHOICE_TYPE, AgentState, Message, ToolCall, ToolChoice
 from app.tool import CreateChatCompletion, Terminate, ToolCollection
@@ -35,6 +36,9 @@ class ToolCallAgent(ReActAgent):
 
     max_steps: int = 30
     max_observe: Optional[Union[int, bool]] = None
+    
+    # ValidatedMemory를 사용하도록 변경
+    memory: ValidatedMemory = Field(default_factory=ValidatedMemory)
 
     async def think(self) -> bool:
         """Process current state and decide next actions using tools"""
@@ -72,6 +76,10 @@ class ToolCallAgent(ReActAgent):
                 return False
             raise
 
+        # 도구 호출 및 콘텐츠 처리
+        if response is None:
+            raise RuntimeError("No response received from the LLM")
+            
         self.tool_calls = tool_calls = (
             response.tool_calls if response and response.tool_calls else []
         )
@@ -89,9 +97,6 @@ class ToolCallAgent(ReActAgent):
             logger.info(f"🔧 Tool arguments: {tool_calls[0].function.arguments}")
 
         try:
-            if response is None:
-                raise RuntimeError("No response received from the LLM")
-
             # Handle different tool_choices modes
             if self.tool_choices == ToolChoice.NONE:
                 if tool_calls:
@@ -103,7 +108,8 @@ class ToolCallAgent(ReActAgent):
                     return True
                 return False
 
-            # Create and add assistant message
+            # 메시지 처리: assistant 메시지와 tool 호출 응답이 올바른 순서로 처리되도록 함
+            # 먼저 assistant 메시지를 생성하고 추가 (도구 호출 포함)
             assistant_msg = (
                 Message.from_tool_calls(content=content, tool_calls=self.tool_calls)
                 if self.tool_calls
@@ -138,6 +144,7 @@ class ToolCallAgent(ReActAgent):
             return self.messages[-1].content or "No content or commands to execute"
 
         results = []
+        # 도구 호출을 순차적으로 처리합니다
         for command in self.tool_calls:
             # Reset base64_image for each tool call
             self._current_base64_image = None
@@ -151,7 +158,8 @@ class ToolCallAgent(ReActAgent):
                 f"🎯 Tool '{command.function.name}' completed its mission! Result: {result}"
             )
 
-            # Add tool response to memory
+            # 각 도구 호출 응답을 메모리에 추가한 후, 후속 도구 호출 처리 전에
+            # 이 도구 호출의 응답이 memory/messages에 포함되게 합니다
             tool_msg = Message.tool_message(
                 content=result,
                 tool_call_id=command.id,
@@ -159,6 +167,8 @@ class ToolCallAgent(ReActAgent):
                 base64_image=self._current_base64_image,
             )
             self.memory.add_message(tool_msg)
+            
+            # 각 도구 결과를 결과 리스트에 추가
             results.append(result)
 
         return "\n\n".join(results)
