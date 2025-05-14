@@ -1,41 +1,11 @@
 import asyncio
 import os
 from datetime import datetime
-from io import StringIO
 import sys
 from fpdf import FPDF
 
 from app.agent.manus import Manus
-from app.logger import logger, _logger
-
-
-class LogCapture:
-    def __init__(self):
-        self.log_string = StringIO()
-        self.captured_output = []
-        
-        # 기존 로그 핸들러를 백업
-        self._original_handlers = _logger._core.handlers.copy()
-        
-        # 모든 핸들러 제거
-        _logger.remove()
-        
-        # 콘솔에 출력하는 핸들러 추가
-        _logger.add(sys.stderr)
-        
-        # StringIO에 로그를 캡처하는 핸들러 추가
-        _logger.add(self.log_string)
-    
-    def restore_handlers(self):
-        # 모든 핸들러 제거
-        _logger.remove()
-        
-        # 원래 핸들러 복원
-        for handler_id, handler in self._original_handlers.items():
-            _logger._core.handlers[handler_id] = handler
-    
-    def get_output(self):
-        return self.log_string.getvalue()
+from app.logger import logger
 
 
 def create_pdf(content, filename):
@@ -82,9 +52,21 @@ def save_text_file(content, filename):
     logger.info(f"Analysis result saved to {filename}")
 
 
+class ResultCollector:
+    def __init__(self):
+        self.result = ""
+    
+    def add_to_result(self, text):
+        if text:
+            self.result += text + "\n"
+    
+    def get_result(self):
+        return self.result
+
+
 async def main():
-    # 로그 캡처 시작
-    log_capture = LogCapture()
+    # 결과 수집기 생성
+    result_collector = ResultCollector()
     
     # Create and initialize Manus agent
     agent = await Manus.create()
@@ -95,12 +77,17 @@ async def main():
             return
 
         logger.warning("Processing your request...")
+        print("\n--- ANALYSIS RESULTS ---\n")
         
-        # 에이전트 실행
-        await agent.run(prompt)
+        # 에이전트 실행하고 결과 받기
+        response = await agent.run(prompt)
         
-        # 캡처된 로그 가져오기
-        captured_result = log_capture.get_output()
+        # 결과를 추가
+        result_collector.add_to_result(response)
+        
+        # 화면에 결과 표시
+        print(response)
+        print("\n--- END OF RESULTS ---\n")
         
         # 결과 폴더 생성
         results_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
@@ -111,9 +98,17 @@ async def main():
         pdf_filename = os.path.join(results_dir, f"analysis_{timestamp}.pdf")
         txt_filename = os.path.join(results_dir, f"analysis_{timestamp}.txt")
         
+        # 수집된 결과 확인
+        final_result = result_collector.get_result()
+        if not final_result.strip():
+            # 결과가 비어있으면 에이전트가 직접 설정한 응답 사용
+            final_result = "분석 결과를 직접 가져올 수 없습니다. 콘솔 출력을 확인해주세요."
+            if response:
+                final_result = response
+        
         # PDF 및 텍스트 파일 생성
-        create_pdf(captured_result, pdf_filename)
-        save_text_file(captured_result, txt_filename)
+        create_pdf(final_result, pdf_filename)
+        save_text_file(final_result, txt_filename)
         
         # 결과 파일 위치 출력
         print(f"\nResults saved to:")
@@ -126,9 +121,6 @@ async def main():
     except Exception as e:
         logger.error(f"Error occurred: {e}")
     finally:
-        # 원래 로그 핸들러 복원
-        log_capture.restore_handlers()
-        
         # Ensure agent resources are cleaned up before exiting
         await agent.cleanup()
 
