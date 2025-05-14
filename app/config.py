@@ -6,6 +6,9 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
+# 환경 변수 로더 임포트
+from app.env_loader import replace_env_vars
+
 
 def get_project_root() -> Path:
     """Get the project root directory"""
@@ -197,7 +200,9 @@ class Config:
     def _load_config(self) -> dict:
         config_path = self._get_config_path()
         with config_path.open("rb") as f:
-            return tomllib.load(f)
+            config = tomllib.load(f)
+            # 구성에서 환경 변수 참조 처리
+            return replace_env_vars(config)
 
     def _load_initial_config(self):
         raw_config = self._load_config()

@@ -8,6 +8,11 @@ data/
 # Workspace
 workspace/
 
+# Configuration files with sensitive information
+config/config.toml
+config/*.toml
+!config/config.example.toml
+
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
