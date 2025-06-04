@@ -261,20 +261,55 @@ class StockClassifier(BaseAgent):
         }
 
         try:
-            # 분류명 추출 (간단한 패턴 매칭)
-            for stock_type in StockType:
-                if stock_type.value in response:
-                    result["classification"] = stock_type.value
+            # 분류명 추출 - 우선순위 기반으로 정확하게 추출!
+            classification = "기타주"  # 기본값
+
+            # 1순위: "선택한 분류", "최종 분류" 등 명시적 결과 패턴 찾기
+            final_patterns = [
+                r"선택한 분류.*?[:：]\s*([^(\n]*?)(?:\s*\(|$)",
+                r"최종 분류.*?[:：]\s*([^(\n]*?)(?:\s*\(|$)",
+                r"분류 결과.*?[:：]\s*([^(\n]*?)(?:\s*\(|$)",
+                r"\*\*분류.*?[:：]\s*([^(\n]*?)(?:\s*\(|\*\*|$)",
+            ]
+
+            for pattern in final_patterns:
+                import re
+
+                matches = re.findall(pattern, response, re.IGNORECASE)
+                if matches:
+                    candidate = matches[0].strip()
+                    # 발견된 후보가 실제 분류명인지 확인
+                    for stock_type in StockType:
+                        if stock_type.value in candidate:
+                            classification = stock_type.value
+                            break
+                    if classification != "기타주":
+                        break
+
+            # 2순위: 전체 텍스트에서 순서대로 찾기 (기존 방식)
+            if classification == "기타주":
+                for stock_type in StockType:
+                    if stock_type.value in response:
+                        classification = stock_type.value
+                        break
+
+            result["classification"] = classification
+
+            # 신뢰도 추출 - 패턴 기반으로 정확하게
+            confidence = "보통"  # 기본값
+            confidence_patterns = [
+                r"신뢰도.*?[:：]\s*(높음|보통|낮음)",
+                r"\*\*신뢰도.*?[:：]\s*(높음|보통|낮음)",
+                r"신뢰도 평가.*?[:：]\s*(높음|보통|낮음)",
+            ]
+
+            for pattern in confidence_patterns:
+                matches = re.findall(pattern, response, re.IGNORECASE)
+                if matches:
+                    confidence = matches[0]
                     break
 
-            # 신뢰도 추출
-            if "신뢰도" in response:
-                if "높음" in response:
-                    result["confidence"] = "높음"
-                elif "낮음" in response:
-                    result["confidence"] = "낮음"
-                else:
-                    result["confidence"] = "보통"
+            result["confidence"] = confidence
 
             # 근거 추출 (• 또는 - 로 시작하는 줄들)
             lines = response.split("\n")

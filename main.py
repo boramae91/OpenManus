@@ -86,21 +86,21 @@ def save_json_file(
         # 프롬프트가 비어있으면 기본 키를 사용해요
         prompt = "User Question"
 
-    # 풍부한 JSON 데이터 생성
-    json_data = {
-        "query": prompt,  # 사용자 질문
-        "analysis_result": content,  # 분석 결과
-        "processing_time_seconds": processing_time,  # 처리 시간
-        "timestamp": datetime.now().isoformat(),  # 분석 시간
-    }
+        # 기존 형식 유지: 질문을 key로, 답변을 value로 저장
+    json_data = {prompt: content}  # 질문을 key로, 답변을 value로 저장해요
 
-    # 종목 분류 정보 추가
+    # 분류 정보가 있으면 추가 (기존 구조 유지하면서 확장)
     if classification_data:
         json_data["stock_classification"] = classification_data
 
-    # 종목 정보 추가 (티커, 시장 등)
+    # 종목 정보가 있으면 추가
     if stock_info:
         json_data["stock_info"] = stock_info
+
+    # 처리 시간과 타임스탬프는 별도 필드로 추가
+    if processing_time > 0:
+        json_data["processing_time_seconds"] = processing_time
+    json_data["timestamp"] = datetime.now().isoformat()
 
     # JSON 파일로 저장해요 (한글도 제대로 저장되도록 설정)
     with open(filename, "w", encoding="utf-8") as f:
