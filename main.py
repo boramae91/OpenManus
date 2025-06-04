@@ -67,27 +67,19 @@ def save_json_file(content, filename, prompt="", processing_time=0):
     분석 결과를 JSON 형식으로 저장하는 함수예요
     - content: 분석 결과 내용 (문자열)
     - filename: 저장할 파일 이름
-    - prompt: 사용자가 입력한 질문
+    - prompt: 사용자가 입력한 질문 (이것이 key가 돼요)
     - processing_time: 처리하는데 걸린 시간
     """
-    # JSON 형식으로 저장할 데이터를 딕셔너리(사전)로 만들어요
-    # 마치 정리된 서랍장처럼 각각의 정보를 분류해서 저장해요
-    json_data = {
-        "metadata": {  # 메타데이터는 결과에 대한 기본 정보들을 담는 상자예요
-            "timestamp": datetime.now().isoformat(),  # 언제 만들어졌는지 시간 정보
-            "generated_by": "OpenManus",  # 어떤 프로그램이 만들었는지
-            "version": "1.0",  # 프로그램 버전
-            "processing_time_seconds": processing_time,  # 분석하는데 걸린 시간
-        },
-        "input": {  # 입력 정보를 담는 상자예요
-            "user_prompt": prompt  # 사용자가 질문한 내용
-        },
-        "output": {  # 출력 결과를 담는 상자예요
-            "analysis_result": content,  # 실제 분석 결과
-            "result_length": len(content),  # 결과 텍스트의 길이
-            "has_content": bool(content.strip()),  # 내용이 있는지 없는지 확인
-        },
-    }
+    # 간단한 key-value 형식으로 JSON 데이터를 만들어요
+    # 사용자의 질문이 key가 되고, 분석 결과가 value가 되는 거예요
+    # 마치 질문-답변 카드처럼 저장하는 거죠!
+
+    if not prompt.strip():
+        # 프롬프트가 비어있으면 기본 키를 사용해요
+        prompt = "User Question"
+
+    # 간단한 형식의 JSON 데이터 생성
+    json_data = {prompt: content}  # 질문을 key로, 답변을 value로 저장해요
 
     # JSON 파일로 저장해요 (한글도 제대로 저장되도록 설정)
     with open(filename, "w", encoding="utf-8") as f:
