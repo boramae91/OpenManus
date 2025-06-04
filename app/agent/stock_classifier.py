@@ -154,8 +154,9 @@ class StockClassifier(BaseAgent):
 
         self.update_memory("user", analysis_prompt)
 
-        response = await self.llm.achat(
-            messages=self.memory.to_llm_messages(), system_prompt=self.system_prompt
+        system_messages = [{"role": "system", "content": self.system_prompt}]
+        response = await self.llm.ask(
+            messages=self.memory.to_dict_list(), system_msgs=system_messages
         )
 
         self.update_memory("assistant", response)
@@ -182,8 +183,9 @@ class StockClassifier(BaseAgent):
 
         self.update_memory("user", classification_prompt)
 
-        response = await self.llm.achat(
-            messages=self.memory.to_llm_messages(), system_prompt=self.system_prompt
+        system_messages = [{"role": "system", "content": self.system_prompt}]
+        response = await self.llm.ask(
+            messages=self.memory.to_dict_list(), system_msgs=system_messages
         )
 
         self.update_memory("assistant", response)
@@ -224,8 +226,9 @@ class StockClassifier(BaseAgent):
 
         self.update_memory("user", final_prompt)
 
-        response = await self.llm.achat(
-            messages=self.memory.to_llm_messages(), system_prompt=self.system_prompt
+        system_messages = [{"role": "system", "content": self.system_prompt}]
+        response = await self.llm.ask(
+            messages=self.memory.to_dict_list(), system_msgs=system_messages
         )
 
         self.update_memory("assistant", response)
