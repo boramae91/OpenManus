@@ -147,10 +147,10 @@ def generate_json_filename(stock_name, base_dir="results", file_type="flow"):
 
     # 파일명 생성 (JSON-Agent-종목명-financial-현재시간-save저장시간.json)
     if file_type == "flow":
-        filename = f"JSON-Agent-{stock_name}-financial-{current_timestamp}-{save_timestamp}.json"
+        filename = f"JSON-Agent-{stock_name}-financial-{current_timestamp}-save{save_timestamp}.json"
     else:
         # 특수한 경우 (timeout, cancelled, error)에는 파일명에 타입을 포함시켜요
-        filename = f"JSON-Agent-{stock_name}-financial-{file_type}-{current_timestamp}-{save_timestamp}.json"
+        filename = f"JSON-Agent-{stock_name}-financial-{file_type}-{current_timestamp}-save{save_timestamp}.json"
 
     # 전체 경로 생성
     full_path = os.path.join(base_dir, filename)
