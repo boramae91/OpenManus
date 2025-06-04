@@ -226,10 +226,10 @@ def generate_json_filename(
     stock_name, stock_code=None, base_dir="results", file_type="flow"
 ):
     """
-    JSON 파일명을 생성하는 함수예요
-    형식: JSON-FA-종목명(영문)-종목티커-현재시간-save현재시간.json
+    JSON 파일명을 생성하는 함수예요 (사용자 요청 형식)
+    형식: JSON-종목코드-종목명-현재시간-save현재시간.json
     - stock_name: 종목명 (영문)
-    - stock_code: 종목티커 (선택사항, 한국 종목만 6자리 코드)
+    - stock_code: 종목코드/티커 (선택사항)
     - base_dir: 저장할 폴더명
     - file_type: 파일 타입 (flow, timeout, cancelled, error)
     """
@@ -237,27 +237,27 @@ def generate_json_filename(
     current_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     save_timestamp = current_timestamp  # 현재시간과 저장시간이 동일해요
 
-    # 해외 종목의 경우 실제 티커를 사용, 한국 종목의 경우 6자리 코드 사용
-    if stock_code and len(stock_code) == 6 and stock_code.isdigit():
-        # 한국 종목코드인 경우
-        ticker_part = stock_code
+    # 종목코드 부분 결정
+    if stock_code:
+        # 종목코드가 있으면 그대로 사용
+        code_part = stock_code
     else:
-        # 해외 종목이거나 코드가 없는 경우, 종목명에서 티커 추출
-        ticker_part = convert_to_english_ticker(stock_name)
-        # 이미 티커 형태라면 그대로, 아니면 UNKNOWN 사용
-        if ticker_part == stock_name and not (
-            ticker_part.isupper()
-            and ticker_part.isalpha()
-            and 2 <= len(ticker_part) <= 5
+        # 종목코드가 없으면 종목명에서 추출하거나 UNKNOWN 사용
+        code_part = convert_to_english_ticker(stock_name)
+        if code_part == stock_name and not (
+            code_part.isupper() and code_part.isalpha() and 2 <= len(code_part) <= 5
         ):
-            ticker_part = "UNKNOWN"
+            code_part = "UNKNOWN"
 
-    # 파일명 생성 (JSON-FA-종목명(영문)-종목티커-현재시간-save현재시간.json)
+    # 종목명 부분 정리 (파일명에 적합하게)
+    clean_stock_name = stock_name if stock_name else "GENERAL"
+
+    # 파일명 생성 (사용자 요청 형식: JSON-종목코드-종목명-현재시간-save현재시간.json)
     if file_type == "flow":
-        filename = f"JSON-FA-{stock_name}-{ticker_part}-{current_timestamp}-save{save_timestamp}.json"
+        filename = f"JSON-{code_part}-{clean_stock_name}-{current_timestamp}-save{save_timestamp}.json"
     else:
         # 특수한 경우 (timeout, cancelled, error)에는 파일명에 타입을 포함시켜요
-        filename = f"JSON-FA-{stock_name}-{ticker_part}-{file_type}-{current_timestamp}-save{save_timestamp}.json"
+        filename = f"JSON-{code_part}-{clean_stock_name}-{file_type}-{current_timestamp}-save{save_timestamp}.json"
 
     # 전체 경로 생성
     full_path = os.path.join(base_dir, filename)
@@ -288,6 +288,8 @@ def extract_stock_candidates_from_text(text):
         "한화시스템",
         "한화솔루션",
         "한화",
+        "한국항공우주",
+        "한국항공우주산업",
         "삼성전자",
         "삼성",
         "SK하이닉스",
@@ -372,6 +374,7 @@ def get_stock_name_from_code(stock_code):
         "035720": "KAKAO",  # 카카오
         "068270": "CELLTRION",  # 셀트리온
         "012450": "HANWHA_AERO",  # 한화에어로스페이스
+        "047810": "KAI",  # 한국항공우주산업
         "009150": "SAMSUNG_ELEC",  # 삼성전기
         "051910": "LG_CHEM",  # LG화학
         "028260": "SAMSUNG_BIO",  # 삼성바이오로직스
@@ -1055,13 +1058,14 @@ async def run_flow():
                 classification_data_for_json = classification_result
 
             # 종목 정보가 있으면 JSON용 데이터 준비
-            if has_stock_detected:
+            if stock_name != "GENERAL":
                 stock_info_for_json = {
-                    "stock_name": detected_stock_name,
-                    "ticker": detected_ticker,
-                    "stock_type": detected_stock_type,
-                    "market": detected_market,
+                    "stock_name": stock_name,
+                    "ticker": stock_code,
+                    "stock_code": stock_code,
                     "found": True,
+                    "extraction_method": "✨ AI Flow 응답 동적 추출",
+                    "source": "ai_flow_response",
                 }
 
             # 텍스트 파일과 JSON 파일 모두 생성해요

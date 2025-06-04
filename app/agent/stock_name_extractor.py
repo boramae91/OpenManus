@@ -27,64 +27,69 @@ class StockNameExtractor:
 
     def __init__(self):
         """종목명 추출 에이전트를 초기화해요"""
-        # 한국 주요 종목 리스트 (종목명 -> (영문명, 종목코드))
+        # 한국 주요 종목 리스트 (종목명 -> (한글명, 종목코드))
         self.korean_stocks = {
             # 삼성 계열
-            "삼성바이오로직스": ("SAMSUNG_BIO", "207940"),
-            "삼성전자": ("SAMSUNG_ELEC", "005930"),
-            "삼성SDI": ("SAMSUNG_SDI", "006400"),
-            "삼성화재": ("SAMSUNG_FIRE", "000810"),
-            "삼성물산": ("SAMSUNG_CT", "028260"),
-            "삼성생명": ("SAMSUNG_LIFE", "032830"),
-            "삼성중공업": ("SAMSUNG_HI", "010140"),
-            "삼성카드": ("SAMSUNG_CARD", "029780"),
-            "삼성증권": ("SAMSUNG_SEC", "016360"),
-            "삼성": ("SAMSUNG", "005930"),  # 기본값은 삼성전자
+            "삼성바이오로직스": ("삼성바이오로직스", "207940"),
+            "삼성전자": ("삼성전자", "005930"),
+            "삼성SDI": ("삼성SDI", "006400"),
+            "삼성화재": ("삼성화재", "000810"),
+            "삼성물산": ("삼성물산", "028260"),
+            "삼성생명": ("삼성생명", "032830"),
+            "삼성중공업": ("삼성중공업", "010140"),
+            "삼성카드": ("삼성카드", "029780"),
+            "삼성증권": ("삼성증권", "016360"),
+            "삼성": ("삼성전자", "005930"),  # 기본값은 삼성전자
             # SK 계열
-            "SK하이닉스": ("SKHYNIX", "000660"),
-            "SK텔레콤": ("SKT", "017670"),
-            "SK이노베이션": ("SKINNO", "096770"),
-            "SK바이오팜": ("SKBIO", "326030"),
-            "SK바이오사이언스": ("SKBIOSCI", "302440"),
-            "SK": ("SK", "000660"),  # 기본값은 SK하이닉스
+            "SK하이닉스": ("SK하이닉스", "000660"),
+            "SK텔레콤": ("SK텔레콤", "017670"),
+            "SK이노베이션": ("SK이노베이션", "096770"),
+            "SK바이오팜": ("SK바이오팜", "326030"),
+            "SK바이오사이언스": ("SK바이오사이언스", "302440"),
+            "SK": ("SK하이닉스", "000660"),  # 기본값은 SK하이닉스
             # LG 계열
-            "LG전자": ("LG_ELEC", "066570"),
-            "LG화학": ("LG_CHEM", "051910"),
-            "LG에너지솔루션": ("LG_ENERGY", "373220"),
-            "LG생활건강": ("LG_HEALTH", "051900"),
-            "LG유플러스": ("LG_UPLUS", "032640"),
-            "LG디스플레이": ("LG_DISPLAY", "034220"),
-            "LG": ("LG", "066570"),  # 기본값은 LG전자
+            "LG전자": ("LG전자", "066570"),
+            "LG화학": ("LG화학", "051910"),
+            "LG에너지솔루션": ("LG에너지솔루션", "373220"),
+            "LG생활건강": ("LG생활건강", "051900"),
+            "LG유플러스": ("LG유플러스", "032640"),
+            "LG디스플레이": ("LG디스플레이", "034220"),
+            "LG": ("LG전자", "066570"),  # 기본값은 LG전자
             # 현대 계열
-            "현대자동차": ("HYUNDAI_MOTOR", "005380"),
-            "현대모비스": ("HYUNDAI_MOBIS", "012330"),
-            "현대중공업": ("HYUNDAI_HI", "009540"),
-            "현대건설": ("HYUNDAI_CONST", "000720"),
-            "현대차": ("HYUNDAI", "005380"),
-            "현대": ("HYUNDAI", "005380"),  # 기본값은 현대자동차
+            "현대자동차": ("현대자동차", "005380"),
+            "현대모비스": ("현대모비스", "012330"),
+            "현대중공업": ("현대중공업", "009540"),
+            "현대건설": ("현대건설", "000720"),
+            "현대차": ("현대차", "005380"),
+            "현대": ("현대자동차", "005380"),  # 기본값은 현대자동차
             # 기타 주요 종목
-            "기아": ("KIA", "000270"),
-            "포스코": ("POSCO", "005490"),
-            "포스코홀딩스": ("POSCO_HOLD", "005490"),
-            "네이버": ("NAVER", "035420"),
-            "카카오": ("KAKAO", "035720"),
-            "카카오뱅크": ("KAKAOBANK", "323410"),
-            "카카오페이": ("KAKAOPAY", "377300"),
-            "셀트리온": ("CELLTRION", "068270"),
-            "셀트리온헬스케어": ("CELLTRION_HC", "091990"),
+            "기아": ("기아", "000270"),
+            "포스코": ("포스코", "005490"),
+            "포스코홀딩스": ("포스코홀딩스", "005490"),
+            "네이버": ("네이버", "035420"),
+            "카카오": ("카카오", "035720"),
+            "카카오뱅크": ("카카오뱅크", "323410"),
+            "카카오페이": ("카카오페이", "377300"),
+            "셀트리온": ("셀트리온", "068270"),
+            "셀트리온헬스케어": ("셀트리온헬스케어", "091990"),
             # 한화 계열
-            "한화에어로스페이스": ("HANWHA_AERO", "012450"),
-            "한화시스템": ("HANWHA_SYS", "272210"),
-            "한화솔루션": ("HANWHA_SOL", "009830"),
-            "한화": ("HANWHA", "000880"),
+            "한화에어로스페이스": ("한화에어로스페이스", "012450"),
+            "한화시스템": ("한화시스템", "272210"),
+            "한화솔루션": ("한화솔루션", "009830"),
+            "한화": ("한화", "000880"),
+            # 항공우주 관련
+            "한국항공우주": ("한국항공우주", "047810"),
+            "한국항공우주산업": ("한국항공우주산업", "047810"),
+            "KAI": ("한국항공우주", "047810"),
             # 기타
-            "휴니드": ("HUNEED", "005870"),
-            "한컴라이프케어": ("HANCOM_LC", "372910"),
-            "두산": ("DOOSAN", "000150"),
-            "롯데": ("LOTTE", "004990"),
-            "신한": ("SHINHAN", "055550"),
+            "휴니드": ("휴니드", "005870"),
+            "한컴라이프케어": ("한컴라이프케어", "372910"),
+            "두산": ("두산", "000150"),
+            "롯데": ("롯데", "004990"),
+            "신한": ("신한", "055550"),
             "KB": ("KB", "105560"),
-            "하나": ("HANA", "086790"),
+            "하나": ("하나", "086790"),
+            "메리츠증권": ("메리츠증권", "008560"),
         }
 
         # 해외 주식 매핑 (한글명/영문명 -> (영문명, 티커))
@@ -326,22 +331,48 @@ class StockNameExtractor:
         """추출된 종목 정보를 딕셔너리로 반환 (티커 정보 포함)"""
         stock_name, ticker = self.extract_from_prompt(prompt)
 
-        # 종목 타입 판별
+        # 종목 타입 판별 - 실제 매핑 테이블을 기반으로 정확하게 판별
         stock_type = "unknown"
         market = "unknown"
 
         if stock_name and ticker:
-            if len(ticker) == 6 and ticker.isdigit():
-                stock_type = "korean"
-                market = "KRX"  # 한국거래소
-            elif ticker.startswith("CODE") and len(ticker) == 10:
+            # 1. 한국 종목인지 확인 (매핑 테이블 기반)
+            is_korean_stock = False
+            for korean_name, (mapped_name, mapped_code) in self.korean_stocks.items():
+                if stock_name == mapped_name or ticker == mapped_code:
+                    is_korean_stock = True
+                    break
+
+            if is_korean_stock:
                 stock_type = "korean"
                 market = "KRX"
-            elif len(ticker) <= 5 and ticker.isalpha() and ticker.isupper():
-                stock_type = "foreign"
-                market = "US"  # 기본값으로 미국 시장
             else:
-                stock_type = "other"
+                # 2. 해외 종목인지 확인 (매핑 테이블 기반)
+                is_foreign_stock = False
+                for foreign_name, (
+                    mapped_name,
+                    mapped_ticker,
+                ) in self.foreign_stocks.items():
+                    if stock_name == mapped_name or ticker == mapped_ticker:
+                        is_foreign_stock = True
+                        break
+
+                if is_foreign_stock:
+                    stock_type = "foreign"
+                    market = "US"
+                else:
+                    # 3. 패턴 기반 추론
+                    if len(ticker) == 6 and ticker.isdigit():
+                        stock_type = "korean"
+                        market = "KRX"
+                    elif ticker.startswith("CODE") and len(ticker) == 10:
+                        stock_type = "korean"
+                        market = "KRX"
+                    elif len(ticker) <= 5 and ticker.isalpha() and ticker.isupper():
+                        stock_type = "foreign"
+                        market = "US"
+                    else:
+                        stock_type = "other"
 
         return {
             "stock_name": stock_name,  # 영문 종목명

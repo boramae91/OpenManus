@@ -355,3 +355,143 @@ class StockClassifier(BaseAgent):
         """사용 가능한 분류 유형들을 반환하는 함수예요"""
 
         return {stock_type.name: stock_type.value for stock_type in StockType}
+
+    def extract_stock_info_from_analysis(self, analysis_text: str) -> Dict:
+        """
+        분석 결과에서 종목명과 종목코드를 동적으로 추출하는 함수예요
+        - analysis_text: AI 분석 결과 텍스트
+        - 반환값: {"stock_name": "종목명", "stock_code": "종목코드", "found": True/False}
+        """
+        import re
+
+        result = {
+            "stock_name": None,
+            "stock_code": None,
+            "found": False,
+            "extraction_method": "stock_classifier_dynamic",
+        }
+
+        try:
+            # 패턴 1: "종목명: XXX" 형태
+            name_patterns = [
+                r"종목명\s*[:：]\s*([가-힣A-Za-z0-9\s&\.\-]+)",
+                r"회사명\s*[:：]\s*([가-힣A-Za-z0-9\s&\.\-]+)",
+                r"기업명\s*[:：]\s*([가-힣A-Za-z0-9\s&\.\-]+)",
+            ]
+
+            # 패턴 2: "종목코드: XXXXXX" 형태
+            code_patterns = [
+                r"종목코드\s*[:：]\s*([A-Z]?[0-9]{2,6})",
+                r"코드\s*[:：]\s*([A-Z]?[0-9]{2,6})",
+                r"티커\s*[:：]\s*([A-Z]{2,5})",
+            ]
+
+            # 종목명 추출
+            for pattern in name_patterns:
+                matches = re.findall(pattern, analysis_text, re.IGNORECASE)
+                if matches:
+                    candidate = matches[0].strip()
+                    # 유효성 검증
+                    if self._is_valid_stock_name(candidate):
+                        result["stock_name"] = candidate
+                        break
+
+            # 종목코드 추출
+            for pattern in code_patterns:
+                matches = re.findall(pattern, analysis_text, re.IGNORECASE)
+                if matches:
+                    candidate = matches[0].strip()
+                    # 유효성 검증
+                    if self._is_valid_stock_code(candidate):
+                        result["stock_code"] = candidate
+                        break
+
+            # 패턴 3: "종목명(종목코드)" 형태
+            combined_pattern = (
+                r"([가-힣A-Za-z0-9\s&\.\-]+)\s*\(\s*([A-Z]?[0-9]{2,6})\s*\)"
+            )
+            combined_matches = re.findall(
+                combined_pattern, analysis_text, re.IGNORECASE
+            )
+
+            if combined_matches:
+                for match in combined_matches:
+                    name_candidate = match[0].strip()
+                    code_candidate = match[1].strip()
+
+                    if self._is_valid_stock_name(
+                        name_candidate
+                    ) and self._is_valid_stock_code(code_candidate):
+                        result["stock_name"] = name_candidate
+                        result["stock_code"] = code_candidate
+                        break
+
+            # 결과 검증
+            if result["stock_name"] or result["stock_code"]:
+                result["found"] = True
+                logger.info(
+                    f"✅ StockClassifier에서 종목 정보 추출 성공: {result['stock_name']} ({result['stock_code']})"
+                )
+            else:
+                logger.warning("❌ StockClassifier에서 종목 정보를 찾지 못했습니다.")
+
+        except Exception as e:
+            logger.error(f"StockClassifier 종목 정보 추출 중 오류: {e}")
+
+        return result
+
+    def _is_valid_stock_name(self, name: str) -> bool:
+        """종목명이 유효한지 검증하는 함수예요"""
+        if not name or len(name.strip()) < 2:
+            return False
+
+        name = name.strip()
+
+        # 제외할 일반적인 단어들
+        exclude_words = {
+            "분석",
+            "종목",
+            "기업",
+            "정보",
+            "결과",
+            "전망",
+            "투자",
+            "주식",
+            "시장",
+            "Analysis",
+            "Stock",
+            "Company",
+            "Market",
+            "Info",
+            "Result",
+        }
+
+        if name in exclude_words:
+            return False
+
+        # 길이 제한
+        if len(name) < 2 or len(name) > 50:
+            return False
+
+        # 숫자만인 경우 제외
+        if name.isdigit():
+            return False
+
+        return True
+
+    def _is_valid_stock_code(self, code: str) -> bool:
+        """종목코드가 유효한지 검증하는 함수예요"""
+        if not code or len(code.strip()) < 2:
+            return False
+
+        code = code.strip()
+
+        # 한국 종목코드 (6자리 숫자)
+        if re.match(r"^\d{6}$", code):
+            return True
+
+        # 해외 티커 (2-5글자 알파벳)
+        if re.match(r"^[A-Z]{2,5}$", code):
+            return True
+
+        return False

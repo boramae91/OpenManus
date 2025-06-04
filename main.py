@@ -12,6 +12,16 @@ from app.agent.stock_classifier import StockClassifier
 from app.agent.stock_name_extractor import StockNameExtractor
 from app.logger import logger
 
+# 동적 종목 정보 추출을 위한 AI 에이전트 import
+try:
+    from app.agent.dynamic_stock_extractor import DynamicStockExtractor
+
+    DYNAMIC_EXTRACTOR_AVAILABLE = True
+    logger.info("🚀 동적 종목 추출 에이전트 로드 성공!")
+except ImportError as e:
+    logger.warning(f"동적 종목 추출 에이전트 로드 실패: {e}")
+    DYNAMIC_EXTRACTOR_AVAILABLE = False
+
 
 def create_pdf(content, filename):
     # PDF 생성
@@ -510,45 +520,46 @@ def extract_company_name_from_prompt(prompt):
 
 def convert_korean_to_english_ticker(korean_name):
     """
-    한글 회사명을 영문 티커로 변환하는 함수예요 (기본적인 변환만)
+    한글 회사명을 처리하는 함수예요 (한글명 유지)
     - korean_name: 한글 회사명
-    - 반환값: 영문 티커 (변환 불가시 원본을 대문자로)
+    - 반환값: 한글 종목명 (변환 불가시 원본 그대로)
     """
     if not korean_name:
         return "UNKNOWN"
 
-    # 기본적인 변환 테이블 (자주 사용되는 몇 개만)
-    basic_conversions = {
-        "삼성전자": "SAMSUNG",
-        "삼성": "SAMSUNG",
-        "SK하이닉스": "SKHYNIX",
-        "SK": "SK",
-        "LG전자": "LG",
-        "LG": "LG",
-        "현대자동차": "HYUNDAI",
-        "현대차": "HYUNDAI",
-        "현대": "HYUNDAI",
-        "기아": "KIA",
-        "포스코": "POSCO",
-        "네이버": "NAVER",
-        "카카오": "KAKAO",
-        "셀트리온": "CELLTRION",
-        "한화에어로스페이스": "HANWHA_AERO",
-        "한화": "HANWHA",
-        "휴니드": "HUNEED",
+    # 한글 종목명은 그대로 유지
+    korean_stocks = {
+        "삼성전자": "삼성전자",
+        "삼성": "삼성전자",
+        "SK하이닉스": "SK하이닉스",
+        "SK": "SK하이닉스",
+        "LG전자": "LG전자",
+        "LG": "LG전자",
+        "현대자동차": "현대자동차",
+        "현대차": "현대차",
+        "현대": "현대자동차",
+        "기아": "기아",
+        "포스코": "포스코",
+        "네이버": "네이버",
+        "카카오": "카카오",
+        "셀트리온": "셀트리온",
+        "한화에어로스페이스": "한화에어로스페이스",
+        "한화": "한화",
+        "휴니드": "휴니드",
+        "삼성증권": "삼성증권",
+        "메리츠증권": "메리츠증권",
     }
 
     # 기본 변환 테이블에 있으면 반환
-    if korean_name in basic_conversions:
-        return basic_conversions[korean_name]
+    if korean_name in korean_stocks:
+        return korean_stocks[korean_name]
 
-    # 없으면 한글 그대로 반환하거나 대문자로 변환
+    # 이미 영문이면 대문자로
     if korean_name.isalpha() and all(ord(char) < 128 for char in korean_name):
-        # 이미 영문이면 대문자로
         return korean_name.upper()
-    else:
-        # 한글이면 그대로 반환
-        return korean_name
+
+    # 한글이면 그대로 반환
+    return korean_name
 
 
 def find_most_frequent_stock_name(ai_response):
@@ -572,6 +583,7 @@ def find_most_frequent_stock_name(ai_response):
         "삼성SDI",
         "삼성화재",
         "삼성물산",
+        "삼성증권",
         "SK하이닉스",
         "SK텔레콤",
         "SK이노베이션",
@@ -593,6 +605,7 @@ def find_most_frequent_stock_name(ai_response):
         "한화솔루션",
         "휴니드",
         "한컴라이프케어",
+        "메리츠증권",
     ]
 
     # 우선순위 종목들이 있는지 먼저 확인 (높은 가중치)
@@ -824,6 +837,25 @@ def find_most_frequent_stock_name(ai_response):
         "REITs",
         "ADR",
         "GDR",
+        # 웹 브라우징 관련 제외 단어
+        "PDF",
+        "URL",
+        "Description",
+        "Metadata",
+        "Search",
+        "results",
+        "http",
+        "https",
+        "www",
+        "com",
+        "html",
+        "Step",
+        "Observed",
+        "output",
+        "cmd",
+        "browser",
+        "use",
+        "executed",
         "Revenue",
         "Profit",
         "Loss",
@@ -911,9 +943,9 @@ def find_most_frequent_stock_name(ai_response):
 
 def convert_to_english_ticker(company_name):
     """
-    회사명을 영문 티커로 변환하는 함수예요 (한국 + 해외 종목 지원)
+    회사명을 티커로 변환하는 함수예요 (한국 + 해외 종목 지원)
     - company_name: 회사명 (한글, 영문, 또는 티커)
-    - 반환값: 영문 티커
+    - 반환값: 한글 종목명 또는 영문 티커
     """
     if not company_name:
         return "UNKNOWN"
@@ -952,45 +984,40 @@ def convert_to_english_ticker(company_name):
 
     # 종목 변환 테이블 (한국 + 해외)
     basic_conversions = {
-        # 한국 종목들
-        "휴니드": "HUNEED",
-        "삼성전자": "SAMSUNG_ELEC",
-        "삼성바이오로직스": "SAMSUNG_BIO",
-        "삼성SDI": "SAMSUNG_SDI",
-        "삼성화재": "SAMSUNG_FIRE",
-        "삼성물산": "SAMSUNG_CT",
-        "삼성": "SAMSUNG",
-        "SK하이닉스": "SKHYNIX",
-        "SK텔레콤": "SKT",
-        "SK이노베이션": "SKINNO",
-        "SK": "SK",
-        "LG전자": "LG_ELEC",
-        "LG화학": "LG_CHEM",
-        "LG에너지솔루션": "LG_ENERGY",
-        "LG": "LG",
-        "현대자동차": "HYUNDAI_MOTOR",
-        "현대모비스": "HYUNDAI_MOBIS",
-        "현대차": "HYUNDAI",
-        "현대": "HYUNDAI",
-        "기아": "KIA",
-        "포스코": "POSCO",
-        "포스코홀딩스": "POSCO_HOLD",
-        "네이버": "NAVER",
-        "카카오": "KAKAO",
-        "카카오뱅크": "KAKAOBANK",
-        "셀트리온": "CELLTRION",
-        "셀트리온헬스케어": "CELLTRION_HC",
-        "한화에어로스페이스": "HANWHA_AERO",
-        "한화시스템": "HANWHA_SYS",
-        "한화솔루션": "HANWHA_SOL",
-        "한화": "HANWHA",
-        "NAVER": "NAVER",
-        "KAKAO": "KAKAO",
-        "CELLTRION": "CELLTRION",
-        "SAMSUNG": "SAMSUNG",
-        "POSCO": "POSCO",
-        "HYUNDAI": "HYUNDAI",
-        "KIA": "KIA",
+        # 한국 종목들 - 한글명 유지
+        "휴니드": "휴니드",
+        "삼성전자": "삼성전자",
+        "삼성바이오로직스": "삼성바이오로직스",
+        "삼성SDI": "삼성SDI",
+        "삼성화재": "삼성화재",
+        "삼성물산": "삼성물산",
+        "삼성": "삼성전자",
+        "SK하이닉스": "SK하이닉스",
+        "SK텔레콤": "SK텔레콤",
+        "SK이노베이션": "SK이노베이션",
+        "SK": "SK하이닉스",
+        "LG전자": "LG전자",
+        "LG화학": "LG화학",
+        "LG에너지솔루션": "LG에너지솔루션",
+        "LG": "LG전자",
+        "현대자동차": "현대자동차",
+        "현대모비스": "현대모비스",
+        "현대차": "현대차",
+        "현대": "현대자동차",
+        "기아": "기아",
+        "포스코": "포스코",
+        "포스코홀딩스": "포스코홀딩스",
+        "네이버": "네이버",
+        "카카오": "카카오",
+        "카카오뱅크": "카카오뱅크",
+        "셀트리온": "셀트리온",
+        "셀트리온헬스케어": "셀트리온헬스케어",
+        "한화에어로스페이스": "한화에어로스페이스",
+        "한화시스템": "한화시스템",
+        "한화솔루션": "한화솔루션",
+        "한화": "한화",
+        "메리츠증권": "메리츠증권",
+        "삼성증권": "삼성증권",
         # 해외 종목들 - 한글명을 실제 티커로 매핑
         "보잉": "BA",  # Boeing Company
         "애플": "AAPL",  # Apple Inc
@@ -1100,53 +1127,129 @@ def cross_verify_stock_name(prompt, ai_response):
 
 def extract_stock_name_from_ai_response(response_text, fallback_prompt=""):
     """
-    AI 에이전트가 실제로 분석한 결과에서 종목명과 종목코드를 추출하는 함수예요 (새로운 동적 방식)
+    AI 에이전트가 실제로 분석한 결과에서 종목명과 종목코드를 추출하는 함수예요 (동적 추출 방식)
     - response_text: AI가 생성한 분석 결과 텍스트
     - fallback_prompt: 응답에서 찾지 못할 경우 사용할 원본 프롬프트
     - 반환값: (종목명, 종목코드) 튜플
     """
-    # 새로운 교차 검증을 통한 종목명과 종목코드 추출 시도
-    stock_name, stock_code = cross_verify_stock_name(fallback_prompt, response_text)
-    if stock_name:
+    if not response_text or not response_text.strip():
+        logger.warning("AI 응답이 비어있습니다.")
+        return "GENERAL", None
+
+    logger.info("🚀 AI 응답에서 동적 종목 정보 추출을 시작합니다...")
+
+    # 1. 구조화된 정보 패턴 (가장 정확) - "종목명: XXX", "종목코드: XXXXXX"
+    structured_name_pattern = (
+        r"종목명\s*[:：]\s*([가-힣A-Za-z0-9\s&\-\.]{2,20})(?=\s*$|\s*\n|\s*-|\s*\*)"
+    )
+    structured_code_pattern = (
+        r"종목코드\s*[:：]\s*([A-Z]?[0-9A-Z]{2,6})(?=\s*$|\s*\n|\s*-|\s*\*)"
+    )
+
+    name_matches = re.findall(structured_name_pattern, response_text, re.IGNORECASE)
+    code_matches = re.findall(structured_code_pattern, response_text, re.IGNORECASE)
+
+    if name_matches and code_matches:
+        stock_name = name_matches[0].strip()
+        stock_code = code_matches[0].strip()
+        # 줄바꿈이나 불필요한 문자 제거
+        stock_name = re.sub(r"\s*\n\s*", "", stock_name).strip()
+        english_name = convert_to_english_ticker(stock_name)
         logger.info(
-            f"동적 분석으로 최종 확정된 종목명: {stock_name}, 종목코드: {stock_code}"
+            f"✅ 구조화된 정보에서 추출: {stock_name} -> {english_name} ({stock_code})"
         )
+
+        # 변환이 실패하면 원본 이름 사용
+        if english_name == stock_name or english_name == "GENERAL":
+            # 한국 종목은 원본 한글명 사용
+            final_name = stock_name
+        else:
+            final_name = english_name
+
+        return final_name, stock_code
+
+    # 2. 괄호 패턴 - "삼성전자(005930)" 형태
+    bracket_pattern = r"([가-힣A-Za-z0-9\s&\-\.]+)\s*\(\s*([A-Z]?[0-9A-Z]{2,6})\s*\)"
+    bracket_matches = re.findall(bracket_pattern, response_text, re.IGNORECASE)
+
+    if bracket_matches:
+        # 가장 신뢰할 만한 매치 선택 (제외 단어가 아닌 것)
+        exclude_words = {
+            "Company",
+            "Inc",
+            "Corp",
+            "Ltd",
+            "분석",
+            "정보",
+            "결과",
+            "PDF",
+            "URL",
+            "Description",
+            "Metadata",
+            "Search",
+            "results",
+            "http",
+            "www",
+            "com",
+            "html",
+            "Step",
+            "Observed",
+            "output",
+        }
+        for stock_name, stock_code in bracket_matches:
+            stock_name = stock_name.strip()
+            stock_code = stock_code.strip()
+            if stock_name not in exclude_words and len(stock_name) >= 2:
+                logger.info(f"✅ 괄호 패턴에서 추출: {stock_name} ({stock_code})")
+                return convert_to_english_ticker(stock_name), stock_code
+
+    # 3. 기존 교차 검증 방식 (백업)
+    stock_name, stock_code = cross_verify_stock_name(fallback_prompt, response_text)
+    if stock_name and stock_name != "GENERAL":
+        logger.info(f"✅ 교차 검증으로 추출: {stock_name}, 종목코드: {stock_code}")
         return stock_name, stock_code
 
+    # 4. 프롬프트에서라도 찾아보기 (최후 백업)
+    if fallback_prompt:
+        prompt_stock = extract_stock_name(fallback_prompt)
+        if prompt_stock != "GENERAL":
+            logger.info(f"📋 프롬프트에서 백업 추출: {prompt_stock}")
+            return prompt_stock, None
+
     # 추출 실패 시 기본값 반환
-    logger.info("동적 분석 실패, 기본값 사용")
+    logger.warning("❌ 동적 분석 실패, 종목 정보를 찾지 못했습니다.")
     return "GENERAL", None
 
 
 def generate_json_filename(stock_name, stock_code=None, base_dir="results"):
     """
-    JSON 파일명을 생성하는 함수예요
-    형식: JSON-FA-종목명(영문)-종목티커-현재시간-save현재시간.json
+    JSON 파일명을 생성하는 함수예요 (사용자 요청 형식)
+    형식: JSON-종목코드-종목명-현재시간-save현재시간.json
     - stock_name: 종목명 (영문)
-    - stock_code: 종목티커 (선택사항, 한국 종목만 6자리 코드)
+    - stock_code: 종목코드/티커 (선택사항)
     - base_dir: 저장할 폴더명
     """
     # 현재 시간을 문자열로 변환 (년월일_시분초 형식)
     current_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     save_timestamp = current_timestamp  # 현재시간과 저장시간이 동일해요
 
-    # 해외 종목의 경우 실제 티커를 사용, 한국 종목의 경우 6자리 코드 사용
-    if stock_code and len(stock_code) == 6 and stock_code.isdigit():
-        # 한국 종목코드인 경우
-        ticker_part = stock_code
+    # 종목코드 부분 결정
+    if stock_code:
+        # 종목코드가 있으면 그대로 사용
+        code_part = stock_code
     else:
-        # 해외 종목이거나 코드가 없는 경우, 종목명에서 티커 추출
-        ticker_part = convert_to_english_ticker(stock_name)
-        # 이미 티커 형태라면 그대로, 아니면 UNKNOWN 사용
-        if ticker_part == stock_name and not (
-            ticker_part.isupper()
-            and ticker_part.isalpha()
-            and 2 <= len(ticker_part) <= 5
+        # 종목코드가 없으면 종목명에서 추출하거나 UNKNOWN 사용
+        code_part = convert_to_english_ticker(stock_name)
+        if code_part == stock_name and not (
+            code_part.isupper() and code_part.isalpha() and 2 <= len(code_part) <= 5
         ):
-            ticker_part = "UNKNOWN"
+            code_part = "UNKNOWN"
 
-    # 파일명 생성 (JSON-FA-종목명(영문)-종목티커-현재시간-save현재시간.json)
-    filename = f"JSON-FA-{stock_name}-{ticker_part}-{current_timestamp}-save{save_timestamp}.json"
+    # 종목명 부분 정리 (파일명에 적합하게)
+    clean_stock_name = stock_name if stock_name else "GENERAL"
+
+    # 파일명 생성 (사용자 요청 형식: JSON-종목코드-종목명-현재시간-save현재시간.json)
+    filename = f"JSON-{code_part}-{clean_stock_name}-{current_timestamp}-save{save_timestamp}.json"
 
     # 전체 경로 생성
     full_path = os.path.join(base_dir, filename)
@@ -1203,13 +1306,13 @@ async def main():
             keyword in prompt.lower() for keyword in classification_keywords
         )
 
-        # 2. 종목 감지 기반 - 새로운 전용 에이전트 사용! 🚀
-        stock_info = stock_extractor.get_extracted_info(prompt)
-        has_stock_detected = stock_info["found"]
-        detected_stock_name = stock_info["stock_name"]
-        detected_ticker = stock_info["ticker"]
-        detected_stock_type = stock_info["stock_type"]
-        detected_market = stock_info["market"]
+        # 2. 종목 감지 기반 - 프롬프트에서 1차 추출 (백업용)
+        stock_info_from_prompt = stock_extractor.get_extracted_info(prompt)
+        has_stock_detected = stock_info_from_prompt["found"]
+        detected_stock_name = stock_info_from_prompt["stock_name"]
+        detected_ticker = stock_info_from_prompt["ticker"]
+        detected_stock_type = stock_info_from_prompt["stock_type"]
+        detected_market = stock_info_from_prompt["market"]
 
         # 최종 판단: 키워드가 있거나 종목이 감지되면 분류 실행
         is_classification_request = (
@@ -1249,6 +1352,19 @@ async def main():
                 )
 
             classification_result = await stock_classifier.classify_stock(prompt)
+
+            # 🆕 StockClassifier에서 동적으로 종목 정보 추출
+            classifier_stock_info = None
+            if classification_result.get("full_analysis"):
+                classifier_stock_info = (
+                    stock_classifier.extract_stock_info_from_analysis(
+                        classification_result["full_analysis"]
+                    )
+                )
+                if classifier_stock_info["found"]:
+                    logger.info(
+                        f"🎯 StockClassifier에서 종목 정보 추출: {classifier_stock_info['stock_name']} ({classifier_stock_info['stock_code']})"
+                    )
 
             # 분류 결과를 결과 수집기에 추가 (전체 결과 포함!)
             if classification_result.get("classification"):
@@ -1302,11 +1418,91 @@ async def main():
         end_time = datetime.now()
         processing_time = (end_time - start_time).total_seconds()
 
+        # 🚀 AI 응답에서 동적으로 종목 정보 추출 (우선순위 1)
+        if DYNAMIC_EXTRACTOR_AVAILABLE:
+            # 새로운 동적 추출기 사용
+            dynamic_extractor = DynamicStockExtractor()
+            dynamic_result = dynamic_extractor.extract_and_compare(response, prompt)
+
+            if dynamic_result["found"]:
+                dynamic_stock_name = dynamic_result["stock_name"]
+                dynamic_stock_code = dynamic_result["stock_code"]
+                logger.info(
+                    f"🎯 동적 추출기 성공: {dynamic_stock_name} ({dynamic_stock_code})"
+                )
+            else:
+                dynamic_stock_name = None
+                dynamic_stock_code = None
+                logger.info("동적 추출기에서 종목 정보를 찾지 못했습니다.")
+        else:
+            # 기존 함수 사용 (fallback)
+            dynamic_stock_name, dynamic_stock_code = (
+                extract_stock_name_from_ai_response(response, prompt)
+            )
+
+        # 최종 종목 정보 결정 (우선순위: StockClassifier → AI 응답 → 프롬프트)
+        if (
+            is_classification_request
+            and "classifier_stock_info" in locals()
+            and classifier_stock_info
+            and classifier_stock_info["found"]
+        ):
+            # 🥇 1순위: StockClassifier에서 동적 추출한 정보
+            final_stock_name = classifier_stock_info["stock_name"]
+            final_stock_code = classifier_stock_info["stock_code"]
+            extraction_method = "🎯 StockClassifier 동적 추출"
+            logger.info(
+                f"🎯 StockClassifier에서 종목 정보 추출 성공: {final_stock_name} ({final_stock_code})"
+            )
+        elif dynamic_stock_name and dynamic_stock_name != "GENERAL":
+            # 🥈 2순위: AI 응답에서 동적 추출
+            final_stock_name = dynamic_stock_name
+            final_stock_code = dynamic_stock_code
+            extraction_method = "✨ AI 응답 동적 추출"
+            logger.info(
+                f"🎯 AI 응답에서 종목 정보 추출 성공: {final_stock_name} ({final_stock_code})"
+            )
+        elif has_stock_detected:
+            # 🥉 3순위: 프롬프트 정적 매칭 (딕셔너리 기반)
+            final_stock_name = detected_stock_name
+            final_stock_code = detected_ticker
+            extraction_method = "📋 프롬프트 정적 매칭"
+            logger.info(
+                f"📋 프롬프트에서 종목 정보 사용: {final_stock_name} ({final_stock_code})"
+            )
+        else:
+            # ❌ 종목 정보 없음
+            final_stock_name = "GENERAL"
+            final_stock_code = None
+            extraction_method = "❓ 종목 정보 없음"
+            logger.info("종목 정보를 찾지 못했습니다.")
+
+        # 최종 종목 정보 구성
+        final_stock_info = {
+            "stock_name": final_stock_name,
+            "ticker": final_stock_code,
+            "stock_code": final_stock_code,
+            "found": final_stock_name != "GENERAL",
+            "extraction_method": extraction_method,
+            "dynamic_extraction": dynamic_stock_name is not None,
+            "prompt_fallback": has_stock_detected,
+            "classifier_extraction": (
+                is_classification_request
+                and "classifier_stock_info" in locals()
+                and classifier_stock_info
+                and classifier_stock_info["found"]
+            ),
+        }
+
         # 결과를 추가
         result_collector.add_to_result(response)
 
         # 화면에 결과 표시
         print(response)
+        print(f"\n🔍 종목 정보: {extraction_method}")
+        if final_stock_info["found"]:
+            print(f"   📊 종목명: {final_stock_name}")
+            print(f"   🎯 종목코드: {final_stock_code}")
         print("\n--- END OF RESULTS ---\n")
 
         # 결과 폴더 생성
@@ -1325,29 +1521,17 @@ async def main():
             if response:
                 final_result = response
 
-        # 새로운 방식: 프롬프트에서 바로 추출한 종목명 사용! 🎯
-        if has_stock_detected:
-            stock_name = detected_stock_name
-            stock_code = detected_ticker  # 실제 거래소 티커 사용
-            logger.info(
-                f"프롬프트에서 추출된 종목 정보 사용: {stock_name}, 티커: {stock_code}, 시장: {detected_market}"
-            )
-        else:
-            # 백업: AI 응답에서 추출 (기존 방식)
-            stock_name, stock_code = extract_stock_name_from_ai_response(
-                final_result, prompt
-            )
-            logger.info(
-                f"백업 방식으로 추출된 종목명: {stock_name}, 종목코드: {stock_code}"
-            )
-
-        # 현재 시간으로 파일명 생성 (기존 PDF, TXT 파일용)
+        # 📁 파일명 생성 (최종 종목 정보 사용)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         pdf_filename = os.path.join(results_dir, f"analysis_{timestamp}.pdf")
         txt_filename = os.path.join(results_dir, f"analysis_{timestamp}.txt")
+        json_filename = generate_json_filename(
+            final_stock_name, final_stock_code, results_dir
+        )
 
-        # JSON 파일명 생성 (AI 응답에서 추출한 종목명 사용)
-        json_filename = generate_json_filename(stock_name, stock_code, results_dir)
+        logger.info(
+            f"📁 파일명 생성 완료: {final_stock_name} ({final_stock_code}) - {extraction_method}"
+        )
 
         # 분류 결과와 종목 정보 준비 (JSON에 포함할 메타데이터)
         classification_data_for_json = None
@@ -1361,15 +1545,11 @@ async def main():
         ):
             classification_data_for_json = classification_result
 
-        # 종목 정보가 있으면 JSON용 데이터 준비
-        if has_stock_detected:
-            stock_info_for_json = {
-                "stock_name": detected_stock_name,
-                "ticker": detected_ticker,
-                "stock_type": detected_stock_type,
-                "market": detected_market,
-                "found": True,
-            }
+        # 최종 종목 정보를 JSON용 데이터로 준비
+        if final_stock_info["found"]:
+            stock_info_for_json = final_stock_info
+        else:
+            stock_info_for_json = None
 
         # PDF, 텍스트, JSON 파일 모두 생성해요
         create_pdf(final_result, pdf_filename)

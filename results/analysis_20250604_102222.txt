@@ -1,0 +1,34 @@
+Step 1: Observed output of cmd `browser_use` executed:
+Search results for '한화에어로스페이스 주식 분석 2023':
+
+1. 한화에어로스페이스(A012450) | Snapshot | 기업정보 - 삼성전자
+   URL: https://comp.fnguide.com/SVO2/ASP/SVD_Main.asp?gicode=A012450
+   Description:  한화에어로스페이스 · 012450 · 12월 결산 · 주가추이, 내부자거래1년 · 외국인 보유비중, 시가총액1년 · 상대수익률1년 · 시세현황 · 실적이슈 · 운용사별 보유 현황. 
+   Content: 한화에어로스페이스(A012450) | Snapshot | 기업정보 | Company Guide 본문 바로가기 메뉴 바로가기 한화에어로스페이스 012450 | 12월 결산 | 홈페이지 홈페이지 http://www.hanwhaaerospace.com 전화번호 전화번호 055-260-2114 | IR 담당자 02-729-5500 주소 주소 경남 창원시 성산구 창원대로 1204 (성주동) KSE 코스피 운송장비·부품 코스피 운송장비·부품 | FICS 상업서비스 | K200 | NXT PER(Price Earning Ratio) 전일자 보통주 수정주가 / 최근 결산 EPS(주당순이익) * EPS = 당기순이익 / 수정평균발행주식수 * 최근결산은 2024/12 (연간) 기준임. PER 17.79 12M PER 전일자 보통주 수정주가 / 12개월 Forward EPS 12M PER 20.70 업종 PER 시장대표업종||SUM(구성종목 시가총액)/SUM(구성종목 당기순이익) * 전일자 보통주 시가총액 기준 * 당기순이익은 최근결산 2024/12 (연간) 기준임. 업종 PER 8.12 PBR(Price Book-value Ratio) 전일자 보통주 수정주가 / 최근 결산기 BPS(주당순자산) * BPS=(지배주주지분-자기주식) / 무상조정기말주식수(우선주 및 자사주 포함) * 최근결산은 2024/12 (연간) 기준임. PBR 7.59 배당수익률 {최근 결산기 보통주 DPS(현금, 무상조정) / 전일자 보통주 수정주가} *100 * 최근결산은 2024/12 (연간) 기준임. 배당수익률 0.42% 3개월 1년 3년 SELL BUY 외국인 보유비중 시가총액 한화에어로스페이스 코스피 운송장비·부품 KOSPI 주가추이, 내부자거래 835,000 외국인 보유비중, 시가총액 45.06 상대수익률 * 상대수익률은 조회시작일의 값을 100포인트로 변환하여 산출된 값입니다. * 특정일의 상대수익률 포인트는 (특정일의 지수 및 주가/조회 기준 시작점의 지수 및 주가) * 100 입니다. 상대수익...
+
+Metadata:
+- Total results: 1
+- Language: en
+- Country: us
+Step 2: Observed output of cmd `browser_use` executed:
+Extracted from page:
+{'text': '한화에어로스페이스 주식 분석 정보:\n\n- 종목 코드: 012450\n- 결산월: 12월\n- 홈페이지: http://www.hanwhaaerospace.com\n- 전화번호: 055-260-2114, IR 담당자: 02-729-5500\n- 주소: 경남 창원시 성산구 창원대로 1204 (성주동)\n- 상장 시장: 코스피 운송장비·부품\n- PER (Price Earning Ratio): 17.79\n- 12M PER: 20.70\n- 업종 PER: 8.12\n- PBR (Price Book-value Ratio): 7.59\n- 배당수익률: 0.42%\n- 외국인 보유비중: 45.06%\n- 시가총액: 835,000\n- 상대수익률: 299.86'}
+
+Step 3: Here's a summary of the analysis for 한화에어로스페이스:
+
+- **종목 코드**: 012450
+- **결산월**: 12월
+- **홈페이지**: [한화에어로스페이스](http://www.hanwhaaerospace.com)
+- **상장 시장**: 코스피 운송장비·부품
+- **PER (Price Earning Ratio)**: 17.79
+- **12M PER**: 20.70
+- **업종 PER**: 8.12
+- **PBR (Price Book-value Ratio)**: 7.59
+- **배당수익률**: 0.42%
+- **외국인 보유비중**: 45.06%
+- **시가총액**: 835,000
+- **상대수익률**: 299.86
+
+If you need further analysis or specific details, let me know!
+Step 4: Observed output of cmd `terminate` executed:
+The interaction has been completed with status: success

@@ -1,0 +1,36 @@
+Step 1: Observed output of cmd `browser_use` executed:
+Search results for 'Raytheon stock analysis October 2023':
+
+1. RTX Reports Q3 2023 Results
+   URL: https://www.rtx.com/news/news-center/2023/10/24/rtx-reports-q3-2023-results
+   Description:  Oct 24, 2023  ·  Raytheon had third quarter 2023 reported sales of $6,472 million, up 3 percent versus prior year. The increase in sales was primarily driven by ... 
+   Content: News | RTX Reports Q3 2023 Results | RTX RTX Reports Q3 2023 Results RTX delivers strong commercial aftermarket growth; announces $10 billion accelerated share repurchase program; updates 2023 outlook October 24, 2023 Share this article on Facebook Share this article on Twitter Share this article on LinkedIn Share this article via email ARLINGTON, Va. , Oct. 24, 2023 /PRNewswire/ -- RTX (NYSE: RTX) reported third quarter 2023 results. Third quarter 2023 Reported sales of $13.5 billion , down 21 percent versus prior year, reflecting the impact of the previously disclosed Pratt powder metal matter Adjusted sales* of $19.0 billion , up 12 percent versus prior year GAAP EPS from continuing operations was a loss of $0.68 , which reflects $1.53 charge from the Pratt powder metal matter and $0.40 of acquisition accounting adjustments and other net significant and/or non-recurring charges Adjusted EPS* of $1.25 , up 3 percent versus prior year Operating cash flow from continuing operations of...
+
+Metadata:
+- Total results: 1
+- Language: en
+- Country: us
+Step 2: Observed output of cmd `browser_use` executed:
+Extracted from page:
+{'text': 'RTX Reports Q3 2023 Results', 'metadata': {'source': 'RTX'}}
+
+Step 3: Here's a summary of Raytheon's Q3 2023 financial performance and outlook:
+
+1. **Sales and Revenue**:
+   - Reported sales were $13.5 billion, a decrease of 21% compared to the previous year.
+   - Adjusted sales were $19.0 billion, an increase of 12% from the prior year.
+
+2. **Earnings**:
+   - GAAP EPS from continuing operations was a loss of $0.68.
+   - Adjusted EPS was $1.25, up 3% from the previous year.
+
+3. **Key Factors**:
+   - The decrease in reported sales was influenced by the Pratt powder metal matter.
+   - The company announced a $10 billion accelerated share repurchase program.
+
+4. **Outlook**:
+   - Raytheon updated its 2023 outlook, reflecting the current financial performance and strategic initiatives.
+
+If you need more detailed information or further analysis, let me know!
+Step 4: Observed output of cmd `terminate` executed:
+The interaction has been completed with status: success

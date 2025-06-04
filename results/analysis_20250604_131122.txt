@@ -1,0 +1,59 @@
+Step 1: Observed output of cmd `browser_use` executed:
+Search results for '한국항공우주 주식 분석 2023':
+
+1. 한국항공우주(047810) | 종목토론 - 팍스넷 증권포털
+   URL: https://www.paxnet.co.kr/stock/analysis/main?abbrSymbol=047810
+   Description:  한국항공우주047810 ; 6936. pbr 0.25배 상법개정 수혜 예상주 · 4 ; 6935. 한국항공우주(047810) 1분기 실적 및 적정주가 분석 리포트(20250526) · 12 ; 6934. 견제가 시작 ... 
+   Content: 한국항공우주(047810) | 종목토론 - 팍스넷 증권포털 콘텐츠 바로가기 최신순 인기순 조회순 댓글순 최신순 인기순 조회순 댓글순 글쓰기 NO 제목 작성자 조회 추천 작성일 6936 pbr 0.25배 상법개정 수혜 예상주 댓글 0 불타는소나무 조회 22 추천 0 6935 한국항공우주(047810) 1분기 실적 및 적정주가 분석 리포트(20250526) 댓글 0 정리요정 조회 41 추천 0 6934 견제가 시작되는데 댓글 0 철용해1 조회 50 추천 0 6933 한국항공우주(047810) 리포트 목표주가 분석(20250514) 댓글 1 정리요정 조회 73 추천 0 6932 한국항공우주 실적 및 성장성 분석 리포트(20250509) 댓글 0 정리요정 조회 36 추천 0 6931 한국항공우주(047810) 리포트 목표주가 분석(20250507) 댓글 0 정리요정 조회 33 추천 0 6930 [2025년 한국항공우주 리포트 분석] 실적 및 수출 모멘텀 주목 댓글 0 정리요정 조회 17 추천 0 6928 한국항공우주 실적 및 주가 분석 댓글 0 정리요정 조회 39 추천 0 6927 나의 상상 댓글 0 철용해1 조회 45 추천 0 6926 2025년 한국항공우주 목표 주가 전망 : FA-50 글로벌 수출 확대와 KF-21 양산 본격화 기대 댓글 0 정리요정 조회 51 추천 0 6924 한국항공우주(047810) 한화투자증권 리포트 목표주가 분석정리(20250403) 댓글 0 정리요정 조회 89 추천 0 6922 한국항공우주 목표주가 139,200원 시나리오, 댓글 1 investinghub 조회 163 추천 0 6921 나는몸신이다어금니양치질 다음사이트검색하면 근육힘증가시켜 부부정력증가 피로감소시키는 좋은방법나옴 댓글 0 풀그림원 조회 64 추천 0 6920 글 올리지 말아야 되는데 올려봅니다 댓글 0 철용해1 조회 116 추천 0 6919 ---- 긴급 = 상한가직행 ---- 이유는 !! 댓글 0 여의도부띠끄 조회 198 추천 0 6918 한국항공우주 주가 전망 댓글...
+
+Metadata:
+- Total results: 1
+- Language: en
+- Country: us
+Step 2: Observed output of cmd `browser_use` executed:
+Navigated to https://www.paxnet.co.kr/stock/analysis/main?abbrSymbol=047810
+Step 3: Observed output of cmd `browser_use` executed:
+Extracted from page:
+{'text': '한국항공우주(047810) 관련 주식 분석 정보는 제공되지 않았습니다. 페이지에는 주식 토론과 관련된 일반적인 링크와 메뉴가 포함되어 있습니다.', 'metadata': {'source': '팍스넷 증권포털'}}
+
+Step 4: Observed output of cmd `browser_use` executed:
+Scrolled down by 500 pixels
+Step 5: Observed output of cmd `browser_use` executed:
+Extracted from page:
+{'text': '한국항공우주(047810) 주식에 대한 분석 정보는 제공되지 않았습니다. 페이지에는 주식 토론과 관련된 일반적인 링크와 메뉴가 포함되어 있습니다. 종목입체분석, 투자전략, 뉴스 등의 섹션이 있지만, 구체적인 한국항공우주 주식 분석 정보는 페이지에 명시되어 있지 않습니다.', 'metadata': {'source': '팍스넷 증권포털'}}
+
+Step 6: The current page on the 팍스넷 증권포털 does not provide specific analysis information for 한국항공우주(047810) stock. It mainly contains general links and menus related to stock discussions, with sections like 종목입체분석, 투자전략, and 뉴스, but no detailed analysis is specified.
+
+To proceed, you might consider the following options:
+
+1. **Explore Other Sections**: Click on sections like 종목입체분석, 투자전략, or 뉴스 to see if they contain relevant analysis information.
+2. **Search for Reports**: Look for specific financial reports or analysis documents on other financial news websites or stock analysis platforms.
+3. **Use Financial Tools**: Consider using financial analysis tools or platforms that provide detailed stock analysis and forecasts.
+
+If you want to explore any of these options or need further assistance, please let me know!
+Step 7: Observed output of cmd `browser_use` executed:
+Search results for '한국항공우주 주식 분석 리포트 2023':
+
+1. 한국항공우주(A047810) | Snapshot | 기업정보 - 삼성전자
+   URL: https://comp.fnguide.com/SVO2/ASP/SVD_Main.asp?pGB=1&gicode=A047810&MenuYn=Y&ReportGB=B&NewMenuID=Y&stkGb=701
+   Description:  한국항공우주 · 047810 · 12월 결산 · 주가추이, 내부자거래1년 · 외국인 보유비중, 시가총액1년 · 상대수익률1년 · 시세현황 · 실적이슈 · 운용사별 보유 현황. 
+   Content: 한국항공우주(A047810) | Snapshot | 기업정보 | Company Guide 본문 바로가기 메뉴 바로가기 상장기업분석 리포트 앱 리타민, 라이트요금제 곧 출시 모든 증권사 리포트를 더 가벼운 요금으로 열기 인쇄 기업정보 Snapshot 기업개요 재무제표 재무비율 투자지표 컨센서스 지분분석 업종분석 경쟁사비교 거래소공시 금감원공시 ETF/ETN 정보 ETF Snapshot 성과 및 위험분석 ETN Snapshot 리포트 리포트동향 요약리포트 실적속보 컨센서스 스크리닝 목표주가 괴리율 컨센서스 상/하향 비율 어닝서프라이즈 턴어라운드 랭킹 분석 업종별 순위 지표별 순위 ETF 순위 캘린더 부가정보 신용등급 기업주소록 이용안내 Retamin Retamin 한국항공우주 047810 | 12월 결산 | 홈페이지 홈페이지 http://www.koreaaero.com 전화번호 전화번호 055-851-1000 | IR 담당자 055-851-1000 주소 주소 경남 사천시 사남면 공단1로 78 KSE 코스피 운송장비·부품 코스피 운송장비·부품 | FICS 상업서비스 | K200 | NXT PER(Price Earning Ratio) 전일자 보통주 수정주가 / 최근 결산 EPS(주당순이익) * EPS = 당기순이익 / 수정평균발행주식수 * 최근결산은 2024/12 (연간) 기준임. PER 45.48 12M PER 전일자 보통주 수정주가 / 12개월 Forward EPS 12M PER - 업종 PER 시장대표업종||SUM(구성종목 시가총액)/SUM(구성종목 당기순이익) * 전일자 보통주 시가총액 기준 * 당기순이익은 최근결산 2024/12 (연간) 기준임. 업종 PER 8.12 PBR(Price Book-value Ratio) 전일자 보통주 수정주가 / 최근 결산기 BPS(주당순자산) * BPS=(지배주주지분-자기주식) / 무상조정기말주식수(우선주 및 자사주 포함) * 최근결산은 2024/12 (연간) 기준임. PBR 4.68 배당수익률 {최근 결산기 보통주 DPS(현...
+
+Metadata:
+- Total results: 1
+- Language: en
+- Country: us
+Step 8: Observed output of cmd `browser_use` executed:
+Extracted from page:
+{'text': '한국항공우주(A047810) is a company listed on the stock exchange. The page provides various sections for company analysis and financial information, including:\n\n- Snapshot: Overview of the company\n- Financial Statements: Detailed financial data\n- Financial Ratios: Key financial metrics\n- Investment Indicators: Metrics for investment analysis\n- Consensus: Market consensus on the company\n- Shareholding Analysis: Information on share distribution\n- Industry Analysis: Comparison with industry peers\n- Competitor Comparison: Analysis against competitors\n- Exchange Disclosures: Official disclosures from the stock exchange\n- Financial Supervisory Service Disclosures: Official disclosures from the financial supervisory service\n\nAdditional sections include ETF/ETN information, reports, performance alerts, consensus screening, ranking analysis, calendar, and additional information such as credit ratings and company directory.'}
+
+Step 9: The page provides a comprehensive overview of 한국항공우주(A047810), including financial statements, ratios, investment indicators, and more. Here's what you can do next:
+
+1. **Review Financial Data**: Analyze the financial statements and ratios to understand the company's financial health.
+2. **Check Investment Indicators**: Look at metrics like PER, PBR, and dividend yield for investment insights.
+3. **Explore Consensus and Analysis**: Review market consensus and industry comparisons for broader context.
+4. **Download Reports**: If available, download detailed reports for in-depth analysis.
+
+If you need further assistance or specific information, let me know!
+Step 10: Observed output of cmd `terminate` executed:
+The interaction has been completed with status: success
