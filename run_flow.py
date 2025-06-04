@@ -856,7 +856,7 @@ async def run_flow():
             logger.warning("Empty prompt provided.")
             return
 
-        # 종목 분류 요청인지 확인해요 (키워드 기반)
+        # 종목 분류 요청인지 확인해요 (키워드 기반 + 종목 감지 기반)
         classification_keywords = [
             "분류",
             "classify",
@@ -871,11 +871,44 @@ async def run_flow():
             "기타주",
             "어떤 종류",
             "어떤 유형",
+            "분석",
+            "analyze",
+            "어떤 주식",
+            "어떤 종목",
+            "성격",
+            "특성",
+            "투자유형",
+            "투자 유형",
         ]
 
-        is_classification_request = any(
+        # 1. 키워드 기반 감지
+        is_classification_request_by_keyword = any(
             keyword in prompt.lower() for keyword in classification_keywords
         )
+
+        # 2. 종목 감지 기반 - 종목명이나 종목코드가 발견되면 자동으로 분류도 실행
+        detected_stock_info, detected_stock_code = extract_stock_name(prompt)
+        has_stock_detected = (
+            detected_stock_info != "GENERAL" and detected_stock_code is not None
+        )
+
+        # 최종 판단: 키워드가 있거나 종목이 감지되면 분류 실행
+        is_classification_request = (
+            is_classification_request_by_keyword or has_stock_detected
+        )
+
+        # 분류 실행 이유를 로그에 기록
+        if is_classification_request:
+            if is_classification_request_by_keyword and has_stock_detected:
+                logger.info("종목 분류 실행 - 키워드 감지 + 종목 감지")
+            elif is_classification_request_by_keyword:
+                logger.info("종목 분류 실행 - 키워드 감지")
+            elif has_stock_detected:
+                logger.info(
+                    f"종목 분류 실행 - 종목 자동 감지: {detected_stock_info} ({detected_stock_code})"
+                )
+        else:
+            logger.info("종목 분류 실행 안함 - 키워드나 종목 감지되지 않음")
 
         flow = FlowFactory.create_flow(
             flow_type=FlowType.PLANNING,
@@ -886,7 +919,17 @@ async def run_flow():
 
         # 종목 분류 요청이면 분류 에이전트를 먼저 실행해요
         if is_classification_request:
-            print("🏷️ 종목 분류 분석을 실행합니다...\n")
+            if is_classification_request_by_keyword and has_stock_detected:
+                print(
+                    f"🏷️ 종목 분류 분석을 실행합니다... (키워드 + 종목 감지: {detected_stock_info})\n"
+                )
+            elif is_classification_request_by_keyword:
+                print("🏷️ 종목 분류 분석을 실행합니다... (키워드 감지)\n")
+            elif has_stock_detected:
+                print(
+                    f"🏷️ 종목 분류 분석을 자동 실행합니다... (종목 감지: {detected_stock_info})\n"
+                )
+
             classification_result = await stock_classifier.classify_stock(prompt)
 
             # 분류 결과를 결과 수집기에 추가
