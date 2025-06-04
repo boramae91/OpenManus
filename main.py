@@ -199,8 +199,6 @@ def extract_stock_name(prompt):
             return ticker
 
     # 6자리 종목코드 확인 (한국 종목만)
-    import re
-
     code_pattern = r"(\d{6})"
     code_matches = re.findall(code_pattern, prompt)
     if code_matches:
@@ -216,8 +214,6 @@ def extract_stock_code_from_text(text):
     - text: 분석할 텍스트
     - 반환값: 추출된 종목코드 (없으면 None)
     """
-    import re
-
     if not text or not text.strip():
         return None
 
@@ -252,8 +248,6 @@ def extract_stock_candidates_from_text(text):
     - text: 분석할 텍스트 (프롬프트 또는 AI 응답)
     - 반환값: 발견된 종목명 후보들의 리스트
     """
-    import re
-
     candidates = []
 
     if not text or not text.strip():
@@ -386,8 +380,6 @@ def extract_company_name_from_response(ai_response):
     - ai_response: AI가 생성한 분석 결과 텍스트
     - 반환값: 추출된 회사명 (없으면 None)
     """
-    import re
-
     if not ai_response or not ai_response.strip():
         return None
 
@@ -450,8 +442,6 @@ def extract_company_name_from_prompt(prompt):
     - prompt: 사용자가 입력한 질문
     - 반환값: 추출된 회사명 (없으면 None)
     """
-    import re
-
     if not prompt or not prompt.strip():
         return None
 
@@ -546,7 +536,6 @@ def find_most_frequent_stock_name(ai_response):
     - ai_response: AI가 생성한 분석 결과 텍스트
     - 반환값: (가장 빈번한 종목명, 출현횟수) 튜플
     """
-    import re
     from collections import Counter
 
     if not ai_response or not ai_response.strip():
@@ -836,12 +825,12 @@ def convert_to_english_ticker(company_name):
     # 예: "Apple Inc" -> "APPLE", "Microsoft Corporation" -> "MICROSOFT"
     company_clean = company_name
     legal_suffixes = [
-        "Inc\.?",
-        "Corp\.?",
+        r"Inc\.?",
+        r"Corp\.?",
         "Corporation",
-        "Ltd\.?",
+        r"Ltd\.?",
         "LLC",
-        "Co\.?",
+        r"Co\.?",
         "Company",
         "Group",
         "Holdings",
