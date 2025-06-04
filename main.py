@@ -1071,10 +1071,8 @@ async def main():
         )
 
         # 2. 종목 감지 기반 - 종목명이나 종목코드가 발견되면 자동으로 분류도 실행
-        detected_stock_info, detected_stock_code = extract_stock_name(prompt)
-        has_stock_detected = (
-            detected_stock_info != "GENERAL" and detected_stock_code is not None
-        )
+        detected_stock_info = extract_stock_name(prompt)
+        has_stock_detected = detected_stock_info != "GENERAL"
 
         # 최종 판단: 키워드가 있거나 종목이 감지되면 분류 실행
         is_classification_request = (
@@ -1088,9 +1086,7 @@ async def main():
             elif is_classification_request_by_keyword:
                 logger.info("종목 분류 실행 - 키워드 감지")
             elif has_stock_detected:
-                logger.info(
-                    f"종목 분류 실행 - 종목 자동 감지: {detected_stock_info} ({detected_stock_code})"
-                )
+                logger.info(f"종목 분류 실행 - 종목 자동 감지: {detected_stock_info}")
         else:
             logger.info("종목 분류 실행 안함 - 키워드나 종목 감지되지 않음")
 
