@@ -8,6 +8,7 @@ from datetime import datetime
 from fpdf import FPDF
 
 from app.agent.manus import Manus
+from app.agent.stock_classifier import StockClassifier
 from app.logger import logger
 
 
@@ -1029,17 +1030,63 @@ async def main():
 
     # Create and initialize Manus agent
     agent = await Manus.create()
+
+    # 종목 분류 에이전트 생성
+    stock_classifier = StockClassifier()
+
     try:
         prompt = input("Enter your prompt: ")
         if not prompt.strip():
             logger.warning("Empty prompt provided.")
             return
 
+        # 종목 분류 요청인지 확인해요 (키워드 기반)
+        classification_keywords = [
+            "분류",
+            "classify",
+            "유형",
+            "type",
+            "저성장주",
+            "우량주",
+            "고성장주",
+            "자산주",
+            "턴어라운드주",
+            "시이클주",
+            "기타주",
+            "어떤 종류",
+            "어떤 유형",
+        ]
+
+        is_classification_request = any(
+            keyword in prompt.lower() for keyword in classification_keywords
+        )
+
         logger.warning("Processing your request...")
         print("\n--- ANALYSIS RESULTS ---\n")
 
         # 처리 시작 시간을 기록해요 (얼마나 걸렸는지 측정하기 위해)
         start_time = datetime.now()
+
+        # 종목 분류 요청이면 분류 에이전트를 먼저 실행해요
+        if is_classification_request:
+            print("🏷️ 종목 분류 분석을 실행합니다...\n")
+            classification_result = await stock_classifier.classify_stock(prompt)
+
+            # 분류 결과를 결과 수집기에 추가
+            if classification_result.get("classification"):
+                classification_summary = f"""
+=== 종목 분류 결과 ===
+🏷️ 분류: {classification_result['classification']['classification']}
+📊 신뢰도: {classification_result['classification']['confidence']}
+📋 근거: {', '.join(classification_result['classification']['reasoning'][:3])}
+
+--- 상세 분석은 아래를 확인하세요 ---
+"""
+                result_collector.add_to_result(classification_summary)
+                print(classification_summary)
+
+            # 분류 후에도 상세 분석을 위해 Manus 에이전트도 실행
+            print("📊 추가 상세 분석을 진행합니다...\n")
 
         # 에이전트 실행하고 결과 받기
         response = await agent.run(prompt)
