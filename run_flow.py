@@ -68,8 +68,9 @@ def extract_stock_name(prompt):
     if not prompt or not prompt.strip():
         return "GENERAL"
 
-    # 기본적인 주요 종목명들만 확인해요
+    # 기본적인 주요 종목명들만 확인해요 (한국 + 해외 종목)
     basic_stocks = {
+        # 한국 종목들
         "삼성전자": "SAMSUNG",
         "삼성": "SAMSUNG",
         "SAMSUNG": "SAMSUNG",
@@ -114,6 +115,41 @@ def extract_stock_name(prompt):
         "KOSPI": "KOSPI",
         "코스닥": "KOSDAQ",
         "KOSDAQ": "KOSDAQ",
+        # 해외 종목들 (한글명 → 영문명 매핑)
+        "보잉": "BOEING",
+        "애플": "APPLE",
+        "마이크로소프트": "MICROSOFT",
+        "테슬라": "TESLA",
+        "구글": "GOOGLE",
+        "알파벳": "ALPHABET",
+        "아마존": "AMAZON",
+        "메타": "META",
+        "페이스북": "META",
+        "넷플릭스": "NETFLIX",
+        "엔비디아": "NVIDIA",
+        "인텔": "INTEL",
+        "AMD": "AMD",
+        "코카콜라": "COCACOLA",
+        "맥도날드": "MCDONALDS",
+        "월마트": "WALMART",
+        "존슨앤존슨": "JNJ",
+        "화이자": "PFIZER",
+        "BOEING": "BOEING",
+        "APPLE": "APPLE",
+        "MICROSOFT": "MICROSOFT",
+        "TESLA": "TESLA",
+        "GOOGLE": "GOOGLE",
+        "ALPHABET": "ALPHABET",
+        "AMAZON": "AMAZON",
+        "META": "META",
+        "FACEBOOK": "META",
+        "NETFLIX": "NETFLIX",
+        "NVIDIA": "NVIDIA",
+        "INTEL": "INTEL",
+        "COCACOLA": "COCACOLA",
+        "MCDONALDS": "MCDONALDS",
+        "WALMART": "WALMART",
+        "PFIZER": "PFIZER",
     }
 
     prompt_upper = prompt.upper()
@@ -121,7 +157,7 @@ def extract_stock_name(prompt):
         if stock.upper() in prompt_upper:
             return ticker
 
-    # 6자리 종목코드 확인
+    # 6자리 종목코드 확인 (한국 종목만)
     import re
 
     code_pattern = r"(\d{6})"
@@ -134,7 +170,8 @@ def extract_stock_name(prompt):
 
 def extract_stock_code_from_text(text):
     """
-    텍스트에서 6자리 종목코드를 추출하는 함수예요
+    텍스트에서 한국 종목코드(6자리)를 추출하는 함수예요
+    해외 종목은 티커 심볼을 사용하므로 6자리 숫자만 한국 종목코드로 인식합니다
     - text: 분석할 텍스트
     - 반환값: 추출된 종목코드 (없으면 None)
     """
@@ -143,11 +180,27 @@ def extract_stock_code_from_text(text):
     if not text or not text.strip():
         return None
 
-    # 6자리 종목코드 찾기
-    code_pattern = r"(\d{6})"
-    code_matches = re.findall(code_pattern, text)
-    if code_matches:
-        return code_matches[0]  # 첫 번째로 발견된 코드 반환
+    # 한국 종목코드만 찾기 (6자리 숫자이면서 종목코드 형태인 것만)
+    # 일반적인 6자리 숫자는 제외하고, 명시적으로 종목코드 패턴인 것만 추출
+    code_patterns = [
+        r"(?:종목코드|코드|Code)\s*[:=]?\s*([0-9]{6})",  # "종목코드: 005930" 형태
+        r"([0-9]{6})\s*(?:종목|주식)",  # "005930 종목" 형태
+        r"\(([0-9]{6})\)",  # "(005930)" 형태
+        r"A([0-9]{6})",  # "A005930" 형태 (한국거래소 표기)
+    ]
+
+    for pattern in code_patterns:
+        code_matches = re.findall(pattern, text, re.IGNORECASE)
+        if code_matches:
+            # 한국 종목코드 범위 확인 (000001~999999 중 실제 거래되는 범위)
+            code = code_matches[0]
+            if (
+                code.startswith("0")
+                or code.startswith("1")
+                or code.startswith("2")
+                or code.startswith("3")
+            ):
+                return code  # 한국 종목코드로 보이는 경우만 반환
 
     return None
 
@@ -159,7 +212,7 @@ def generate_json_filename(
     JSON 파일명을 생성하는 함수예요
     형식: JSON-FA-종목명(영문)-종목티커-현재시간-save현재시간.json
     - stock_name: 종목명 (영문)
-    - stock_code: 종목티커 (선택사항)
+    - stock_code: 종목티커 (선택사항, 한국 종목만 6자리 코드)
     - base_dir: 저장할 폴더명
     - file_type: 파일 타입 (flow, timeout, cancelled, error)
     """
@@ -167,8 +220,20 @@ def generate_json_filename(
     current_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     save_timestamp = current_timestamp  # 현재시간과 저장시간이 동일해요
 
-    # 종목티커가 있으면 포함, 없으면 UNKNOWN 사용
-    ticker_part = stock_code if stock_code else "UNKNOWN"
+    # 해외 종목의 경우 실제 티커를 사용, 한국 종목의 경우 6자리 코드 사용
+    if stock_code and len(stock_code) == 6 and stock_code.isdigit():
+        # 한국 종목코드인 경우
+        ticker_part = stock_code
+    else:
+        # 해외 종목이거나 코드가 없는 경우, 종목명에서 티커 추출
+        ticker_part = convert_to_english_ticker(stock_name)
+        # 이미 티커 형태라면 그대로, 아니면 UNKNOWN 사용
+        if ticker_part == stock_name and not (
+            ticker_part.isupper()
+            and ticker_part.isalpha()
+            and 2 <= len(ticker_part) <= 5
+        ):
+            ticker_part = "UNKNOWN"
 
     # 파일명 생성 (JSON-FA-종목명(영문)-종목티커-현재시간-save현재시간.json)
     if file_type == "flow":
@@ -319,7 +384,7 @@ def get_stock_name_from_code(stock_code):
 
 def find_most_frequent_stock_name(ai_response):
     """
-    AI 에이전트 서칭 결과에서 가장 빈번하게 등장하는 종목명을 찾는 함수예요
+    AI 에이전트 서칭 결과에서 가장 빈번하게 등장하는 종목명을 찾는 함수예요 (해외 종목 지원)
     - ai_response: AI가 생성한 분석 결과 텍스트
     - 반환값: (가장 빈번한 종목명, 출현횟수) 튜플
     """
@@ -332,24 +397,39 @@ def find_most_frequent_stock_name(ai_response):
     # 종목명 후보들을 찾을 패턴들
     candidates = []
 
-    # 1. 한글 회사명 (2-10글자)
+    # 1. 한글 회사명 (2-10글자) - 한국 종목용
     korean_pattern = r"\b([가-힣]{2,10})\b"
     korean_matches = re.findall(korean_pattern, ai_response)
     candidates.extend(korean_matches)
 
-    # 2. 영문 회사명 (2-15글자, 대문자)
-    english_pattern = r"\b([A-Z][A-Z0-9]{1,14})\b"
+    # 2. 해외 회사명 패턴 (공백 포함, Inc/Corp/Ltd 등 포함)
+    # 예: "Apple Inc", "Microsoft Corporation", "Tesla Inc"
+    foreign_company_pattern = r"\b([A-Z][a-zA-Z0-9\s]{2,25}(?:Inc|Corp|Corporation|Ltd|LLC|Co|Company|Group|Holdings|Technologies|Systems|Solutions)\.?)\b"
+    foreign_matches = re.findall(foreign_company_pattern, ai_response)
+    # 해외 회사명은 가중치를 더 줘요 (더 정확한 패턴이므로)
+    candidates.extend(foreign_matches * 2)
+
+    # 3. 일반 영문 회사명 (단어 하나) - 간단한 경우
+    english_pattern = r"\b([A-Z][A-Za-z0-9]{1,14})\b"
     english_matches = re.findall(english_pattern, ai_response)
     candidates.extend(english_matches)
 
-    # 3. 괄호와 함께 나오는 회사명 (가장 정확함)
-    bracket_pattern = r"([가-힣A-Za-z0-9]+)\s*\([A]?\d{6}\)"
-    bracket_matches = re.findall(bracket_pattern, ai_response)
-    # 괄호 패턴은 가중치를 더 줘요 (더 정확하므로)
-    candidates.extend(bracket_matches * 3)
+    # 4. 티커 심볼 패턴 (2-5글자 대문자) - 해외 주식에서 중요
+    # 예: AAPL, MSFT, TSLA, GOOGL
+    ticker_pattern = r"\b([A-Z]{2,5})\b"
+    ticker_matches = re.findall(ticker_pattern, ai_response)
+    # 티커는 매우 정확하므로 높은 가중치
+    candidates.extend(ticker_matches * 4)
 
-    # 일반적인 단어들 제외
+    # 5. 괄호와 함께 나오는 회사명 (가장 정확함) - 한국/해외 모두
+    bracket_pattern = r"([가-힣A-Za-z0-9\s]+)\s*\([A-Z]?[0-9A-Z]{2,6}\)"
+    bracket_matches = re.findall(bracket_pattern, ai_response)
+    # 괄호 패턴은 최고 가중치
+    candidates.extend([match.strip() for match in bracket_matches] * 5)
+
+    # 일반적인 단어들 제외 (한국어 + 영어)
     exclude_words = {
+        # 한국어 제외 단어
         "분석",
         "종목",
         "기업",
@@ -381,6 +461,7 @@ def find_most_frequent_stock_name(ai_response):
         "결산",
         "연간",
         "구성종목",
+        # 영어 제외 단어 (금융/기술 용어)
         "KOSPI",
         "PER",
         "PBR",
@@ -472,18 +553,94 @@ def find_most_frequent_stock_name(ai_response):
         "with",
         "status",
         "success",
+        # 해외 종목 관련 제외 단어
+        "NYSE",
+        "NASDAQ",
+        "AMEX",
+        "LSE",
+        "TSE",
+        "HKEX",
+        "SSE",
+        "SZSE",
+        "Exchange",
+        "Market",
+        "Index",
+        "Fund",
+        "ETF",
+        "REITs",
+        "ADR",
+        "GDR",
+        "Revenue",
+        "Profit",
+        "Loss",
+        "Income",
+        "Assets",
+        "Liabilities",
+        "Equity",
+        "Dividend",
+        "Yield",
+        "Growth",
+        "Volume",
+        "Shares",
+        "Outstanding",
+        "Float",
+        "Beta",
+        "Alpha",
+        "Volatility",
+        "Correlation",
+        "Analysis",
+        "Report",
+        "Quarter",
+        "Annual",
+        "Monthly",
+        "Weekly",
+        "Daily",
+        "News",
+        "Data",
+        "Technology",
+        "Finance",
+        "Healthcare",
+        "Energy",
+        "Materials",
+        "Utilities",
+        "Consumer",
+        "Industrial",
+        "Communication",
+        "Services",
+        "Real",
+        "Estate",
     }
 
     # 필터링된 후보들만 선택
     filtered_candidates = []
     for candidate in candidates:
+        candidate = candidate.strip()
+        # 기본 필터링
         if (
             candidate not in exclude_words
             and len(candidate) >= 2
-            and len(candidate) <= 15
+            and len(candidate) <= 30  # 해외 종목명이 길 수 있으므로 30으로 증가
             and not candidate.isdigit()
+            and not candidate.replace(".", "").isdigit()
         ):  # 숫자만인 것 제외
-            filtered_candidates.append(candidate)
+
+            # 추가 필터링: 너무 일반적인 단어들 제외
+            common_words = [
+                "THE",
+                "AND",
+                "OR",
+                "BUT",
+                "IN",
+                "ON",
+                "AT",
+                "TO",
+                "FOR",
+                "OF",
+                "WITH",
+                "BY",
+            ]
+            if candidate.upper() not in common_words:
+                filtered_candidates.append(candidate)
 
     if not filtered_candidates:
         return None, 0
@@ -500,23 +657,48 @@ def find_most_frequent_stock_name(ai_response):
 
 def convert_to_english_ticker(company_name):
     """
-    회사명을 영문 티커로 변환하는 함수예요 (최소한의 변환만)
-    - company_name: 회사명 (한글 또는 영문)
+    회사명을 영문 티커로 변환하는 함수예요 (한국 + 해외 종목 지원)
+    - company_name: 회사명 (한글, 영문, 또는 티커)
     - 반환값: 영문 티커
     """
     if not company_name:
         return "UNKNOWN"
 
-    # 이미 영문이고 적절한 길이면 그대로 사용
-    if (
-        company_name.isalpha()
-        and all(ord(char) < 128 for char in company_name)
-        and len(company_name) <= 15
-    ):
-        return company_name.upper()
+    company_name = company_name.strip()
 
-    # 한글인 경우 간단한 변환만 (기본적인 몇 개만)
+    # 이미 티커 형태인지 확인 (2-5글자 대문자)
+    if (
+        company_name.isupper()
+        and company_name.isalpha()
+        and 2 <= len(company_name) <= 5
+    ):
+        return company_name  # 이미 티커이므로 그대로 반환
+
+    # 해외 회사명에서 법인 형태 제거하고 티커 형태로 변환
+    # 예: "Apple Inc" -> "APPLE", "Microsoft Corporation" -> "MICROSOFT"
+    company_clean = company_name
+    legal_suffixes = [
+        "Inc\.?",
+        "Corp\.?",
+        "Corporation",
+        "Ltd\.?",
+        "LLC",
+        "Co\.?",
+        "Company",
+        "Group",
+        "Holdings",
+        "Technologies",
+        "Systems",
+        "Solutions",
+        "Services",
+    ]
+
+    for suffix in legal_suffixes:
+        company_clean = re.sub(rf"\s+{suffix}$", "", company_clean, flags=re.IGNORECASE)
+
+    # 종목 변환 테이블 (한국 + 해외)
     basic_conversions = {
+        # 한국 종목들
         "휴니드": "HUNEED",
         "삼성전자": "SAMSUNG",
         "삼성": "SAMSUNG",
@@ -531,12 +713,63 @@ def convert_to_english_ticker(company_name):
         "셀트리온": "CELLTRION",
         "한화에어로스페이스": "HANWHA_AERO",
         "한화": "HANWHA",
+        # 해외 종목들 - 한글명을 실제 티커로 매핑
+        "보잉": "BA",  # Boeing Company
+        "애플": "AAPL",  # Apple Inc
+        "마이크로소프트": "MSFT",  # Microsoft Corporation
+        "테슬라": "TSLA",  # Tesla Inc
+        "구글": "GOOGL",  # Alphabet Inc (Google)
+        "알파벳": "GOOGL",  # Alphabet Inc
+        "아마존": "AMZN",  # Amazon.com Inc
+        "메타": "META",  # Meta Platforms Inc
+        "페이스북": "META",  # Meta (구 Facebook)
+        "넷플릭스": "NFLX",  # Netflix Inc
+        "엔비디아": "NVDA",  # NVIDIA Corporation
+        "인텔": "INTC",  # Intel Corporation
+        "코카콜라": "KO",  # The Coca-Cola Company
+        "맥도날드": "MCD",  # McDonald's Corporation
+        "월마트": "WMT",  # Walmart Inc
+        "존슨앤존슨": "JNJ",  # Johnson & Johnson
+        "화이자": "PFE",  # Pfizer Inc
+        # 영문명도 매핑
+        "BOEING": "BA",
+        "APPLE": "AAPL",
+        "MICROSOFT": "MSFT",
+        "TESLA": "TSLA",
+        "GOOGLE": "GOOGL",
+        "ALPHABET": "GOOGL",
+        "AMAZON": "AMZN",
+        "META": "META",
+        "FACEBOOK": "META",
+        "NETFLIX": "NFLX",
+        "NVIDIA": "NVDA",
+        "INTEL": "INTC",
+        "COCACOLA": "KO",
+        "MCDONALDS": "MCD",
+        "WALMART": "WMT",
+        "PFIZER": "PFE",
     }
 
+    # 변환 테이블에서 찾기
     if company_name in basic_conversions:
         return basic_conversions[company_name]
 
-    # 변환 테이블에 없으면 한글 그대로 반환
+    # 정리된 이름에서 찾기
+    if company_clean in basic_conversions:
+        return basic_conversions[company_clean]
+
+    # 이미 영문이고 적절한 길이면 대문자로 변환
+    if company_clean.replace(" ", "").isalpha() and all(
+        ord(char) < 128 or char == " " for char in company_clean
+    ):
+        # 공백 제거하고 대문자로
+        ticker = company_clean.replace(" ", "").upper()
+        # 너무 길면 앞의 일부만 사용 (최대 10글자)
+        if len(ticker) > 10:
+            ticker = ticker[:10]
+        return ticker
+
+    # 변환할 수 없으면 원본 반환 (한글 등)
     return company_name
 
 
