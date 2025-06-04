@@ -132,11 +132,34 @@ def extract_stock_name(prompt):
     return "GENERAL"
 
 
-def generate_json_filename(stock_name, base_dir="results", file_type="flow"):
+def extract_stock_code_from_text(text):
+    """
+    텍스트에서 6자리 종목코드를 추출하는 함수예요
+    - text: 분석할 텍스트
+    - 반환값: 추출된 종목코드 (없으면 None)
+    """
+    import re
+
+    if not text or not text.strip():
+        return None
+
+    # 6자리 종목코드 찾기
+    code_pattern = r"(\d{6})"
+    code_matches = re.findall(code_pattern, text)
+    if code_matches:
+        return code_matches[0]  # 첫 번째로 발견된 코드 반환
+
+    return None
+
+
+def generate_json_filename(
+    stock_name, stock_code=None, base_dir="results", file_type="flow"
+):
     """
     JSON 파일명을 생성하는 함수예요
-    형식: JSON-Agent-종목명-financial-현재시간-save저장시간.json
-    - stock_name: 종목명
+    형식: JSON-FA-종목명(영문)-종목티커-현재시간-save현재시간.json
+    - stock_name: 종목명 (영문)
+    - stock_code: 종목티커 (선택사항)
     - base_dir: 저장할 폴더명
     - file_type: 파일 타입 (flow, timeout, cancelled, error)
     """
@@ -144,12 +167,15 @@ def generate_json_filename(stock_name, base_dir="results", file_type="flow"):
     current_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     save_timestamp = current_timestamp  # 현재시간과 저장시간이 동일해요
 
-    # 파일명 생성 (JSON-Agent-종목명-financial-현재시간-save저장시간.json)
+    # 종목티커가 있으면 포함, 없으면 UNKNOWN 사용
+    ticker_part = stock_code if stock_code else "UNKNOWN"
+
+    # 파일명 생성 (JSON-FA-종목명(영문)-종목티커-현재시간-save현재시간.json)
     if file_type == "flow":
-        filename = f"JSON-Agent-{stock_name}-financial-{current_timestamp}-save{save_timestamp}.json"
+        filename = f"JSON-FA-{stock_name}-{ticker_part}-{current_timestamp}-save{save_timestamp}.json"
     else:
         # 특수한 경우 (timeout, cancelled, error)에는 파일명에 타입을 포함시켜요
-        filename = f"JSON-Agent-{stock_name}-financial-{file_type}-{current_timestamp}-save{save_timestamp}.json"
+        filename = f"JSON-FA-{stock_name}-{ticker_part}-{file_type}-{current_timestamp}-save{save_timestamp}.json"
 
     # 전체 경로 생성
     full_path = os.path.join(base_dir, filename)
@@ -253,7 +279,7 @@ def cross_verify_stock_name(prompt, ai_response):
     프롬프트와 AI Flow 응답을 교차 검증하여 가장 정확한 종목명을 찾는 함수예요
     - prompt: 사용자가 입력한 질문
     - ai_response: AI Flow가 생성한 분석 결과
-    - 반환값: 교차 검증된 종목명 (없으면 None)
+    - 반환값: (종목명, 종목코드) 튜플 (없으면 (None, None))
     """
     # 프롬프트에서 종목명 후보 추출
     prompt_candidates = extract_stock_candidates_from_text(prompt)
@@ -261,8 +287,14 @@ def cross_verify_stock_name(prompt, ai_response):
     # AI 응답에서 종목명 후보 추출
     response_candidates = extract_stock_candidates_from_text(ai_response)
 
+    # 종목코드 추출
+    prompt_code = extract_stock_code_from_text(prompt)
+    response_code = extract_stock_code_from_text(ai_response)
+
     logger.info(f"프롬프트에서 추출된 종목명 후보: {prompt_candidates}")
     logger.info(f"AI Flow 응답에서 추출된 종목명 후보: {response_candidates}")
+    logger.info(f"프롬프트에서 추출된 종목코드: {prompt_code}")
+    logger.info(f"AI Flow 응답에서 추출된 종목코드: {response_code}")
 
     # 종목명 매핑 테이블
     stock_mapping = {
@@ -301,13 +333,17 @@ def cross_verify_stock_name(prompt, ai_response):
         "아모레퍼시픽": "AMOREPACIFIC",
     }
 
+    # 최종 종목코드 결정 (AI 응답 우선)
+    final_code = response_code or prompt_code
+
     # 1단계: 정확한 일치 확인 (프롬프트와 AI 응답 모두에서 발견된 종목명)
     for p_candidate in prompt_candidates:
         for r_candidate in response_candidates:
             # 종목코드는 정확히 일치해야 함
             if p_candidate.startswith("CODE") and p_candidate == r_candidate:
+                code_from_name = p_candidate.replace("CODE", "")
                 logger.info(f"교차 검증 성공 (종목코드): {p_candidate}")
-                return p_candidate
+                return p_candidate, code_from_name
 
             # 회사명은 유사성 검사
             p_mapped = stock_mapping.get(p_candidate, p_candidate.upper())
@@ -317,7 +353,7 @@ def cross_verify_stock_name(prompt, ai_response):
                 logger.info(
                     f"교차 검증 성공 (회사명): {p_candidate} & {r_candidate} -> {p_mapped}"
                 )
-                return p_mapped
+                return p_mapped, final_code
 
             # 부분 일치 검사 (한화에어로스페이스 vs 한화)
             if (
@@ -333,41 +369,57 @@ def cross_verify_stock_name(prompt, ai_response):
                 logger.info(
                     f"교차 검증 성공 (부분 일치): {p_candidate} & {r_candidate} -> {mapped_name}"
                 )
-                return mapped_name
+                return mapped_name, final_code
 
     # 2단계: AI 응답 우선 (AI가 실제로 분석한 내용이므로)
     if response_candidates:
         best_candidate = response_candidates[0]  # 첫 번째로 발견된 것
-        mapped_name = stock_mapping.get(best_candidate, best_candidate.upper())
-        logger.info(f"AI Flow 응답 우선 선택: {best_candidate} -> {mapped_name}")
-        return mapped_name
+        if best_candidate.startswith("CODE"):
+            code_from_name = best_candidate.replace("CODE", "")
+            logger.info(f"AI Flow 응답 우선 선택 (종목코드): {best_candidate}")
+            return best_candidate, code_from_name
+        else:
+            mapped_name = stock_mapping.get(best_candidate, best_candidate.upper())
+            logger.info(f"AI Flow 응답 우선 선택: {best_candidate} -> {mapped_name}")
+            return mapped_name, final_code
 
     # 3단계: 프롬프트 우선 (마지막 fallback)
     if prompt_candidates:
         best_candidate = prompt_candidates[0]
-        mapped_name = stock_mapping.get(best_candidate, best_candidate.upper())
-        logger.info(f"프롬프트 우선 선택: {best_candidate} -> {mapped_name}")
-        return mapped_name
+        if best_candidate.startswith("CODE"):
+            code_from_name = best_candidate.replace("CODE", "")
+            logger.info(f"프롬프트 우선 선택 (종목코드): {best_candidate}")
+            return best_candidate, code_from_name
+        else:
+            mapped_name = stock_mapping.get(best_candidate, best_candidate.upper())
+            logger.info(f"프롬프트 우선 선택: {best_candidate} -> {mapped_name}")
+            return mapped_name, final_code
 
-    return None
+    return None, final_code
 
 
 def extract_stock_name_from_ai_response(response_text, fallback_prompt=""):
     """
-    AI Flow가 실제로 분석한 결과에서 종목명을 추출하는 함수예요 (교차 검증 포함)
+    AI Flow가 실제로 분석한 결과에서 종목명과 종목코드를 추출하는 함수예요 (교차 검증 포함)
     - response_text: AI Flow가 생성한 분석 결과 텍스트
     - fallback_prompt: 응답에서 찾지 못할 경우 사용할 원본 프롬프트
-    - 반환값: 추출된 종목명 (없으면 프롬프트에서 추출 시도)
+    - 반환값: (종목명, 종목코드) 튜플
     """
-    # 교차 검증을 통한 종목명 추출 시도
-    cross_verified = cross_verify_stock_name(fallback_prompt, response_text)
-    if cross_verified:
-        logger.info(f"교차 검증으로 최종 확정된 종목명: {cross_verified}")
-        return cross_verified
+    # 교차 검증을 통한 종목명과 종목코드 추출 시도
+    stock_name, stock_code = cross_verify_stock_name(fallback_prompt, response_text)
+    if stock_name:
+        logger.info(
+            f"교차 검증으로 최종 확정된 종목명: {stock_name}, 종목코드: {stock_code}"
+        )
+        return stock_name, stock_code
 
     # 교차 검증 실패 시 기존 방식으로 fallback
     logger.info("교차 검증 실패, 기존 방식으로 종목명 추출 시도")
-    return extract_stock_name(fallback_prompt)
+    fallback_name = extract_stock_name(fallback_prompt)
+    fallback_code = extract_stock_code_from_text(
+        response_text
+    ) or extract_stock_code_from_text(fallback_prompt)
+    return fallback_name, fallback_code
 
 
 async def run_flow():
@@ -426,16 +478,20 @@ async def run_flow():
                 if flow_result:
                     final_result = flow_result
 
-            # AI Flow 응답에서 실제 분석된 종목명 추출 (최우선!)
-            stock_name = extract_stock_name_from_ai_response(final_result, prompt)
-            logger.info(f"최종 추출된 종목명: {stock_name}")
+            # AI Flow 응답에서 실제 분석된 종목명과 종목코드 추출 (최우선!)
+            stock_name, stock_code = extract_stock_name_from_ai_response(
+                final_result, prompt
+            )
+            logger.info(f"최종 추출된 종목명: {stock_name}, 종목코드: {stock_code}")
 
             # 현재 시간으로 파일명 생성 (기존 TXT 파일용)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             txt_filename = os.path.join(results_dir, f"flow_analysis_{timestamp}.txt")
 
-            # JSON 파일명 생성 (AI Flow 응답에서 추출한 종목명 사용)
-            json_filename = generate_json_filename(stock_name, results_dir, "flow")
+            # JSON 파일명 생성 (AI Flow 응답에서 추출한 종목명과 종목코드 사용)
+            json_filename = generate_json_filename(
+                stock_name, stock_code, results_dir, "flow"
+            )
 
             # 텍스트 파일과 JSON 파일 모두 생성해요
             save_text_file(final_result, txt_filename)
@@ -464,14 +520,16 @@ async def run_flow():
             )
             os.makedirs(results_dir, exist_ok=True)
 
-            # 타임아웃의 경우 프롬프트에서 종목명 추출
-            stock_name = extract_stock_name(prompt)
+            # 타임아웃의 경우 프롬프트에서 종목명과 종목코드 추출
+            stock_name, stock_code = extract_stock_name_from_ai_response(prompt)
 
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             txt_filename = os.path.join(
                 results_dir, f"flow_analysis_timeout_{timestamp}.txt"
             )
-            json_filename = generate_json_filename(stock_name, results_dir, "timeout")
+            json_filename = generate_json_filename(
+                stock_name, stock_code, results_dir, "timeout"
+            )
 
             save_text_file(timeout_message, txt_filename)
             save_json_file(
@@ -494,8 +552,10 @@ async def run_flow():
         )
         os.makedirs(results_dir, exist_ok=True)
 
-        # 취소의 경우 프롬프트에서 종목명 추출
-        stock_name = extract_stock_name(prompt if "prompt" in locals() else "")
+        # 취소의 경우 프롬프트에서 종목명과 종목코드 추출
+        stock_name, stock_code = extract_stock_name_from_ai_response(
+            prompt if "prompt" in locals() else ""
+        )
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         txt_filename = os.path.join(
@@ -503,6 +563,7 @@ async def run_flow():
         )
         json_filename = generate_json_filename(
             stock_name if "stock_name" in locals() else "GENERAL",
+            stock_code if "stock_code" in locals() else None,
             results_dir,
             "cancelled",
         )
@@ -532,12 +593,16 @@ async def run_flow():
         )
         os.makedirs(results_dir, exist_ok=True)
 
-        # 에러의 경우 프롬프트에서 종목명 추출
-        stock_name = extract_stock_name(prompt if "prompt" in locals() else "")
+        # 에러의 경우 프롬프트에서 종목명과 종목코드 추출
+        stock_name, stock_code = extract_stock_name_from_ai_response(
+            prompt if "prompt" in locals() else ""
+        )
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         txt_filename = os.path.join(results_dir, f"flow_analysis_error_{timestamp}.txt")
-        json_filename = generate_json_filename(stock_name, results_dir, "error")
+        json_filename = generate_json_filename(
+            stock_name, stock_code, results_dir, "error"
+        )
 
         save_text_file(error_message, txt_filename)
         save_json_file(
