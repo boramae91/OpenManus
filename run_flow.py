@@ -90,6 +90,26 @@ def extract_stock_name(prompt):
         "KAKAO": "KAKAO",
         "셀트리온": "CELLTRION",
         "CELLTRION": "CELLTRION",
+        "한화에어로스페이스": "HANWHA_AERO",
+        "한화": "HANWHA",
+        "HANWHA": "HANWHA",
+        "두산": "DOOSAN",
+        "DOOSAN": "DOOSAN",
+        "롯데": "LOTTE",
+        "LOTTE": "LOTTE",
+        "신세계": "SHINSEGAE",
+        "SHINSEGAE": "SHINSEGAE",
+        "이마트": "EMART",
+        "EMART": "EMART",
+        "CJ": "CJ",
+        "현대건설": "HYUNDAI_CONST",
+        "KB금융": "KBFG",
+        "KB": "KB",
+        "신한": "SHINHAN",
+        "하나금융": "HANAFN",
+        "우리금융": "WOORI",
+        "국민은행": "KOOKMIN",
+        "아모레퍼시픽": "AMOREPACIFIC",
         "코스피": "KOSPI",
         "KOSPI": "KOSPI",
         "코스닥": "KOSDAQ",
@@ -137,6 +157,219 @@ def generate_json_filename(stock_name, base_dir="results", file_type="flow"):
     return full_path
 
 
+def extract_stock_candidates_from_text(text):
+    """
+    텍스트에서 종목명 후보들을 추출하는 헬퍼 함수예요
+    - text: 분석할 텍스트 (프롬프트 또는 AI 응답)
+    - 반환값: 발견된 종목명 후보들의 리스트
+    """
+    import re
+
+    candidates = []
+
+    if not text or not text.strip():
+        return candidates
+
+    # 1. 6자리 종목코드 찾기
+    code_pattern = r"(\d{6})"
+    code_matches = re.findall(code_pattern, text)
+    for code in code_matches:
+        candidates.append(f"CODE{code}")
+
+    # 2. 주요 종목명 찾기 (단어 경계 고려)
+    major_stocks = [
+        "한화에어로스페이스",
+        "한화시스템",
+        "한화솔루션",
+        "한화",
+        "삼성전자",
+        "삼성",
+        "SK하이닉스",
+        "SK",
+        "LG전자",
+        "LG",
+        "현대자동차",
+        "현대차",
+        "현대",
+        "기아",
+        "포스코",
+        "네이버",
+        "카카오",
+        "셀트리온",
+        "두산",
+        "롯데",
+        "신세계",
+        "이마트",
+        "CJ",
+        "KB금융",
+        "KB",
+        "국민은행",
+        "신한금융",
+        "신한",
+        "하나금융",
+        "하나은행",
+        "우리금융",
+        "우리은행",
+        "아모레퍼시픽",
+    ]
+
+    for stock in major_stocks:
+        pattern = rf"\b{re.escape(stock)}\b"
+        if re.search(pattern, text, re.IGNORECASE):
+            candidates.append(stock)
+
+    # 3. 구체적 패턴으로 회사명 찾기
+    specific_patterns = [
+        r"([가-힣A-Za-z0-9]+)(?:의\s*(?:주가|주식|분석|전망|실적))",
+        r"([가-힣A-Za-z0-9]+)(?:\s*주식\s*분석)",
+        r"([가-힣A-Za-z0-9]+)(?:\s*\(\s*[A-Z]?\d{6}\s*\))",
+        r"([가-힣A-Za-z0-9]+)(?:에\s*대한\s*(?:분석|전망))",
+        r"([가-힣A-Za-z0-9]+)(?:\s*(?:분석|전망)\s*(?:결과|정보))",
+    ]
+
+    for pattern in specific_patterns:
+        matches = re.findall(pattern, text)
+        for match in matches:
+            exclude_words = [
+                "주식",
+                "투자",
+                "분석",
+                "시장",
+                "종목",
+                "기업",
+                "회사",
+                "정보",
+                "결과",
+                "전망",
+            ]
+            if match not in exclude_words and len(match) >= 2 and len(match) <= 25:
+                candidates.append(match)
+
+    return candidates
+
+
+def cross_verify_stock_name(prompt, ai_response):
+    """
+    프롬프트와 AI Flow 응답을 교차 검증하여 가장 정확한 종목명을 찾는 함수예요
+    - prompt: 사용자가 입력한 질문
+    - ai_response: AI Flow가 생성한 분석 결과
+    - 반환값: 교차 검증된 종목명 (없으면 None)
+    """
+    # 프롬프트에서 종목명 후보 추출
+    prompt_candidates = extract_stock_candidates_from_text(prompt)
+
+    # AI 응답에서 종목명 후보 추출
+    response_candidates = extract_stock_candidates_from_text(ai_response)
+
+    logger.info(f"프롬프트에서 추출된 종목명 후보: {prompt_candidates}")
+    logger.info(f"AI Flow 응답에서 추출된 종목명 후보: {response_candidates}")
+
+    # 종목명 매핑 테이블
+    stock_mapping = {
+        "한화에어로스페이스": "HANWHA_AERO",
+        "한화시스템": "HANWHA_SYS",
+        "한화솔루션": "HANWHA_SOL",
+        "한화": "HANWHA",
+        "삼성전자": "SAMSUNG",
+        "삼성": "SAMSUNG",
+        "SK하이닉스": "SKHYNIX",
+        "SK": "SK",
+        "LG전자": "LG",
+        "LG": "LG",
+        "현대자동차": "HYUNDAI",
+        "현대차": "HYUNDAI",
+        "현대": "HYUNDAI",
+        "기아": "KIA",
+        "포스코": "POSCO",
+        "네이버": "NAVER",
+        "카카오": "KAKAO",
+        "셀트리온": "CELLTRION",
+        "두산": "DOOSAN",
+        "롯데": "LOTTE",
+        "신세계": "SHINSEGAE",
+        "이마트": "EMART",
+        "CJ": "CJ",
+        "KB금융": "KBFG",
+        "KB": "KB",
+        "국민은행": "KOOKMIN",
+        "신한금융": "SHINHAN",
+        "신한": "SHINHAN",
+        "하나금융": "HANAFN",
+        "하나은행": "HANA",
+        "우리금융": "WOORI",
+        "우리은행": "WOORI",
+        "아모레퍼시픽": "AMOREPACIFIC",
+    }
+
+    # 1단계: 정확한 일치 확인 (프롬프트와 AI 응답 모두에서 발견된 종목명)
+    for p_candidate in prompt_candidates:
+        for r_candidate in response_candidates:
+            # 종목코드는 정확히 일치해야 함
+            if p_candidate.startswith("CODE") and p_candidate == r_candidate:
+                logger.info(f"교차 검증 성공 (종목코드): {p_candidate}")
+                return p_candidate
+
+            # 회사명은 유사성 검사
+            p_mapped = stock_mapping.get(p_candidate, p_candidate.upper())
+            r_mapped = stock_mapping.get(r_candidate, r_candidate.upper())
+
+            if p_mapped == r_mapped:
+                logger.info(
+                    f"교차 검증 성공 (회사명): {p_candidate} & {r_candidate} -> {p_mapped}"
+                )
+                return p_mapped
+
+            # 부분 일치 검사 (한화에어로스페이스 vs 한화)
+            if (
+                (p_candidate in r_candidate or r_candidate in p_candidate)
+                and len(p_candidate) > 1
+                and len(r_candidate) > 1
+            ):
+                # 더 구체적인 이름을 선택
+                longer_name = (
+                    p_candidate if len(p_candidate) >= len(r_candidate) else r_candidate
+                )
+                mapped_name = stock_mapping.get(longer_name, longer_name.upper())
+                logger.info(
+                    f"교차 검증 성공 (부분 일치): {p_candidate} & {r_candidate} -> {mapped_name}"
+                )
+                return mapped_name
+
+    # 2단계: AI 응답 우선 (AI가 실제로 분석한 내용이므로)
+    if response_candidates:
+        best_candidate = response_candidates[0]  # 첫 번째로 발견된 것
+        mapped_name = stock_mapping.get(best_candidate, best_candidate.upper())
+        logger.info(f"AI Flow 응답 우선 선택: {best_candidate} -> {mapped_name}")
+        return mapped_name
+
+    # 3단계: 프롬프트 우선 (마지막 fallback)
+    if prompt_candidates:
+        best_candidate = prompt_candidates[0]
+        mapped_name = stock_mapping.get(best_candidate, best_candidate.upper())
+        logger.info(f"프롬프트 우선 선택: {best_candidate} -> {mapped_name}")
+        return mapped_name
+
+    return None
+
+
+def extract_stock_name_from_ai_response(response_text, fallback_prompt=""):
+    """
+    AI Flow가 실제로 분석한 결과에서 종목명을 추출하는 함수예요 (교차 검증 포함)
+    - response_text: AI Flow가 생성한 분석 결과 텍스트
+    - fallback_prompt: 응답에서 찾지 못할 경우 사용할 원본 프롬프트
+    - 반환값: 추출된 종목명 (없으면 프롬프트에서 추출 시도)
+    """
+    # 교차 검증을 통한 종목명 추출 시도
+    cross_verified = cross_verify_stock_name(fallback_prompt, response_text)
+    if cross_verified:
+        logger.info(f"교차 검증으로 최종 확정된 종목명: {cross_verified}")
+        return cross_verified
+
+    # 교차 검증 실패 시 기존 방식으로 fallback
+    logger.info("교차 검증 실패, 기존 방식으로 종목명 추출 시도")
+    return extract_stock_name(fallback_prompt)
+
+
 async def run_flow():
     # 결과 수집기 생성
     result_collector = ResultCollector()
@@ -151,10 +384,6 @@ async def run_flow():
         if prompt.strip().isspace() or not prompt:
             logger.warning("Empty prompt provided.")
             return
-
-        # 프롬프트에서 종목명을 미리 추출해 둬요 (모든 상황에서 사용하기 위해)
-        stock_name = extract_stock_name(prompt)
-        logger.info(f"Extracted stock name from prompt: {stock_name}")
 
         flow = FlowFactory.create_flow(
             flow_type=FlowType.PLANNING,
@@ -197,11 +426,15 @@ async def run_flow():
                 if flow_result:
                     final_result = flow_result
 
+            # AI Flow 응답에서 실제 분석된 종목명 추출 (최우선!)
+            stock_name = extract_stock_name_from_ai_response(final_result, prompt)
+            logger.info(f"최종 추출된 종목명: {stock_name}")
+
             # 현재 시간으로 파일명 생성 (기존 TXT 파일용)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             txt_filename = os.path.join(results_dir, f"flow_analysis_{timestamp}.txt")
 
-            # JSON 파일명 생성 (프롬프트에서 추출한 종목명 사용)
+            # JSON 파일명 생성 (AI Flow 응답에서 추출한 종목명 사용)
             json_filename = generate_json_filename(stock_name, results_dir, "flow")
 
             # 텍스트 파일과 JSON 파일 모두 생성해요
@@ -231,6 +464,9 @@ async def run_flow():
             )
             os.makedirs(results_dir, exist_ok=True)
 
+            # 타임아웃의 경우 프롬프트에서 종목명 추출
+            stock_name = extract_stock_name(prompt)
+
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             txt_filename = os.path.join(
                 results_dir, f"flow_analysis_timeout_{timestamp}.txt"
@@ -257,6 +493,9 @@ async def run_flow():
             os.path.dirname(os.path.abspath(__file__)), "results"
         )
         os.makedirs(results_dir, exist_ok=True)
+
+        # 취소의 경우 프롬프트에서 종목명 추출
+        stock_name = extract_stock_name(prompt if "prompt" in locals() else "")
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         txt_filename = os.path.join(
@@ -293,11 +532,12 @@ async def run_flow():
         )
         os.makedirs(results_dir, exist_ok=True)
 
+        # 에러의 경우 프롬프트에서 종목명 추출
+        stock_name = extract_stock_name(prompt if "prompt" in locals() else "")
+
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         txt_filename = os.path.join(results_dir, f"flow_analysis_error_{timestamp}.txt")
-        json_filename = generate_json_filename(
-            stock_name if "stock_name" in locals() else "GENERAL", results_dir, "error"
-        )
+        json_filename = generate_json_filename(stock_name, results_dir, "error")
 
         save_text_file(error_message, txt_filename)
         save_json_file(
