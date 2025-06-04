@@ -20,26 +20,46 @@ def save_text_file(content, filename):
 
 
 def save_json_file(
-    content, filename, prompt="", processing_time=0, flow_type="PLANNING"
+    content,
+    filename,
+    prompt="",
+    processing_time=0,
+    flow_type="PLANNING",
+    classification_data=None,
+    stock_info=None,
 ):
     """
-    Flow 실행 결과를 JSON 형식으로 저장하는 함수예요
+    Flow 실행 결과를 JSON 형식으로 저장하는 함수예요 (분류 정보 포함)
     - content: Flow 실행 결과 내용 (문자열)
     - filename: 저장할 파일 이름
     - prompt: 사용자가 입력한 질문 (이것이 key가 돼요)
     - processing_time: 처리하는데 걸린 시간 (초 단위)
     - flow_type: 실행한 Flow의 종류
+    - classification_data: 종목 분류 결과 (딕셔너리)
+    - stock_info: 종목 정보 (딕셔너리)
     """
-    # 간단한 key-value 형식으로 JSON 데이터를 만들어요
-    # 사용자의 질문이 key가 되고, Flow 실행 결과가 value가 되는 거예요
-    # 마치 질문-답변 카드처럼 저장하는 거죠!
 
     if not prompt.strip():
         # 프롬프트가 비어있으면 기본 키를 사용해요
         prompt = "User Flow Question"
 
-    # 간단한 형식의 JSON 데이터 생성
-    json_data = {prompt: content}  # 질문을 key로, Flow 실행 결과를 value로 저장해요
+    # 풍부한 JSON 데이터 생성
+    json_data = {
+        "query": prompt,  # 사용자 질문
+        "analysis_result": content,  # 분석 결과
+        "processing_time_seconds": processing_time,  # 처리 시간
+        "timestamp": datetime.now().isoformat(),  # 분석 시간
+        "analysis_type": "Flow",  # 분석 유형 표시
+        "flow_type": flow_type,  # Flow 종류
+    }
+
+    # 종목 분류 정보 추가
+    if classification_data:
+        json_data["stock_classification"] = classification_data
+
+    # 종목 정보 추가 (티커, 시장 등)
+    if stock_info:
+        json_data["stock_info"] = stock_info
 
     # JSON 파일로 저장해요 (한글도 제대로 저장되도록 설정)
     with open(filename, "w", encoding="utf-8") as f:
@@ -928,8 +948,9 @@ async def run_flow():
 
             classification_result = await stock_classifier.classify_stock(prompt)
 
-            # 분류 결과를 결과 수집기에 추가
+            # 분류 결과를 결과 수집기에 추가 (전체 결과 포함!)
             if classification_result.get("classification"):
+                # 요약본 (화면 출력용)
                 classification_summary = f"""
 === 종목 분류 결과 ===
 🏷️ 분류: {classification_result['classification']['classification']}
@@ -938,8 +959,36 @@ async def run_flow():
 
 --- Flow 상세 분석은 아래를 확인하세요 ---
 """
-                result_collector.add_to_result(classification_summary)
                 print(classification_summary)
+
+                # 상세 결과 (파일 저장용)
+                detailed_classification = f"""
+=== 종목 분류 상세 분석 (Flow) ===
+📊 **분류 결과:** {classification_result['classification']['classification']}
+🎯 **신뢰도:** {classification_result['classification']['confidence']}
+
+📋 **분류 근거:**
+"""
+                # 모든 근거 나열
+                for i, reason in enumerate(
+                    classification_result["classification"]["reasoning"], 1
+                ):
+                    detailed_classification += f"{i}. {reason}\n"
+
+                detailed_classification += f"""
+💡 **AI 분석 전문:**
+{classification_result.get('full_analysis', '상세 분석 내용 없음')}
+
+🔍 **원시 분석 데이터:**
+입력: {classification_result.get('input', 'N/A')}
+에이전트 상태: {classification_result.get('agent_state', 'N/A')}
+
+===============================
+"""
+
+                # 요약본과 상세본 모두 결과 수집기에 추가
+                result_collector.add_to_result(classification_summary)
+                result_collector.add_to_result(detailed_classification)
 
             # 분류 후에도 상세 분석을 위해 Flow도 실행
             print("📊 Flow 추가 상세 분석을 진행합니다...\n")
@@ -993,11 +1042,39 @@ async def run_flow():
                 stock_name, stock_code, results_dir, "flow"
             )
 
+            # 분류 결과와 종목 정보 준비 (JSON에 포함할 메타데이터)
+            classification_data_for_json = None
+            stock_info_for_json = None
+
+            # 분류 결과가 있으면 JSON용 데이터 준비
+            if (
+                is_classification_request
+                and "classification_result" in locals()
+                and classification_result.get("classification")
+            ):
+                classification_data_for_json = classification_result
+
+            # 종목 정보가 있으면 JSON용 데이터 준비
+            if has_stock_detected:
+                stock_info_for_json = {
+                    "stock_name": detected_stock_name,
+                    "ticker": detected_ticker,
+                    "stock_type": detected_stock_type,
+                    "market": detected_market,
+                    "found": True,
+                }
+
             # 텍스트 파일과 JSON 파일 모두 생성해요
             save_text_file(final_result, txt_filename)
             save_json_file(
-                final_result, json_filename, prompt, elapsed_time, "PLANNING"
-            )  # JSON 파일도 생성해요
+                final_result,
+                json_filename,
+                prompt,
+                elapsed_time,
+                "PLANNING",
+                classification_data_for_json,  # 분류 결과 포함
+                stock_info_for_json,  # 종목 정보 포함
+            )  # JSON 파일도 생성해요 (분류 정보 포함!)
 
             # 결과 파일 위치 출력
             print(f"\nResults saved to:")
@@ -1033,7 +1110,7 @@ async def run_flow():
 
             save_text_file(timeout_message, txt_filename)
             save_json_file(
-                timeout_message, json_filename, prompt, 3600, "PLANNING"
+                timeout_message, json_filename, prompt, 3600, "PLANNING", None, None
             )  # 타임아웃도 JSON으로 저장
 
             print(f"\nTimeout results saved to:")
@@ -1075,6 +1152,8 @@ async def run_flow():
             prompt if "prompt" in locals() else "",
             0,
             "PLANNING",
+            None,  # 취소 시에는 분류 정보 없음
+            None,  # 취소 시에는 종목 정보 없음
         )
 
         print(f"\nCancellation results saved to:")
@@ -1111,6 +1190,8 @@ async def run_flow():
             prompt if "prompt" in locals() else "",
             0,
             "PLANNING",
+            None,  # 에러 시에는 분류 정보 없음
+            None,  # 에러 시에는 종목 정보 없음
         )
 
         print(f"\nError results saved to:")

@@ -9,6 +9,7 @@ from fpdf import FPDF
 
 from app.agent.manus import Manus
 from app.agent.stock_classifier import StockClassifier
+from app.agent.stock_name_extractor import StockNameExtractor
 from app.logger import logger
 
 
@@ -63,24 +64,43 @@ def save_text_file(content, filename):
     logger.info(f"Analysis result saved to {filename}")
 
 
-def save_json_file(content, filename, prompt="", processing_time=0):
+def save_json_file(
+    content,
+    filename,
+    prompt="",
+    processing_time=0,
+    classification_data=None,
+    stock_info=None,
+):
     """
-    분석 결과를 JSON 형식으로 저장하는 함수예요
+    분석 결과를 JSON 형식으로 저장하는 함수예요 (분류 정보 포함)
     - content: 분석 결과 내용 (문자열)
     - filename: 저장할 파일 이름
     - prompt: 사용자가 입력한 질문 (이것이 key가 돼요)
     - processing_time: 처리하는데 걸린 시간
+    - classification_data: 종목 분류 결과 (딕셔너리)
+    - stock_info: 종목 정보 (딕셔너리)
     """
-    # 간단한 key-value 형식으로 JSON 데이터를 만들어요
-    # 사용자의 질문이 key가 되고, 분석 결과가 value가 되는 거예요
-    # 마치 질문-답변 카드처럼 저장하는 거죠!
 
     if not prompt.strip():
         # 프롬프트가 비어있으면 기본 키를 사용해요
         prompt = "User Question"
 
-    # 간단한 형식의 JSON 데이터 생성
-    json_data = {prompt: content}  # 질문을 key로, 답변을 value로 저장해요
+    # 풍부한 JSON 데이터 생성
+    json_data = {
+        "query": prompt,  # 사용자 질문
+        "analysis_result": content,  # 분석 결과
+        "processing_time_seconds": processing_time,  # 처리 시간
+        "timestamp": datetime.now().isoformat(),  # 분석 시간
+    }
+
+    # 종목 분류 정보 추가
+    if classification_data:
+        json_data["stock_classification"] = classification_data
+
+    # 종목 정보 추가 (티커, 시장 등)
+    if stock_info:
+        json_data["stock_info"] = stock_info
 
     # JSON 파일로 저장해요 (한글도 제대로 저장되도록 설정)
     with open(filename, "w", encoding="utf-8") as f:
@@ -545,9 +565,56 @@ def find_most_frequent_stock_name(ai_response):
     # 종목명 후보들을 찾을 패턴들
     candidates = []
 
-    # 1. 한글 회사명 (2-10글자) - 한국 종목용
-    korean_pattern = r"\b([가-힣]{2,10})\b"
-    korean_matches = re.findall(korean_pattern, ai_response)
+    # 0. 우선순위 높은 정확한 한국 종목명들 (직접 검색)
+    priority_stocks = [
+        "삼성바이오로직스",
+        "삼성전자",
+        "삼성SDI",
+        "삼성화재",
+        "삼성물산",
+        "SK하이닉스",
+        "SK텔레콤",
+        "SK이노베이션",
+        "LG전자",
+        "LG화학",
+        "LG에너지솔루션",
+        "현대자동차",
+        "현대모비스",
+        "기아",
+        "포스코",
+        "포스코홀딩스",
+        "네이버",
+        "카카오",
+        "카카오뱅크",
+        "셀트리온",
+        "셀트리온헬스케어",
+        "한화에어로스페이스",
+        "한화시스템",
+        "한화솔루션",
+        "휴니드",
+        "한컴라이프케어",
+    ]
+
+    # 우선순위 종목들이 있는지 먼저 확인 (높은 가중치)
+    for stock in priority_stocks:
+        if stock in ai_response:
+            count = ai_response.count(stock)
+            candidates.extend([stock] * (count * 10))  # 높은 가중치
+
+    # 1. 한글 회사명 패턴 - 한국 종목용 (더 정교한 패턴)
+    # "삼성바이오로직스", "삼성전자" 등의 정확한 종목명만 매치
+    korean_patterns = [
+        r"(?:^|[^가-힣])([가-힣]{2,}(?:바이오로직스|바이오텍|바이오|전자|전기|화학|물산|생명과학|제약|건설|중공업|해운|카드|증권|보험|생활건강|전력|가스|통신|시스템|솔루션|엔터테인먼트|게임즈))(?=[^가-힣]|$)",
+        r"(?:^|[^가-힣])([가-힣]{2,8})(?=[^가-힣]|$)",
+    ]
+
+    korean_matches = []
+    for pattern in korean_patterns:
+        matches = re.findall(pattern, ai_response)
+        korean_matches.extend(matches)
+
+    # 중복 제거 및 기본 필터링
+    korean_matches = list(set(korean_matches))
     candidates.extend(korean_matches)
 
     # 2. 해외 회사명 패턴 (공백 포함, Inc/Corp/Ltd 등 포함)
@@ -611,16 +678,55 @@ def find_most_frequent_stock_name(ai_response):
         "구성종목",
         # 영어 제외 단어 (금융/기술 용어)
         "KOSPI",
+        "KOSDAQ",
         "PER",
         "PBR",
         "EPS",
         "BPS",
         "DPS",
+        "ROE",
+        "ROA",
+        "EBITDA",
+        "FCF",
         "Price",
         "Earning",
         "Ratio",
         "Book",
         "value",
+        # 통화 코드들 (매우 중요!)
+        "KRW",
+        "USD",
+        "EUR",
+        "JPY",
+        "GBP",
+        "CNY",
+        "CAD",
+        "AUD",
+        "CHF",
+        "HKD",
+        "SGD",
+        "TWD",
+        "THB",
+        "INR",
+        "BRL",
+        "MXN",
+        "ZAR",
+        "RUB",
+        "SEK",
+        "NOK",
+        "DKK",
+        "PLN",
+        "CZK",
+        "HUF",
+        "TRY",
+        "ILS",
+        "AED",
+        "SAR",
+        "QAR",
+        "KWD",
+        "BHD",
+        "OMR",
+        "JOD",
         "Company",
         "Guide",
         "Snapshot",
@@ -848,19 +954,43 @@ def convert_to_english_ticker(company_name):
     basic_conversions = {
         # 한국 종목들
         "휴니드": "HUNEED",
-        "삼성전자": "SAMSUNG",
+        "삼성전자": "SAMSUNG_ELEC",
+        "삼성바이오로직스": "SAMSUNG_BIO",
+        "삼성SDI": "SAMSUNG_SDI",
+        "삼성화재": "SAMSUNG_FIRE",
+        "삼성물산": "SAMSUNG_CT",
         "삼성": "SAMSUNG",
         "SK하이닉스": "SKHYNIX",
-        "LG전자": "LG",
-        "현대자동차": "HYUNDAI",
+        "SK텔레콤": "SKT",
+        "SK이노베이션": "SKINNO",
+        "SK": "SK",
+        "LG전자": "LG_ELEC",
+        "LG화학": "LG_CHEM",
+        "LG에너지솔루션": "LG_ENERGY",
+        "LG": "LG",
+        "현대자동차": "HYUNDAI_MOTOR",
+        "현대모비스": "HYUNDAI_MOBIS",
         "현대차": "HYUNDAI",
+        "현대": "HYUNDAI",
         "기아": "KIA",
         "포스코": "POSCO",
+        "포스코홀딩스": "POSCO_HOLD",
         "네이버": "NAVER",
         "카카오": "KAKAO",
+        "카카오뱅크": "KAKAOBANK",
         "셀트리온": "CELLTRION",
+        "셀트리온헬스케어": "CELLTRION_HC",
         "한화에어로스페이스": "HANWHA_AERO",
+        "한화시스템": "HANWHA_SYS",
+        "한화솔루션": "HANWHA_SOL",
         "한화": "HANWHA",
+        "NAVER": "NAVER",
+        "KAKAO": "KAKAO",
+        "CELLTRION": "CELLTRION",
+        "SAMSUNG": "SAMSUNG",
+        "POSCO": "POSCO",
+        "HYUNDAI": "HYUNDAI",
+        "KIA": "KIA",
         # 해외 종목들 - 한글명을 실제 티커로 매핑
         "보잉": "BA",  # Boeing Company
         "애플": "AAPL",  # Apple Inc
@@ -1034,6 +1164,9 @@ async def main():
     # 종목 분류 에이전트 생성
     stock_classifier = StockClassifier()
 
+    # 종목명 추출 전용 에이전트 생성 (새로운 방식!)
+    stock_extractor = StockNameExtractor()
+
     try:
         prompt = input("Enter your prompt: ")
         if not prompt.strip():
@@ -1070,9 +1203,13 @@ async def main():
             keyword in prompt.lower() for keyword in classification_keywords
         )
 
-        # 2. 종목 감지 기반 - 종목명이나 종목코드가 발견되면 자동으로 분류도 실행
-        detected_stock_info = extract_stock_name(prompt)
-        has_stock_detected = detected_stock_info != "GENERAL"
+        # 2. 종목 감지 기반 - 새로운 전용 에이전트 사용! 🚀
+        stock_info = stock_extractor.get_extracted_info(prompt)
+        has_stock_detected = stock_info["found"]
+        detected_stock_name = stock_info["stock_name"]
+        detected_ticker = stock_info["ticker"]
+        detected_stock_type = stock_info["stock_type"]
+        detected_market = stock_info["market"]
 
         # 최종 판단: 키워드가 있거나 종목이 감지되면 분류 실행
         is_classification_request = (
@@ -1086,7 +1223,9 @@ async def main():
             elif is_classification_request_by_keyword:
                 logger.info("종목 분류 실행 - 키워드 감지")
             elif has_stock_detected:
-                logger.info(f"종목 분류 실행 - 종목 자동 감지: {detected_stock_info}")
+                logger.info(
+                    f"종목 분류 실행 - 종목 자동 감지: {detected_stock_name} (티커: {detected_ticker}, 시장: {detected_market})"
+                )
         else:
             logger.info("종목 분류 실행 안함 - 키워드나 종목 감지되지 않음")
 
@@ -1100,19 +1239,20 @@ async def main():
         if is_classification_request:
             if is_classification_request_by_keyword and has_stock_detected:
                 print(
-                    f"🏷️ 종목 분류 분석을 실행합니다... (키워드 + 종목 감지: {detected_stock_info})\n"
+                    f"🏷️ 종목 분류 분석을 실행합니다... (키워드 + 종목 감지: {detected_stock_name} [{detected_ticker}])\n"
                 )
             elif is_classification_request_by_keyword:
                 print("🏷️ 종목 분류 분석을 실행합니다... (키워드 감지)\n")
             elif has_stock_detected:
                 print(
-                    f"🏷️ 종목 분류 분석을 자동 실행합니다... (종목 감지: {detected_stock_info})\n"
+                    f"🏷️ 종목 분류 분석을 자동 실행합니다... (종목 감지: {detected_stock_name} [{detected_ticker}])\n"
                 )
 
             classification_result = await stock_classifier.classify_stock(prompt)
 
-            # 분류 결과를 결과 수집기에 추가
+            # 분류 결과를 결과 수집기에 추가 (전체 결과 포함!)
             if classification_result.get("classification"):
+                # 요약본 (화면 출력용)
                 classification_summary = f"""
 === 종목 분류 결과 ===
 🏷️ 분류: {classification_result['classification']['classification']}
@@ -1121,8 +1261,36 @@ async def main():
 
 --- 상세 분석은 아래를 확인하세요 ---
 """
-                result_collector.add_to_result(classification_summary)
                 print(classification_summary)
+
+                # 상세 결과 (파일 저장용)
+                detailed_classification = f"""
+=== 종목 분류 상세 분석 ===
+📊 **분류 결과:** {classification_result['classification']['classification']}
+🎯 **신뢰도:** {classification_result['classification']['confidence']}
+
+📋 **분류 근거:**
+"""
+                # 모든 근거 나열
+                for i, reason in enumerate(
+                    classification_result["classification"]["reasoning"], 1
+                ):
+                    detailed_classification += f"{i}. {reason}\n"
+
+                detailed_classification += f"""
+💡 **AI 분석 전문:**
+{classification_result.get('full_analysis', '상세 분석 내용 없음')}
+
+🔍 **원시 분석 데이터:**
+입력: {classification_result.get('input', 'N/A')}
+에이전트 상태: {classification_result.get('agent_state', 'N/A')}
+
+===============================
+"""
+
+                # 요약본과 상세본 모두 결과 수집기에 추가
+                result_collector.add_to_result(classification_summary)
+                result_collector.add_to_result(detailed_classification)
 
             # 분류 후에도 상세 분석을 위해 Manus 에이전트도 실행
             print("📊 추가 상세 분석을 진행합니다...\n")
@@ -1157,11 +1325,21 @@ async def main():
             if response:
                 final_result = response
 
-        # AI 응답에서 실제 분석된 종목명 추출 (최우선!)
-        stock_name, stock_code = extract_stock_name_from_ai_response(
-            final_result, prompt
-        )
-        logger.info(f"최종 추출된 종목명: {stock_name}, 종목코드: {stock_code}")
+        # 새로운 방식: 프롬프트에서 바로 추출한 종목명 사용! 🎯
+        if has_stock_detected:
+            stock_name = detected_stock_name
+            stock_code = detected_ticker  # 실제 거래소 티커 사용
+            logger.info(
+                f"프롬프트에서 추출된 종목 정보 사용: {stock_name}, 티커: {stock_code}, 시장: {detected_market}"
+            )
+        else:
+            # 백업: AI 응답에서 추출 (기존 방식)
+            stock_name, stock_code = extract_stock_name_from_ai_response(
+                final_result, prompt
+            )
+            logger.info(
+                f"백업 방식으로 추출된 종목명: {stock_name}, 종목코드: {stock_code}"
+            )
 
         # 현재 시간으로 파일명 생성 (기존 PDF, TXT 파일용)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -1171,12 +1349,39 @@ async def main():
         # JSON 파일명 생성 (AI 응답에서 추출한 종목명 사용)
         json_filename = generate_json_filename(stock_name, stock_code, results_dir)
 
+        # 분류 결과와 종목 정보 준비 (JSON에 포함할 메타데이터)
+        classification_data_for_json = None
+        stock_info_for_json = None
+
+        # 분류 결과가 있으면 JSON용 데이터 준비
+        if (
+            is_classification_request
+            and "classification_result" in locals()
+            and classification_result.get("classification")
+        ):
+            classification_data_for_json = classification_result
+
+        # 종목 정보가 있으면 JSON용 데이터 준비
+        if has_stock_detected:
+            stock_info_for_json = {
+                "stock_name": detected_stock_name,
+                "ticker": detected_ticker,
+                "stock_type": detected_stock_type,
+                "market": detected_market,
+                "found": True,
+            }
+
         # PDF, 텍스트, JSON 파일 모두 생성해요
         create_pdf(final_result, pdf_filename)
         save_text_file(final_result, txt_filename)
         save_json_file(
-            final_result, json_filename, prompt, processing_time
-        )  # JSON 파일도 생성해요
+            final_result,
+            json_filename,
+            prompt,
+            processing_time,
+            classification_data_for_json,  # 분류 결과 포함
+            stock_info_for_json,  # 종목 정보 포함
+        )  # JSON 파일도 생성해요 (분류 정보 포함!)
 
         # 결과 파일 위치 출력
         print(f"\nResults saved to:")
