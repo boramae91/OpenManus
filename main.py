@@ -284,34 +284,177 @@ def extract_stock_candidates_from_text(text):
     return candidates
 
 
-def cross_verify_stock_name(prompt, ai_response):
+def get_stock_name_from_code(stock_code):
     """
-    프롬프트와 AI 응답을 교차 검증하여 가장 정확한 종목명을 찾는 함수예요
+    종목코드로 실제 종목명을 찾는 함수예요
+    - stock_code: 6자리 종목코드
+    - 반환값: 매핑된 종목명 (없으면 None)
+    """
+    # 종목코드 → 종목명 매핑 테이블
+    code_to_name = {
+        "005930": "SAMSUNG",  # 삼성전자
+        "000660": "SKHYNIX",  # SK하이닉스
+        "035420": "NAVER",  # 네이버
+        "373220": "LG",  # LG전자
+        "005380": "HYUNDAI",  # 현대자동차
+        "000270": "KIA",  # 기아
+        "005490": "POSCO",  # 포스코홀딩스
+        "035720": "KAKAO",  # 카카오
+        "068270": "CELLTRION",  # 셀트리온
+        "012450": "HANWHA_AERO",  # 한화에어로스페이스
+        "009150": "SAMSUNG_ELEC",  # 삼성전기
+        "051910": "LG_CHEM",  # LG화학
+        "028260": "SAMSUNG_BIO",  # 삼성바이오로직스
+        "207940": "SAMSUNG_SDI",  # 삼성SDI
+        "000810": "SAMSUNG_FIRE",  # 삼성화재
+        "018260": "SAMSUNG_SDS",  # 삼성SDS
+        "105560": "KB_FINANCIAL",  # KB금융지주
+        "055550": "SHINHAN",  # 신한지주
+        "086790": "HANA_FINANCIAL",  # 하나금융지주
+        "316140": "WOORI_FINANCIAL",  # 우리금융지주
+        "036570": "NCSOFT",  # 엔씨소프트
+        "251270": "NETMARBLE",  # 넷마블
+        "005870": "HUNEED",  # 휴니드
+        "003670": "POSCO_CHEM",  # 포스코케미칼
+        "034730": "SK",  # SK
+        "017670": "SK_TELECOM",  # SK텔레콤
+        "096770": "SK_INNOVATION",  # SK이노베이션
+        "011200": "HMM",  # HMM
+        "042660": "DAEWOO_SHIPBUILDING",  # 대우조선해양
+        "009540": "HD_KOREA_SHIPBUILDING",  # HD한국조선해양
+    }
+
+    return code_to_name.get(stock_code)
+
+
+def extract_company_name_from_response(ai_response):
+    """
+    AI 에이전트의 서칭 결과에서 회사명을 직접 추출하는 함수예요
+    - ai_response: AI가 생성한 분석 결과 텍스트
+    - 반환값: 추출된 회사명 (없으면 None)
+    """
+    import re
+
+    if not ai_response or not ai_response.strip():
+        return None
+
+    # 1. 괄호 안의 종목코드와 함께 나타나는 회사명 찾기
+    # 예: "휴니드(A005870)", "삼성전자(005930)" 등
+    pattern1 = r"([가-힣A-Za-z0-9]+)\s*\([A]?(\d{6})\)"
+    matches1 = re.findall(pattern1, ai_response)
+    if matches1:
+        company_name = matches1[0][0].strip()
+        logger.info(f"AI 응답에서 회사명 추출 (패턴1): {company_name}")
+        return company_name
+
+    # 2. "회사명 is a company" 패턴
+    pattern2 = r"([가-힣A-Za-z0-9]+)\s+\((\d{6})\)\s+is\s+a\s+company"
+    matches2 = re.findall(pattern2, ai_response)
+    if matches2:
+        company_name = matches2[0][0].strip()
+        logger.info(f"AI 응답에서 회사명 추출 (패턴2): {company_name}")
+        return company_name
+
+    # 3. URL이나 제목에서 회사명 추출
+    # 예: "휴니드(A005870) | Snapshot | 기업정보"
+    pattern3 = r"([가-힣A-Za-z0-9]+)\([A]?(\d{6})\)\s*\|"
+    matches3 = re.findall(pattern3, ai_response)
+    if matches3:
+        company_name = matches3[0][0].strip()
+        logger.info(f"AI 응답에서 회사명 추출 (패턴3): {company_name}")
+        return company_name
+
+    # 4. 기본적인 한글/영문 회사명 패턴 (길이 제한)
+    pattern4 = r"\b([가-힣]{2,10})\b"
+    korean_matches = re.findall(pattern4, ai_response)
+    for match in korean_matches:
+        # 일반적인 단어들 제외
+        exclude_words = [
+            "분석",
+            "종목",
+            "기업",
+            "정보",
+            "결과",
+            "전망",
+            "투자",
+            "주식",
+            "시장",
+            "수익률",
+            "거래량",
+            "매출",
+            "영업이익",
+        ]
+        if match not in exclude_words and len(match) >= 2:
+            logger.info(f"AI 응답에서 한글 회사명 추출 (패턴4): {match}")
+            return match
+
+    return None
+
+
+def extract_company_name_from_prompt(prompt):
+    """
+    사용자 프롬프트에서 회사명을 직접 추출하는 함수예요
     - prompt: 사용자가 입력한 질문
-    - ai_response: AI가 생성한 분석 결과
-    - 반환값: (종목명, 종목코드) 튜플 (없으면 (None, None))
+    - 반환값: 추출된 회사명 (없으면 None)
     """
-    # 프롬프트에서 종목명 후보 추출
-    prompt_candidates = extract_stock_candidates_from_text(prompt)
+    import re
 
-    # AI 응답에서 종목명 후보 추출
-    response_candidates = extract_stock_candidates_from_text(ai_response)
+    if not prompt or not prompt.strip():
+        return None
 
-    # 종목코드 추출
-    prompt_code = extract_stock_code_from_text(prompt)
-    response_code = extract_stock_code_from_text(ai_response)
+    # 1. "~에 대해서", "~에 대한", "~ 분석" 패턴
+    pattern1 = r"([가-힣A-Za-z0-9]+)(?:\s*(?:에\s*대해서?|에\s*대한|을?를?\s*분석|의?\s*분석|주식|종목))"
+    matches1 = re.findall(pattern1, prompt)
+    if matches1:
+        company_name = matches1[0].strip()
+        logger.info(f"프롬프트에서 회사명 추출 (패턴1): {company_name}")
+        return company_name
 
-    logger.info(f"프롬프트에서 추출된 종목명 후보: {prompt_candidates}")
-    logger.info(f"AI 응답에서 추출된 종목명 후보: {response_candidates}")
-    logger.info(f"프롬프트에서 추출된 종목코드: {prompt_code}")
-    logger.info(f"AI 응답에서 추출된 종목코드: {response_code}")
+    # 2. 종목코드와 함께 나오는 패턴
+    pattern2 = r"([가-힣A-Za-z0-9]+)\s*\(?(\d{6})\)?"
+    matches2 = re.findall(pattern2, prompt)
+    if matches2:
+        company_name = matches2[0][0].strip()
+        logger.info(f"프롬프트에서 회사명 추출 (패턴2): {company_name}")
+        return company_name
 
-    # 종목명 매핑 테이블
-    stock_mapping = {
-        "한화에어로스페이스": "HANWHA_AERO",
-        "한화시스템": "HANWHA_SYS",
-        "한화솔루션": "HANWHA_SOL",
-        "한화": "HANWHA",
+    # 3. 단순한 회사명 (2글자 이상)
+    pattern3 = r"\b([가-힣A-Za-z]{2,15})\b"
+    matches3 = re.findall(pattern3, prompt)
+    for match in matches3:
+        exclude_words = [
+            "분석",
+            "종목",
+            "기업",
+            "정보",
+            "결과",
+            "전망",
+            "투자",
+            "주식",
+            "시장",
+            "해줘",
+            "알려줘",
+            "대해",
+            "어떻게",
+        ]
+        if match not in exclude_words and len(match) >= 2:
+            logger.info(f"프롬프트에서 회사명 추출 (패턴3): {match}")
+            return match
+
+    return None
+
+
+def convert_korean_to_english_ticker(korean_name):
+    """
+    한글 회사명을 영문 티커로 변환하는 함수예요 (기본적인 변환만)
+    - korean_name: 한글 회사명
+    - 반환값: 영문 티커 (변환 불가시 원본을 대문자로)
+    """
+    if not korean_name:
+        return "UNKNOWN"
+
+    # 기본적인 변환 테이블 (자주 사용되는 몇 개만)
+    basic_conversions = {
         "삼성전자": "SAMSUNG",
         "삼성": "SAMSUNG",
         "SK하이닉스": "SKHYNIX",
@@ -326,110 +469,312 @@ def cross_verify_stock_name(prompt, ai_response):
         "네이버": "NAVER",
         "카카오": "KAKAO",
         "셀트리온": "CELLTRION",
-        "두산": "DOOSAN",
-        "롯데": "LOTTE",
-        "신세계": "SHINSEGAE",
-        "이마트": "EMART",
-        "CJ": "CJ",
-        "KB금융": "KBFG",
-        "KB": "KB",
-        "국민은행": "KOOKMIN",
-        "신한금융": "SHINHAN",
-        "신한": "SHINHAN",
-        "하나금융": "HANAFN",
-        "하나은행": "HANA",
-        "우리금융": "WOORI",
-        "우리은행": "WOORI",
-        "아모레퍼시픽": "AMOREPACIFIC",
+        "한화에어로스페이스": "HANWHA_AERO",
+        "한화": "HANWHA",
+        "휴니드": "HUNEED",
     }
 
-    # 최종 종목코드 결정 (AI 응답 우선)
+    # 기본 변환 테이블에 있으면 반환
+    if korean_name in basic_conversions:
+        return basic_conversions[korean_name]
+
+    # 없으면 한글 그대로 반환하거나 대문자로 변환
+    if korean_name.isalpha() and all(ord(char) < 128 for char in korean_name):
+        # 이미 영문이면 대문자로
+        return korean_name.upper()
+    else:
+        # 한글이면 그대로 반환
+        return korean_name
+
+
+def find_most_frequent_stock_name(ai_response):
+    """
+    AI 에이전트 서칭 결과에서 가장 빈번하게 등장하는 종목명을 찾는 함수예요
+    - ai_response: AI가 생성한 분석 결과 텍스트
+    - 반환값: (가장 빈번한 종목명, 출현횟수) 튜플
+    """
+    import re
+    from collections import Counter
+
+    if not ai_response or not ai_response.strip():
+        return None, 0
+
+    # 종목명 후보들을 찾을 패턴들
+    candidates = []
+
+    # 1. 한글 회사명 (2-10글자)
+    korean_pattern = r"\b([가-힣]{2,10})\b"
+    korean_matches = re.findall(korean_pattern, ai_response)
+    candidates.extend(korean_matches)
+
+    # 2. 영문 회사명 (2-15글자, 대문자)
+    english_pattern = r"\b([A-Z][A-Z0-9]{1,14})\b"
+    english_matches = re.findall(english_pattern, ai_response)
+    candidates.extend(english_matches)
+
+    # 3. 괄호와 함께 나오는 회사명 (가장 정확함)
+    bracket_pattern = r"([가-힣A-Za-z0-9]+)\s*\([A]?\d{6}\)"
+    bracket_matches = re.findall(bracket_pattern, ai_response)
+    # 괄호 패턴은 가중치를 더 줘요 (더 정확하므로)
+    candidates.extend(bracket_matches * 3)
+
+    # 일반적인 단어들 제외
+    exclude_words = {
+        "분석",
+        "종목",
+        "기업",
+        "정보",
+        "결과",
+        "전망",
+        "투자",
+        "주식",
+        "시장",
+        "수익률",
+        "거래량",
+        "매출",
+        "영업이익",
+        "당기순이익",
+        "지배주주",
+        "외국인",
+        "보유비중",
+        "시가총액",
+        "배당수익률",
+        "상대수익률",
+        "거래",
+        "전일",
+        "대비",
+        "코스피",
+        "전기",
+        "전자",
+        "통신장비",
+        "기준",
+        "결산",
+        "연간",
+        "구성종목",
+        "KOSPI",
+        "PER",
+        "PBR",
+        "EPS",
+        "BPS",
+        "DPS",
+        "Price",
+        "Earning",
+        "Ratio",
+        "Book",
+        "value",
+        "Company",
+        "Guide",
+        "Snapshot",
+        "Main",
+        "ASP",
+        "SVD",
+        "URL",
+        "Description",
+        "Content",
+        "http",
+        "www",
+        "com",
+        "HOME",
+        "PAGE",
+        "Step",
+        "Observed",
+        "output",
+        "cmd",
+        "browser",
+        "use",
+        "executed",
+        "Search",
+        "results",
+        "for",
+        "Total",
+        "Language",
+        "Country",
+        "Extracted",
+        "from",
+        "page",
+        "text",
+        "company",
+        "listed",
+        "under",
+        "sector",
+        "fiscal",
+        "year",
+        "ending",
+        "website",
+        "contacted",
+        "address",
+        "Key",
+        "financial",
+        "metrics",
+        "include",
+        "based",
+        "most",
+        "recent",
+        "Industry",
+        "Stock",
+        "performance",
+        "indicators",
+        "Current",
+        "stock",
+        "price",
+        "Foreign",
+        "ownership",
+        "percentage",
+        "Relative",
+        "return",
+        "over",
+        "past",
+        "summary",
+        "these",
+        "provide",
+        "snapshot",
+        "health",
+        "market",
+        "need",
+        "further",
+        "specific",
+        "details",
+        "know",
+        "interaction",
+        "has",
+        "been",
+        "completed",
+        "with",
+        "status",
+        "success",
+    }
+
+    # 필터링된 후보들만 선택
+    filtered_candidates = []
+    for candidate in candidates:
+        if (
+            candidate not in exclude_words
+            and len(candidate) >= 2
+            and len(candidate) <= 15
+            and not candidate.isdigit()
+        ):  # 숫자만인 것 제외
+            filtered_candidates.append(candidate)
+
+    if not filtered_candidates:
+        return None, 0
+
+    # 빈도수 계산
+    frequency_counter = Counter(filtered_candidates)
+    most_common = frequency_counter.most_common(1)[0]
+
+    logger.info(f"종목명 빈도수 분석 결과: {frequency_counter}")
+    logger.info(f"가장 빈번한 종목명: {most_common[0]} (출현횟수: {most_common[1]})")
+
+    return most_common[0], most_common[1]
+
+
+def convert_to_english_ticker(company_name):
+    """
+    회사명을 영문 티커로 변환하는 함수예요 (최소한의 변환만)
+    - company_name: 회사명 (한글 또는 영문)
+    - 반환값: 영문 티커
+    """
+    if not company_name:
+        return "UNKNOWN"
+
+    # 이미 영문이고 적절한 길이면 그대로 사용
+    if (
+        company_name.isalpha()
+        and all(ord(char) < 128 for char in company_name)
+        and len(company_name) <= 15
+    ):
+        return company_name.upper()
+
+    # 한글인 경우 간단한 변환만 (기본적인 몇 개만)
+    basic_conversions = {
+        "휴니드": "HUNEED",
+        "삼성전자": "SAMSUNG",
+        "삼성": "SAMSUNG",
+        "SK하이닉스": "SKHYNIX",
+        "LG전자": "LG",
+        "현대자동차": "HYUNDAI",
+        "현대차": "HYUNDAI",
+        "기아": "KIA",
+        "포스코": "POSCO",
+        "네이버": "NAVER",
+        "카카오": "KAKAO",
+        "셀트리온": "CELLTRION",
+        "한화에어로스페이스": "HANWHA_AERO",
+        "한화": "HANWHA",
+    }
+
+    if company_name in basic_conversions:
+        return basic_conversions[company_name]
+
+    # 변환 테이블에 없으면 한글 그대로 반환
+    return company_name
+
+
+def cross_verify_stock_name(prompt, ai_response):
+    """
+    AI 응답에서 가장 빈번한 종목명을 찾고, 프롬프트와 비교해서 검증하는 함수예요
+    - prompt: 사용자가 입력한 질문
+    - ai_response: AI가 생성한 분석 결과
+    - 반환값: (종목명, 종목코드) 튜플
+    """
+    # AI 응답에서 가장 빈번한 종목명 찾기
+    most_frequent_name, frequency = find_most_frequent_stock_name(ai_response)
+
+    # 종목코드 추출
+    response_code = extract_stock_code_from_text(ai_response)
+    prompt_code = extract_stock_code_from_text(prompt)
     final_code = response_code or prompt_code
 
-    # 1단계: 정확한 일치 확인 (프롬프트와 AI 응답 모두에서 발견된 종목명)
-    for p_candidate in prompt_candidates:
-        for r_candidate in response_candidates:
-            # 종목코드는 정확히 일치해야 함
-            if p_candidate.startswith("CODE") and p_candidate == r_candidate:
-                code_from_name = p_candidate.replace("CODE", "")
-                logger.info(f"교차 검증 성공 (종목코드): {p_candidate}")
-                return p_candidate, code_from_name
+    logger.info(
+        f"AI 응답에서 가장 빈번한 종목명: {most_frequent_name} (빈도: {frequency})"
+    )
+    logger.info(f"추출된 종목코드: {final_code}")
 
-            # 회사명은 유사성 검사
-            p_mapped = stock_mapping.get(p_candidate, p_candidate.upper())
-            r_mapped = stock_mapping.get(r_candidate, r_candidate.upper())
+    # 빈도수가 충분히 높으면 (2번 이상 나타나면) 신뢰할 만함
+    if most_frequent_name and frequency >= 2:
+        english_ticker = convert_to_english_ticker(most_frequent_name)
+        logger.info(
+            f"빈도수 기반 종목명 확정: {most_frequent_name} -> {english_ticker}"
+        )
+        return english_ticker, final_code
 
-            if p_mapped == r_mapped:
-                logger.info(
-                    f"교차 검증 성공 (회사명): {p_candidate} & {r_candidate} -> {p_mapped}"
-                )
-                return p_mapped, final_code
+    # 빈도수가 낮으면 프롬프트에서 찾아보기
+    if most_frequent_name and frequency == 1:
+        # 프롬프트에서도 같은 이름이 나오는지 확인
+        if most_frequent_name in prompt:
+            english_ticker = convert_to_english_ticker(most_frequent_name)
+            logger.info(
+                f"프롬프트 교차검증 성공: {most_frequent_name} -> {english_ticker}"
+            )
+            return english_ticker, final_code
 
-            # 부분 일치 검사 (한화에어로스페이스 vs 한화)
-            if (
-                (p_candidate in r_candidate or r_candidate in p_candidate)
-                and len(p_candidate) > 1
-                and len(r_candidate) > 1
-            ):
-                # 더 구체적인 이름을 선택
-                longer_name = (
-                    p_candidate if len(p_candidate) >= len(r_candidate) else r_candidate
-                )
-                mapped_name = stock_mapping.get(longer_name, longer_name.upper())
-                logger.info(
-                    f"교차 검증 성공 (부분 일치): {p_candidate} & {r_candidate} -> {mapped_name}"
-                )
-                return mapped_name, final_code
+    # 종목코드만 있는 경우
+    if final_code:
+        logger.info(f"종목코드만 발견: {final_code}")
+        return f"CODE{final_code}", final_code
 
-    # 2단계: AI 응답 우선 (AI가 실제로 분석한 내용이므로)
-    if response_candidates:
-        best_candidate = response_candidates[0]  # 첫 번째로 발견된 것
-        if best_candidate.startswith("CODE"):
-            code_from_name = best_candidate.replace("CODE", "")
-            logger.info(f"AI 응답 우선 선택 (종목코드): {best_candidate}")
-            return best_candidate, code_from_name
-        else:
-            mapped_name = stock_mapping.get(best_candidate, best_candidate.upper())
-            logger.info(f"AI 응답 우선 선택: {best_candidate} -> {mapped_name}")
-            return mapped_name, final_code
-
-    # 3단계: 프롬프트 우선 (마지막 fallback)
-    if prompt_candidates:
-        best_candidate = prompt_candidates[0]
-        if best_candidate.startswith("CODE"):
-            code_from_name = best_candidate.replace("CODE", "")
-            logger.info(f"프롬프트 우선 선택 (종목코드): {best_candidate}")
-            return best_candidate, code_from_name
-        else:
-            mapped_name = stock_mapping.get(best_candidate, best_candidate.upper())
-            logger.info(f"프롬프트 우선 선택: {best_candidate} -> {mapped_name}")
-            return mapped_name, final_code
-
-    return None, final_code
+    # 아무것도 찾지 못한 경우
+    return "GENERAL", None
 
 
 def extract_stock_name_from_ai_response(response_text, fallback_prompt=""):
     """
-    AI 에이전트가 실제로 분석한 결과에서 종목명과 종목코드를 추출하는 함수예요 (교차 검증 포함)
+    AI 에이전트가 실제로 분석한 결과에서 종목명과 종목코드를 추출하는 함수예요 (새로운 동적 방식)
     - response_text: AI가 생성한 분석 결과 텍스트
     - fallback_prompt: 응답에서 찾지 못할 경우 사용할 원본 프롬프트
     - 반환값: (종목명, 종목코드) 튜플
     """
-    # 교차 검증을 통한 종목명과 종목코드 추출 시도
+    # 새로운 교차 검증을 통한 종목명과 종목코드 추출 시도
     stock_name, stock_code = cross_verify_stock_name(fallback_prompt, response_text)
     if stock_name:
         logger.info(
-            f"교차 검증으로 최종 확정된 종목명: {stock_name}, 종목코드: {stock_code}"
+            f"동적 분석으로 최종 확정된 종목명: {stock_name}, 종목코드: {stock_code}"
         )
         return stock_name, stock_code
 
-    # 교차 검증 실패 시 기존 방식으로 fallback
-    logger.info("교차 검증 실패, 기존 방식으로 종목명 추출 시도")
-    fallback_name = extract_stock_name(fallback_prompt)
-    fallback_code = extract_stock_code_from_text(
-        response_text
-    ) or extract_stock_code_from_text(fallback_prompt)
-    return fallback_name, fallback_code
+    # 추출 실패 시 기본값 반환
+    logger.info("동적 분석 실패, 기본값 사용")
+    return "GENERAL", None
 
 
 def generate_json_filename(stock_name, stock_code=None, base_dir="results"):
