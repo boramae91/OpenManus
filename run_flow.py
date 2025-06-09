@@ -87,6 +87,17 @@ def extract_stock_name(prompt):
     if code_matches:
         return f"CODE{code_matches[0]}"
 
+    # 구체적인 회사명 패턴 매칭 (완전한 회사명만)
+    specific_company_patterns = [
+        r"([가-힣]{2,}(?:오션|로템|바이오로직스|바이오|전자|자동차|증권|화학|에너지|시스템|솔루션|머티리얼스|생명과학))",
+        r"([가-힣]{2,}(?:그룹|코퍼레이션|컴퍼니))",
+    ]
+
+    for pattern in specific_company_patterns:
+        matches = re.findall(pattern, prompt)
+        if matches:
+            return matches[0]
+
     # AI 분석이 실패했을 때만 사용하는 최소한의 fallback
     # 대부분의 경우 AI Flow가 정확하게 종목명을 추출할 것으로 예상
     return "GENERAL"
@@ -127,6 +138,165 @@ def extract_stock_code_from_text(text):
     return None
 
 
+def extract_stock_code_from_browser_results(ai_response):
+    """
+    🆕 획기적 해결책: AI Flow의 브라우저 검색 결과에서 직접 종목코드를 추출하는 함수예요
+    브라우저가 실제로 찾은 정보를 활용해서 종목코드를 정확히 추출합니다!
+    - ai_response: AI Flow가 생성한 전체 응답 (브라우저 검색 결과 포함)
+    - 반환값: 추출된 종목코드 (없으면 None)
+    """
+    if not ai_response or not ai_response.strip():
+        return None
+
+    logger.info("🌐 Flow 브라우저 검색 결과 패턴 분석 중...")
+
+    # 브라우저 검색 결과에서 종목코드 패턴들
+    browser_patterns = [
+        # Company Guide 패턴: "한화오션(A042660) | 업종분석"
+        r"([가-힣A-Za-z0-9\s&\-\.]+)\(A([0-9]{6})\)\s*\|\s*업종분석",
+        # 일반 괄호 패턴: "삼성전자(005930)"
+        r"([가-힣A-Za-z0-9\s&\-\.]+)\(A?([0-9]{6})\)",
+        # URL 패턴: "gicode=A042660"
+        r"gicode=A([0-9]{6})",
+        # 브라우저 출력 패턴: "한화오션 042660"
+        r"([가-힣A-Za-z0-9\s&\-\.]+)\s+([0-9]{6})",
+        # 직접 언급 패턴: "종목코드: 042660"
+        r"종목코드:\s*([0-9]{6})",
+        # Step 결과 패턴에서 추출
+        r"Step\s+\d+:.*?([0-9]{6})",
+    ]
+
+    found_codes = []
+
+    for pattern in browser_patterns:
+        matches = re.findall(pattern, ai_response, re.IGNORECASE | re.MULTILINE)
+        for match in matches:
+            if isinstance(match, tuple):
+                # 튜플인 경우 마지막 요소가 종목코드
+                code = match[-1]
+            else:
+                code = match
+
+            # 한국 종목코드 범위 확인
+            if code and len(code) == 6 and code.isdigit():
+                if code.startswith(("0", "1", "2", "3")):
+                    found_codes.append(code)
+                    logger.info(
+                        f"🎯 Flow 브라우저 결과에서 종목코드 발견: {code} (패턴: {pattern})"
+                    )
+
+    # 가장 자주 나타나는 종목코드 선택
+    if found_codes:
+        from collections import Counter
+
+        most_common_code = Counter(found_codes).most_common(1)[0][0]
+        logger.info(f"🏆 Flow 최종 선택된 종목코드: {most_common_code}")
+        return most_common_code
+
+    # 특별 케이스: 텍스트에서 회사명과 함께 나타나는 6자리 숫자 검색
+    # "한화오션 042660" 같은 패턴을 위한 추가 검색
+    text_lines = ai_response.split("\n")
+    for line in text_lines:
+        if any(
+            keyword in line
+            for keyword in ["Company Guide", "기업정보", "업종분석", "fnguide"]
+        ):
+            # 이 줄에서 6자리 숫자 찾기
+            numbers = re.findall(r"\b([0-9]{6})\b", line)
+            for num in numbers:
+                if num.startswith(("0", "1", "2", "3")):
+                    logger.info(f"🎯 Flow 특별 케이스에서 종목코드 발견: {num}")
+                    return num
+
+    logger.info("❌ Flow 브라우저 검색 결과에서 종목코드를 찾지 못했습니다.")
+    return None
+
+
+def extract_company_name_from_prompt(prompt):
+    """
+    사용자 프롬프트에서 회사명을 직접 추출하는 함수예요
+    - prompt: 사용자가 입력한 질문
+    - 반환값: 추출된 회사명 (없으면 None)
+    """
+    if not prompt or not prompt.strip():
+        return None
+
+    # 1. "~에 대해서", "~에 대한", "~ 분석" 패턴
+    pattern1 = r"([가-힣A-Za-z0-9]+)(?:\s*(?:에\s*대해서?|에\s*대한|을?를?\s*분석|의?\s*분석|주식|종목))"
+    matches1 = re.findall(pattern1, prompt)
+    if matches1:
+        company_name = matches1[0].strip()
+        logger.info(f"Flow 프롬프트에서 회사명 추출 (패턴1): {company_name}")
+        return company_name
+
+    # 2. 종목코드와 함께 나오는 패턴
+    pattern2 = r"([가-힣A-Za-z0-9]+)\s*\(?(\d{6})\)?"
+    matches2 = re.findall(pattern2, prompt)
+    if matches2:
+        company_name = matches2[0][0].strip()
+        logger.info(f"Flow 프롬프트에서 회사명 추출 (패턴2): {company_name}")
+        return company_name
+
+    # 3. 단순한 회사명 (2글자 이상)
+    pattern3 = r"\b([가-힣A-Za-z]{2,15})\b"
+    matches3 = re.findall(pattern3, prompt)
+    for match in matches3:
+        exclude_words = [
+            "분석",
+            "종목",
+            "기업",
+            "정보",
+            "결과",
+            "전망",
+            "투자",
+            "주식",
+            "시장",
+            "해줘",
+            "알려줘",
+            "대해",
+            "어떻게",
+        ]
+        if match not in exclude_words and len(match) >= 2:
+            logger.info(f"Flow 프롬프트에서 회사명 추출 (패턴3): {match}")
+            return match
+
+    return None
+
+
+def clean_filename_part(text):
+    """
+    파일명에 사용할 수 없는 문자들을 제거하는 함수예요
+    - text: 정리할 텍스트
+    - 반환값: 파일명에 안전한 텍스트
+    """
+    if not text:
+        return "UNKNOWN"
+
+    # 줄바꿈과 탭 문자 제거
+    cleaned = re.sub(r"\s*\n\s*", "", text)
+    cleaned = re.sub(r"\s*\t\s*", "", cleaned)
+
+    # 파일명에 사용할 수 없는 문자들 제거 (Windows 기준)
+    illegal_chars = r'[<>:"/\\|?*\n\r\t]'
+    cleaned = re.sub(illegal_chars, "", cleaned)
+
+    # 연속된 공백을 하나로 통합
+    cleaned = re.sub(r"\s+", " ", cleaned)
+
+    # 앞뒤 공백 제거
+    cleaned = cleaned.strip()
+
+    # 길이 제한 (파일명이 너무 길어지지 않도록)
+    if len(cleaned) > 30:
+        cleaned = cleaned[:30]
+
+    # 비어있으면 기본값 반환
+    if not cleaned:
+        return "UNKNOWN"
+
+    return cleaned
+
+
 def generate_json_filename(
     stock_name, stock_code=None, base_dir="results", file_type="flow"
 ):
@@ -142,10 +312,10 @@ def generate_json_filename(
     current_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     save_timestamp = current_timestamp  # 현재시간과 저장시간이 동일해요
 
-    # 종목코드 부분 결정
+    # 종목코드 부분 결정 및 정리
     if stock_code:
-        # 종목코드가 있으면 그대로 사용
-        code_part = stock_code
+        # 종목코드가 있으면 정리해서 사용
+        code_part = clean_filename_part(stock_code)
     else:
         # 종목코드가 없으면 종목명에서 추출하거나 UNKNOWN 사용
         code_part = convert_to_english_ticker(stock_name)
@@ -153,9 +323,10 @@ def generate_json_filename(
             code_part.isupper() and code_part.isalpha() and 2 <= len(code_part) <= 5
         ):
             code_part = "UNKNOWN"
+        code_part = clean_filename_part(code_part)
 
     # 종목명 부분 정리 (파일명에 적합하게)
-    clean_stock_name = stock_name if stock_name else "GENERAL"
+    clean_stock_name = clean_filename_part(stock_name) if stock_name else "GENERAL"
 
     # 파일명 생성 (사용자 요청 형식: JSON-종목코드-종목명-현재시간-save현재시간.json)
     if file_type == "flow":
@@ -877,6 +1048,24 @@ async def run_flow():
             stock_name, stock_code = extract_stock_name_from_ai_response(
                 final_result, prompt
             )
+
+            # 🆕 획기적 해결책: 브라우저 검색 결과에서 직접 종목코드 추출
+            if not stock_code:
+                logger.info("🌐 Flow에서 브라우저 검색 결과에서 종목코드 추출 시도...")
+                browser_extracted_code = extract_stock_code_from_browser_results(
+                    final_result
+                )
+                if browser_extracted_code:
+                    logger.info(
+                        f"🎯 Flow 브라우저 검색 결과에서 종목코드 발견: {browser_extracted_code}"
+                    )
+                    stock_code = browser_extracted_code
+                    if stock_name == "GENERAL":
+                        # 프롬프트에서 종목명 추출
+                        stock_name = (
+                            extract_company_name_from_prompt(prompt) or "GENERAL"
+                        )
+
             logger.info(f"최종 추출된 종목명: {stock_name}, 종목코드: {stock_code}")
 
             # JSON 파일명 생성 (AI Flow 응답에서 추출한 종목명과 종목코드 사용)

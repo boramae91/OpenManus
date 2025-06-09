@@ -48,13 +48,32 @@ class DynamicStockExtractor:
         if not ai_response or not ai_response.strip():
             return self._create_empty_result(user_prompt)
 
-        # 패턴 1: "종목명: XXX" 찾기
-        name_pattern = r"종목명\s*[:：]\s*([가-힣A-Za-z0-9\s&\.]+)"
-        name_matches = re.findall(name_pattern, ai_response, re.IGNORECASE)
+        # 패턴 1: "종목명: XXX" 찾기 (다양한 형태 지원)
+        name_patterns = [
+            r"종목명\s*[:：]\s*([가-힣A-Za-z0-9\s&\-\.]{2,20})(?=\s*(?:\(|$|\n|,))",
+            r"회사명\s*[:：]\s*([가-힣A-Za-z0-9\s&\-\.]{2,20})(?=\s*(?:\(|$|\n|,))",
+            # JSON에서 발견된 패턴: "**종목명 및 종목코드**: 한화오션 (종목코드: 042660)"
+            r"\*\*종목명[^:]*\*\*:\s*([가-힣A-Za-z0-9\s&\-\.]{2,20})(?=\s*\()",
+            r"종목명\s*및\s*종목코드\**\s*[:：]\s*([가-힣A-Za-z0-9\s&\-\.]{2,20})(?=\s*\()",
+        ]
 
-        # 패턴 2: "종목코드: XXXXXX" 찾기
-        code_pattern = r"종목코드\s*[:：]\s*([A-Z]?[0-9]{2,6})"
-        code_matches = re.findall(code_pattern, ai_response, re.IGNORECASE)
+        name_matches = []
+        for pattern in name_patterns:
+            matches = re.findall(pattern, ai_response, re.IGNORECASE)
+            name_matches.extend(matches)
+
+        # 패턴 2: "종목코드: XXXXXX" 찾기 (다양한 형태 지원)
+        code_patterns = [
+            r"종목코드\s*[:：]\s*([A-Z]?[0-9]{2,6})(?=\s*(?:\n|$|[가-힣]*[:：]|\s*-\s*))",
+            r"코드\s*[:：]\s*([A-Z]?[0-9]{2,6})",
+            # JSON에서 발견된 패턴: "(종목코드: 042660)"
+            r"\(\s*종목코드\s*[:：]\s*([0-9]{6})\s*\)",
+        ]
+
+        code_matches = []
+        for pattern in code_patterns:
+            matches = re.findall(pattern, ai_response, re.IGNORECASE)
+            code_matches.extend(matches)
 
         # 이름과 코드 매칭
         if name_matches and code_matches:
