@@ -1,2 +1,0 @@
-Step 1: Observed output of cmd `terminate` executed:
-The interaction has been completed with status: success
