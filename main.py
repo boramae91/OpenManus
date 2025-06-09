@@ -80,108 +80,21 @@ class ResultCollector:
 
 def extract_stock_name(prompt):
     """
-    프롬프트에서 기본적인 종목명을 추출하는 간단한 fallback 함수예요
+    프롬프트에서 기본적인 종목명을 추출하는 간단한 fallback 함수예요 (AI 분석 실패시에만 사용)
     - prompt: 사용자가 입력한 질문
     - 반환값: 추출된 종목명 (없으면 "GENERAL" 반환)
     """
     if not prompt or not prompt.strip():
         return "GENERAL"
 
-    # 기본적인 주요 종목명들만 확인해요 (한국 + 해외 종목)
-    basic_stocks = {
-        # 한국 종목들
-        "삼성전자": "SAMSUNG",
-        "삼성": "SAMSUNG",
-        "SAMSUNG": "SAMSUNG",
-        "SK하이닉스": "SKHYNIX",
-        "SK": "SK",
-        "네이버": "NAVER",
-        "NAVER": "NAVER",
-        "LG전자": "LG",
-        "LG": "LG",
-        "현대자동차": "HYUNDAI",
-        "현대차": "HYUNDAI",
-        "HYUNDAI": "HYUNDAI",
-        "기아": "KIA",
-        "KIA": "KIA",
-        "포스코": "POSCO",
-        "POSCO": "POSCO",
-        "카카오": "KAKAO",
-        "KAKAO": "KAKAO",
-        "셀트리온": "CELLTRION",
-        "CELLTRION": "CELLTRION",
-        "한화에어로스페이스": "HANWHA_AERO",
-        "한화": "HANWHA",
-        "HANWHA": "HANWHA",
-        "두산": "DOOSAN",
-        "DOOSAN": "DOOSAN",
-        "롯데": "LOTTE",
-        "LOTTE": "LOTTE",
-        "신세계": "SHINSEGAE",
-        "SHINSEGAE": "SHINSEGAE",
-        "이마트": "EMART",
-        "EMART": "EMART",
-        "CJ": "CJ",
-        "현대건설": "HYUNDAI_CONST",
-        "KB금융": "KBFG",
-        "KB": "KB",
-        "신한": "SHINHAN",
-        "하나금융": "HANAFN",
-        "우리금융": "WOORI",
-        "국민은행": "KOOKMIN",
-        "아모레퍼시픽": "AMOREPACIFIC",
-        "코스피": "KOSPI",
-        "KOSPI": "KOSPI",
-        "코스닥": "KOSDAQ",
-        "KOSDAQ": "KOSDAQ",
-        # 해외 종목들 (한글명 → 영문명 매핑)
-        "보잉": "BOEING",
-        "애플": "APPLE",
-        "마이크로소프트": "MICROSOFT",
-        "테슬라": "TESLA",
-        "구글": "GOOGLE",
-        "알파벳": "ALPHABET",
-        "아마존": "AMAZON",
-        "메타": "META",
-        "페이스북": "META",
-        "넷플릭스": "NETFLIX",
-        "엔비디아": "NVIDIA",
-        "인텔": "INTEL",
-        "AMD": "AMD",
-        "코카콜라": "COCACOLA",
-        "맥도날드": "MCDONALDS",
-        "월마트": "WALMART",
-        "존슨앤존슨": "JNJ",
-        "화이자": "PFIZER",
-        "BOEING": "BOEING",
-        "APPLE": "APPLE",
-        "MICROSOFT": "MICROSOFT",
-        "TESLA": "TESLA",
-        "GOOGLE": "GOOGLE",
-        "ALPHABET": "ALPHABET",
-        "AMAZON": "AMAZON",
-        "META": "META",
-        "FACEBOOK": "META",
-        "NETFLIX": "NETFLIX",
-        "NVIDIA": "NVIDIA",
-        "INTEL": "INTEL",
-        "COCACOLA": "COCACOLA",
-        "MCDONALDS": "MCDONALDS",
-        "WALMART": "WALMART",
-        "PFIZER": "PFE",
-    }
-
-    prompt_upper = prompt.upper()
-    for stock, ticker in basic_stocks.items():
-        if stock.upper() in prompt_upper:
-            return ticker
-
-    # 6자리 종목코드 확인 (한국 종목만)
+    # 6자리 종목코드만 확인 (가장 정확한 정보)
     code_pattern = r"(\d{6})"
     code_matches = re.findall(code_pattern, prompt)
     if code_matches:
         return f"CODE{code_matches[0]}"
 
+    # AI 분석이 실패했을 때만 사용하는 최소한의 fallback
+    # 대부분의 경우 AI 에이전트가 정확하게 종목명을 추출할 것으로 예상
     return "GENERAL"
 
 
@@ -222,7 +135,7 @@ def extract_stock_code_from_text(text):
 
 def extract_stock_candidates_from_text(text):
     """
-    텍스트에서 종목명 후보들을 추출하는 헬퍼 함수예요
+    텍스트에서 종목명 후보들을 추출하는 헬퍼 함수예요 (AI 분석을 보완하는 용도)
     - text: 분석할 텍스트 (프롬프트 또는 AI 응답)
     - 반환값: 발견된 종목명 후보들의 리스트
     """
@@ -231,53 +144,39 @@ def extract_stock_candidates_from_text(text):
     if not text or not text.strip():
         return candidates
 
-    # 1. 6자리 종목코드 찾기
+    # 1. 6자리 종목코드 찾기 (가장 정확한 정보)
     code_pattern = r"(\d{6})"
     code_matches = re.findall(code_pattern, text)
     for code in code_matches:
         candidates.append(f"CODE{code}")
 
-    # 2. 주요 종목명 찾기 (단어 경계 고려)
-    major_stocks = [
-        "한화에어로스페이스",
-        "한화시스템",
-        "한화솔루션",
-        "한화",
-        "삼성전자",
-        "삼성",
-        "SK하이닉스",
-        "SK",
-        "LG전자",
-        "LG",
-        "현대자동차",
-        "현대차",
-        "현대",
-        "기아",
-        "포스코",
-        "네이버",
-        "카카오",
-        "셀트리온",
-        "두산",
-        "롯데",
-        "신세계",
-        "이마트",
-        "CJ",
-        "KB금융",
-        "KB",
-        "국민은행",
-        "신한금융",
-        "신한",
-        "하나금융",
-        "하나은행",
-        "우리금융",
-        "우리은행",
-        "아모레퍼시픽",
-    ]
-
-    for stock in major_stocks:
-        pattern = rf"\b{re.escape(stock)}\b"
-        if re.search(pattern, text, re.IGNORECASE):
-            candidates.append(stock)
+    # 2. 한글 회사명 패턴 찾기 (AI가 추출하지 못한 경우를 위한 보완)
+    korean_pattern = r"\b([가-힣]{2,10})\b"
+    korean_matches = re.findall(korean_pattern, text)
+    for match in korean_matches:
+        # 일반적인 단어들 제외
+        exclude_words = {
+            "분석",
+            "종목",
+            "기업",
+            "정보",
+            "결과",
+            "전망",
+            "투자",
+            "주식",
+            "시장",
+            "수익률",
+            "거래량",
+            "매출",
+            "영업이익",
+            "코스피",
+            "코스닥",
+            "거래",
+            "전일",
+            "대비",
+        }
+        if match not in exclude_words and len(match) >= 2:
+            candidates.append(match)
 
     # 3. 구체적 패턴으로 회사명 찾기
     specific_patterns = [
@@ -311,45 +210,17 @@ def extract_stock_candidates_from_text(text):
 
 def get_stock_name_from_code(stock_code):
     """
-    종목코드로 실제 종목명을 찾는 함수예요
+    종목코드로 실제 종목명을 찾는 함수예요 (AI 분석 실패시 fallback 용도)
     - stock_code: 6자리 종목코드
-    - 반환값: 매핑된 종목명 (없으면 None)
+    - 반환값: 매핑된 종목명 (없으면 None, AI가 대부분 처리할 것으로 예상)
     """
-    # 종목코드 → 종목명 매핑 테이블
-    code_to_name = {
-        "005930": "SAMSUNG",  # 삼성전자
-        "000660": "SKHYNIX",  # SK하이닉스
-        "035420": "NAVER",  # 네이버
-        "373220": "LG",  # LG전자
-        "005380": "HYUNDAI",  # 현대자동차
-        "000270": "KIA",  # 기아
-        "005490": "POSCO",  # 포스코홀딩스
-        "035720": "KAKAO",  # 카카오
-        "068270": "CELLTRION",  # 셀트리온
-        "012450": "HANWHA_AERO",  # 한화에어로스페이스
-        "009150": "SAMSUNG_ELEC",  # 삼성전기
-        "051910": "LG_CHEM",  # LG화학
-        "028260": "SAMSUNG_BIO",  # 삼성바이오로직스
-        "207940": "SAMSUNG_SDI",  # 삼성SDI
-        "000810": "SAMSUNG_FIRE",  # 삼성화재
-        "018260": "SAMSUNG_SDS",  # 삼성SDS
-        "105560": "KB_FINANCIAL",  # KB금융지주
-        "055550": "SHINHAN",  # 신한지주
-        "086790": "HANA_FINANCIAL",  # 하나금융지주
-        "316140": "WOORI_FINANCIAL",  # 우리금융지주
-        "036570": "NCSOFT",  # 엔씨소프트
-        "251270": "NETMARBLE",  # 넷마블
-        "005870": "HUNEED",  # 휴니드
-        "003670": "POSCO_CHEM",  # 포스코케미칼
-        "034730": "SK",  # SK
-        "017670": "SK_TELECOM",  # SK텔레콤
-        "096770": "SK_INNOVATION",  # SK이노베이션
-        "011200": "HMM",  # HMM
-        "042660": "DAEWOO_SHIPBUILDING",  # 대우조선해양
-        "009540": "HD_KOREA_SHIPBUILDING",  # HD한국조선해양
-    }
+    # AI 분석이 실패했을 때만 사용하는 최소한의 매핑
+    # 대부분의 경우 AI 에이전트가 정확하게 종목명을 추출할 것으로 예상
+    if not stock_code:
+        return None
 
-    return code_to_name.get(stock_code)
+    # 종목코드 그대로 반환하여 AI가 처리하도록 함
+    return f"CODE{stock_code}"
 
 
 def extract_company_name_from_response(ai_response):
@@ -890,9 +761,9 @@ def find_most_frequent_stock_name(ai_response):
 
 def convert_to_english_ticker(company_name):
     """
-    회사명을 티커로 변환하는 함수예요 (한국 + 해외 종목 지원)
+    회사명을 티커로 변환하는 함수예요 (AI 분석 결과를 우선 사용, fallback 용도로만 활용)
     - company_name: 회사명 (한글, 영문, 또는 티커)
-    - 반환값: 한글 종목명 또는 영문 티커
+    - 반환값: 원본 회사명 (AI가 이미 정확하게 추출했을 것으로 가정)
     """
     if not company_name:
         return "UNKNOWN"
@@ -929,86 +800,8 @@ def convert_to_english_ticker(company_name):
     for suffix in legal_suffixes:
         company_clean = re.sub(rf"\s+{suffix}$", "", company_clean, flags=re.IGNORECASE)
 
-    # 종목 변환 테이블 (한국 + 해외)
-    basic_conversions = {
-        # 한국 종목들 - 한글명 유지
-        "휴니드": "휴니드",
-        "삼성전자": "삼성전자",
-        "삼성바이오로직스": "삼성바이오로직스",
-        "삼성SDI": "삼성SDI",
-        "삼성화재": "삼성화재",
-        "삼성물산": "삼성물산",
-        "삼성": "삼성전자",
-        "SK하이닉스": "SK하이닉스",
-        "SK텔레콤": "SK텔레콤",
-        "SK이노베이션": "SK이노베이션",
-        "SK": "SK하이닉스",
-        "LG전자": "LG전자",
-        "LG화학": "LG화학",
-        "LG에너지솔루션": "LG에너지솔루션",
-        "LG": "LG전자",
-        "현대자동차": "현대자동차",
-        "현대모비스": "현대모비스",
-        "현대차": "현대차",
-        "현대": "현대자동차",
-        "기아": "기아",
-        "포스코": "포스코",
-        "포스코홀딩스": "포스코홀딩스",
-        "네이버": "네이버",
-        "카카오": "카카오",
-        "카카오뱅크": "카카오뱅크",
-        "셀트리온": "셀트리온",
-        "셀트리온헬스케어": "셀트리온헬스케어",
-        "한화에어로스페이스": "한화에어로스페이스",
-        "한화시스템": "한화시스템",
-        "한화솔루션": "한화솔루션",
-        "한화": "한화",
-        "메리츠증권": "메리츠증권",
-        "삼성증권": "삼성증권",
-        # 해외 종목들 - 한글명을 실제 티커로 매핑
-        "보잉": "BA",  # Boeing Company
-        "애플": "AAPL",  # Apple Inc
-        "마이크로소프트": "MSFT",  # Microsoft Corporation
-        "테슬라": "TSLA",  # Tesla Inc
-        "구글": "GOOGL",  # Alphabet Inc (Google)
-        "알파벳": "GOOGL",  # Alphabet Inc
-        "아마존": "AMZN",  # Amazon.com Inc
-        "메타": "META",  # Meta Platforms Inc
-        "페이스북": "META",  # Meta (구 Facebook)
-        "넷플릭스": "NFLX",  # Netflix Inc
-        "엔비디아": "NVDA",  # NVIDIA Corporation
-        "인텔": "INTC",  # Intel Corporation
-        "코카콜라": "KO",  # The Coca-Cola Company
-        "맥도날드": "MCD",  # McDonald's Corporation
-        "월마트": "WMT",  # Walmart Inc
-        "존슨앤존슨": "JNJ",  # Johnson & Johnson
-        "화이자": "PFE",  # Pfizer Inc
-        # 영문명도 매핑
-        "BOEING": "BA",
-        "APPLE": "AAPL",
-        "MICROSOFT": "MSFT",
-        "TESLA": "TSLA",
-        "GOOGLE": "GOOGL",
-        "ALPHABET": "GOOGL",
-        "AMAZON": "AMZN",
-        "META": "META",
-        "FACEBOOK": "META",
-        "NETFLIX": "NFLX",
-        "NVIDIA": "NVDA",
-        "INTEL": "INTC",
-        "COCACOLA": "KO",
-        "MCDONALDS": "MCD",
-        "WALMART": "WMT",
-        "PFIZER": "PFE",
-    }
-
-    # 변환 테이블에서 찾기
-    if company_name in basic_conversions:
-        return basic_conversions[company_name]
-
-    # 정리된 이름에서 찾기
-    if company_clean in basic_conversions:
-        return basic_conversions[company_clean]
+    # AI 분석 결과를 최대한 활용하기 위해 하드코딩 매핑 최소화
+    # 대부분의 경우 AI 에이전트가 정확하게 종목명을 추출할 것으로 예상
 
     # 이미 영문이고 적절한 길이면 대문자로 변환
     if company_clean.replace(" ", "").isalpha() and all(
@@ -1021,7 +814,7 @@ def convert_to_english_ticker(company_name):
             ticker = ticker[:10]
         return ticker
 
-    # 변환할 수 없으면 원본 반환 (한글 등)
+    # 한글이거나 기타인 경우 원본 그대로 반환 (AI가 이미 정확하게 처리했을 것으로 가정)
     return company_name
 
 
@@ -1387,42 +1180,42 @@ async def main():
                 extract_stock_name_from_ai_response(response, prompt)
             )
 
-        # 최종 종목 정보 결정 (우선순위: StockClassifier → AI 응답 → 프롬프트)
-        if (
+        # 최종 종목 정보 결정 (우선순위: AI 에이전트 분석 결과 최우선)
+        if dynamic_stock_name and dynamic_stock_name != "GENERAL":
+            # 🥇 1순위: AI 응답에서 동적 추출 (최우선 - 가장 정확)
+            final_stock_name = dynamic_stock_name
+            final_stock_code = dynamic_stock_code
+            extraction_method = "🎯 AI 에이전트 동적 분석"
+            logger.info(
+                f"🎯 AI 에이전트 분석 성공: {final_stock_name} ({final_stock_code})"
+            )
+        elif (
             is_classification_request
             and "classifier_stock_info" in locals()
             and classifier_stock_info
             and classifier_stock_info["found"]
         ):
-            # 🥇 1순위: StockClassifier에서 동적 추출한 정보
+            # 🥈 2순위: StockClassifier에서 동적 추출한 정보
             final_stock_name = classifier_stock_info["stock_name"]
             final_stock_code = classifier_stock_info["stock_code"]
-            extraction_method = "🎯 StockClassifier 동적 추출"
+            extraction_method = "📊 StockClassifier 동적 추출"
             logger.info(
-                f"🎯 StockClassifier에서 종목 정보 추출 성공: {final_stock_name} ({final_stock_code})"
-            )
-        elif dynamic_stock_name and dynamic_stock_name != "GENERAL":
-            # 🥈 2순위: AI 응답에서 동적 추출
-            final_stock_name = dynamic_stock_name
-            final_stock_code = dynamic_stock_code
-            extraction_method = "✨ AI 응답 동적 추출"
-            logger.info(
-                f"🎯 AI 응답에서 종목 정보 추출 성공: {final_stock_name} ({final_stock_code})"
+                f"📊 StockClassifier에서 종목 정보 추출 성공: {final_stock_name} ({final_stock_code})"
             )
         elif has_stock_detected:
-            # 🥉 3순위: 프롬프트 정적 매칭 (딕셔너리 기반)
+            # 🥉 3순위: 프롬프트 fallback (최소한의 백업)
             final_stock_name = detected_stock_name
             final_stock_code = detected_ticker
-            extraction_method = "📋 프롬프트 정적 매칭"
+            extraction_method = "📋 프롬프트 fallback"
             logger.info(
-                f"📋 프롬프트에서 종목 정보 사용: {final_stock_name} ({final_stock_code})"
+                f"📋 프롬프트 fallback 사용: {final_stock_name} ({final_stock_code})"
             )
         else:
             # ❌ 종목 정보 없음
             final_stock_name = "GENERAL"
             final_stock_code = None
             extraction_method = "❓ 종목 정보 없음"
-            logger.info("종목 정보를 찾지 못했습니다.")
+            logger.info("❌ AI 분석에서 종목 정보를 찾지 못했습니다.")
 
         # 최종 종목 정보 구성
         final_stock_info = {
