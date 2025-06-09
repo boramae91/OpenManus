@@ -408,6 +408,7 @@ def find_most_frequent_stock_name(ai_response):
         "LG전자",
         "LG화학",
         "LG에너지솔루션",
+        "현대로템",  # 현대로템 추가 (우선순위)
         "현대자동차",
         "현대모비스",
         "기아",
@@ -426,10 +427,15 @@ def find_most_frequent_stock_name(ai_response):
         "메리츠증권",
     ]
 
-    # 우선순위 종목들이 있는지 먼저 확인 (높은 가중치)
+    # 우선순위 종목들이 있는지 먼저 확인 (높은 가중치) - 정확한 매칭으로 개선
     for stock in priority_stocks:
-        if stock in ai_response:
-            count = ai_response.count(stock)
+        # 정확한 단어 경계를 사용하여 매치 (부분 매칭 방지)
+        import re
+
+        pattern = r"\b" + re.escape(stock) + r"\b"
+        matches = re.findall(pattern, ai_response)
+        if matches:
+            count = len(matches)
             candidates.extend([stock] * (count * 10))  # 높은 가중치
 
     # 1. 한글 회사명 패턴 - 한국 종목용 (더 정교한 패턴)
@@ -879,12 +885,8 @@ def extract_stock_name_from_ai_response(response_text, fallback_prompt=""):
     logger.info("🚀 AI 응답에서 동적 종목 정보 추출을 시작합니다...")
 
     # 1. 구조화된 정보 패턴 (가장 정확) - "종목명: XXX", "종목코드: XXXXXX"
-    structured_name_pattern = (
-        r"종목명\s*[:：]\s*([가-힣A-Za-z0-9\s&\-\.]{2,20})(?=\s*$|\s*\n|\s*-|\s*\*)"
-    )
-    structured_code_pattern = (
-        r"종목코드\s*[:：]\s*([A-Z]?[0-9A-Z]{2,6})(?=\s*$|\s*\n|\s*-|\s*\*)"
-    )
+    structured_name_pattern = r"종목명\s*[:：]\s*([가-힣A-Za-z0-9\s&\-\.]{2,20})"
+    structured_code_pattern = r"종목코드\s*[:：]\s*([A-Z]?[0-9A-Z]{2,6})"
 
     name_matches = re.findall(structured_name_pattern, response_text, re.IGNORECASE)
     code_matches = re.findall(structured_code_pattern, response_text, re.IGNORECASE)
@@ -1096,11 +1098,18 @@ async def main():
             # 🆕 StockClassifier에서 동적으로 종목 정보 추출
             classifier_stock_info = None
             if classification_result.get("full_analysis"):
+                logger.info(
+                    f"🔍 StockClassifier 분석 내용 길이: {len(classification_result['full_analysis'])}"
+                )
+                logger.info(
+                    f"🔍 StockClassifier 분석 일부: {classification_result['full_analysis'][:500]}..."
+                )
                 classifier_stock_info = (
                     stock_classifier.extract_stock_info_from_analysis(
                         classification_result["full_analysis"]
                     )
                 )
+                logger.info(f"🔍 StockClassifier 추출 결과: {classifier_stock_info}")
                 if classifier_stock_info["found"]:
                     logger.info(
                         f"🎯 StockClassifier에서 종목 정보 추출: {classifier_stock_info['stock_name']} ({classifier_stock_info['stock_code']})"
@@ -1162,7 +1171,10 @@ async def main():
         if DYNAMIC_EXTRACTOR_AVAILABLE:
             # 새로운 동적 추출기 사용
             dynamic_extractor = DynamicStockExtractor()
+            logger.info(f"🔍 동적 추출기 디버깅 - AI 응답 길이: {len(response)}")
+            logger.info(f"🔍 AI 응답 일부: {response[:500]}...")
             dynamic_result = dynamic_extractor.extract_and_compare(response, prompt)
+            logger.info(f"🔍 동적 추출기 결과: {dynamic_result}")
 
             if dynamic_result["found"]:
                 dynamic_stock_name = dynamic_result["stock_name"]
@@ -1176,6 +1188,7 @@ async def main():
                 logger.info("동적 추출기에서 종목 정보를 찾지 못했습니다.")
         else:
             # 기존 함수 사용 (fallback)
+            logger.info("🔍 동적 추출기 사용 불가, 기존 함수 사용")
             dynamic_stock_name, dynamic_stock_code = (
                 extract_stock_name_from_ai_response(response, prompt)
             )

@@ -274,6 +274,48 @@ def find_most_frequent_stock_name(ai_response):
     # 종목명 후보들을 찾을 패턴들
     candidates = []
 
+    # 0. 우선순위 높은 정확한 한국 종목명들 (정확한 매칭)
+    priority_stocks = [
+        "삼성바이오로직스",
+        "삼성전자",
+        "삼성SDI",
+        "삼성화재",
+        "삼성물산",
+        "삼성증권",
+        "SK하이닉스",
+        "SK텔레콤",
+        "SK이노베이션",
+        "LG전자",
+        "LG화학",
+        "LG에너지솔루션",
+        "현대로템",  # 현대로템 추가 (우선순위)
+        "현대자동차",
+        "현대모비스",
+        "기아",
+        "포스코",
+        "포스코홀딩스",
+        "네이버",
+        "카카오",
+        "카카오뱅크",
+        "셀트리온",
+        "셀트리온헬스케어",
+        "한화에어로스페이스",
+        "한화시스템",
+        "한화솔루션",
+        "휴니드",
+        "한컴라이프케어",
+        "메리츠증권",
+    ]
+
+    # 우선순위 종목들이 있는지 먼저 확인 (정확한 매칭으로 개선)
+    for stock in priority_stocks:
+        # 정확한 단어 경계를 사용하여 매치 (부분 매칭 방지)
+        pattern = r"\b" + re.escape(stock) + r"\b"
+        matches = re.findall(pattern, ai_response)
+        if matches:
+            count = len(matches)
+            candidates.extend([stock] * (count * 10))  # 높은 가중치
+
     # 1. 한글 회사명 (2-10글자) - 한국 종목용
     korean_pattern = r"\b([가-힣]{2,10})\b"
     korean_matches = re.findall(korean_pattern, ai_response)
