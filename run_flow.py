@@ -11,14 +11,6 @@ from app.flow.flow_factory import FlowFactory, FlowType
 from app.logger import logger
 
 
-def save_text_file(content, filename):
-    # 텍스트 파일로 저장
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write(content)
-
-    logger.info(f"Flow result saved to {filename}")
-
-
 def save_json_file(
     content,
     filename,
@@ -1036,10 +1028,6 @@ async def run_flow():
             )
             logger.info(f"최종 추출된 종목명: {stock_name}, 종목코드: {stock_code}")
 
-            # 현재 시간으로 파일명 생성 (기존 TXT 파일용)
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            txt_filename = os.path.join(results_dir, f"flow_analysis_{timestamp}.txt")
-
             # JSON 파일명 생성 (AI Flow 응답에서 추출한 종목명과 종목코드 사용)
             json_filename = generate_json_filename(
                 stock_name, stock_code, results_dir, "flow"
@@ -1068,8 +1056,7 @@ async def run_flow():
                     "source": "ai_flow_response",
                 }
 
-            # 텍스트 파일과 JSON 파일 모두 생성해요
-            save_text_file(final_result, txt_filename)
+            # JSON 파일 생성해요
             save_json_file(
                 final_result,
                 json_filename,
@@ -1078,12 +1065,11 @@ async def run_flow():
                 "PLANNING",
                 classification_data_for_json,  # 분류 결과 포함
                 stock_info_for_json,  # 종목 정보 포함
-            )  # JSON 파일도 생성해요 (분류 정보 포함!)
+            )  # JSON 파일 생성해요 (분류 정보 포함!)
 
             # 결과 파일 위치 출력
             print(f"\nResults saved to:")
-            print(f" - TXT: {txt_filename}")
-            print(f" - JSON: {json_filename}")  # JSON 파일 경로도 알려줘요
+            print(f" - JSON: {json_filename}")  # JSON 파일 경로 알려줘요
 
         except asyncio.TimeoutError:
             logger.error("Request processing timed out after 1 hour")
@@ -1104,21 +1090,15 @@ async def run_flow():
             # 타임아웃의 경우 프롬프트에서 종목명과 종목코드 추출
             stock_name, stock_code = extract_stock_name_from_ai_response(prompt)
 
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            txt_filename = os.path.join(
-                results_dir, f"flow_analysis_timeout_{timestamp}.txt"
-            )
             json_filename = generate_json_filename(
                 stock_name, stock_code, results_dir, "timeout"
             )
 
-            save_text_file(timeout_message, txt_filename)
             save_json_file(
                 timeout_message, json_filename, prompt, 3600, "PLANNING", None, None
             )  # 타임아웃도 JSON으로 저장
 
             print(f"\nTimeout results saved to:")
-            print(f" - TXT: {txt_filename}")
             print(f" - JSON: {json_filename}")
 
     except KeyboardInterrupt:
@@ -1138,10 +1118,6 @@ async def run_flow():
             prompt if "prompt" in locals() else ""
         )
 
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        txt_filename = os.path.join(
-            results_dir, f"flow_analysis_cancelled_{timestamp}.txt"
-        )
         json_filename = generate_json_filename(
             stock_name if "stock_name" in locals() else "GENERAL",
             stock_code if "stock_code" in locals() else None,
@@ -1149,7 +1125,6 @@ async def run_flow():
             "cancelled",
         )
 
-        save_text_file(cancel_message, txt_filename)
         save_json_file(
             cancel_message,
             json_filename,
@@ -1161,7 +1136,6 @@ async def run_flow():
         )
 
         print(f"\nCancellation results saved to:")
-        print(f" - TXT: {txt_filename}")
         print(f" - JSON: {json_filename}")
 
     except Exception as e:
@@ -1181,13 +1155,10 @@ async def run_flow():
             prompt if "prompt" in locals() else ""
         )
 
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        txt_filename = os.path.join(results_dir, f"flow_analysis_error_{timestamp}.txt")
         json_filename = generate_json_filename(
             stock_name, stock_code, results_dir, "error"
         )
 
-        save_text_file(error_message, txt_filename)
         save_json_file(
             error_message,
             json_filename,
@@ -1199,7 +1170,6 @@ async def run_flow():
         )
 
         print(f"\nError results saved to:")
-        print(f" - TXT: {txt_filename}")
         print(f" - JSON: {json_filename}")
 
 

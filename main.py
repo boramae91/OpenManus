@@ -5,8 +5,6 @@ import re  # 종목명 추출을 위한 정규표현식 모듈을 추가해요
 import sys
 from datetime import datetime
 
-from fpdf import FPDF
-
 from app.agent.manus import Manus
 from app.agent.stock_classifier import StockClassifier
 from app.agent.stock_name_extractor import StockNameExtractor
@@ -21,57 +19,6 @@ try:
 except ImportError as e:
     logger.warning(f"동적 종목 추출 에이전트 로드 실패: {e}")
     DYNAMIC_EXTRACTOR_AVAILABLE = False
-
-
-def create_pdf(content, filename):
-    # PDF 생성
-    pdf = FPDF()
-    pdf.add_page()
-
-    # 폰트 설정 (한글 폰트 대신 기본 폰트 사용)
-    pdf.set_font("Arial", "", 11)
-
-    # 마진 설정
-    pdf.set_margins(10, 10, 10)
-
-    # 제목 추가
-    pdf.set_font("Arial", "B", 16)
-    pdf.cell(0, 10, "OpenManus Analysis", 0, 1, "C")
-    pdf.ln(5)
-
-    # 날짜 추가
-    pdf.set_font("Arial", "", 10)
-    pdf.cell(
-        0,
-        10,
-        f'Generated on: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}',
-        0,
-        1,
-        "R",
-    )
-    pdf.ln(5)
-
-    # 내용 추가
-    pdf.set_font("Arial", "", 11)
-
-    # 내용을 라인별로 처리 (ASCII 문자만 처리)
-    for line in content.split("\n"):
-        # 비-ASCII 문자 필터링 (한글 등은 ?로 대체될 수 있음)
-        filtered_line = "".join(char if ord(char) < 128 else "?" for char in line)
-        pdf.multi_cell(0, 8, filtered_line)
-
-    # PDF 저장
-    pdf.output(filename)
-
-    logger.info(f"Analysis result saved to {filename}")
-
-
-def save_text_file(content, filename):
-    # 텍스트 파일로 저장
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write(content)
-
-    logger.info(f"Analysis result saved to {filename}")
 
 
 def save_json_file(
@@ -1522,9 +1469,6 @@ async def main():
                 final_result = response
 
         # 📁 파일명 생성 (최종 종목 정보 사용)
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        pdf_filename = os.path.join(results_dir, f"analysis_{timestamp}.pdf")
-        txt_filename = os.path.join(results_dir, f"analysis_{timestamp}.txt")
         json_filename = generate_json_filename(
             final_stock_name, final_stock_code, results_dir
         )
@@ -1551,9 +1495,7 @@ async def main():
         else:
             stock_info_for_json = None
 
-        # PDF, 텍스트, JSON 파일 모두 생성해요
-        create_pdf(final_result, pdf_filename)
-        save_text_file(final_result, txt_filename)
+        # JSON 파일 생성해요
         save_json_file(
             final_result,
             json_filename,
@@ -1561,13 +1503,11 @@ async def main():
             processing_time,
             classification_data_for_json,  # 분류 결과 포함
             stock_info_for_json,  # 종목 정보 포함
-        )  # JSON 파일도 생성해요 (분류 정보 포함!)
+        )  # JSON 파일로 생성해요 (분류 정보 포함!)
 
         # 결과 파일 위치 출력
         print(f"\nResults saved to:")
-        print(f" - PDF: {pdf_filename}")
-        print(f" - TXT: {txt_filename}")
-        print(f" - JSON: {json_filename}")  # JSON 파일 경로도 알려줘요
+        print(f" - JSON: {json_filename}")  # JSON 파일 경로 알려줘요
 
         logger.info("Request processing completed.")
     except KeyboardInterrupt:
