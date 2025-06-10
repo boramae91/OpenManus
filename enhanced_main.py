@@ -32,9 +32,23 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 # 모듈 import
 from app.agent.manus import Manus
 from app.agent.stock_classifier import StockClassifier
+from app.agent.stock_name_extractor import StockNameExtractor
 from app.data_collector import FinancialDataCollector
+from app.data_collector.enhanced_financial_data_collector import (
+    EnhancedDartDataCollector,
+)
 from app.llm import LLM
 from app.logger import logger
+
+# 동적 종목 정보 추출을 위한 AI 에이전트 import
+try:
+    from app.agent.dynamic_stock_extractor import DynamicStockExtractor
+
+    DYNAMIC_EXTRACTOR_AVAILABLE = True
+    logger.info("🚀 동적 종목 추출 에이전트 로드 성공!")
+except ImportError as e:
+    logger.warning(f"동적 종목 추출 에이전트 로드 실패: {e}")
+    DYNAMIC_EXTRACTOR_AVAILABLE = False
 
 
 class EnhancedStockAnalysisSystem:
@@ -52,14 +66,34 @@ class EnhancedStockAnalysisSystem:
         self.stock_classifier = StockClassifier(llm=self.llm)
         self.manus_agent = Manus(llm=self.llm)
 
+        # 🤖 종목 감지용 AI 에이전트들 초기화
+        self.stock_name_extractor = StockNameExtractor()
+        if DYNAMIC_EXTRACTOR_AVAILABLE:
+            self.dynamic_stock_extractor = DynamicStockExtractor()
+            logger.info("🎯 동적 종목 추출 에이전트 초기화 완료")
+        else:
+            self.dynamic_stock_extractor = None
+            logger.warning("⚠️ 동적 종목 추출 에이전트 사용 불가")
+
         # 재무데이터 수집기 초기화 (DART API 키는 선택사항)
         dart_api_key = os.getenv("DART_API_KEY")  # 환경변수에서 가져오기
         self.financial_collector = FinancialDataCollector(dart_api_key=dart_api_key)
+
+        # 🚀 Enhanced DART API 수집기 초기화 (새로운 기능들)
+        self.enhanced_dart_collector = EnhancedDartDataCollector(
+            dart_api_key=dart_api_key
+        )
 
         # 결과 저장용
         self.analysis_results = {}
 
         logger.info("✅ 모든 컴포넌트 초기화 완료!")
+
+        # DART API 상태 로그
+        if dart_api_key:
+            logger.info("🔑 DART API 키가 설정되었습니다 - Enhanced 기능 사용 가능!")
+        else:
+            logger.warning("⚠️ DART API 키가 없습니다 - yfinance 데이터만 사용됩니다")
 
     async def run_enhanced_analysis(self, user_prompt: str) -> Dict[str, Any]:
         """
@@ -84,7 +118,7 @@ class EnhancedStockAnalysisSystem:
         try:
             # Step 1: 종목 및 종목코드 감지
             logger.info("📋 Step 1: 종목 및 종목코드 감지")
-            stock_info = self.extract_stock_info(user_prompt)
+            stock_info = await self.extract_stock_info(user_prompt)
             results["steps"]["step1_stock_detection"] = stock_info
 
             if not stock_info["detected"]:
@@ -96,32 +130,61 @@ class EnhancedStockAnalysisSystem:
                 f"✅ 감지된 종목: {stock_info['stock_name']} ({stock_info['stock_code']})"
             )
 
-            # Step 2: 재무데이터 수집
+            # Step 2: 재무데이터 수집 (기본 + Enhanced DART)
             logger.info("📊 Step 2: 실제 재무데이터 수집")
+
+            # 2-1: 기본 재무데이터 수집 (yfinance + 기본 DART)
             financial_data = self.financial_collector.collect_stock_data(
                 stock_code=stock_info["stock_code"], stock_name=stock_info["stock_name"]
             )
             results["steps"]["step2_financial_data"] = financial_data
 
             if not financial_data["success"]:
-                logger.warning("⚠️ 재무데이터 수집 실패 - 기존 방식으로 진행")
-                # 재무데이터 없이도 분석 계속 진행
+                logger.warning("⚠️ 기본 재무데이터 수집 실패 - 기존 방식으로 진행")
             else:
                 logger.info(
-                    f"✅ 재무데이터 수집 완료 (출처: {', '.join(financial_data['data_sources'])})"
+                    f"✅ 기본 재무데이터 수집 완료 (출처: {', '.join(financial_data['data_sources'])})"
                 )
 
-            # Step 3: 재무데이터 기반 종목 분류
+            # 2-2: 🚀 Enhanced DART API 데이터 수집 (새로운 기능들)
+            enhanced_dart_data = None
+            if self.enhanced_dart_collector.is_available() and self._is_korean_stock(
+                stock_info["stock_code"]
+            ):
+                logger.info("🔍 Enhanced DART 데이터 수집 시작...")
+                enhanced_dart_data = (
+                    self.enhanced_dart_collector.get_comprehensive_company_analysis(
+                        stock_code=stock_info["stock_code"]
+                    )
+                )
+
+                if enhanced_dart_data["success"]:
+                    results["steps"]["step2_enhanced_dart_data"] = enhanced_dart_data
+                    logger.info("✅ Enhanced DART 데이터 수집 완료!")
+                else:
+                    logger.warning(
+                        f"⚠️ Enhanced DART 데이터 수집 실패: {enhanced_dart_data.get('error')}"
+                    )
+            else:
+                logger.info(
+                    "ℹ️ Enhanced DART 데이터 수집 생략 (API 키 없음 또는 해외 종목)"
+                )
+
+            # Step 3: 재무데이터 기반 종목 분류 (Enhanced 데이터 포함)
             logger.info("🏷️ Step 3: 재무데이터 기반 종목 분류")
             classification_result = await self.perform_enhanced_classification(
-                user_prompt, stock_info, financial_data
+                user_prompt, stock_info, financial_data, enhanced_dart_data
             )
             results["steps"]["step3_classification"] = classification_result
 
-            # Step 4: 재무데이터 기반 상세 분석
+            # Step 4: 재무데이터 기반 상세 분석 (Enhanced 데이터 포함)
             logger.info("📈 Step 4: 재무데이터 기반 상세 분석")
             analysis_result = await self.perform_enhanced_analysis(
-                user_prompt, stock_info, financial_data, classification_result
+                user_prompt,
+                stock_info,
+                financial_data,
+                classification_result,
+                enhanced_dart_data,
             )
             results["steps"]["step4_detailed_analysis"] = analysis_result
 
@@ -144,9 +207,14 @@ class EnhancedStockAnalysisSystem:
 
         return results
 
-    def extract_stock_info(self, prompt: str) -> Dict[str, Any]:
+    async def extract_stock_info(self, prompt: str) -> Dict[str, Any]:
         """
-        사용자 프롬프트에서 종목 정보를 추출해요
+        🚀 AI 기반 동적 웹검색 우선 종목 정보 추출
+
+        순서:
+        1. AI 웹검색 (최우선) - 실시간 웹 검색으로 정확한 종목코드 찾기
+        2. 정규식 매핑 (백업) - 빠른 로컬 매칭
+        3. 패턴 매칭 (최후 수단) - 기본 패턴 인식
 
         Args:
             prompt: 사용자 입력
@@ -161,6 +229,183 @@ class EnhancedStockAnalysisSystem:
             "detection_method": None,
         }
 
+        logger.info("🚀 AI 기반 동적 웹검색 우선 종목 감지 시작...")
+
+        try:
+            # 🚀 1단계: Manus 에이전트로 AI 기반 동적 웹검색 시도 (최우선!)
+            logger.info("🎯 AI 기반 동적 웹검색 시도... (최우선 방법)")
+
+            # 종목 검색을 위한 특별한 프롬프트 구성
+            search_prompt = f"""
+다음 질문에서 종목명과 종목코드를 찾아주세요:
+"{prompt}"
+
+웹에서 검색해서 정확한 종목명과 6자리 종목코드를 찾아주세요.
+한국 주식이면 6자리 숫자 종목코드를, 해외 주식이면 티커를 찾아주세요.
+
+결과는 다음 형식으로 출력해주세요:
+종목명: [회사명]
+종목코드: [6자리 숫자 또는 티커]
+
+예시:
+종목명: 삼성전자
+종목코드: 005930
+
+예시:
+종목명: Apple
+종목코드: AAPL
+"""
+
+            # 메모리 초기화
+            self.manus_agent.memory.clear()
+            self.manus_agent.update_memory("user", search_prompt)
+
+            # AI 에이전트 실행
+            search_result = await self.manus_agent.run()
+
+            # 결과 처리
+            if hasattr(search_result, "__aiter__"):
+                ai_response = ""
+                async for response in search_result:
+                    ai_response += response + "\n"
+            else:
+                ai_response = str(search_result)
+
+            # AI 응답에서 종목 정보 추출
+            extracted_info = self._parse_ai_stock_response(
+                ai_response, "ai_web_search_priority"
+            )
+            if extracted_info["detected"]:
+                result.update(extracted_info)
+                logger.info(
+                    f"🎉 AI 웹검색 성공 (최우선): {result['stock_name']} ({result['stock_code']})"
+                )
+                return result
+            else:
+                logger.info("⚠️ AI 웹검색에서 종목 감지 실패, 백업 방법 시도...")
+
+            # 2단계: StockNameExtractor로 빠른 매핑 시도 (백업)
+            logger.info("📝 StockNameExtractor 백업 시도...")
+            extracted_name, extracted_code = (
+                self.stock_name_extractor.extract_from_prompt(prompt)
+            )
+
+            if extracted_name and extracted_code:
+                result["detected"] = True
+                result["stock_name"] = extracted_name
+                result["stock_code"] = extracted_code
+                result["detection_method"] = "stock_name_extractor_backup"
+                logger.info(
+                    f"✅ StockNameExtractor 백업 성공: {result['stock_name']} ({result['stock_code']})"
+                )
+                return result
+            else:
+                logger.info("⚠️ StockNameExtractor 백업에서도 종목 감지 실패")
+
+            # 3단계: 마지막 수단으로 정규식 패턴 매칭
+            logger.info("🔍 정규식 패턴 매칭 시도...")
+            fallback_result = self._fallback_pattern_matching(prompt)
+            if fallback_result["detected"]:
+                result.update(fallback_result)
+                logger.info(
+                    f"✅ 패턴 매칭 성공: {result['stock_name']} ({result['stock_code']})"
+                )
+                return result
+
+            logger.warning("❌ 모든 방법으로 종목 감지 실패")
+            return result
+
+        except Exception as e:
+            logger.error(f"❌ 종목 감지 중 오류 발생: {e}")
+
+            # 오류 발생시 폴백으로 정규식 시도
+            logger.info("🔄 오류 발생으로 폴백 패턴 매칭 시도...")
+            fallback_result = self._fallback_pattern_matching(prompt)
+            if fallback_result["detected"]:
+                result.update(fallback_result)
+                logger.info(
+                    f"✅ 폴백 매칭 성공: {result['stock_name']} ({result['stock_code']})"
+                )
+
+            return result
+
+    def _parse_ai_stock_response(self, ai_response: str, method: str) -> Dict[str, Any]:
+        """AI 에이전트 응답에서 종목 정보 파싱"""
+        result = {
+            "detected": False,
+            "stock_name": None,
+            "stock_code": None,
+            "detection_method": f"ai_{method}",
+        }
+
+        if not ai_response:
+            return result
+
+        # main.py의 extract_stock_code_from_browser_results 로직 활용
+        # 브라우저 검색 결과에서 종목코드 패턴들
+        browser_patterns = [
+            # Company Guide 패턴: "한화오션(A042660) | 업종분석"
+            r"([가-힣A-Za-z0-9\s&\-\.]+)\(A([0-9]{6})\)\s*\|\s*업종분석",
+            # 일반 괄호 패턴: "삼성전자(005930)"
+            r"([가-힣A-Za-z0-9\s&\-\.]+)\(A?([0-9]{6})\)",
+            # URL 패턴: "gicode=A042660"
+            r"gicode=A([0-9]{6})",
+            # 브라우저 출력 패턴: "한화오션 042660"
+            r"([가-힣A-Za-z0-9\s&\-\.]+)\s+([0-9]{6})",
+            # 직접 언급 패턴: "종목코드: 042660"
+            r"종목코드:\s*([0-9]{6})",
+            # Step 결과 패턴에서 추출
+            r"Step\s+\d+:.*?([0-9]{6})",
+        ]
+
+        found_codes = []
+        found_names = []
+
+        for pattern in browser_patterns:
+            matches = re.findall(pattern, ai_response, re.IGNORECASE | re.MULTILINE)
+            for match in matches:
+                if isinstance(match, tuple):
+                    if len(match) == 2:
+                        name, code = match
+                        found_names.append(name.strip())
+                        found_codes.append(code)
+                    else:
+                        # 마지막 요소가 종목코드
+                        code = match[-1]
+                        found_codes.append(code)
+                else:
+                    found_codes.append(match)
+
+        # 가장 자주 나타나는 종목코드 선택
+        if found_codes:
+            from collections import Counter
+
+            most_common_code = Counter(found_codes).most_common(1)[0][0]
+
+            # 종목코드 유효성 검사
+            if len(most_common_code) == 6 and most_common_code.isdigit():
+                if most_common_code.startswith(("0", "1", "2", "3")):
+                    result["detected"] = True
+                    result["stock_code"] = most_common_code
+
+                    # 매칭되는 회사명이 있으면 사용
+                    if found_names:
+                        most_common_name = Counter(found_names).most_common(1)[0][0]
+                        result["stock_name"] = most_common_name.strip()
+
+                    return result
+
+        return result
+
+    def _fallback_pattern_matching(self, prompt: str) -> Dict[str, Any]:
+        """폴백용 정규식 패턴 매칭"""
+        result = {
+            "detected": False,
+            "stock_name": None,
+            "stock_code": None,
+            "detection_method": "pattern_fallback",
+        }
+
         # 1. 6자리 종목코드 패턴 검색 (한국 주식)
         korean_code_pattern = r"\b(\d{6})\b"
         korean_codes = re.findall(korean_code_pattern, prompt)
@@ -168,67 +413,59 @@ class EnhancedStockAnalysisSystem:
         if korean_codes:
             result["detected"] = True
             result["stock_code"] = korean_codes[0]
-            result["detection_method"] = "korean_stock_code"
-            logger.info(f"📈 한국 종목코드 감지: {result['stock_code']}")
+            result["detection_method"] = "korean_stock_code_fallback"
+            return result
 
         # 2. 해외 티커 패턴 검색 (2-5자리 대문자)
-        if not result["detected"]:
-            ticker_pattern = r"\b([A-Z]{2,5})\b"
-            tickers = re.findall(ticker_pattern, prompt.upper())
+        ticker_pattern = r"\b([A-Z]{2,5})\b"
+        tickers = re.findall(ticker_pattern, prompt.upper())
 
-            if tickers:
-                # 일반적인 단어 제외 (예: "THE", "AND" 등)
-                excluded_words = {
-                    "THE",
-                    "AND",
-                    "FOR",
-                    "YOU",
-                    "ARE",
-                    "NOT",
-                    "BUT",
-                    "CAN",
-                }
-                valid_tickers = [t for t in tickers if t not in excluded_words]
+        if tickers:
+            # 일반적인 단어 제외
+            excluded_words = {"THE", "AND", "FOR", "YOU", "ARE", "NOT", "BUT", "CAN"}
+            valid_tickers = [t for t in tickers if t not in excluded_words]
 
-                if valid_tickers:
-                    result["detected"] = True
-                    result["stock_code"] = valid_tickers[0]
-                    result["detection_method"] = "ticker_symbol"
-                    logger.info(f"🌐 해외 티커 감지: {result['stock_code']}")
+            if valid_tickers:
+                result["detected"] = True
+                result["stock_code"] = valid_tickers[0]
+                result["detection_method"] = "ticker_symbol_fallback"
+                return result
 
-        # 3. 한국 회사명 패턴 검색
-        if not result["detected"]:
-            # 회사명 → 종목코드 매핑
-            korean_companies = {
-                "삼성전자": "005930",
-                "SK하이닉스": "000660",
-                "LG전자": "066570",
-                "현대자동차": "005380",
-                "카카오": "035720",
-                "네이버": "035420",
-                "셀트리온": "068270",
-                "LG화학": "051910",
-                "포스코": "005490",
-                "삼성바이오로직스": "207940",
-                "삼성SDI": "006400",
-                "기아": "000270",
-            }
+                # 3. 주요 한국 회사명 패턴 검색 (폴백용 간소화된 목록)
+        korean_companies = {
+            "삼성전자": "005930",
+            "삼성증권": "016360",
+            "SK하이닉스": "000660",
+            "LG전자": "066570",
+            "현대자동차": "005380",
+            "카카오": "035720",
+            "네이버": "035420",
+            "한화에어로스페이스": "012450",
+            "한화오션": "042660",
+        }
 
-            for company, code in korean_companies.items():
-                if company in prompt:
-                    result["detected"] = True
-                    result["stock_name"] = company
-                    result["stock_code"] = code  # 종목코드도 함께 설정!
-                    result["detection_method"] = "company_name_with_code"
-                    logger.info(
-                        f"🏢 회사명 감지: {result['stock_name']} ({result['stock_code']})"
-                    )
-                    break
+        for company, code in korean_companies.items():
+            if company in prompt:
+                result["detected"] = True
+                result["stock_name"] = company
+                result["stock_code"] = code
+                result["detection_method"] = "company_name_fallback"
+                return result
 
         return result
 
+    def _is_korean_stock(self, stock_code: str) -> bool:
+        """한국 주식인지 확인해요 (6자리 숫자면 한국 주식)"""
+        if not stock_code:
+            return False
+        return len(stock_code) == 6 and stock_code.isdigit()
+
     async def perform_enhanced_classification(
-        self, user_prompt: str, stock_info: Dict, financial_data: Dict
+        self,
+        user_prompt: str,
+        stock_info: Dict,
+        financial_data: Dict,
+        enhanced_dart_data: Dict = None,
     ) -> Dict[str, Any]:
         """
         재무데이터를 활용한 개선된 종목 분류
@@ -281,6 +518,12 @@ class EnhancedStockAnalysisSystem:
                     financial_summary = self.financial_collector.get_analysis_summary(
                         financial_data
                     )
+
+                    # Enhanced DART 데이터 요약 생성
+                    dart_summary = ""
+                    if enhanced_dart_data and enhanced_dart_data.get("success"):
+                        dart_summary = self._create_dart_summary(enhanced_dart_data)
+
                     enhanced_prompt = f"""
 다음 종목에 대한 분류를 수행해주세요:
 
@@ -288,6 +531,8 @@ class EnhancedStockAnalysisSystem:
 
 실제 재무데이터:
 {financial_summary}
+
+{dart_summary}
 
 위 실제 재무정보를 바탕으로 정확한 분류를 수행해주세요.
 """
@@ -332,12 +577,53 @@ class EnhancedStockAnalysisSystem:
             logger.error(f"분류 중 오류: {e}")
             return {"performed": False, "error": str(e)}
 
+    def _create_dart_summary(self, enhanced_dart_data: Dict) -> str:
+        """Enhanced DART 데이터 요약 생성"""
+        if not enhanced_dart_data or not enhanced_dart_data.get("success"):
+            return ""
+
+        summary_parts = ["📊 추가 DART 상세 정보:"]
+
+        # 재무분석 정보
+        if "financial_analysis" in enhanced_dart_data:
+            financial = enhanced_dart_data["financial_analysis"]
+            if financial.get("success"):
+                summary_parts.append("• 상세 재무제표 데이터 포함")
+
+        # 지배구조 정보
+        if "governance_analysis" in enhanced_dart_data:
+            governance = enhanced_dart_data["governance_analysis"]
+            if governance.get("success") and "major_shareholders" in governance:
+                shareholders = governance["major_shareholders"][:3]  # 상위 3명만
+                summary_parts.append("• 주요 주주 정보:")
+                for shareholder in shareholders:
+                    name = shareholder.get("shareholder_name", "")
+                    ratio = shareholder.get("ownership_ratio", 0)
+                    if name and ratio:
+                        summary_parts.append(f"  - {name}: {ratio}%")
+
+        # 투자정보
+        if "investment_analysis" in enhanced_dart_data:
+            investment = enhanced_dart_data["investment_analysis"]
+            if investment.get("success") and "dividend_info" in investment:
+                summary_parts.append("• 배당 정보 포함")
+
+        # 공시정보
+        if "disclosure_monitoring" in enhanced_dart_data:
+            disclosure = enhanced_dart_data["disclosure_monitoring"]
+            if disclosure.get("success") and "recent_disclosures" in disclosure:
+                recent_count = len(disclosure["recent_disclosures"])
+                summary_parts.append(f"• 최근 공시: {recent_count}건")
+
+        return "\n".join(summary_parts) if len(summary_parts) > 1 else ""
+
     async def perform_enhanced_analysis(
         self,
         user_prompt: str,
         stock_info: Dict,
         financial_data: Dict,
         classification_result: Dict,
+        enhanced_dart_data: Dict = None,
     ) -> Dict[str, Any]:
         """
         재무데이터를 활용한 개선된 상세 분석
@@ -365,6 +651,15 @@ class EnhancedStockAnalysisSystem:
                 analysis_prompt += f"""
 실제 재무데이터:
 {financial_summary}
+
+"""
+
+            # Enhanced DART 데이터 포함
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                dart_summary = self._create_dart_summary(enhanced_dart_data)
+                if dart_summary:
+                    analysis_prompt += f"""
+{dart_summary}
 
 """
 
@@ -506,7 +801,7 @@ class EnhancedStockAnalysisSystem:
 
 
 async def main():
-    """메인 실행 함수"""
+    """메인 실행 함수 - 한 번 실행하고 자동 종료"""
     print("🚀 개선된 주식 분석 시스템에 오신 것을 환영합니다!")
     print("=" * 60)
     print("📊 새로운 기능:")
@@ -520,58 +815,55 @@ async def main():
     system = EnhancedStockAnalysisSystem()
 
     try:
-        while True:
-            print("\n" + "=" * 50)
-            user_input = input(
-                "📝 질문을 입력하세요 (종료: 'quit' 또는 'exit'): "
-            ).strip()
+        # 사용자 입력 받기 (한 번만)
+        print("\n" + "=" * 50)
+        user_input = input("📝 질문을 입력하세요: ").strip()
 
-            if user_input.lower() in ["quit", "exit", "종료"]:
-                print("👋 시스템을 종료합니다. 감사합니다!")
-                break
+        if not user_input:
+            print("❌ 빈 입력입니다. 프로그램을 종료합니다.")
+            return
 
-            if not user_input:
-                print("❌ 빈 입력입니다. 다시 입력해주세요.")
-                continue
+        print(f"\n🔍 분석 시작: {user_input}")
+        print("-" * 50)
 
-            print(f"\n🔍 분석 시작: {user_input}")
-            print("-" * 50)
+        # 개선된 분석 실행
+        results = await system.run_enhanced_analysis(user_input)
 
-            # 개선된 분석 실행
-            results = await system.run_enhanced_analysis(user_input)
+        # 결과 출력
+        if results["success"]:
+            print("\n✅ 분석 완료!")
 
-            # 결과 출력
-            if results["success"]:
-                print("\n✅ 분석 완료!")
+            # 종합 요약 출력
+            summary = results.get("final_summary", {})
+            analyzed_stock = summary.get("analyzed_stock", {})
+            data_sources = summary.get("data_sources", {})
 
-                # 종합 요약 출력
-                summary = results.get("final_summary", {})
-                analyzed_stock = summary.get("analyzed_stock", {})
-                data_sources = summary.get("data_sources", {})
+            print(
+                f"📊 분석 대상: {analyzed_stock.get('name', '정보없음')} ({analyzed_stock.get('code', '정보없음')})"
+            )
+            print(
+                f"📈 데이터 수집: {'성공' if data_sources.get('financial_data_collected') else '실패'}"
+            )
+            if data_sources.get("data_sources"):
+                print(f"🗂️ 데이터 출처: {', '.join(data_sources['data_sources'])}")
+            print(f"🔍 데이터 품질: {data_sources.get('data_quality', '정보없음')}")
 
-                print(
-                    f"📊 분석 대상: {analyzed_stock.get('name', '정보없음')} ({analyzed_stock.get('code', '정보없음')})"
-                )
-                print(
-                    f"📈 데이터 수집: {'성공' if data_sources.get('financial_data_collected') else '실패'}"
-                )
-                if data_sources.get("data_sources"):
-                    print(f"🗂️ 데이터 출처: {', '.join(data_sources['data_sources'])}")
-                print(f"🔍 데이터 품질: {data_sources.get('data_quality', '정보없음')}")
+            # 저장된 파일 정보
+            if results.get("saved_file"):
+                print(f"💾 결과 저장: {results['saved_file']}")
 
-                # 저장된 파일 정보
-                if results.get("saved_file"):
-                    print(f"💾 결과 저장: {results['saved_file']}")
+            print("\n📁 상세 결과는 저장된 JSON 파일을 확인해주세요!")
+            print("🎉 분석이 완료되었습니다. 프로그램을 종료합니다.")
 
-                print("\n상세 결과는 저장된 JSON 파일을 확인해주세요! 📁")
-
-            else:
-                print(f"❌ 분석 실패: {results.get('error', '알 수 없는 오류')}")
+        else:
+            print(f"❌ 분석 실패: {results.get('error', '알 수 없는 오류')}")
+            print("⚠️ 프로그램을 종료합니다.")
 
     except KeyboardInterrupt:
         print("\n👋 사용자에 의해 중단되었습니다.")
     except Exception as e:
         print(f"❌ 시스템 오류: {e}")
+        print("⚠️ 프로그램을 종료합니다.")
 
 
 if __name__ == "__main__":
