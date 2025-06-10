@@ -617,6 +617,172 @@ class EnhancedStockAnalysisSystem:
 
         return "\n".join(summary_parts) if len(summary_parts) > 1 else ""
 
+    def _create_comprehensive_dart_analysis(self, enhanced_dart_data: Dict) -> str:
+        """Enhanced DART 데이터의 포괄적 분석 생성"""
+        if not enhanced_dart_data or not enhanced_dart_data.get("success"):
+            return ""
+
+        analysis_parts = ["📊 **Enhanced DART 종합 분석**:"]
+
+        # 1. 재무분석 상세 정보
+        if "financial_analysis" in enhanced_dart_data:
+            financial = enhanced_dart_data["financial_analysis"]
+            if financial.get("success"):
+                analysis_parts.append("\n🏦 **상세 재무분석**:")
+
+                # 개별재무제표 정보
+                if "individual_statements" in financial:
+                    individual = financial["individual_statements"]
+                    if individual.get("assets"):
+                        total_assets = individual["assets"].get("total_assets", 0)
+                        analysis_parts.append(f"• 개별 총자산: {total_assets:,}원")
+                    if individual.get("liabilities"):
+                        total_debt = individual["liabilities"].get(
+                            "total_liabilities", 0
+                        )
+                        analysis_parts.append(f"• 개별 총부채: {total_debt:,}원")
+                    if individual.get("equity"):
+                        total_equity = individual["equity"].get("total_equity", 0)
+                        analysis_parts.append(f"• 개별 총자본: {total_equity:,}원")
+
+                # 연결재무제표 정보
+                if "consolidated_statements" in financial:
+                    consolidated = financial["consolidated_statements"]
+                    if consolidated.get("assets"):
+                        total_assets = consolidated["assets"].get("total_assets", 0)
+                        analysis_parts.append(f"• 연결 총자산: {total_assets:,}원")
+                    if consolidated.get("equity"):
+                        total_equity = consolidated["equity"].get("total_equity", 0)
+                        analysis_parts.append(f"• 연결 총자본: {total_equity:,}원")
+
+                # 분기별 실적
+                if "quarterly_performance" in financial:
+                    quarterly = financial["quarterly_performance"]
+                    if quarterly:
+                        analysis_parts.append(
+                            f"• 분기별 실적 데이터: {len(quarterly)}분기"
+                        )
+
+        # 2. 지배구조 상세 정보
+        if "governance_analysis" in enhanced_dart_data:
+            governance = enhanced_dart_data["governance_analysis"]
+            if governance.get("success"):
+                analysis_parts.append("\n🏢 **기업지배구조 분석**:")
+
+                # 주요 주주 정보
+                if "major_shareholders" in governance:
+                    shareholders = governance["major_shareholders"][:3]  # 상위 3명
+                    analysis_parts.append("• 주요 주주:")
+                    for i, shareholder in enumerate(shareholders, 1):
+                        name = shareholder.get("shareholder_name", "")
+                        ratio = shareholder.get("ownership_ratio", 0)
+                        if name and ratio:
+                            analysis_parts.append(f"  {i}. {name}: {ratio}%")
+
+                # 임원 정보
+                if "executives" in governance:
+                    executives = governance["executives"]
+                    if executives:
+                        analysis_parts.append(f"• 등록임원 수: {len(executives)}명")
+
+                # 이사 보수
+                if "director_compensation" in governance:
+                    compensation = governance["director_compensation"]
+                    if compensation:
+                        total_compensation = sum(
+                            comp.get("total_compensation", 0) for comp in compensation
+                        )
+                        analysis_parts.append(
+                            f"• 이사 총 보수: {total_compensation:,}원"
+                        )
+
+                # 사외이사
+                if "outside_directors" in governance:
+                    outside = governance["outside_directors"]
+                    if outside:
+                        analysis_parts.append(f"• 사외이사 수: {len(outside)}명")
+
+        # 3. 투자정보 상세 분석
+        if "investment_analysis" in enhanced_dart_data:
+            investment = enhanced_dart_data["investment_analysis"]
+            if investment.get("success"):
+                analysis_parts.append("\n💰 **투자정보 분석**:")
+
+                # 배당 정보
+                if "dividend_info" in investment:
+                    dividend = investment["dividend_info"]
+                    if dividend:
+                        latest_dividend = dividend[0] if dividend else {}
+                        dividend_rate = latest_dividend.get("dividend_rate", 0)
+                        dividend_amount = latest_dividend.get("dividend_amount", 0)
+                        if dividend_rate or dividend_amount:
+                            analysis_parts.append(f"• 최근 배당률: {dividend_rate}%")
+                            analysis_parts.append(f"• 최근 배당금: {dividend_amount}원")
+
+                # 증자감자 정보
+                if "capital_changes" in investment:
+                    capital = investment["capital_changes"]
+                    if capital:
+                        analysis_parts.append(f"• 자본변동 이력: {len(capital)}건")
+
+                # 자기주식 정보
+                if "treasury_stock" in investment:
+                    treasury = investment["treasury_stock"]
+                    if treasury:
+                        latest_treasury = treasury[0] if treasury else {}
+                        stock_count = latest_treasury.get("stock_count", 0)
+                        if stock_count:
+                            analysis_parts.append(f"• 자기주식 보유: {stock_count:,}주")
+
+                # 타법인 출자
+                if "investments" in investment:
+                    investments = investment["investments"]
+                    if investments:
+                        analysis_parts.append(f"• 타법인 출자: {len(investments)}건")
+
+        # 4. 공시 모니터링 정보
+        if "disclosure_monitoring" in enhanced_dart_data:
+            disclosure = enhanced_dart_data["disclosure_monitoring"]
+            if disclosure.get("success"):
+                analysis_parts.append("\n📢 **실시간 공시 모니터링**:")
+
+                # 최근 공시
+                if "recent_disclosures" in disclosure:
+                    recent = disclosure["recent_disclosures"]
+                    if recent:
+                        analysis_parts.append(f"• 최근 30일 공시: {len(recent)}건")
+
+                        # 최신 3개 공시 표시
+                        for i, disc in enumerate(recent[:3], 1):
+                            report_name = disc.get("report_name", "")
+                            receipt_date = disc.get("receipt_date", "")
+                            if report_name:
+                                analysis_parts.append(
+                                    f"  {i}. {report_name} ({receipt_date})"
+                                )
+
+                # 중요 공시
+                if "important_notices" in disclosure:
+                    important = disclosure["important_notices"]
+                    if important:
+                        analysis_parts.append(f"• 중요 공시: {len(important)}건")
+
+                # 정정 공시
+                if "corrections" in disclosure:
+                    corrections = disclosure["corrections"]
+                    if corrections:
+                        analysis_parts.append(f"• 정정 공시: {len(corrections)}건")
+
+        analysis_parts.append("\n💡 **Enhanced DART 특별 인사이트**:")
+        analysis_parts.append(
+            "• 위 정보는 일반 재무데이터에서는 얻을 수 없는 DART 전용 상세 정보입니다"
+        )
+        analysis_parts.append(
+            "• 특히 지배구조, 배당정책, 실시간 공시는 투자 의사결정에 중요한 차별화 정보입니다"
+        )
+
+        return "\n".join(analysis_parts)
+
     async def perform_enhanced_analysis(
         self,
         user_prompt: str,
@@ -638,43 +804,100 @@ class EnhancedStockAnalysisSystem:
             Dict: 상세 분석 결과
         """
         try:
-            logger.info("📊 상세 분석 실행...")
+            logger.info("📊 통합 재무데이터 기반 상세 분석 실행...")
 
-            # 분석용 프롬프트 구성
+            # 🚀 통합 분석용 프롬프트 구성
             analysis_prompt = f"사용자 질문: {user_prompt}\n\n"
 
-            # 재무데이터 포함
+            # 📊 Step 2-1: 기본 재무데이터 (yfinance + 기본 DART)
+            basic_financial_included = False
             if financial_data.get("success"):
                 financial_summary = self.financial_collector.get_analysis_summary(
                     financial_data
                 )
                 analysis_prompt += f"""
-실제 재무데이터:
+📊 **기본 재무데이터 (yfinance + 기본 DART)**:
 {financial_summary}
 
 """
+                basic_financial_included = True
+                logger.info("✅ 기본 재무데이터를 분석에 포함했습니다")
 
-            # Enhanced DART 데이터 포함
+            # 🚀 Step 2-2: Enhanced DART 상세 데이터 (한국 주식 전용)
+            enhanced_dart_included = False
             if enhanced_dart_data and enhanced_dart_data.get("success"):
-                dart_summary = self._create_dart_summary(enhanced_dart_data)
-                if dart_summary:
+                enhanced_summary = self._create_comprehensive_dart_analysis(
+                    enhanced_dart_data
+                )
+                if enhanced_summary:
                     analysis_prompt += f"""
-{dart_summary}
+🚀 **Enhanced DART 상세 분석**:
+{enhanced_summary}
 
 """
+                    enhanced_dart_included = True
+                    logger.info("✅ Enhanced DART 데이터를 분석에 포함했습니다")
 
-            # 분류 결과 포함
+            # 🏷️ 분류 결과 포함
             if classification_result.get("performed"):
                 analysis_prompt += f"""
-종목 분류 결과:
+🏷️ **AI 종목 분류 결과**:
 {classification_result.get('response', '')}
 
 """
 
-            analysis_prompt += """
-위 정보들을 종합하여 상세한 투자 분석을 수행해주세요.
+            # 🎯 통합 분석 지시사항
+            analysis_method = "통합분석"
+            if basic_financial_included and enhanced_dart_included:
+                analysis_method = "완전통합분석"
+                analysis_prompt += """
+🎯 **통합 분석 지시사항**:
+위의 기본 재무데이터와 Enhanced DART 상세 정보를 모두 종합하여 다음 관점에서 상세 분석해주세요:
+
+1. **재무건전성 분석**:
+   - 기본 재무비율과 상세 재무제표 비교 분석
+   - 개별 vs 연결재무제표 차이점 분석
+   - 분기별 실적 트렌드 분석
+
+2. **기업지배구조 평가**:
+   - 주요 주주 구조와 지분 안정성
+   - 경영진 역량과 보상체계 적정성
+   - 사외이사 독립성과 전문성
+
+3. **투자자 친화 정책**:
+   - 배당 정책과 주주환원 의지
+   - 자기주식 운용과 자본 효율성
+   - 증자감자 등 자본 정책 변화
+
+4. **실시간 리스크 평가**:
+   - 최근 공시사항과 주가 영향 요인
+   - 중요 공시와 투자 의사결정 포인트
+   - 정정공시 등 주의사항
+
+5. **종합 투자 의견**:
+   - 모든 데이터를 종합한 투자 추천 등급
+   - 목표 주가와 투자 기간 제시
+   - 핵심 리스크와 기회 요소 정리
+
+특히 기본 재무데이터로는 알 수 없는 Enhanced DART만의 독특한 인사이트를 강조해주세요.
+"""
+            elif basic_financial_included:
+                analysis_method = "기본재무분석"
+                analysis_prompt += """
+📊 **기본 재무분석 지시사항**:
+기본 재무데이터를 중심으로 상세한 투자 분석을 수행해주세요.
 특히 실제 재무데이터가 있다면 이를 중심으로 분석해주세요.
 """
+            else:
+                analysis_method = "일반분석"
+                analysis_prompt += """
+📝 **일반 분석 지시사항**:
+사용 가능한 정보를 바탕으로 투자 분석을 수행해주세요.
+"""
+
+            logger.info(f"🎯 분석 방법: {analysis_method}")
+            logger.info(f"📊 기본 재무데이터 포함: {basic_financial_included}")
+            logger.info(f"🚀 Enhanced DART 포함: {enhanced_dart_included}")
 
             # Manus 에이전트 실행
             # reset() 대신 memory.clear() 사용
@@ -694,15 +917,21 @@ class EnhancedStockAnalysisSystem:
 
             return {
                 "performed": True,
-                "method": (
-                    "enhanced_with_financial_data"
-                    if financial_data.get("success")
-                    else "standard"
-                ),
+                "method": analysis_method,
                 "response": analysis_response.strip(),
-                "financial_data_used": financial_data.get("success", False),
+                "basic_financial_data_used": basic_financial_included,
+                "enhanced_dart_data_used": enhanced_dart_included,
                 "classification_included": classification_result.get(
                     "performed", False
+                ),
+                "analysis_completeness": (
+                    "완전통합"
+                    if (basic_financial_included and enhanced_dart_included)
+                    else (
+                        "부분통합"
+                        if (basic_financial_included or enhanced_dart_included)
+                        else "기본"
+                    )
                 ),
             }
 
