@@ -109,6 +109,10 @@ class FinancialDataCollector:
         """
         logger.info(f"📈 yfinance에서 {stock_code} 데이터 수집 중...")
 
+        # 종목코드가 None인 경우 처리
+        if not stock_code:
+            return {"success": False, "errors": ["종목코드가 제공되지 않았습니다"]}
+
         try:
             # 한국 주식은 .KS 또는 .KQ 접미사 필요
             if self._is_korean_stock(stock_code):
@@ -299,6 +303,8 @@ class FinancialDataCollector:
 
     def _is_korean_stock(self, stock_code: str) -> bool:
         """한국 주식인지 확인해요 (6자리 숫자면 한국 주식)"""
+        if not stock_code:  # None 체크 추가
+            return False
         return len(stock_code) == 6 and stock_code.isdigit()
 
     def _assess_data_quality(self, info: Dict) -> str:

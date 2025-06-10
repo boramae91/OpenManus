@@ -1,0 +1,107 @@
+{
+  "user_prompt": "삼성전자 분류해줘",
+  "timestamp": "2025-06-10T09:43:09.406514",
+  "analysis_flow": "enhanced",
+  "success": false,
+  "steps": {
+    "step1_stock_detection": {
+      "detected": true,
+      "stock_name": "삼성전자",
+      "stock_code": "005930",
+      "detection_method": "company_name_with_code"
+    },
+    "step2_financial_data": {
+      "stock_info": {
+        "stock_code": "005930",
+        "stock_name": "삼성전자",
+        "collection_timestamp": "2025-06-10T09:43:09.409261"
+      },
+      "success": true,
+      "errors": [
+        "DART API 키가 설정되지 않았습니다"
+      ],
+      "data_sources": [
+        "yfinance"
+      ],
+      "basic_info": {
+        "company_name": "Samsung Electronics Co., Ltd.",
+        "sector": "Technology",
+        "industry": "Consumer Electronics",
+        "country": "South Korea",
+        "currency": "KRW",
+        "exchange": "KSC",
+        "ticker_symbol": "005930.KS"
+      },
+      "current_price_info": {
+        "current_price": 59400.0,
+        "previous_close": 59800.0,
+        "open_price": 60000.0,
+        "day_high": 60100.0,
+        "day_low": 59000.0,
+        "volume": 3707699,
+        "market_cap": 386820525260800,
+        "shares_outstanding": 5919640064
+      },
+      "financial_ratios": {
+        "pe_ratio": null,
+        "peg_ratio": null,
+        "pb_ratio": null,
+        "ps_ratio": 1.2555202,
+        "dividend_yield": 2.42,
+        "profit_margin": 0.113690004,
+        "operating_margin": 0.08447,
+        "return_on_equity": 0.09228,
+        "return_on_assets": 0.04153,
+        "debt_to_equity": 2.741,
+        "current_ratio": 2.467,
+        "quick_ratio": 1.763
+      },
+      "growth_metrics": {
+        "earnings_growth": -0.999,
+        "revenue_growth": 0.1,
+        "earnings_quarterly_growth": 0.213,
+        "revenue_quarterly_growth": null
+      },
+      "price_history": {
+        "52_week_high": 87188.48844178082,
+        "52_week_low": 49269.3359375,
+        "avg_volume_3m": 17720258.877777778,
+        "price_change_1y": -19.72560244598725
+      },
+      "data_quality": "보통"
+    },
+    "step3_classification": {
+      "performed": false,
+      "error": "'async for' requires an object with __aiter__ method, got coroutine"
+    },
+    "step4_detailed_analysis": {
+      "performed": false,
+      "error": "'async for' requires an object with __aiter__ method, got coroutine"
+    }
+  },
+  "final_summary": {
+    "analyzed_stock": {
+      "name": "삼성전자",
+      "code": "005930",
+      "detection_method": "company_name_with_code"
+    },
+    "data_sources": {
+      "financial_data_collected": true,
+      "data_sources": [
+        "yfinance"
+      ],
+      "data_quality": "보통"
+    },
+    "analysis_quality": {
+      "classification_performed": false,
+      "detailed_analysis_performed": false,
+      "financial_data_enhanced": true
+    },
+    "key_insights": {
+      "classification": null,
+      "investment_outlook": null,
+      "risk_factors": null,
+      "recommendation": null
+    }
+  }
+}

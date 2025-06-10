@@ -17,6 +17,11 @@ import json
 import os
 import re
 
+# 환경변수 로딩 (가장 먼저 실행)
+from dotenv import load_dotenv
+
+load_dotenv()  # .env 파일에서 환경변수 로딩
+
 # 프로젝트 경로 설정
 import sys
 from datetime import datetime
@@ -193,27 +198,31 @@ class EnhancedStockAnalysisSystem:
 
         # 3. 한국 회사명 패턴 검색
         if not result["detected"]:
-            korean_companies = [
-                "삼성전자",
-                "SK하이닉스",
-                "LG전자",
-                "현대자동차",
-                "카카오",
-                "네이버",
-                "셀트리온",
-                "LG화학",
-                "포스코",
-                "삼성바이오로직스",
-                "삼성SDI",
-                "기아",
-            ]
+            # 회사명 → 종목코드 매핑
+            korean_companies = {
+                "삼성전자": "005930",
+                "SK하이닉스": "000660",
+                "LG전자": "066570",
+                "현대자동차": "005380",
+                "카카오": "035720",
+                "네이버": "035420",
+                "셀트리온": "068270",
+                "LG화학": "051910",
+                "포스코": "005490",
+                "삼성바이오로직스": "207940",
+                "삼성SDI": "006400",
+                "기아": "000270",
+            }
 
-            for company in korean_companies:
+            for company, code in korean_companies.items():
                 if company in prompt:
                     result["detected"] = True
                     result["stock_name"] = company
-                    result["detection_method"] = "company_name"
-                    logger.info(f"🏢 회사명 감지: {result['stock_name']}")
+                    result["stock_code"] = code  # 종목코드도 함께 설정!
+                    result["detection_method"] = "company_name_with_code"
+                    logger.info(
+                        f"🏢 회사명 감지: {result['stock_name']} ({result['stock_code']})"
+                    )
                     break
 
         return result
@@ -288,12 +297,20 @@ class EnhancedStockAnalysisSystem:
                     )
 
                 # Stock Classifier 실행
-                self.stock_classifier.reset()
+                # reset() 대신 memory.clear() 사용
+                self.stock_classifier.memory.clear()
                 self.stock_classifier.update_memory("user", enhanced_prompt)
 
                 classification_response = ""
-                async for response in self.stock_classifier.run():
-                    classification_response += response + "\n"
+                # run()을 await으로 호출하고 결과를 직접 사용
+                run_result = await self.stock_classifier.run()
+                # run_result가 제너레이터라면 반복하여 수집
+                if hasattr(run_result, "__aiter__"):
+                    async for response in run_result:
+                        classification_response += response + "\n"
+                else:
+                    # 단일 결과라면 바로 사용
+                    classification_response = str(run_result)
 
                 return {
                     "performed": True,
@@ -365,12 +382,20 @@ class EnhancedStockAnalysisSystem:
 """
 
             # Manus 에이전트 실행
-            self.manus_agent.reset()
+            # reset() 대신 memory.clear() 사용
+            self.manus_agent.memory.clear()
             self.manus_agent.update_memory("user", analysis_prompt)
 
             analysis_response = ""
-            async for response in self.manus_agent.run():
-                analysis_response += response + "\n"
+            # run()을 await으로 호출하고 결과를 직접 사용
+            run_result = await self.manus_agent.run()
+            # run_result가 제너레이터라면 반복하여 수집
+            if hasattr(run_result, "__aiter__"):
+                async for response in run_result:
+                    analysis_response += response + "\n"
+            else:
+                # 단일 결과라면 바로 사용
+                analysis_response = str(run_result)
 
             return {
                 "performed": True,
