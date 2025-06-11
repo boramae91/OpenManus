@@ -318,19 +318,29 @@ def save_interaction_log(
         "meta": meta or {},
     }
 
-    # 🚀 사람이 스크롤하면서 읽기 편하도록 더 보기 좋게 포맷팅해서 저장해요!
+    # 🚀 사람이 스크롤하면서 읽기 편하도록 멀티라인 JSON으로 저장해요!
     with open(filename, "w", encoding="utf-8") as f:
-        # 커스텀 JSON 포맷팅 - 사람이 읽기 편하게!
+        # 완전히 새로운 방식: JSON 파일 자체를 여러 줄로 나누어서 저장
         f.write("{\n")
         f.write(f'  "timestamp": "{data["timestamp"]}",\n')
-        f.write(f'  "prompt": "{_escape_json_string(data["prompt"])}",\n')
-        f.write(f'  "response": "{_escape_json_string(data["response"])}",\n')
+
+        # prompt를 여러 줄로 포맷팅
+        f.write('  "prompt": ')
+        _write_multiline_string(f, data["prompt"], indent_level=2)
+        f.write(",\n")
+
+        # response를 여러 줄로 포맷팅
+        f.write('  "response": ')
+        _write_multiline_string(f, data["response"], indent_level=2)
+        f.write(",\n")
 
         # steps 배열을 읽기 편하게 포맷팅
         f.write('  "steps": [\n')
         for i, step in enumerate(data["steps"]):
             comma = "," if i < len(data["steps"]) - 1 else ""
-            f.write(f'    "{_escape_json_string(str(step))}"{comma}\n')
+            f.write("    ")
+            _write_multiline_string(f, str(step), indent_level=4)
+            f.write(f"{comma}\n")
         f.write("  ],\n")
 
         # meta 객체를 표준 JSON으로 저장
@@ -341,22 +351,67 @@ def save_interaction_log(
     return filename
 
 
-def _escape_json_string(text):
+def _write_multiline_string(file, text, indent_level=0, max_line_length=80):
     """
-    JSON 문자열에서 특수문자를 이스케이프하는 헬퍼 함수예요
+    🚀 긴 텍스트를 여러 줄 JSON 문자열로 작성하는 함수예요
 
-    사람이 읽기 편하게 하면서도 JSON 문법을 지켜요
+    JSON 파일 자체가 여러 줄로 나뉘어서 사람이 읽기 편하게 만들어요!
+
+    Args:
+        file: 쓸 파일 객체
+        text: 작성할 텍스트
+        indent_level: 들여쓰기 레벨
+        max_line_length: 한 줄 최대 길이
     """
     if not isinstance(text, str):
         text = str(text)
 
-    # JSON에서 이스케이프가 필요한 문자들 처리
-    text = text.replace("\\", "\\\\")  # 백슬래시
-    text = text.replace('"', '\\"')  # 큰따옴표
-    text = text.replace("\n", "\\n")  # 줄바꿈
-    text = text.replace("\r", "\\r")  # 캐리지 리턴
-    text = text.replace("\t", "\\t")  # 탭
-    text = text.replace("\b", "\\b")  # 백스페이스
-    text = text.replace("\f", "\\f")  # 폼 피드
+    indent = " " * indent_level
 
-    return text
+    # 특수문자 이스케이프
+    text = text.replace("\\", "\\\\")
+    text = text.replace('"', '\\"')
+    text = text.replace("\r", "\\r")
+    text = text.replace("\t", "\\t")
+    text = text.replace("\b", "\\b")
+    text = text.replace("\f", "\\f")
+
+    # 기존 줄바꿈 처리
+    lines = text.split("\n")
+
+    # 첫 번째 줄 시작
+    file.write('"')
+
+    for line_idx, line in enumerate(lines):
+        if line_idx > 0:
+            file.write('\\n" +\n' + indent + '"')
+
+        # 긴 줄을 나누기
+        if len(line) <= max_line_length:
+            file.write(line)
+        else:
+            words = line.split(" ")
+            current_line = ""
+            word_written = False
+
+            for word in words:
+                test_line = current_line + (" " if current_line else "") + word
+
+                if len(test_line) <= max_line_length:
+                    current_line = test_line
+                else:
+                    if current_line:
+                        file.write(current_line)
+                        file.write('" +\n' + indent + '"')
+                        current_line = word
+                        word_written = True
+                    else:
+                        current_line = word
+
+            if current_line:
+                file.write(current_line)
+
+    file.write('"')
+
+
+# 🚀 기존 함수들은 새로운 멀티라인 방식으로 대체되었어요!
