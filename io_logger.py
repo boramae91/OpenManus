@@ -309,7 +309,7 @@ def save_interaction_log(
                 # 이미 문자열이면 그대로 사용
                 formatted_steps.append(str(step))
 
-    # 첨부된 파일과 동일한 JSON 구조로 저장
+    # 🚀 첨부된 파일처럼 사람이 읽기 편한 JSON 구조로 저장
     data = {
         "timestamp": now,
         "prompt": prompt,
@@ -318,6 +318,45 @@ def save_interaction_log(
         "meta": meta or {},
     }
 
+    # 🚀 사람이 스크롤하면서 읽기 편하도록 더 보기 좋게 포맷팅해서 저장해요!
     with open(filename, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+        # 커스텀 JSON 포맷팅 - 사람이 읽기 편하게!
+        f.write("{\n")
+        f.write(f'  "timestamp": "{data["timestamp"]}",\n')
+        f.write(f'  "prompt": "{_escape_json_string(data["prompt"])}",\n')
+        f.write(f'  "response": "{_escape_json_string(data["response"])}",\n')
+
+        # steps 배열을 읽기 편하게 포맷팅
+        f.write('  "steps": [\n')
+        for i, step in enumerate(data["steps"]):
+            comma = "," if i < len(data["steps"]) - 1 else ""
+            f.write(f'    "{_escape_json_string(str(step))}"{comma}\n')
+        f.write("  ],\n")
+
+        # meta 객체를 표준 JSON으로 저장
+        f.write('  "meta": ')
+        json.dump(data["meta"], f, ensure_ascii=False, indent=4)
+        f.write("\n")
+        f.write("}")
     return filename
+
+
+def _escape_json_string(text):
+    """
+    JSON 문자열에서 특수문자를 이스케이프하는 헬퍼 함수예요
+
+    사람이 읽기 편하게 하면서도 JSON 문법을 지켜요
+    """
+    if not isinstance(text, str):
+        text = str(text)
+
+    # JSON에서 이스케이프가 필요한 문자들 처리
+    text = text.replace("\\", "\\\\")  # 백슬래시
+    text = text.replace('"', '\\"')  # 큰따옴표
+    text = text.replace("\n", "\\n")  # 줄바꿈
+    text = text.replace("\r", "\\r")  # 캐리지 리턴
+    text = text.replace("\t", "\\t")  # 탭
+    text = text.replace("\b", "\\b")  # 백스페이스
+    text = text.replace("\f", "\\f")  # 폼 피드
+
+    return text
