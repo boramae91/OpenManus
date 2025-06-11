@@ -1319,26 +1319,16 @@ async def main():
         else:
             stock_info_for_json = None
 
-        # 🚀 io_logger를 사용해서 일관된 형식으로 JSON 파일 생성해요
+        # 🚀 io_logger를 사용해서 첨부된 JSON 파일과 동일한 형식으로 저장해요
         json_filename = save_interaction_log(
             prompt=prompt,
             response=final_result,
             steps=[
-                {
-                    "step": "stock_detection",
-                    "result": final_stock_info,
-                    "extraction_method": extraction_method,
-                },
-                {
-                    "step": "classification",
-                    "result": classification_data_for_json,
-                    "performed": classification_data_for_json is not None,
-                },
-                {
-                    "step": "analysis",
-                    "response": response,
-                    "processing_time": processing_time,
-                },
+                "",  # 첫 번째 단계는 빈 문자열 (기존 형식 유지)
+                f"🔍 종목 감지 결과: {final_stock_name} ({final_stock_code}) - {extraction_method}",
+                f"⏱️ 처리 시간: {processing_time:.2f}초",
+                response,  # AI 에이전트 응답 내용
+                "",  # 마지막 단계는 빈 문자열 (기존 형식 유지)
             ],
             meta={
                 "processing_time_seconds": processing_time,

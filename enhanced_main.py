@@ -1042,10 +1042,29 @@ class EnhancedStockAnalysisSystem:
 
             response_text = "\n\n".join(final_response)
 
-            # 단계별 정보 구성
-            steps_data = []
+            # 🚀 첨부된 JSON 파일과 동일한 형식의 단계별 정보 구성
+            steps_text = []
+            steps_text.append("")  # 첫 번째는 빈 문자열
+
+            # 각 단계별 결과를 문자열로 변환
             for step_key, step_data in results.get("steps", {}).items():
-                steps_data.append({"step_name": step_key, "step_data": step_data})
+                if step_key == "step1_stock_detection" and step_data.get("detected"):
+                    steps_text.append(
+                        f"📊 감지된 종목: {step_data.get('stock_name')} ({step_data.get('stock_code')})"
+                    )
+                elif step_key == "step2_financial_data" and step_data.get("success"):
+                    steps_text.append(
+                        f"📈 재무데이터 수집 성공: {', '.join(step_data.get('data_sources', []))}"
+                    )
+                elif step_key == "step3_classification" and step_data.get("performed"):
+                    steps_text.append("🏷️ 종목 분류 완료")
+                elif step_key == "step4_detailed_analysis" and step_data.get(
+                    "performed"
+                ):
+                    steps_text.append("📊 상세 분석 완료")
+
+            steps_text.append(response_text)  # 전체 응답 내용
+            steps_text.append("")  # 마지막은 빈 문자열
 
             # 메타데이터 구성
             meta_data = {
@@ -1071,11 +1090,11 @@ class EnhancedStockAnalysisSystem:
                 },
             }
 
-            # 🚀 io_logger를 사용해서 저장
+            # 🚀 io_logger를 사용해서 첨부된 JSON 파일과 동일한 형식으로 저장
             filepath = save_interaction_log(
                 prompt=user_prompt,
                 response=response_text,
-                steps=steps_data,
+                steps=steps_text,
                 meta=meta_data,
             )
 

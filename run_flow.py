@@ -977,27 +977,20 @@ async def run_flow():
                     "source": "ai_flow_response",
                 }
 
-            # 🚀 io_logger를 사용해서 일관된 형식으로 JSON 파일 생성해요
+            # 🚀 io_logger를 사용해서 첨부된 JSON 파일과 동일한 형식으로 저장해요
             json_filename = save_interaction_log(
                 prompt=prompt,
                 response=final_result,
                 steps=[
-                    {
-                        "step": "stock_detection",
-                        "result": stock_info_for_json,
-                        "extraction_method": "AI Flow 응답 동적 추출",
-                    },
-                    {
-                        "step": "classification",
-                        "result": classification_data_for_json,
-                        "performed": classification_data_for_json is not None,
-                    },
-                    {
-                        "step": "flow_execution",
-                        "flow_type": "PLANNING",
-                        "response": flow_result,
-                        "processing_time": elapsed_time,
-                    },
+                    "",  # 첫 번째는 빈 문자열 (기존 형식 유지)
+                    (
+                        f"🔍 종목 감지: {stock_name} ({stock_code})"
+                        if stock_name != "GENERAL"
+                        else "🔍 종목 감지: 일반 질문"
+                    ),
+                    f"⏱️ Flow 실행 시간: {elapsed_time:.2f}초",
+                    flow_result,  # Flow 실행 결과
+                    "",  # 마지막은 빈 문자열 (기존 형식 유지)
                 ],
                 meta={
                     "analysis_type": "Flow",
@@ -1035,11 +1028,10 @@ async def run_flow():
                 prompt=prompt,
                 response=timeout_message,
                 steps=[
-                    {
-                        "step": "timeout",
-                        "message": "Request processing timed out after 1 hour",
-                        "processing_time": 3600,
-                    }
+                    "",
+                    "⏰ Flow 실행 타임아웃 (1시간 초과)",
+                    timeout_message,
+                    "",
                 ],
                 meta={
                     "analysis_type": "Flow",
@@ -1070,11 +1062,10 @@ async def run_flow():
             prompt=prompt if "prompt" in locals() else "",
             response=cancel_message,
             steps=[
-                {
-                    "step": "cancelled",
-                    "message": "Operation cancelled by user",
-                    "processing_time": 0,
-                }
+                "",
+                "⛔ 사용자가 실행을 취소했습니다",
+                cancel_message,
+                "",
             ],
             meta={
                 "analysis_type": "Flow",
@@ -1105,7 +1096,10 @@ async def run_flow():
             prompt=prompt if "prompt" in locals() else "",
             response=error_message,
             steps=[
-                {"step": "error", "message": f"Error: {str(e)}", "processing_time": 0}
+                "",
+                f"❌ 오류 발생: {str(e)}",
+                error_message,
+                "",
             ],
             meta={
                 "analysis_type": "Flow",

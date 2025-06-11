@@ -3,8 +3,28 @@ import os
 import re
 from datetime import datetime
 
+# 🚀 AI Agent의 종목명 추출 방식을 사용해요!
+from app.agent.stock_name_extractor import StockNameExtractor
+
 LOG_DIR = "results"
 
+# 🚀 AI Agent 인스턴스 생성 (전역적으로 한 번만 생성해서 성능 최적화)
+_stock_extractor = None
+
+
+def get_stock_extractor():
+    """
+    종목명 추출 AI Agent 인스턴스를 가져오는 함수예요
+
+    처음 호출할 때만 인스턴스를 생성하고, 이후에는 재사용해요 (싱글톤 패턴)
+    """
+    global _stock_extractor
+    if _stock_extractor is None:
+        _stock_extractor = StockNameExtractor()
+    return _stock_extractor
+
+
+# 🚀 기존 하드코딩된 키워드 매칭은 분석 타입 추출용으로만 사용
 ANALYSIS_KEYWORDS = {
     "종목분석",
     "기술분석",
@@ -40,43 +60,50 @@ def safe_filename(s):
     return s[:20]  # 20자 초과시 잘라서 사용
 
 
+def extract_stock_with_ai_agent(prompt):
+    """
+    🚀 AI Agent를 사용해서 종목명을 추출하는 새로운 함수예요!
+
+    기존의 하드코딩된 정규식 패턴 대신 AI Agent의 정교한 알고리즘을 사용해요
+
+    Args:
+        prompt: 사용자가 입력한 프롬프트
+
+    Returns:
+        dict: AI Agent가 추출한 종목 정보
+        {
+            "stock_name": "SAMSUNG_ELECTRONICS",  # 영문 종목명
+            "ticker": "005930",                   # 종목코드/티커
+            "found": True,                        # 종목 발견 여부
+            "stock_type": "korean",               # 종목 타입 (korean/foreign/other)
+            "market": "KRX"                       # 거래소 (KRX/US/etc)
+        }
+    """
+    try:
+        extractor = get_stock_extractor()
+        stock_info = extractor.get_extracted_info(prompt)
+        return stock_info
+    except Exception as e:
+        # AI Agent 오류 시 fallback으로 기본값 반환
+        return {
+            "stock_name": None,
+            "ticker": None,
+            "found": False,
+            "stock_type": "unknown",
+            "market": "unknown",
+            "error": str(e),
+        }
+
+
+# 🚀 기존 함수들은 AI Agent 방식으로 대체되지만, 하위 호환성을 위해 래퍼로 유지
 def extract_stock_from_query(query):
-    # 검색 쿼리에서 종목명 추출
-    # 예: "Disney company technical analysis 2023" -> "Disney"
-    # 예: "TSLA stock analysis October 2023" -> "TSLA"
-    # 예: "두산에너빌리티 기술분석 2023" -> "두산에너빌리티"
-
-    # 1. 영문 종목명/티커 패턴
-    patterns = [
-        r"([A-Z]{2,10})\s+stock",  # TSLA stock
-        r"([A-Z]{2,10})\s+company",  # Disney company
-        r"([A-Z]{2,10})\s+technical",  # DIS technical
-        r"([A-Z]{2,10})\s+financial",  # DIS financial
-    ]
-
-    # 2. 한글 종목명 패턴
-    korean_patterns = [
-        r"([가-힣]{2,20})\s+기술분석",  # 두산에너빌리티 기술분석
-        r"([가-힣]{2,20})\s+재무분석",  # 두산에너빌리티 재무분석
-        r"([가-힣]{2,20})\s+뉴스",  # 두산에너빌리티 뉴스
-    ]
-
-    # 영문 패턴 검사
-    for pat in patterns:
-        match = re.search(pat, query, re.I)
-        if match:
-            return match.group(1)
-
-    # 한글 패턴 검사
-    for pat in korean_patterns:
-        match = re.search(pat, query)
-        if match:
-            return match.group(1)
-
-    return None
+    """🚀 기존 함수의 하위 호환성을 위한 래퍼 - AI Agent 사용"""
+    stock_info = extract_stock_with_ai_agent(query)
+    return stock_info.get("stock_name") or stock_info.get("ticker")
 
 
 def extract_stock_from_log(log_path):
+    """🚀 로그 파일에서 종목명 추출 - AI Agent 방식 적용"""
     if not log_path or not os.path.exists(log_path):
         return None
     try:
@@ -85,85 +112,35 @@ def extract_stock_from_log(log_path):
                 match = re.search(r"Search results for '([^']+)'", line)
                 if match:
                     query = match.group(1)
-                    # 분석 키워드 앞까지 전체 추출
-                    m2 = re.search(r"^([가-힣A-Za-z0-9]+)", query)
-                    # 분석 키워드 앞까지(공백 포함) 추출
-                    m3 = re.search(
-                        r"^([가-힣A-Za-z0-9 ]+?)(종목 ?분석|기술 ?분석|재무 ?분석|뉴스|분석|\\d{4})",
-                        query,
-                    )
-                    if m3:
-                        return m3.group(1).strip().replace(" ", "")
-                    elif m2:
-                        return m2.group(1).strip()
+                    # 🚀 AI Agent로 종목명 추출
+                    stock_info = extract_stock_with_ai_agent(query)
+                    if stock_info["found"]:
+                        return stock_info["stock_name"] or stock_info["ticker"]
     except Exception:
         return None
     return None
 
 
 def extract_stock_from_text(text_content):
-    def normalize_stock_name(name):
-        # 분석 키워드 제거
-        for keyword in ANALYSIS_KEYWORDS:
-            name = name.replace(keyword, "")
-        # 조사 제거
-        for particle in ["에 대해", "에대한", "에", "에대해"]:
-            name = name.replace(particle, "")
-        # 연도/날짜 패턴 제거
-        name = re.sub(r"(20[0-9]{2}년?|19[0-9]{2}년?)", "", name)
-        # 앞뒤 공백 제거
-        name = name.strip()
-        # 띄어쓰기 제거
-        name = name.replace(" ", "")
-        # 길이 체크
-        if len(name) <= 2 and name.upper() not in ["KB", "LG", "SK"]:
-            return None
-        if len(name) > 20:
-            return None
-        return name
-
-    def extract_from_prompt(prompt):
-        # 복합명사 패턴 (띄어쓰기 포함)
-        patterns = [
-            # 한글 복합명사 (띄어쓰기 포함)
-            r"([가-힣]{2,10}\s*[가-힣]{2,10})",
-            # 한글+영문 복합명사
-            r"([가-힣]{2,10}\s*[A-Za-z]{2,10})",
-            # 영문+한글 복합명사
-            r"([A-Za-z]{2,10}\s*[가-힣]{2,10})",
-            # 영문 복합명사
-            r"([A-Za-z]{2,10}\s*[A-Za-z]{2,10})",
-            # 단일 한글/영문/숫자
-            r"([가-힣A-Za-z0-9]{2,20})",
-        ]
-
-        for pattern in patterns:
-            match = re.search(pattern, prompt)
-            if match:
-                stock_name = match.group(1).strip()
-                normalized = normalize_stock_name(stock_name)
-                if normalized:
-                    return normalized
-        return None
-
+    """🚀 텍스트에서 종목명 추출 - AI Agent 방식으로 완전 교체"""
     # JSON 응답에서 prompt 추출
     prompt_json_match = re.search(r'"prompt":"([^"]+)"', text_content)
     if prompt_json_match:
-        stock = extract_from_prompt(prompt_json_match.group(1))
-        if stock:
-            return stock
+        stock_info = extract_stock_with_ai_agent(prompt_json_match.group(1))
+        if stock_info["found"]:
+            return stock_info["stock_name"] or stock_info["ticker"]
 
     # JSON 응답에서 query 추출
     query_json_match = re.search(r'"query":"([^"]+)"', text_content)
     if query_json_match:
-        stock = extract_from_prompt(query_json_match.group(1))
-        if stock:
-            return stock
+        stock_info = extract_stock_with_ai_agent(query_json_match.group(1))
+        if stock_info["found"]:
+            return stock_info["stock_name"] or stock_info["ticker"]
 
     # 직접 텍스트에서 추출
-    stock_from_direct_text = extract_from_prompt(text_content)
-    if stock_from_direct_text:
-        return stock_from_direct_text
+    stock_info = extract_stock_with_ai_agent(text_content)
+    if stock_info["found"]:
+        return stock_info["stock_name"] or stock_info["ticker"]
 
     return None
 
@@ -215,20 +192,28 @@ def extract_stock_and_date_from_memory(memory):
 
 
 def extract_stock_from_llm_response(response):
-    # "종목명: KB증권" 또는 JSON {"stock_name": "KB증권"} 형태 지원
+    """🚀 LLM 응답에서 종목명 추출 - AI Agent 방식 추가"""
     if not response:
         return None
-    # 1. "종목명: KB증권" 패턴
+
+    # 1. 기존 패턴 유지 (빠른 추출)
     match = re.search(r"종목명[:：]\s*([가-힣A-Za-z0-9]+)", response)
     if match:
         return match.group(1)
-    # 2. JSON 응답
+
+    # 2. JSON 응답 처리
     try:
         data = json.loads(response)
         if isinstance(data, dict) and "stock_name" in data:
             return data["stock_name"]
     except Exception:
         pass
+
+    # 3. 🚀 AI Agent로 추가 분석
+    stock_info = extract_stock_with_ai_agent(response)
+    if stock_info["found"]:
+        return stock_info["stock_name"] or stock_info["ticker"]
+
     return None
 
 
@@ -241,22 +226,46 @@ def clean_stock_name(name):
 def save_interaction_log(
     prompt, response, steps=None, meta=None, memory=None, log_path=None
 ):
+    """
+    🚀 사용자 상호작용을 첨부된 JSON 파일 형식과 동일하게 저장하는 함수예요
+
+    AI Agent를 사용해서 정교하게 종목명을 추출해요!
+
+    저장 형식:
+    {
+      "timestamp": "20250610_090142",
+      "prompt": "사용자 질문...",
+      "response": "AI 응답...",
+      "steps": ["단계별 실행 내용..."],
+      "meta": {}
+    }
+    """
     os.makedirs(LOG_DIR, exist_ok=True)
     now = datetime.now().strftime("%Y%m%d_%H%M%S")
     stock, date = None, None
 
-    # 1순위: LLM 응답에서 종목명 추출
-    stock = extract_stock_from_llm_response(response)
+    # 🚀 1순위: AI Agent로 프롬프트에서 종목명 추출 (가장 정확함)
+    stock_info = extract_stock_with_ai_agent(prompt)
+    if stock_info["found"]:
+        stock = stock_info["stock_name"] or stock_info["ticker"]
+        # AI Agent가 추출한 정보를 meta에 저장
+        if meta is None:
+            meta = {}
+        meta["ai_extracted_stock_info"] = stock_info
 
-    # 2순위: log_path가 주어지면 log에서 종목명 추출
+    # 2순위: LLM 응답에서 종목명 추출
+    if not stock:
+        stock = extract_stock_from_llm_response(response)
+
+    # 3순위: log_path가 주어지면 log에서 종목명 추출
     if not stock and log_path:
         stock = extract_stock_from_log(log_path)
 
-    # 3순위: 기존 방식 fallback
+    # 4순위: 기존 방식 fallback
     if not stock and memory is not None:
         stock, date = extract_stock_and_date_from_memory(memory)
 
-    # 4순위: 프롬프트에서 추출
+    # 5순위: 구 방식 프롬프트 추출 (최후의 수단)
     if not stock:
         stock_from_prompt_tuple = extract_info_from_prompt(prompt)
         stock = stock_from_prompt_tuple[0]
@@ -281,11 +290,31 @@ def save_interaction_log(
     analysis = safe_filename(analysis)
 
     filename = f"{LOG_DIR}/json-agent-{stock}-{analysis}-at{date_only}-save{now}.json"
+
+    # 🚀 첨부된 JSON 파일과 동일한 형식으로 저장
+    # steps 데이터를 문자열 배열로 변환 (기존 형식에 맞춤)
+    formatted_steps = []
+    if steps:
+        for step in steps:
+            if isinstance(step, dict):
+                # dict 형태의 step을 문자열로 변환
+                if "response" in step:
+                    formatted_steps.append(step["response"])
+                elif "message" in step:
+                    formatted_steps.append(step["message"])
+                else:
+                    # 전체 dict를 문자열로 변환
+                    formatted_steps.append(str(step))
+            else:
+                # 이미 문자열이면 그대로 사용
+                formatted_steps.append(str(step))
+
+    # 첨부된 파일과 동일한 JSON 구조로 저장
     data = {
         "timestamp": now,
         "prompt": prompt,
         "response": response,
-        "steps": steps or [],
+        "steps": formatted_steps,
         "meta": meta or {},
     }
 
