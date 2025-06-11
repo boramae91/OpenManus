@@ -205,3 +205,10 @@ cython_debug/
 
 # node
 node_modules
+
+# 다운로드 임시 파일들 (Chrome에서 다운로드 중인 파일들을 Git에서 무시)
+*.crdownload
+
+# CSV 데이터 파일들 (데이터셋 파일들을 Git에서 무시)
+*.csv
+
