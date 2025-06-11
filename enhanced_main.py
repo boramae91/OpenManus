@@ -1005,7 +1005,7 @@ class EnhancedStockAnalysisSystem:
     def save_enhanced_results(
         self, results: Dict[str, Any], stock_info: Dict[str, Any]
     ) -> str:
-        """🚀 io_logger를 사용해서 개선된 분석 결과를 일관된 형식으로 저장해요"""
+        """🚀 io_logger를 사용해서 개선된 분석 결과를 일관된 형식으로 저장해요 (원본 데이터 포함)"""
         try:
             # 사용자 프롬프트와 최종 응답 추출
             user_prompt = results.get("user_prompt", "")
@@ -1056,6 +1056,10 @@ class EnhancedStockAnalysisSystem:
                     steps_text.append(
                         f"📈 재무데이터 수집 성공: {', '.join(step_data.get('data_sources', []))}"
                     )
+                elif step_key == "step2_enhanced_dart_data" and step_data.get(
+                    "success"
+                ):
+                    steps_text.append("🚀 Enhanced DART 데이터 수집 성공")
                 elif step_key == "step3_classification" and step_data.get("performed"):
                     steps_text.append("🏷️ 종목 분류 완료")
                 elif step_key == "step4_detailed_analysis" and step_data.get(
@@ -1066,7 +1070,10 @@ class EnhancedStockAnalysisSystem:
             steps_text.append(response_text)  # 전체 응답 내용
             steps_text.append("")  # 마지막은 빈 문자열
 
-            # 메타데이터 구성
+            # 📊 원본 데이터 추가 준비
+            raw_data_section = self._prepare_raw_data_for_json(results)
+
+            # 메타데이터 구성 (원본 데이터 포함)
             meta_data = {
                 "analysis_flow": results.get("analysis_flow", "enhanced"),
                 "success": results.get("success", False),
@@ -1088,6 +1095,8 @@ class EnhancedStockAnalysisSystem:
                     .get("step4_detailed_analysis", {})
                     .get("performed", False),
                 },
+                # 🚀 원본 데이터 섹션 추가
+                "raw_data": raw_data_section,
             }
 
             # 🚀 io_logger를 사용해서 첨부된 JSON 파일과 동일한 형식으로 저장
@@ -1098,12 +1107,172 @@ class EnhancedStockAnalysisSystem:
                 meta=meta_data,
             )
 
-            logger.info(f"💾 Enhanced 분석 결과 저장: {filepath}")
+            logger.info(f"💾 Enhanced 분석 결과 저장 (원본 데이터 포함): {filepath}")
             return filepath
 
         except Exception as e:
             logger.error(f"결과 저장 중 오류: {e}")
             return None
+
+    def _prepare_raw_data_for_json(self, results: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        JSON 저장을 위한 원본 데이터 준비
+        yfinance와 DART에서 가져온 모든 원본 데이터를 정리해요
+        """
+        raw_data = {
+            "data_sources_summary": {
+                "yfinance_data_available": False,
+                "dart_basic_data_available": False,
+                "enhanced_dart_data_available": False,
+            },
+            "yfinance_raw_data": {},
+            "dart_basic_raw_data": {},
+            "enhanced_dart_raw_data": {},
+        }
+
+        try:
+            # 1. 🔍 yfinance 원본 데이터 추출
+            financial_data = results.get("steps", {}).get("step2_financial_data", {})
+            if financial_data.get("success"):
+                raw_data["data_sources_summary"]["yfinance_data_available"] = True
+
+                # yfinance에서 수집한 모든 데이터를 포함
+                yfinance_data = {
+                    "basic_info": financial_data.get("basic_info", {}),
+                    "current_price_info": financial_data.get("current_price_info", {}),
+                    "financial_ratios": financial_data.get("financial_ratios", {}),
+                    "growth_metrics": financial_data.get("growth_metrics", {}),
+                    "price_history": financial_data.get("price_history", {}),
+                    "data_quality": financial_data.get("data_quality", "정보없음"),
+                    "data_sources": financial_data.get("data_sources", []),
+                    "collection_info": {
+                        "success": financial_data.get("success", False),
+                        "errors": financial_data.get("errors", []),
+                        "stock_info": financial_data.get("stock_info", {}),
+                    },
+                }
+
+                # DART 기본 정보가 포함되어 있다면 분리
+                if "dart_info" in financial_data:
+                    raw_data["data_sources_summary"]["dart_basic_data_available"] = True
+                    raw_data["dart_basic_raw_data"] = financial_data["dart_info"]
+
+                raw_data["yfinance_raw_data"] = yfinance_data
+                logger.info("✅ yfinance 원본 데이터 JSON 준비 완료")
+
+            # 2. 🚀 Enhanced DART 원본 데이터 추출
+            enhanced_dart_data = results.get("steps", {}).get(
+                "step2_enhanced_dart_data", {}
+            )
+            if enhanced_dart_data.get("success"):
+                raw_data["data_sources_summary"]["enhanced_dart_data_available"] = True
+
+                # Enhanced DART에서 수집한 모든 데이터를 포함
+                enhanced_dart_raw = {
+                    "collection_info": {
+                        "success": enhanced_dart_data.get("success", False),
+                        "stock_code": enhanced_dart_data.get("stock_code", ""),
+                        "collected_at": enhanced_dart_data.get("collected_at", ""),
+                        "error": enhanced_dart_data.get("error", ""),
+                    },
+                    "financial_analysis": enhanced_dart_data.get(
+                        "financial_analysis", {}
+                    ),
+                    "governance_analysis": enhanced_dart_data.get(
+                        "governance_analysis", {}
+                    ),
+                    "investment_analysis": enhanced_dart_data.get(
+                        "investment_analysis", {}
+                    ),
+                    "disclosure_monitoring": enhanced_dart_data.get(
+                        "disclosure_monitoring", {}
+                    ),
+                }
+
+                raw_data["enhanced_dart_raw_data"] = enhanced_dart_raw
+                logger.info("✅ Enhanced DART 원본 데이터 JSON 준비 완료")
+
+            # 3. 📊 데이터 소스별 통계 정보 추가
+            raw_data["data_statistics"] = self._calculate_data_statistics(raw_data)
+
+            logger.info("📊 원본 데이터 JSON 준비 완료")
+
+        except Exception as e:
+            logger.error(f"❌ 원본 데이터 준비 중 오류: {e}")
+            raw_data["preparation_error"] = str(e)
+
+        return raw_data
+
+    def _calculate_data_statistics(self, raw_data: Dict[str, Any]) -> Dict[str, Any]:
+        """원본 데이터의 통계 정보를 계산해요"""
+        stats = {
+            "total_data_points": 0,
+            "yfinance_data_points": 0,
+            "enhanced_dart_data_points": 0,
+            "data_completeness": "정보없음",
+        }
+
+        try:
+            # yfinance 데이터 포인트 계산
+            yfinance_data = raw_data.get("yfinance_raw_data", {})
+            if yfinance_data:
+                yfinance_count = 0
+                for section_name, section_data in yfinance_data.items():
+                    if isinstance(section_data, dict):
+                        # None이 아닌 값들만 카운트
+                        yfinance_count += sum(
+                            1 for v in section_data.values() if v is not None
+                        )
+                stats["yfinance_data_points"] = yfinance_count
+
+            # Enhanced DART 데이터 포인트 계산
+            enhanced_dart_data = raw_data.get("enhanced_dart_raw_data", {})
+            if enhanced_dart_data:
+                dart_count = 0
+                for section_name, section_data in enhanced_dart_data.items():
+                    if isinstance(section_data, dict):
+                        dart_count += self._count_nested_dict_values(section_data)
+                stats["enhanced_dart_data_points"] = dart_count
+
+            # 총 데이터 포인트
+            stats["total_data_points"] = (
+                stats["yfinance_data_points"] + stats["enhanced_dart_data_points"]
+            )
+
+            # 데이터 완성도 평가
+            if stats["total_data_points"] > 100:
+                stats["data_completeness"] = "매우높음"
+            elif stats["total_data_points"] > 50:
+                stats["data_completeness"] = "높음"
+            elif stats["total_data_points"] > 20:
+                stats["data_completeness"] = "보통"
+            else:
+                stats["data_completeness"] = "낮음"
+
+        except Exception as e:
+            logger.error(f"데이터 통계 계산 오류: {e}")
+            stats["calculation_error"] = str(e)
+
+        return stats
+
+    def _count_nested_dict_values(
+        self, data: Dict, max_depth: int = 3, current_depth: int = 0
+    ) -> int:
+        """중첩된 딕셔너리의 값 개수를 재귀적으로 계산해요"""
+        if current_depth > max_depth:
+            return 0
+
+        count = 0
+        for value in data.values():
+            if isinstance(value, dict):
+                count += self._count_nested_dict_values(
+                    value, max_depth, current_depth + 1
+                )
+            elif isinstance(value, list):
+                count += len(value)
+            elif value is not None:
+                count += 1
+        return count
 
 
 async def main():
