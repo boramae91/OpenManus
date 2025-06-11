@@ -157,7 +157,8 @@ class EnhancedStockAnalysisSystem:
                 logger.info("🔍 Enhanced DART 데이터 수집 시작...")
                 enhanced_dart_data = (
                     self.enhanced_dart_collector.get_comprehensive_company_analysis(
-                        stock_code=stock_info["stock_code"]
+                        stock_code=stock_info["stock_code"],
+                        company_name=stock_info.get("stock_name"),
                     )
                 )
 

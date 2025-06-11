@@ -1,0 +1,165 @@
+{
+  "timestamp": "20250611_152211",
+  "prompt": "한화에어로스페이스에 대해서 분석해줘",
+  "response": "📊 감지된 종목: 1. 한화에어로스페이스 (012450)\n" +
+  "\n" +
+  "📋 종합 요약:\n" +
+  "\n" +
+  "{'analyzed_stock': {'name': '1. 한화에어로스페이스', 'code': '012450'," +
+  "'detection_method': 'ai_ai_web_search_priority'}, 'data_sources':" +
+  "{'financial_data_collected': True, 'data_sources': ['yfinance', 'DART']," +
+  "'data_quality': '보통'}, 'analysis_quality': {'classification_performed': False," +
+  "'detailed_analysis_performed': False, 'financial_data_enhanced': True}," +
+  "'key_insights': {'classification': None, 'investment_outlook': None," +
+  "'risk_factors': None, 'recommendation': None}}",
+  "steps": [
+    "",
+    "📊 감지된 종목: 1. 한화에어로스페이스 (012450)",
+    "📈 재무데이터 수집 성공: yfinance, DART",
+    "📊 감지된 종목: 1. 한화에어로스페이스 (012450)\n" +
+    "\n" +
+    "📋 종합 요약:\n" +
+    "\n" +
+    "{'analyzed_stock': {'name': '1. 한화에어로스페이스', 'code': '012450'," +
+    "'detection_method': 'ai_ai_web_search_priority'}, 'data_sources':" +
+    "{'financial_data_collected': True, 'data_sources': ['yfinance', 'DART']," +
+    "'data_quality': '보통'}, 'analysis_quality': {'classification_performed': False," +
+    "'detailed_analysis_performed': False, 'financial_data_enhanced': True}," +
+    "'key_insights': {'classification': None, 'investment_outlook': None," +
+    "'risk_factors': None, 'recommendation': None}}",
+    ""
+  ],
+  "meta": {
+    "analysis_flow": "enhanced",
+    "success": false,
+    "timestamp": "2025-06-11T15:21:41.646270",
+    "stock_info": {
+        "detected": true,
+        "stock_name": "1. 한화에어로스페이스",
+        "stock_code": "012450",
+        "detection_method": "ai_ai_web_search_priority"
+    },
+    "data_quality": "보통",
+    "enhanced_features": {
+        "financial_data_used": true,
+        "enhanced_dart_used": false,
+        "classification_performed": false,
+        "detailed_analysis_performed": false
+    },
+    "raw_data": {
+        "data_sources_summary": {
+            "yfinance_data_available": true,
+            "dart_basic_data_available": true,
+            "enhanced_dart_data_available": false
+        },
+        "yfinance_raw_data": {
+            "basic_info": {
+                "company_name": "Hanwha Aerospace Co., Ltd.",
+                "sector": "Industrials",
+                "industry": "Aerospace & Defense",
+                "country": "South Korea",
+                "currency": "KRW",
+                "exchange": "KSC",
+                "ticker_symbol": "012450.KS"
+            },
+            "current_price_info": {
+                "current_price": 907000.0,
+                "previous_close": 936000.0,
+                "open_price": 936000.0,
+                "day_high": 942000.0,
+                "day_low": 901000.0,
+                "volume": 376994,
+                "market_cap": 43365122965504,
+                "shares_outstanding": 47811600
+            },
+            "financial_ratios": {
+                "pe_ratio": null,
+                "peg_ratio": null,
+                "pb_ratio": null,
+                "ps_ratio": 2.8389215,
+                "dividend_yield": 0.37,
+                "profit_margin": 0.15703,
+                "operating_margin": 0.10225,
+                "return_on_equity": 0.36983,
+                "return_on_assets": 0.04161,
+                "debt_to_equity": 122.98,
+                "current_ratio": 0.876,
+                "quick_ratio": 0.235
+            },
+            "growth_metrics": {
+                "earnings_growth": null,
+                "revenue_growth": 2.784,
+                "earnings_quarterly_growth": null,
+                "revenue_quarterly_growth": null
+            },
+            "price_history": {
+                "52_week_high": 950000.0,
+                "52_week_low": 229638.40818130382,
+                "avg_volume_3m": 455631.2555555556,
+                "price_change_1y": 293.0879684662838
+            },
+            "data_quality": "보통",
+            "data_sources": [
+                "yfinance",
+                "DART"
+            ],
+            "collection_info": {
+                "success": true,
+                "errors": [],
+                "stock_info": {
+                    "stock_code": "012450",
+                    "stock_name": "1. 한화에어로스페이스",
+                    "collection_timestamp": "2025-06-11T15:22:00.408061"
+                }
+            }
+        },
+        "dart_basic_raw_data": {
+            "company_info": {
+                "corp_name": "한화에어로스페이스(주)",
+                "corp_code": "00126566",
+                "business_summary": "6098102992",
+                "established_date": "19770801",
+                "listing_date": "12",
+                "ceo_name": "김동관, 손재일, Michael Coulter",
+                "address": "경상남도 창원시 성산구  창원대로 1204"
+            },
+            "financial_statements": {
+                "current_assets": 22867968340831,
+                "non_current_assets": 20468905344642,
+                "total_assets": 17364759288308,
+                "current_liabilities": 25516144577239,
+                "non_current_liabilities": 6456412360924,
+                "total_liabilities": 13843180975323,
+                "total_equity": 3521578312985,
+                "revenue": 7935101827678,
+                "operating_profit": 1499700414775,
+                "net_income": 1038040280457,
+                "debt_ratio": 3.93,
+                "operating_margin": 0.189,
+                "net_margin": 0.1308
+            },
+            "business_report": {
+                "main_business": "법인고유번호 00126566 기업의 주요사업",
+                "business_risks": "시장변동성, 경쟁심화 등",
+                "future_plans": "사업확장 및 기술개발 계획"
+            }
+        },
+        "enhanced_dart_raw_data": {},
+        "data_statistics": {
+            "total_data_points": 32,
+            "yfinance_data_points": 32,
+            "enhanced_dart_data_points": 0,
+            "data_completeness": "보통"
+        }
+    },
+    "ai_extracted_stock_info": {
+        "stock_name": "한화에어로스페이스",
+        "ticker": "012450",
+        "stock_code": "012450",
+        "found": true,
+        "stock_type": "korean",
+        "market": "KRX",
+        "prompt": "한화에어로스페이스에 대해서 분석해줘"
+    }
+}
+}

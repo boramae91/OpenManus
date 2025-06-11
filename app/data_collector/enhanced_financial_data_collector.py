@@ -903,12 +903,15 @@ class EnhancedDartDataCollector:
         except:
             return 0.0
 
-    def get_corp_code_from_stock_code(self, stock_code: str) -> Optional[str]:
+    def get_corp_code_from_stock_code(
+        self, stock_code: str, company_name: str = None
+    ) -> Optional[str]:
         """
-        종목코드로부터 DART 기업고유코드 조회
+        종목코드와 회사명으로부터 DART 기업고유코드 조회 (동적 검색 지원)
 
         Args:
             stock_code: 6자리 종목코드 (예: "005930")
+            company_name: 회사명 (동적 검색용, 선택사항)
 
         Returns:
             str: 8자리 기업고유코드 또는 None
@@ -917,7 +920,26 @@ class EnhancedDartDataCollector:
             return None
 
         try:
-            # 간단한 매핑 테이블 (실제로는 DART 고유번호 API를 사용해야 함)
+            # 🚀 1단계: 회사명이 있으면 DART API로 동적 검색 (최우선!)
+            if company_name:
+                logger.info(
+                    f"🔍 Enhanced DART: 회사명 '{company_name}'으로 동적 검색 시도..."
+                )
+                corp_code = self._search_corp_code_by_company_name(company_name)
+                if corp_code:
+                    logger.info(
+                        f"✅ Enhanced DART 동적 검색 성공: {company_name} → {corp_code}"
+                    )
+                    return corp_code
+                else:
+                    logger.warning(
+                        f"⚠️ Enhanced DART 회사명 '{company_name}' 동적 검색 실패"
+                    )
+
+            # 🗂️ 2단계: 백업용 하드코딩 매핑 테이블 (주요 종목만)
+            logger.info(
+                f"📋 Enhanced DART: 종목코드 {stock_code} 백업 매핑 테이블 검색..."
+            )
             stock_to_corp_mapping = {
                 "005930": "00126380",  # 삼성전자
                 "000660": "00164779",  # SK하이닉스
@@ -929,22 +951,244 @@ class EnhancedDartDataCollector:
                 "028260": "00344976",  # 삼성물산
                 "066570": "00186136",  # LG전자
                 "096770": "00173054",  # SK이노베이션
+                "032830": "00126256",  # 삼성생명 (추가)
+                "272210": "00356535",  # 한화시스템 (추가)
+                "012450": "00178253",  # 한화에어로스페이스 (추가)
             }
 
-            return stock_to_corp_mapping.get(stock_code)
+            backup_corp_code = stock_to_corp_mapping.get(stock_code)
+            if backup_corp_code:
+                logger.info(
+                    f"✅ Enhanced DART 백업 매핑 성공: {stock_code} → {backup_corp_code}"
+                )
+                return backup_corp_code
 
-        except Exception as e:
-            logger.error(f"종목코드 변환 실패: {e}")
+            # ❌ 3단계: 모든 방법 실패
+            logger.warning(
+                f"❌ Enhanced DART 법인고유번호 검색 실패: 종목코드({stock_code}), 회사명({company_name})"
+            )
             return None
 
+        except Exception as e:
+            logger.error(f"Enhanced DART 종목코드 변환 실패: {e}")
+            return None
+
+    def _search_corp_code_by_company_name(self, company_name: str) -> Optional[str]:
+        """DART API를 사용해서 회사명으로 법인고유번호를 검색해요 (Enhanced 버전)"""
+        try:
+            # 🧹 회사명 정제 (접두사 및 불필요한 문자 제거)
+            cleaned_name = self._clean_company_name(company_name)
+            logger.info(
+                f"🧹 Enhanced DART 회사명 정제: '{company_name}' → '{cleaned_name}'"
+            )
+
+            # DART API의 고유번호 검색 API 호출 (ZIP 압축 파일)
+            url = "https://opendart.fss.or.kr/api/corpCode.xml"
+            params = {
+                "crtfc_key": self.dart_api_key,
+            }
+
+            response = requests.get(url, params=params, timeout=30)
+
+            if response.status_code == 200:
+                # ZIP 파일 압축 해제
+                import io
+                import xml.etree.ElementTree as ET
+                import zipfile
+
+                # ZIP 내용을 메모리에서 압축 해제
+                zip_content = io.BytesIO(response.content)
+                with zipfile.ZipFile(zip_content, "r") as zip_file:
+                    # CORPCODE.xml 파일 읽기
+                    xml_filename = zip_file.namelist()[0]  # 첫 번째 파일
+                    xml_content = zip_file.read(xml_filename).decode("utf-8")
+
+                # XML 파싱
+                root = ET.fromstring(xml_content)
+                companies = []
+
+                # 🔍 모든 회사 정보 파싱
+                for company in root.findall(".//list"):
+                    corp_code = company.findtext("corp_code", "")
+                    corp_name = company.findtext("corp_name", "")
+                    stock_code = company.findtext("stock_code", "")
+
+                    if corp_code and corp_name:
+                        companies.append(
+                            {
+                                "corp_code": corp_code,
+                                "corp_name": corp_name.strip(),
+                                "stock_code": stock_code.strip() if stock_code else "",
+                            }
+                        )
+
+                logger.info(
+                    f"📋 Enhanced DART에서 {len(companies)}개 기업 정보 로드 완료"
+                )
+
+                # 🎯 매칭 점수 계산하여 최적 회사 찾기
+                best_match = None
+                best_score = 0
+
+                # 1차: 정제된 이름으로 직접 매칭
+                for company in companies:
+                    score = self._calculate_match_score(
+                        cleaned_name, company["corp_name"]
+                    )
+                    if score > best_score:
+                        best_score = score
+                        best_match = company
+
+                # 2차: 대체 표기법 시도 (점수가 낮은 경우)
+                if best_score < 90:
+                    alternative_names = self._try_alternative_company_names(
+                        cleaned_name
+                    )
+                    for alt_name in alternative_names:
+                        logger.info(f"🔄 Enhanced DART 대체 표기법 시도: '{alt_name}'")
+                        for company in companies:
+                            score = self._calculate_match_score(
+                                alt_name, company["corp_name"]
+                            )
+                            if score > best_score:
+                                best_score = score
+                                best_match = company
+                                logger.info(
+                                    f"✅ Enhanced DART 대체 표기법 매칭 성공: {alt_name} → {company['corp_name']} (점수: {score})"
+                                )
+
+                if best_match and best_score >= 70:  # 최소 70% 매칭
+                    logger.info(
+                        f"🎯 Enhanced DART 최고 매칭: {best_match['corp_name']} (점수: {best_score})"
+                    )
+                    return best_match["corp_code"]
+                else:
+                    logger.warning(
+                        f"⚠️ Enhanced DART 매칭 점수 부족: 최고 점수 {best_score} < 70"
+                    )
+                    return None
+
+            else:
+                logger.error(
+                    f"Enhanced DART API 호출 실패: HTTP {response.status_code}"
+                )
+                return None
+
+        except Exception as e:
+            logger.error(f"Enhanced DART 회사명 검색 중 오류: {e}")
+            return None
+
+    def _clean_company_name(self, company_name: str) -> str:
+        """회사명에서 불필요한 접두사와 문자를 제거해요 (Enhanced 버전)"""
+        import re
+
+        # 원본 보존
+        cleaned = company_name.strip()
+
+        # 🧹 1단계: 숫자+점+공백 접두사 제거 (예: "1. 삼성생명" → "삼성생명")
+        cleaned = re.sub(r"^\d+\.\s*", "", cleaned)
+
+        # 🧹 2단계: 괄호와 내용 제거 (예: "삼성생명(주)" → "삼성생명")
+        cleaned = re.sub(r"\([^)]*\)", "", cleaned)
+
+        # 🧹 3단계: 다양한 회사 표기 정리
+        # "㈜" → "주식회사"로 정규화 (하지만 검색시에는 둘 다 시도)
+
+        # 🧹 4단계: 여러 공백을 하나로 합치기
+        cleaned = re.sub(r"\s+", " ", cleaned).strip()
+
+        logger.debug(f"🧹 Enhanced DART 회사명 정제: '{company_name}' → '{cleaned}'")
+        return cleaned
+
+    def _try_alternative_company_names(self, company_name: str) -> List[str]:
+        """다양한 대체 표기법을 생성해요 (Enhanced 버전)"""
+        alternatives = []
+
+        # 원본 추가
+        alternatives.append(company_name)
+
+        # 🔄 "주식회사" 관련 변형
+        if "주식회사" in company_name:
+            # "주식회사 ABC" → "ABC"
+            alternatives.append(company_name.replace("주식회사", "").strip())
+            # "주식회사 ABC" → "㈜ABC"
+            alternatives.append(company_name.replace("주식회사", "㈜"))
+        else:
+            # "ABC" → "주식회사 ABC"
+            alternatives.append(f"주식회사 {company_name}")
+            # "ABC" → "㈜ABC"
+            alternatives.append(f"㈜{company_name}")
+
+        # 🔄 특별한 케이스들
+        special_cases = {
+            "삼성생명": [
+                "삼성생명보험",
+                "삼성생명보험주식회사",
+                "주식회사 삼성생명보험",
+            ],
+            "삼성전자": ["삼성전자주식회사", "주식회사 삼성전자"],
+            "LG전자": ["LG전자주식회사", "주식회사 LG전자"],
+            "SK하이닉스": ["SK하이닉스주식회사", "에스케이하이닉스"],
+            "한화에어로스페이스": [
+                "한화에어로스페이스주식회사",
+                "주식회사 한화에어로스페이스",
+            ],
+            "한화시스템": ["한화시스템주식회사", "주식회사 한화시스템"],
+        }
+
+        if company_name in special_cases:
+            alternatives.extend(special_cases[company_name])
+
+        # 중복 제거하면서 순서 보존
+        seen = set()
+        unique_alternatives = []
+        for alt in alternatives:
+            if alt not in seen:
+                seen.add(alt)
+                unique_alternatives.append(alt)
+
+        logger.debug(f"🔄 Enhanced DART 대체 표기법: {unique_alternatives}")
+        return unique_alternatives
+
+    def _calculate_match_score(self, target: str, corp: str) -> int:
+        """회사명 매칭 점수를 계산해요 (Enhanced 버전)"""
+        score = 0
+
+        # 🎯 1단계: 정확한 일치 (최고점)
+        if target == corp:
+            score += 100
+
+        # 🎯 2단계: 완전히 포함되는 경우
+        elif target in corp:
+            # 정확한 부분 문자열인지 확인 (예: "한화에어로스페이스"가 "한화에어로스페이스주식회사"에 포함)
+            if corp.startswith(target) or corp.endswith(target):
+                score += 90
+            else:
+                score += 70
+
+        elif corp in target:
+            score += 60
+
+        # 🎯 3단계: 키워드 기반 매칭
+        target_keywords = target.split()
+        corp_keywords = corp.split()
+
+        # 공통 키워드 개수에 따른 점수
+        common_keywords = set(target_keywords) & set(corp_keywords)
+        if common_keywords:
+            score += len(common_keywords) * 20
+
+        return score
+
     def get_comprehensive_company_analysis(
-        self, stock_code: str, bsns_year: str = None
+        self, stock_code: str, company_name: str = None, bsns_year: str = None
     ) -> Dict[str, Any]:
         """
-        종합 기업 분석 (모든 기능 통합)
+        종합 기업 분석 (모든 기능 통합) - 회사명 지원 추가
 
         Args:
             stock_code: 6자리 종목코드
+            company_name: 회사명 (동적 검색용, 선택사항)
             bsns_year: 사업연도
 
         Returns:
@@ -953,19 +1197,22 @@ class EnhancedDartDataCollector:
         if not self.is_available():
             return {"success": False, "error": "DART API 키가 설정되지 않았습니다"}
 
-        # 종목코드 → 기업고유코드 변환
-        corp_code = self.get_corp_code_from_stock_code(stock_code)
+        # 종목코드 + 회사명 → 기업고유코드 변환 (동적 검색 지원)
+        corp_code = self.get_corp_code_from_stock_code(stock_code, company_name)
         if not corp_code:
             return {
                 "success": False,
-                "error": f"종목코드 {stock_code}에 대한 기업고유코드를 찾을 수 없습니다",
+                "error": f"종목코드 {stock_code} ({company_name})에 대한 기업고유코드를 찾을 수 없습니다",
             }
 
-        logger.info(f"🔍 {stock_code} 종합 기업 분석 시작")
+        logger.info(
+            f"🔍 Enhanced DART: {stock_code} ({company_name}) 종합 기업 분석 시작"
+        )
 
         result = {
             "success": True,
             "stock_code": stock_code,
+            "company_name": company_name,
             "corp_code": corp_code,
             "analysis_date": datetime.now().isoformat(),
         }
@@ -991,11 +1238,13 @@ class EnhancedDartDataCollector:
             if disclosure_data["success"]:
                 result["disclosure_monitoring"] = disclosure_data
 
-            logger.info(f"✅ {stock_code} 종합 기업 분석 완료")
+            logger.info(
+                f"✅ Enhanced DART: {stock_code} ({company_name}) 종합 기업 분석 완료"
+            )
             return result
 
         except Exception as e:
-            logger.error(f"❌ 종합 기업 분석 실패: {e}")
+            logger.error(f"❌ Enhanced DART 종합 기업 분석 실패: {e}")
             result["success"] = False
             result["error"] = str(e)
             return result
