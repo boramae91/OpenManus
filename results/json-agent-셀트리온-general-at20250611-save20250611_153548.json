@@ -1,0 +1,859 @@
+{
+  "timestamp": "20250611_153548",
+  "prompt": "셀트리온에 대해서 분석해줘",
+  "response": "📊 감지된 종목: 1. 셀트리온 (068270)\n" +
+  "\n" +
+  "🏷️ 종목 분류:\n" +
+  "\n" +
+  "Step 1: 종목 기본 정보 분석을 완료했습니다.\n" +
+  "\n" +
+  "셀트리온에 대한 기본 정보를 다음과 같이 정리할 수 있습니다:\n" +
+  "\n" +
+  "1. **종목명 및 종목코드**: \n" +
+  "   - 종목명: 셀트리온\n" +
+  "   - 종목코드: 068270\n" +
+  "\n" +
+  "2. **업종 분류**:\n" +
+  "   - 섹터: Healthcare\n" +
+  "   - 산업: Biotechnology\n" +
+  "\n" +
+  "3. **시가총액 규모**:\n" +
+  "   - 시가총액: 36,656,425,992,192 KRW\n" +
+  "\n" +
+  "4. **주요 사업 영역**:\n" +
+  "   - 셀트리온은 바이오의약품 개발 및 생산을 주요 사업으로 하고 있으며, 특히 바이오시밀러 제품에 강점을 가지고 있습니다.\n" +
+  "\n" +
+  "5. **최근 3년간 매출 및 영업이익 추이**:\n" +
+  "   - 제공된 데이터에는 최근 3년간의 매출 및 영업이익 추이가 명시되어 있지 않으므로, 이 부분은 추가적인 데이터 수집이 필요합니다.\n" +
+  "\n" +
+  "6. **주요 재무지표**:\n" +
+  "   - PER (주가수익비율): 데이터 없음\n" +
+  "   - PBR (주가순자산비율): 데이터 없음\n" +
+  "   - ROE (자기자본이익률): 2.95%\n" +
+  "   - 부채비율: 12.918%\n" +
+  "   - 배당수익률: 42.00% (데이터의 신뢰성 확인 필요)\n" +
+  "\n" +
+  "위 정보를 바탕으로 셀트리온을 분류하면 다음과 같습니다:\n" +
+  "\n" +
+  "셀트리온은 바이오테크놀로지 산업에 속하며, 매출 성장률이 14.20%로 고성장주에 근접한 수치를 보이고 있습니다. 이익 성장률이 414.40%로" +
+  "매우 높아, 최근 실적 개선이 두드러집니다. 시가총액이 크고, 바이오시밀러 분야에서 혁신적인 기술을 보유하고 있어 높은 성장 잠재력을 가지고" +
+  "있습니다. 따라서 셀트리온은 **고성장주 (High Growth Stock)**로 분류할 수 있습니다.\n" +
+  "Step 2: 종목 분류를 완료했습니다.\n" +
+  "\n" +
+  "### 셀트리온 분류 분석\n" +
+  "\n" +
+  "1. **저성장주 (Low Growth Stock)**\n" +
+  "   - 매출 성장률: 14.20% (기준 미달)\n" +
+  "   - 안정성: 바이오 산업 특성상 변동성 존재\n" +
+  "   - 점수: 2/5\n" +
+  "\n" +
+  "2. **우량주 (Blue Chip Stock)**\n" +
+  "   - 대기업 여부: 시가총액이 크지만, 전통적 우량주 기준과는 다소 차이\n" +
+  "   - 안정적 실적 및 배당: 배당수익률 데이터의 신뢰성 문제\n" +
+  "   - 점수: 3/5\n" +
+  "\n" +
+  "3. **고성장주 (High Growth Stock)**\n" +
+  "   - 매출 성장률: 14.20% (기준 근접)\n" +
+  "   - 혁신 기술 및 성장 잠재력: 바이오시밀러 분야의 혁신적 기술 보유\n" +
+  "   - 점수: 4/5\n" +
+  "\n" +
+  "4. **자산주 (Asset Stock)**\n" +
+  "   - PBR: 데이터 없음\n" +
+  "   - 자산 가치: 부동산 및 보유 자산 정보 부족\n" +
+  "   - 점수: 1/5\n" +
+  "\n" +
+  "5. **턴어라운드주 (Turnaround Stock)**\n" +
+  "   - 실적 개선 여부: 이익 성장률 414.40%로 최근 실적 개선\n" +
+  "   - 구조조정 여부: 관련 정보 부족\n" +
+  "   - 점수: 3/5\n" +
+  "\n" +
+  "6. **시이클주 (Cyclical Stock)**\n" +
+  "   - 경기 변동 민감도: 바이오 산업은 경기 변동에 덜 민감\n" +
+  "   - 점수: 1/5\n" +
+  "\n" +
+  "7. **기타주 (Other Stock)**\n" +
+  "   - 특수한 경우: 바이오 산업의 특수성 존재\n" +
+  "   - 점수: 2/5\n" +
+  "\n" +
+  "### 최종 분류\n" +
+  "- **선택한 분류**: 고성장주 (High Growth Stock)\n" +
+  "- **근거**: 셀트리온은 매출 성장률이 14.20%로 고성장주 기준에 근접하며, 바이오시밀러 분야에서 혁신적인 기술을 보유하고 있어 높은" +
+  "성장 잠재력을 가지고 있습니다. 이익 성장률이 매우 높아 최근 실적 개선이 두드러집니다.\n" +
+  "- **신뢰도 평가**: 보통 (데이터의 일부 불확실성 및 매출 성장률이 기준에 근접하지만 미달)\n" +
+  "\n" +
+  "셀트리온은 바이오테크놀로지 산업의 특성상 고성장주로 분류하는 것이 적절하다고 판단됩니다.\n" +
+  "Step 3: === 종목 분류 결과 ===\n" +
+  "🏷️ **분류: 고성장주 (High Growth Stock)**\n" +
+  "📊 **신뢰도: 보통**\n" +
+  "📋 **주요 근거:**\n" +
+  "• 매출 성장률이 14.20%로 고성장주 기준에 근접\n" +
+  "• 바이오시밀러 분야에서 혁신적인 기술 보유\n" +
+  "• 이익 성장률이 414.40%로 최근 실적 개선 두드러짐\n" +
+  "\n" +
+  "🔍 **투자 시 고려사항:**\n" +
+  "• 바이오 산업 특성상 변동성이 클 수 있음\n" +
+  "• 배당수익률 데이터의 신뢰성 문제로 배당 안정성 확인 필요\n" +
+  "\n" +
+  "💡 **추가 조언:**\n" +
+  "고성장주는 높은 성장 잠재력을 가진 만큼, 장기적인 관점에서 투자하는 것이 유리할 수 있습니다. 다만, 변동성이 클 수 있으므로 시장 상황과" +
+  "기업의 기술 개발 동향을 주기적으로 모니터링하는 것이 중요합니다.\n" +
+  "Terminated: Reached max steps (3)\n" +
+  "\n" +
+  "📈 상세 분석:\n" +
+  "\n" +
+  "Step 4: Observed output of cmd `browser_use` executed:\n" +
+  "Search results for '셀트리온 068270 재무제표 분석':\n" +
+  "\n" +
+  "1. 셀트리온(A068270) | 재무제표 | 기업정보 | Company Guide\n" +
+  "URL:" +
+  "https://comp.fnguide.com/SVO2/asp/SVD_Finance.asp?pGB=1&gicode=A068270&cID=&MenuYn=Y&ReportGB=B&NewMenuID=103&stkGb=701\n" +
+  "Description:  포괄손익계산서. IFRS(별도), 2022/12, 2023/12, 2024/12, 2025/03, 전년동기," +
+  "전년동기(%). 매출액. 19,375, 18,734, 37,092, 6,340, 6,382, -0.7. 매출원가. \n" +
+  "Content: 셀트리온(A068270) | 재무제표 | 기업정보 | Company Guide 본문 바로가기 메뉴 바로가기 상장기업분석 리포트" +
+  "앱 리타민, 라이트요금제 곧 출시 모든 증권사 리포트를 더 가벼운 요금으로 열기 인쇄 기업정보 Snapshot 기업개요 재무제표 재무비율" +
+  "투자지표 컨센서스 지분분석 업종분석 경쟁사비교 거래소공시 금감원공시 ETF/ETN 정보 ETF Snapshot 성과 및 위험분석 ETN" +
+  "Snapshot 리포트 리포트동향 요약리포트 실적속보 컨센서스 스크리닝 목표주가 괴리율 컨센서스 상/하향 비율 어닝서프라이즈 턴어라운드 랭킹" +
+  "분석 업종별 순위 지표별 순위 ETF 순위 캘린더 부가정보 신용등급 기업주소록 이용안내 Retamin Retamin 셀트리온 068270 |" +
+  "12월 결산 | 홈페이지 홈페이지 http://www.celltrion.com 전화번호 전화번호 032-850-5000 | IR 담당자" +
+  "032-850-5000 주소 주소 인천시 연수구 아카데미로 23 KSE 코스피 제약 코스피 제약 | FICS 바이오 | K200 | NXT" +
+  "PER(Price Earning Ratio) 전일자 보통주 수정주가 / 최근 결산 EPS(주당순이익) * EPS = 당기순이익 /" +
+  "수정평균발행주식수 * 최근결산은 2024/12 (연간) 기준임. PER 36.74 12M PER 전일자 보통주 수정주가 / 12개월" +
+  "Forward EPS 12M PER - 업종 PER 시장대표업종||SUM(구성종목 시가총액)/SUM(구성종목 당기순이익) * 전일자 보통주" +
+  "시가총액 기준 * 당기순이익은 최근결산 2024/12 (연간) 기준임. 업종 PER 69.55 PBR(Price Book-value Ratio)" +
+  "전일자 보통주 수정주가 / 최근 결산기 BPS(주당순자산) * BPS=(지배주주지분-자기주식) / 무상조정기말주식수(우선주 및 자사주 포함) *" +
+  "최근결산은 2024/12 (연간) 기준임. PBR 1.87 배당수익률 {최근 결산기 보통주 DPS(현금, 무상조정) / 전일자 보통주 수정...\n" +
+  "\n" +
+  "Metadata:\n" +
+  "- Total results: 1\n" +
+  "- Language: en\n" +
+  "- Country: us\n" +
+  "\n" +
+  "Observed output of cmd `browser_use` executed:\n" +
+  "Search results for '셀트리온 068270 기업지배구조':\n" +
+  "\n" +
+  "1. [셀트리온] 기업지배구조 보고서 공시 - KRX KIND\n" +
+  "URL:" +
+  "https://kind.krx.co.kr/common/disclsviewer.do?method=search&acptno=20230531000660\n" +
+  "Description:  May 31, 2023  ·  주요내용, 회사의 기업지배구조 관련 주요사항. I. 개요. II. 기업지배구조 현황." +
+  "III. 주주 (i) 주주의 권리 (ii) 주주의 공평한 대우. IV. 이사회 \n" +
+  "Content: [셀트리온] 기업지배구조 보고서 공시 [셀트리온] 본 문서는 최종문서가 아니므로, 최종 정정문서를 반드시 확인하시기 바랍니다." +
+  "문서 목차 문서 목차 본 공지사항은 공시내용 기재 불충분 등의 사유로 한국거래소 정정요구를 받은 사항입니다. 동 공시에 대한 정정공시가" +
+  "이루어지는 경우 공시내용의 기재내용이 달라지게 되므로 반드시 정정내용을 확인하시기 바랍니다. 확인\n" +
+  "\n" +
+  "Metadata:\n" +
+  "- Total results: 1\n" +
+  "- Language: en\n" +
+  "- Country: us\n" +
+  "\n" +
+  "Observed output of cmd `browser_use` executed:\n" +
+  "Search results for '셀트리온 068270 배당 정책':\n" +
+  "\n" +
+  "1. 통합 셀트리온, 1주당 500원 배당 결정..\"내년 4천억 규모 자사주 소각\"\n" +
+  "URL:" +
+  "https://pharm.edaily.co.kr/News/Read?newsId=02384566635838192&mediaCodeNo=257\n" +
+  "Description:  Dec 13, 2023  ·  이번 배당 결정으로 셀트리온의 주주환원율은 163.3%에 이르며, 이는 지난해 기준" +
+  "코스피 상위 10대 기업 평균인 54.7%를 훨씬 뛰어넘는 수준이다. 주주 ... \n" +
+  "Content: 통합 셀트리온, 1주당 500원 배당 결정..\"내년 4천억 규모 자사주 소각\" - 팜이데일리 유료기사는 인쇄용 화면을" +
+  "제공하지 않습니다. pharm edaily 로그인 회원가입 search 전체기사 다크호스 리포트 UP&DOWN 제약 바이오 English" +
+  "News 팜톡 서비스소개 전체기사 전체기사 프리미엄 다크호스 화제의 신약개발 장외 기업들 투자맥짚기 리포트 리포트 분석 전문가 인터뷰 공시" +
+  "돋보기 UP&DOWN UP&DOWN SPECIAL 제약바이오 CEO 인터뷰 지금 업계는 이슈 분석 해외 업계는 English News All" +
+  "Articles (Eng) Premium 팜톡 서비스소개 공지사항 유튜브 구독안내 Subscribe LOGIN SEARCH 지금업계는" +
+  "주주가치제고 자사주소각 배당 통합 셀트리온, 1주당 500원 배당 결정..\"내년 4천억 규모 자사주 소각\" 등록 2023-12-13 오후" +
+  "2:14:07 수정 2023-12-13 오후 2:14:07 kakao facebook twitter mail link_url link_url" +
+  "[이데일리 나은경 기자] 셀트리온(068270) 그룹은 13일 이사회를 거쳐 셀트리온과 셀트리온제약의 배당을 각각 결정했다. 셀트리온헬스케어는" +
+  "신주로 통합된 통합 셀트리온의 주주 자격으로 배당을 받게 되며, 배당 기준일은 12월 31일이다. 우선 셀트리온은 보통주 1주당 500원씩 총" +
+  "1037억원 규모의 현금 배당을 결정했다. 배당 규모는 셀트리온과 셀트리온헬스케어의 합병 기일인 12월 28일 기준, 합병법인의 발행주식" +
+  "총수(약 2억2029만주)에서 자기주식(약 1291만주)을 제외한 2억 738만주를 대상으로 산정했다. 셀트리온은 올해 주식배당 대신 현금배당에" +
+  "집중하면서, 주식가치의 희석을 없애고 동시에 현금배당 총액도 지난해 718억원 대비 1000억원 수준으로 늘렸다. 회사 측은 향후에도 주주환원" +
+  "정책을 강화하기 위해 이익의 30% 수준까지 현금배당을 높인다는 계획이다. 주식 배당 결정에 앞서 셀트리온과 셀트리온헬스케어는...\n" +
+  "\n" +
+  "Metadata:\n" +
+  "- Total results: 1\n" +
+  "- Language: en\n" +
+  "- Country: us\n" +
+  "\n" +
+  "Observed output of cmd `browser_use` executed:\n" +
+  "Search results for '셀트리온 068270 최근 공시사항':\n" +
+  "\n" +
+  "1. 셀트리온(A068270) | 금감원공시 | 기업정보 | Company Guide\n" +
+  "URL:" +
+  "https://comp.fnguide.com/SVO2/asp/SVD_Dart.asp?pGB=1&gicode=A068270&cID=&MenuYn=Y&ReportGB=&NewMenuID=111&stkGb=\n" +
+  "Description:  * 최근결산은 2024/12 (연간) 기준임. PER: 87.83. 12M PER: 전일자 보통주 수정주가 ..." +
+  "비상장회사중요사항공시; 하도급대금결제조건공시; 기타공정위공시. 본 자료는 ... \n" +
+  "Content: 셀트리온(A068270) | 금감원공시 | 기업정보 | Company Guide 본문 바로가기 메뉴 바로가기 상장기업분석 리포트" +
+  "앱 리타민, 라이트요금제 곧 출시 모든 증권사 리포트를 더 가벼운 요금으로 열기 인쇄 기업정보 Snapshot 기업개요 재무제표 재무비율" +
+  "투자지표 컨센서스 지분분석 업종분석 경쟁사비교 거래소공시 금감원공시 ETF/ETN 정보 ETF Snapshot 성과 및 위험분석 ETN" +
+  "Snapshot 리포트 리포트동향 요약리포트 실적속보 컨센서스 스크리닝 목표주가 괴리율 컨센서스 상/하향 비율 어닝서프라이즈 턴어라운드 랭킹" +
+  "분석 업종별 순위 지표별 순위 ETF 순위 캘린더 부가정보 신용등급 기업주소록 이용안내 Retamin Retamin 셀트리온 068270 |" +
+  "12월 결산 | 홈페이지 홈페이지 http://www.celltrion.com 전화번호 전화번호 032-850-5000 | IR 담당자" +
+  "032-850-5000 주소 주소 인천시 연수구 아카데미로 23 KSE 코스피 제약 코스피 제약 | FICS 바이오 | K200 | NXT" +
+  "PER(Price Earning Ratio) 전일자 보통주 수정주가 / 최근 결산 EPS(주당순이익) * EPS = 당기순이익 /" +
+  "수정평균발행주식수 * 최근결산은 2024/12 (연간) 기준임. PER 87.35 12M PER 전일자 보통주 수정주가 / 12개월" +
+  "Forward EPS 12M PER 34.35 업종 PER 시장대표업종||SUM(구성종목 시가총액)/SUM(구성종목 당기순이익) * 전일자" +
+  "보통주 시가총액 기준 * 당기순이익은 최근결산 2024/12 (연간) 기준임. 업종 PER 69.55 PBR(Price Book-value" +
+  "Ratio) 전일자 보통주 수정주가 / 최근 결산기 BPS(주당순자산) * BPS=(지배주주지분-자기주식) / 무상조정기말주식수(우선주 및" +
+  "자사주 포함) * 최근결산은 2024/12 (연간) 기준임. PBR 1.89 배당수익률 {최근 결산기 보통주 DPS(현금, 무상조정) / 전일자" +
+  "보...\n" +
+  "\n" +
+  "Metadata:\n" +
+  "- Total results: 1\n" +
+  "- Language: en\n" +
+  "- Country: us\n" +
+  "Step 5: I have gathered the following information from the web searches" +
+  "regarding Celltrion (종목코드: 068270):\n" +
+  "\n" +
+  "1. **Financial Analysis**:\n" +
+  "- A detailed financial statement for Celltrion is available on the Company Guide" +
+  "website. This includes information on revenue, net income, and various financial" +
+  "ratios such as PER and PBR. You can view the detailed financial statement" +
+  "[here](https://comp.fnguide.com/SVO2/asp/SVD_Finance.asp?pGB=1&gicode=A068270&cID=&MenuYn=Y&ReportGB=B&NewMenuID=103&stkGb=701).\n" +
+  "\n" +
+  "2. **Corporate Governance**:\n" +
+  "- Information on Celltrion's corporate governance, including major shareholders" +
+  "and board structure, is available on the KRX KIND website. You can access the" +
+  "report" +
+  "[here](https://kind.krx.co.kr/common/disclsviewer.do?method=search&acptno=20230531000660).\n" +
+  "\n" +
+  "3. **Dividend Policy**:\n" +
+  "- Recent news indicates that Celltrion has decided on a dividend of 500 KRW per" +
+  "share, with plans to increase cash dividends up to 30% of earnings. More details" +
+  "can be found in the article" +
+  "[here](https://pharm.edaily.co.kr/News/Read?newsId=02384566635838192&mediaCodeNo=257).\n" +
+  "\n" +
+  "4. **Recent Disclosures**:\n" +
+  "- The latest disclosures and announcements related to Celltrion can be found on" +
+  "the Company Guide website. This includes important financial and corporate" +
+  "announcements. You can view the disclosures" +
+  "[here](https://comp.fnguide.com/SVO2/asp/SVD_Dart.asp?pGB=1&gicode=A068270&cID=&MenuYn=Y&ReportGB=&NewMenuID=111&stkGb=).\n" +
+  "\n" +
+  "### Next Steps:\n" +
+  "- **Financial Health Analysis**: Review the detailed financial statement to" +
+  "assess Celltrion's financial health, focusing on key ratios and trends.\n" +
+  "- **Corporate Governance Evaluation**: Examine the corporate governance report" +
+  "to understand the stability and effectiveness of Celltrion's management and" +
+  "board.\n" +
+  "- **Dividend Policy Review**: Analyze the dividend policy to evaluate" +
+  "Celltrion's commitment to shareholder returns.\n" +
+  "- **Risk Assessment**: Monitor recent disclosures for any potential risks or" +
+  "opportunities that may impact investment decisions.\n" +
+  "\n" +
+  "If you need further analysis or specific insights from these resources, please" +
+  "let me know!\n" +
+  "Step 6: Observed output of cmd `browser_use` executed:\n" +
+  "Navigated to" +
+  "https://comp.fnguide.com/SVO2/asp/SVD_Finance.asp?pGB=1&gicode=A068270&cID=&MenuYn=Y&ReportGB=B&NewMenuID=103&stkGb=701\n" +
+  "\n" +
+  "Observed output of cmd `browser_use` executed:\n" +
+  "Navigated to" +
+  "https://kind.krx.co.kr/common/disclsviewer.do?method=search&acptno=20230531000660\n" +
+  "\n" +
+  "Observed output of cmd `browser_use` executed:\n" +
+  "Navigated to" +
+  "https://pharm.edaily.co.kr/News/Read?newsId=02384566635838192&mediaCodeNo=257\n" +
+  "\n" +
+  "Observed output of cmd `browser_use` executed:\n" +
+  "Navigated to" +
+  "https://comp.fnguide.com/SVO2/asp/SVD_Dart.asp?pGB=1&gicode=A068270&cID=&MenuYn=Y&ReportGB=&NewMenuID=111&stkGb=\n" +
+  "Step 7: Observed output of cmd `browser_use` executed:\n" +
+  "Extracted from page:\n" +
+  "{'text': \"The page provides a navigation menu for various financial and" +
+  "corporate information about Celltrion (A068270), including financial statements," +
+  "financial ratios, investment indicators, consensus, and more. However, the" +
+  "specific financial ratios and trends for Celltrion are not directly listed on" +
+  "this page. To access detailed financial ratios and trends, one would need to" +
+  "navigate to the '재무비율' (Financial Ratios) section or the '재무제표' (Financial" +
+  "Statements) section from the menu provided.\", 'metadata': {'source': 'Company" +
+  "Guide - Celltrion'}}\n" +
+  "\n" +
+  "\n" +
+  "Observed output of cmd `browser_use` executed:\n" +
+  "Extracted from page:\n" +
+  "{'text': \"The page does not contain specific information about major" +
+  "shareholders or the board structure of the company 셀트리온 (Celltrion). It appears" +
+  "to be a navigation page for accessing various types of corporate information," +
+  "such as financial statements, shareholder analysis, and regulatory filings. To" +
+  "find detailed information about major shareholders and board structure, one" +
+  "would need to navigate to the '지분분석' (Shareholder Analysis) or '금감원공시'" +
+  "(Regulatory Filings) sections.\"}\n" +
+  "\n" +
+  "\n" +
+  "Observed output of cmd `browser_use` executed:\n" +
+  "Extracted from page:\n" +
+  "{'text': 'The page does not contain specific information about the dividend" +
+  "policy or future plans of Celltrion. It appears to be a navigation page for" +
+  "various financial and corporate information related to Celltrion, such as" +
+  "financial statements, shareholder analysis, and market reports. There is no" +
+  "direct mention of dividend policy or future plans in the provided content.'," +
+  "'metadata': {'source': 'Company Guide - Celltrion'}}\n" +
+  "\n" +
+  "\n" +
+  "Observed output of cmd `browser_use` executed:\n" +
+  "Extracted from page:\n" +
+  "{'text': 'No recent disclosures or significant announcements are available on" +
+  "the page. The page primarily contains navigation links and menu options related" +
+  "to company information, financial statements, and other corporate data for 셀트리온" +
+  "(Celltrion).', 'metadata': {'source': '금감원공시 | 기업정보 | Company Guide'}}\n" +
+  "\n" +
+  "Step 8: The extraction attempts from the web pages did not yield specific" +
+  "details directly from the content. Here's a summary of what was found and the" +
+  "next steps:\n" +
+  "\n" +
+  "1. **Financial Analysis**:\n" +
+  "- The financial statement page provides a navigation menu for accessing various" +
+  "financial and corporate information about Celltrion, including financial" +
+  "statements and ratios. However, specific financial ratios and trends are not" +
+  "directly listed on the page. To access these details, you would need to navigate" +
+  "to the '재무비율' (Financial Ratios) or '재무제표' (Financial Statements) sections.\n" +
+  "\n" +
+  "2. **Corporate Governance**:\n" +
+  "- The corporate governance page does not contain specific information about" +
+  "major shareholders or the board structure. It serves as a navigation page for" +
+  "accessing different types of corporate information. For detailed information," +
+  "you would need to explore the '지분분석' (Shareholder Analysis) or '금감원공시'" +
+  "(Regulatory Filings) sections.\n" +
+  "\n" +
+  "3. **Dividend Policy**:\n" +
+  "- The page related to the dividend policy does not provide specific details" +
+  "about Celltrion's dividend policy or future plans. It is primarily a navigation" +
+  "page for various financial and corporate information.\n" +
+  "\n" +
+  "4. **Recent Disclosures**:\n" +
+  "- No recent disclosures or significant announcements are available on the page." +
+  "It mainly contains navigation links and menu options related to company" +
+  "information and financial data.\n" +
+  "\n" +
+  "### Next Steps:\n" +
+  "- **Manual Navigation**: To gather the specific information needed, manual" +
+  "navigation through the provided sections on each page is required. This involves" +
+  "accessing the detailed sections for financial ratios, shareholder analysis, and" +
+  "regulatory filings.\n" +
+  "- **Direct Access**: If you have access to financial databases or platforms that" +
+  "provide detailed company analysis, such as Bloomberg or Reuters, they might" +
+  "offer more direct access to the required data.\n" +
+  "\n" +
+  "If you need further assistance in navigating these pages or accessing specific" +
+  "sections, please let me know!\n" +
+  "Step 9: Observed output of cmd `terminate` executed:\n" +
+  "The interaction has been completed with status: failure\n" +
+  "\n" +
+  "📋 종합 요약:\n" +
+  "\n" +
+  "{'analyzed_stock': {'name': '1. 셀트리온', 'code': '068270', 'detection_method':" +
+  "'ai_ai_web_search_priority'}, 'data_sources': {'financial_data_collected': True," +
+  "'data_sources': ['yfinance', 'DART'], 'data_quality': '보통'}, 'analysis_quality':" +
+  "{'classification_performed': True, 'detailed_analysis_performed': True," +
+  "'financial_data_enhanced': True}, 'key_insights': {'classification': '우량주'," +
+  "'investment_outlook': '중립적', 'risk_factors': None, 'recommendation': None}}",
+  "steps": [
+    "",
+    "📊 감지된 종목: 1. 셀트리온 (068270)",
+    "📈 재무데이터 수집 성공: yfinance, DART",
+    "🚀 Enhanced DART 데이터 수집 성공",
+    "🏷️ 종목 분류 완료",
+    "📊 상세 분석 완료",
+    "📊 감지된 종목: 1. 셀트리온 (068270)\n" +
+    "\n" +
+    "🏷️ 종목 분류:\n" +
+    "\n" +
+    "Step 1: 종목 기본 정보 분석을 완료했습니다.\n" +
+    "\n" +
+    "셀트리온에 대한 기본 정보를 다음과 같이 정리할 수 있습니다:\n" +
+    "\n" +
+    "1. **종목명 및 종목코드**: \n" +
+    "   - 종목명: 셀트리온\n" +
+    "   - 종목코드: 068270\n" +
+    "\n" +
+    "2. **업종 분류**:\n" +
+    "   - 섹터: Healthcare\n" +
+    "   - 산업: Biotechnology\n" +
+    "\n" +
+    "3. **시가총액 규모**:\n" +
+    "   - 시가총액: 36,656,425,992,192 KRW\n" +
+    "\n" +
+    "4. **주요 사업 영역**:\n" +
+    "   - 셀트리온은 바이오의약품 개발 및 생산을 주요 사업으로 하고 있으며, 특히 바이오시밀러 제품에 강점을 가지고 있습니다.\n" +
+    "\n" +
+    "5. **최근 3년간 매출 및 영업이익 추이**:\n" +
+    "   - 제공된 데이터에는 최근 3년간의 매출 및 영업이익 추이가 명시되어 있지 않으므로, 이 부분은 추가적인 데이터 수집이 필요합니다.\n" +
+    "\n" +
+    "6. **주요 재무지표**:\n" +
+    "   - PER (주가수익비율): 데이터 없음\n" +
+    "   - PBR (주가순자산비율): 데이터 없음\n" +
+    "   - ROE (자기자본이익률): 2.95%\n" +
+    "   - 부채비율: 12.918%\n" +
+    "   - 배당수익률: 42.00% (데이터의 신뢰성 확인 필요)\n" +
+    "\n" +
+    "위 정보를 바탕으로 셀트리온을 분류하면 다음과 같습니다:\n" +
+    "\n" +
+    "셀트리온은 바이오테크놀로지 산업에 속하며, 매출 성장률이 14.20%로 고성장주에 근접한 수치를 보이고 있습니다. 이익 성장률이 414.40%로" +
+    "매우 높아, 최근 실적 개선이 두드러집니다. 시가총액이 크고, 바이오시밀러 분야에서 혁신적인 기술을 보유하고 있어 높은 성장 잠재력을 가지고" +
+    "있습니다. 따라서 셀트리온은 **고성장주 (High Growth Stock)**로 분류할 수 있습니다.\n" +
+    "Step 2: 종목 분류를 완료했습니다.\n" +
+    "\n" +
+    "### 셀트리온 분류 분석\n" +
+    "\n" +
+    "1. **저성장주 (Low Growth Stock)**\n" +
+    "   - 매출 성장률: 14.20% (기준 미달)\n" +
+    "   - 안정성: 바이오 산업 특성상 변동성 존재\n" +
+    "   - 점수: 2/5\n" +
+    "\n" +
+    "2. **우량주 (Blue Chip Stock)**\n" +
+    "   - 대기업 여부: 시가총액이 크지만, 전통적 우량주 기준과는 다소 차이\n" +
+    "   - 안정적 실적 및 배당: 배당수익률 데이터의 신뢰성 문제\n" +
+    "   - 점수: 3/5\n" +
+    "\n" +
+    "3. **고성장주 (High Growth Stock)**\n" +
+    "   - 매출 성장률: 14.20% (기준 근접)\n" +
+    "   - 혁신 기술 및 성장 잠재력: 바이오시밀러 분야의 혁신적 기술 보유\n" +
+    "   - 점수: 4/5\n" +
+    "\n" +
+    "4. **자산주 (Asset Stock)**\n" +
+    "   - PBR: 데이터 없음\n" +
+    "   - 자산 가치: 부동산 및 보유 자산 정보 부족\n" +
+    "   - 점수: 1/5\n" +
+    "\n" +
+    "5. **턴어라운드주 (Turnaround Stock)**\n" +
+    "   - 실적 개선 여부: 이익 성장률 414.40%로 최근 실적 개선\n" +
+    "   - 구조조정 여부: 관련 정보 부족\n" +
+    "   - 점수: 3/5\n" +
+    "\n" +
+    "6. **시이클주 (Cyclical Stock)**\n" +
+    "   - 경기 변동 민감도: 바이오 산업은 경기 변동에 덜 민감\n" +
+    "   - 점수: 1/5\n" +
+    "\n" +
+    "7. **기타주 (Other Stock)**\n" +
+    "   - 특수한 경우: 바이오 산업의 특수성 존재\n" +
+    "   - 점수: 2/5\n" +
+    "\n" +
+    "### 최종 분류\n" +
+    "- **선택한 분류**: 고성장주 (High Growth Stock)\n" +
+    "- **근거**: 셀트리온은 매출 성장률이 14.20%로 고성장주 기준에 근접하며, 바이오시밀러 분야에서 혁신적인 기술을 보유하고 있어 높은" +
+    "성장 잠재력을 가지고 있습니다. 이익 성장률이 매우 높아 최근 실적 개선이 두드러집니다.\n" +
+    "- **신뢰도 평가**: 보통 (데이터의 일부 불확실성 및 매출 성장률이 기준에 근접하지만 미달)\n" +
+    "\n" +
+    "셀트리온은 바이오테크놀로지 산업의 특성상 고성장주로 분류하는 것이 적절하다고 판단됩니다.\n" +
+    "Step 3: === 종목 분류 결과 ===\n" +
+    "🏷️ **분류: 고성장주 (High Growth Stock)**\n" +
+    "📊 **신뢰도: 보통**\n" +
+    "📋 **주요 근거:**\n" +
+    "• 매출 성장률이 14.20%로 고성장주 기준에 근접\n" +
+    "• 바이오시밀러 분야에서 혁신적인 기술 보유\n" +
+    "• 이익 성장률이 414.40%로 최근 실적 개선 두드러짐\n" +
+    "\n" +
+    "🔍 **투자 시 고려사항:**\n" +
+    "• 바이오 산업 특성상 변동성이 클 수 있음\n" +
+    "• 배당수익률 데이터의 신뢰성 문제로 배당 안정성 확인 필요\n" +
+    "\n" +
+    "💡 **추가 조언:**\n" +
+    "고성장주는 높은 성장 잠재력을 가진 만큼, 장기적인 관점에서 투자하는 것이 유리할 수 있습니다. 다만, 변동성이 클 수 있으므로 시장 상황과" +
+    "기업의 기술 개발 동향을 주기적으로 모니터링하는 것이 중요합니다.\n" +
+    "Terminated: Reached max steps (3)\n" +
+    "\n" +
+    "📈 상세 분석:\n" +
+    "\n" +
+    "Step 4: Observed output of cmd `browser_use` executed:\n" +
+    "Search results for '셀트리온 068270 재무제표 분석':\n" +
+    "\n" +
+    "1. 셀트리온(A068270) | 재무제표 | 기업정보 | Company Guide\n" +
+    "URL:" +
+    "https://comp.fnguide.com/SVO2/asp/SVD_Finance.asp?pGB=1&gicode=A068270&cID=&MenuYn=Y&ReportGB=B&NewMenuID=103&stkGb=701\n" +
+    "Description:  포괄손익계산서. IFRS(별도), 2022/12, 2023/12, 2024/12, 2025/03, 전년동기," +
+    "전년동기(%). 매출액. 19,375, 18,734, 37,092, 6,340, 6,382, -0.7. 매출원가. \n" +
+    "Content: 셀트리온(A068270) | 재무제표 | 기업정보 | Company Guide 본문 바로가기 메뉴 바로가기 상장기업분석 리포트" +
+    "앱 리타민, 라이트요금제 곧 출시 모든 증권사 리포트를 더 가벼운 요금으로 열기 인쇄 기업정보 Snapshot 기업개요 재무제표 재무비율" +
+    "투자지표 컨센서스 지분분석 업종분석 경쟁사비교 거래소공시 금감원공시 ETF/ETN 정보 ETF Snapshot 성과 및 위험분석 ETN" +
+    "Snapshot 리포트 리포트동향 요약리포트 실적속보 컨센서스 스크리닝 목표주가 괴리율 컨센서스 상/하향 비율 어닝서프라이즈 턴어라운드 랭킹" +
+    "분석 업종별 순위 지표별 순위 ETF 순위 캘린더 부가정보 신용등급 기업주소록 이용안내 Retamin Retamin 셀트리온 068270 |" +
+    "12월 결산 | 홈페이지 홈페이지 http://www.celltrion.com 전화번호 전화번호 032-850-5000 | IR 담당자" +
+    "032-850-5000 주소 주소 인천시 연수구 아카데미로 23 KSE 코스피 제약 코스피 제약 | FICS 바이오 | K200 | NXT" +
+    "PER(Price Earning Ratio) 전일자 보통주 수정주가 / 최근 결산 EPS(주당순이익) * EPS = 당기순이익 /" +
+    "수정평균발행주식수 * 최근결산은 2024/12 (연간) 기준임. PER 36.74 12M PER 전일자 보통주 수정주가 / 12개월" +
+    "Forward EPS 12M PER - 업종 PER 시장대표업종||SUM(구성종목 시가총액)/SUM(구성종목 당기순이익) * 전일자 보통주" +
+    "시가총액 기준 * 당기순이익은 최근결산 2024/12 (연간) 기준임. 업종 PER 69.55 PBR(Price Book-value Ratio)" +
+    "전일자 보통주 수정주가 / 최근 결산기 BPS(주당순자산) * BPS=(지배주주지분-자기주식) / 무상조정기말주식수(우선주 및 자사주 포함) *" +
+    "최근결산은 2024/12 (연간) 기준임. PBR 1.87 배당수익률 {최근 결산기 보통주 DPS(현금, 무상조정) / 전일자 보통주 수정...\n" +
+    "\n" +
+    "Metadata:\n" +
+    "- Total results: 1\n" +
+    "- Language: en\n" +
+    "- Country: us\n" +
+    "\n" +
+    "Observed output of cmd `browser_use` executed:\n" +
+    "Search results for '셀트리온 068270 기업지배구조':\n" +
+    "\n" +
+    "1. [셀트리온] 기업지배구조 보고서 공시 - KRX KIND\n" +
+    "URL:" +
+    "https://kind.krx.co.kr/common/disclsviewer.do?method=search&acptno=20230531000660\n" +
+    "Description:  May 31, 2023  ·  주요내용, 회사의 기업지배구조 관련 주요사항. I. 개요. II. 기업지배구조 현황." +
+    "III. 주주 (i) 주주의 권리 (ii) 주주의 공평한 대우. IV. 이사회 \n" +
+    "Content: [셀트리온] 기업지배구조 보고서 공시 [셀트리온] 본 문서는 최종문서가 아니므로, 최종 정정문서를 반드시 확인하시기 바랍니다." +
+    "문서 목차 문서 목차 본 공지사항은 공시내용 기재 불충분 등의 사유로 한국거래소 정정요구를 받은 사항입니다. 동 공시에 대한 정정공시가" +
+    "이루어지는 경우 공시내용의 기재내용이 달라지게 되므로 반드시 정정내용을 확인하시기 바랍니다. 확인\n" +
+    "\n" +
+    "Metadata:\n" +
+    "- Total results: 1\n" +
+    "- Language: en\n" +
+    "- Country: us\n" +
+    "\n" +
+    "Observed output of cmd `browser_use` executed:\n" +
+    "Search results for '셀트리온 068270 배당 정책':\n" +
+    "\n" +
+    "1. 통합 셀트리온, 1주당 500원 배당 결정..\"내년 4천억 규모 자사주 소각\"\n" +
+    "URL:" +
+    "https://pharm.edaily.co.kr/News/Read?newsId=02384566635838192&mediaCodeNo=257\n" +
+    "Description:  Dec 13, 2023  ·  이번 배당 결정으로 셀트리온의 주주환원율은 163.3%에 이르며, 이는 지난해 기준" +
+    "코스피 상위 10대 기업 평균인 54.7%를 훨씬 뛰어넘는 수준이다. 주주 ... \n" +
+    "Content: 통합 셀트리온, 1주당 500원 배당 결정..\"내년 4천억 규모 자사주 소각\" - 팜이데일리 유료기사는 인쇄용 화면을" +
+    "제공하지 않습니다. pharm edaily 로그인 회원가입 search 전체기사 다크호스 리포트 UP&DOWN 제약 바이오 English" +
+    "News 팜톡 서비스소개 전체기사 전체기사 프리미엄 다크호스 화제의 신약개발 장외 기업들 투자맥짚기 리포트 리포트 분석 전문가 인터뷰 공시" +
+    "돋보기 UP&DOWN UP&DOWN SPECIAL 제약바이오 CEO 인터뷰 지금 업계는 이슈 분석 해외 업계는 English News All" +
+    "Articles (Eng) Premium 팜톡 서비스소개 공지사항 유튜브 구독안내 Subscribe LOGIN SEARCH 지금업계는" +
+    "주주가치제고 자사주소각 배당 통합 셀트리온, 1주당 500원 배당 결정..\"내년 4천억 규모 자사주 소각\" 등록 2023-12-13 오후" +
+    "2:14:07 수정 2023-12-13 오후 2:14:07 kakao facebook twitter mail link_url link_url" +
+    "[이데일리 나은경 기자] 셀트리온(068270) 그룹은 13일 이사회를 거쳐 셀트리온과 셀트리온제약의 배당을 각각 결정했다. 셀트리온헬스케어는" +
+    "신주로 통합된 통합 셀트리온의 주주 자격으로 배당을 받게 되며, 배당 기준일은 12월 31일이다. 우선 셀트리온은 보통주 1주당 500원씩 총" +
+    "1037억원 규모의 현금 배당을 결정했다. 배당 규모는 셀트리온과 셀트리온헬스케어의 합병 기일인 12월 28일 기준, 합병법인의 발행주식" +
+    "총수(약 2억2029만주)에서 자기주식(약 1291만주)을 제외한 2억 738만주를 대상으로 산정했다. 셀트리온은 올해 주식배당 대신 현금배당에" +
+    "집중하면서, 주식가치의 희석을 없애고 동시에 현금배당 총액도 지난해 718억원 대비 1000억원 수준으로 늘렸다. 회사 측은 향후에도 주주환원" +
+    "정책을 강화하기 위해 이익의 30% 수준까지 현금배당을 높인다는 계획이다. 주식 배당 결정에 앞서 셀트리온과 셀트리온헬스케어는...\n" +
+    "\n" +
+    "Metadata:\n" +
+    "- Total results: 1\n" +
+    "- Language: en\n" +
+    "- Country: us\n" +
+    "\n" +
+    "Observed output of cmd `browser_use` executed:\n" +
+    "Search results for '셀트리온 068270 최근 공시사항':\n" +
+    "\n" +
+    "1. 셀트리온(A068270) | 금감원공시 | 기업정보 | Company Guide\n" +
+    "URL:" +
+    "https://comp.fnguide.com/SVO2/asp/SVD_Dart.asp?pGB=1&gicode=A068270&cID=&MenuYn=Y&ReportGB=&NewMenuID=111&stkGb=\n" +
+    "Description:  * 최근결산은 2024/12 (연간) 기준임. PER: 87.83. 12M PER: 전일자 보통주 수정주가 ..." +
+    "비상장회사중요사항공시; 하도급대금결제조건공시; 기타공정위공시. 본 자료는 ... \n" +
+    "Content: 셀트리온(A068270) | 금감원공시 | 기업정보 | Company Guide 본문 바로가기 메뉴 바로가기 상장기업분석 리포트" +
+    "앱 리타민, 라이트요금제 곧 출시 모든 증권사 리포트를 더 가벼운 요금으로 열기 인쇄 기업정보 Snapshot 기업개요 재무제표 재무비율" +
+    "투자지표 컨센서스 지분분석 업종분석 경쟁사비교 거래소공시 금감원공시 ETF/ETN 정보 ETF Snapshot 성과 및 위험분석 ETN" +
+    "Snapshot 리포트 리포트동향 요약리포트 실적속보 컨센서스 스크리닝 목표주가 괴리율 컨센서스 상/하향 비율 어닝서프라이즈 턴어라운드 랭킹" +
+    "분석 업종별 순위 지표별 순위 ETF 순위 캘린더 부가정보 신용등급 기업주소록 이용안내 Retamin Retamin 셀트리온 068270 |" +
+    "12월 결산 | 홈페이지 홈페이지 http://www.celltrion.com 전화번호 전화번호 032-850-5000 | IR 담당자" +
+    "032-850-5000 주소 주소 인천시 연수구 아카데미로 23 KSE 코스피 제약 코스피 제약 | FICS 바이오 | K200 | NXT" +
+    "PER(Price Earning Ratio) 전일자 보통주 수정주가 / 최근 결산 EPS(주당순이익) * EPS = 당기순이익 /" +
+    "수정평균발행주식수 * 최근결산은 2024/12 (연간) 기준임. PER 87.35 12M PER 전일자 보통주 수정주가 / 12개월" +
+    "Forward EPS 12M PER 34.35 업종 PER 시장대표업종||SUM(구성종목 시가총액)/SUM(구성종목 당기순이익) * 전일자" +
+    "보통주 시가총액 기준 * 당기순이익은 최근결산 2024/12 (연간) 기준임. 업종 PER 69.55 PBR(Price Book-value" +
+    "Ratio) 전일자 보통주 수정주가 / 최근 결산기 BPS(주당순자산) * BPS=(지배주주지분-자기주식) / 무상조정기말주식수(우선주 및" +
+    "자사주 포함) * 최근결산은 2024/12 (연간) 기준임. PBR 1.89 배당수익률 {최근 결산기 보통주 DPS(현금, 무상조정) / 전일자" +
+    "보...\n" +
+    "\n" +
+    "Metadata:\n" +
+    "- Total results: 1\n" +
+    "- Language: en\n" +
+    "- Country: us\n" +
+    "Step 5: I have gathered the following information from the web searches" +
+    "regarding Celltrion (종목코드: 068270):\n" +
+    "\n" +
+    "1. **Financial Analysis**:\n" +
+    "- A detailed financial statement for Celltrion is available on the Company Guide" +
+    "website. This includes information on revenue, net income, and various financial" +
+    "ratios such as PER and PBR. You can view the detailed financial statement" +
+    "[here](https://comp.fnguide.com/SVO2/asp/SVD_Finance.asp?pGB=1&gicode=A068270&cID=&MenuYn=Y&ReportGB=B&NewMenuID=103&stkGb=701).\n" +
+    "\n" +
+    "2. **Corporate Governance**:\n" +
+    "- Information on Celltrion's corporate governance, including major shareholders" +
+    "and board structure, is available on the KRX KIND website. You can access the" +
+    "report" +
+    "[here](https://kind.krx.co.kr/common/disclsviewer.do?method=search&acptno=20230531000660).\n" +
+    "\n" +
+    "3. **Dividend Policy**:\n" +
+    "- Recent news indicates that Celltrion has decided on a dividend of 500 KRW per" +
+    "share, with plans to increase cash dividends up to 30% of earnings. More details" +
+    "can be found in the article" +
+    "[here](https://pharm.edaily.co.kr/News/Read?newsId=02384566635838192&mediaCodeNo=257).\n" +
+    "\n" +
+    "4. **Recent Disclosures**:\n" +
+    "- The latest disclosures and announcements related to Celltrion can be found on" +
+    "the Company Guide website. This includes important financial and corporate" +
+    "announcements. You can view the disclosures" +
+    "[here](https://comp.fnguide.com/SVO2/asp/SVD_Dart.asp?pGB=1&gicode=A068270&cID=&MenuYn=Y&ReportGB=&NewMenuID=111&stkGb=).\n" +
+    "\n" +
+    "### Next Steps:\n" +
+    "- **Financial Health Analysis**: Review the detailed financial statement to" +
+    "assess Celltrion's financial health, focusing on key ratios and trends.\n" +
+    "- **Corporate Governance Evaluation**: Examine the corporate governance report" +
+    "to understand the stability and effectiveness of Celltrion's management and" +
+    "board.\n" +
+    "- **Dividend Policy Review**: Analyze the dividend policy to evaluate" +
+    "Celltrion's commitment to shareholder returns.\n" +
+    "- **Risk Assessment**: Monitor recent disclosures for any potential risks or" +
+    "opportunities that may impact investment decisions.\n" +
+    "\n" +
+    "If you need further analysis or specific insights from these resources, please" +
+    "let me know!\n" +
+    "Step 6: Observed output of cmd `browser_use` executed:\n" +
+    "Navigated to" +
+    "https://comp.fnguide.com/SVO2/asp/SVD_Finance.asp?pGB=1&gicode=A068270&cID=&MenuYn=Y&ReportGB=B&NewMenuID=103&stkGb=701\n" +
+    "\n" +
+    "Observed output of cmd `browser_use` executed:\n" +
+    "Navigated to" +
+    "https://kind.krx.co.kr/common/disclsviewer.do?method=search&acptno=20230531000660\n" +
+    "\n" +
+    "Observed output of cmd `browser_use` executed:\n" +
+    "Navigated to" +
+    "https://pharm.edaily.co.kr/News/Read?newsId=02384566635838192&mediaCodeNo=257\n" +
+    "\n" +
+    "Observed output of cmd `browser_use` executed:\n" +
+    "Navigated to" +
+    "https://comp.fnguide.com/SVO2/asp/SVD_Dart.asp?pGB=1&gicode=A068270&cID=&MenuYn=Y&ReportGB=&NewMenuID=111&stkGb=\n" +
+    "Step 7: Observed output of cmd `browser_use` executed:\n" +
+    "Extracted from page:\n" +
+    "{'text': \"The page provides a navigation menu for various financial and" +
+    "corporate information about Celltrion (A068270), including financial statements," +
+    "financial ratios, investment indicators, consensus, and more. However, the" +
+    "specific financial ratios and trends for Celltrion are not directly listed on" +
+    "this page. To access detailed financial ratios and trends, one would need to" +
+    "navigate to the '재무비율' (Financial Ratios) section or the '재무제표' (Financial" +
+    "Statements) section from the menu provided.\", 'metadata': {'source': 'Company" +
+    "Guide - Celltrion'}}\n" +
+    "\n" +
+    "\n" +
+    "Observed output of cmd `browser_use` executed:\n" +
+    "Extracted from page:\n" +
+    "{'text': \"The page does not contain specific information about major" +
+    "shareholders or the board structure of the company 셀트리온 (Celltrion). It appears" +
+    "to be a navigation page for accessing various types of corporate information," +
+    "such as financial statements, shareholder analysis, and regulatory filings. To" +
+    "find detailed information about major shareholders and board structure, one" +
+    "would need to navigate to the '지분분석' (Shareholder Analysis) or '금감원공시'" +
+    "(Regulatory Filings) sections.\"}\n" +
+    "\n" +
+    "\n" +
+    "Observed output of cmd `browser_use` executed:\n" +
+    "Extracted from page:\n" +
+    "{'text': 'The page does not contain specific information about the dividend" +
+    "policy or future plans of Celltrion. It appears to be a navigation page for" +
+    "various financial and corporate information related to Celltrion, such as" +
+    "financial statements, shareholder analysis, and market reports. There is no" +
+    "direct mention of dividend policy or future plans in the provided content.'," +
+    "'metadata': {'source': 'Company Guide - Celltrion'}}\n" +
+    "\n" +
+    "\n" +
+    "Observed output of cmd `browser_use` executed:\n" +
+    "Extracted from page:\n" +
+    "{'text': 'No recent disclosures or significant announcements are available on" +
+    "the page. The page primarily contains navigation links and menu options related" +
+    "to company information, financial statements, and other corporate data for 셀트리온" +
+    "(Celltrion).', 'metadata': {'source': '금감원공시 | 기업정보 | Company Guide'}}\n" +
+    "\n" +
+    "Step 8: The extraction attempts from the web pages did not yield specific" +
+    "details directly from the content. Here's a summary of what was found and the" +
+    "next steps:\n" +
+    "\n" +
+    "1. **Financial Analysis**:\n" +
+    "- The financial statement page provides a navigation menu for accessing various" +
+    "financial and corporate information about Celltrion, including financial" +
+    "statements and ratios. However, specific financial ratios and trends are not" +
+    "directly listed on the page. To access these details, you would need to navigate" +
+    "to the '재무비율' (Financial Ratios) or '재무제표' (Financial Statements) sections.\n" +
+    "\n" +
+    "2. **Corporate Governance**:\n" +
+    "- The corporate governance page does not contain specific information about" +
+    "major shareholders or the board structure. It serves as a navigation page for" +
+    "accessing different types of corporate information. For detailed information," +
+    "you would need to explore the '지분분석' (Shareholder Analysis) or '금감원공시'" +
+    "(Regulatory Filings) sections.\n" +
+    "\n" +
+    "3. **Dividend Policy**:\n" +
+    "- The page related to the dividend policy does not provide specific details" +
+    "about Celltrion's dividend policy or future plans. It is primarily a navigation" +
+    "page for various financial and corporate information.\n" +
+    "\n" +
+    "4. **Recent Disclosures**:\n" +
+    "- No recent disclosures or significant announcements are available on the page." +
+    "It mainly contains navigation links and menu options related to company" +
+    "information and financial data.\n" +
+    "\n" +
+    "### Next Steps:\n" +
+    "- **Manual Navigation**: To gather the specific information needed, manual" +
+    "navigation through the provided sections on each page is required. This involves" +
+    "accessing the detailed sections for financial ratios, shareholder analysis, and" +
+    "regulatory filings.\n" +
+    "- **Direct Access**: If you have access to financial databases or platforms that" +
+    "provide detailed company analysis, such as Bloomberg or Reuters, they might" +
+    "offer more direct access to the required data.\n" +
+    "\n" +
+    "If you need further assistance in navigating these pages or accessing specific" +
+    "sections, please let me know!\n" +
+    "Step 9: Observed output of cmd `terminate` executed:\n" +
+    "The interaction has been completed with status: failure\n" +
+    "\n" +
+    "📋 종합 요약:\n" +
+    "\n" +
+    "{'analyzed_stock': {'name': '1. 셀트리온', 'code': '068270', 'detection_method':" +
+    "'ai_ai_web_search_priority'}, 'data_sources': {'financial_data_collected': True," +
+    "'data_sources': ['yfinance', 'DART'], 'data_quality': '보통'}, 'analysis_quality':" +
+    "{'classification_performed': True, 'detailed_analysis_performed': True," +
+    "'financial_data_enhanced': True}, 'key_insights': {'classification': '우량주'," +
+    "'investment_outlook': '중립적', 'risk_factors': None, 'recommendation': None}}",
+    ""
+  ],
+  "meta": {
+    "analysis_flow": "enhanced",
+    "success": false,
+    "timestamp": "2025-06-11T15:33:41.676170",
+    "stock_info": {
+        "detected": true,
+        "stock_name": "1. 셀트리온",
+        "stock_code": "068270",
+        "detection_method": "ai_ai_web_search_priority"
+    },
+    "data_quality": "보통",
+    "enhanced_features": {
+        "financial_data_used": true,
+        "enhanced_dart_used": true,
+        "classification_performed": true,
+        "detailed_analysis_performed": true
+    },
+    "raw_data": {
+        "data_sources_summary": {
+            "yfinance_data_available": true,
+            "dart_basic_data_available": true,
+            "enhanced_dart_data_available": true
+        },
+        "yfinance_raw_data": {
+            "basic_info": {
+                "company_name": "Celltrion, Inc.",
+                "sector": "Healthcare",
+                "industry": "Biotechnology",
+                "country": "South Korea",
+                "currency": "KRW",
+                "exchange": "KSC",
+                "ticker_symbol": "068270.KS"
+            },
+            "current_price_info": {
+                "current_price": 161900.0,
+                "previous_close": 162200.0,
+                "open_price": 161800.0,
+                "day_high": 162300.0,
+                "day_low": 160400.0,
+                "volume": 405833,
+                "market_cap": 36656425992192,
+                "shares_outstanding": 226414000
+            },
+            "financial_ratios": {
+                "pe_ratio": null,
+                "peg_ratio": null,
+                "pb_ratio": null,
+                "ps_ratio": 10.009305,
+                "dividend_yield": 0.42,
+                "profit_margin": 0.13896,
+                "operating_margin": 0.17748,
+                "return_on_equity": 0.02954,
+                "return_on_assets": 0.01903,
+                "debt_to_equity": 12.918,
+                "current_ratio": 1.605,
+                "quick_ratio": 0.638
+            },
+            "growth_metrics": {
+                "earnings_growth": 4.144,
+                "revenue_growth": 0.142,
+                "earnings_quarterly_growth": 3.843,
+                "revenue_quarterly_growth": null
+            },
+            "price_history": {
+                "52_week_high": 192397.07342274534,
+                "52_week_low": 144615.390625,
+                "avg_volume_3m": 532703.1444444444,
+                "price_change_1y": -7.755019824485419
+            },
+            "data_quality": "보통",
+            "data_sources": [
+                "yfinance",
+                "DART"
+            ],
+            "collection_info": {
+                "success": true,
+                "errors": [],
+                "stock_info": {
+                    "stock_code": "068270",
+                    "stock_name": "1. 셀트리온",
+                    "collection_timestamp": "2025-06-11T15:33:59.064910"
+                }
+            }
+        },
+        "dart_basic_raw_data": {
+            "company_info": {
+                "corp_name": "주식회사 셀트리온",
+                "corp_code": "00421045",
+                "business_summary": "1318170056",
+                "established_date": "20020226",
+                "listing_date": "12",
+                "ceo_name": "서정진",
+                "address": "인천광역시 연수구 송도동 13-6"
+            },
+            "financial_statements": {
+                "revenue": 0,
+                "operating_profit": 0,
+                "net_income": 0,
+                "total_assets": 0,
+                "total_liabilities": 0,
+                "total_equity": 0,
+                "cash_and_equivalents": 0,
+                "data_source": "fallback_no_dart_connection",
+                "note": "DART API 연결 실패로 기본값 사용"
+            },
+            "business_report": {
+                "main_business": "법인고유번호 00421045 기업의 주요사업",
+                "business_risks": "시장변동성, 경쟁심화 등",
+                "future_plans": "사업확장 및 기술개발 계획"
+            }
+        },
+        "enhanced_dart_raw_data": {
+            "collection_info": {
+                "success": true,
+                "stock_code": "068270",
+                "collected_at": "",
+                "error": ""
+            },
+            "financial_analysis": {
+                "success": true,
+                "corp_code": "00421045",
+                "bsns_year": "2024",
+                "collected_at": "2025-06-11T15:34:14.146635",
+                "quarterly_performance": []
+            },
+            "governance_analysis": {
+                "success": true,
+                "corp_code": "00421045",
+                "bsns_year": "2024",
+                "collected_at": "2025-06-11T15:34:15.203767"
+            },
+            "investment_analysis": {
+                "success": true,
+                "corp_code": "00421045",
+                "bsns_year": "2024",
+                "collected_at": "2025-06-11T15:34:15.845574"
+            },
+            "disclosure_monitoring": {
+                "success": true,
+                "monitoring_period": "최근 30일",
+                "collected_at": "2025-06-11T15:34:16.489369"
+            }
+        },
+        "data_statistics": {
+            "total_data_points": 53,
+            "yfinance_data_points": 34,
+            "enhanced_dart_data_points": 19,
+            "data_completeness": "높음"
+        }
+    },
+    "ai_extracted_stock_info": {
+        "stock_name": "셀트리온",
+        "ticker": "068270",
+        "stock_code": "068270",
+        "found": true,
+        "stock_type": "korean",
+        "market": "KRX",
+        "prompt": "셀트리온에 대해서 분석해줘"
+    }
+}
+}

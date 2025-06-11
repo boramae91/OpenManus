@@ -484,7 +484,7 @@ class FinancialDataCollector:
             logger.info(
                 f"🔍 회사명 '{company_name}'으로 DART 법인고유번호 동적 검색 시도..."
             )
-            corp_code = self._search_corp_code_by_company_name(company_name)
+            corp_code = self._search_corp_code_by_company_name(company_name, stock_code)
             if corp_code:
                 logger.info(f"✅ 동적 검색 성공: {company_name} → {corp_code}")
                 return corp_code
@@ -527,7 +527,9 @@ class FinancialDataCollector:
         )
         return ""
 
-    def _search_corp_code_by_company_name(self, company_name: str) -> str:
+    def _search_corp_code_by_company_name(
+        self, company_name: str, stock_code: str = None
+    ) -> str:
         """DART API를 사용해서 회사명으로 법인고유번호를 검색해요"""
         try:
             # 🧹 회사명 정제 (접두사 및 불필요한 문자 제거)
@@ -585,6 +587,14 @@ class FinancialDataCollector:
                     score = self._calculate_match_score(
                         cleaned_name, company["corp_name"]
                     )
+
+                    # 🚀 종목코드가 있는 경우 추가 보너스 점수 (정확한 매칭 보장)
+                    if company.get("stock_code") == stock_code:
+                        score += 1000  # 종목코드 완전 매칭시 최고 점수
+                        logger.info(
+                            f"🎯 종목코드 완전 매칭: {company['corp_name']} ({company['stock_code']})"
+                        )
+
                     if score > best_score:
                         best_score = score
                         best_match = company
@@ -600,6 +610,14 @@ class FinancialDataCollector:
                             score = self._calculate_match_score(
                                 alt_name, company["corp_name"]
                             )
+
+                            # 🚀 종목코드가 있는 경우 추가 보너스 점수
+                            if company.get("stock_code") == stock_code:
+                                score += 1000  # 종목코드 완전 매칭시 최고 점수
+                                logger.info(
+                                    f"🎯 종목코드 완전 매칭 (대체명): {company['corp_name']} ({company['stock_code']})"
+                                )
+
                             if score > best_score:
                                 best_score = score
                                 best_match = company
