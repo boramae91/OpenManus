@@ -229,7 +229,7 @@ def save_interaction_log(
     """
     🚀 사용자 상호작용을 첨부된 JSON 파일 형식과 동일하게 저장하는 함수예요
 
-    AI Agent를 사용해서 정교하게 종목명을 추출해요!
+    AI Agent를 사용해서 정교하게 종목코드를 우선 추출해요!
 
     저장 형식:
     {
@@ -242,40 +242,55 @@ def save_interaction_log(
     """
     os.makedirs(LOG_DIR, exist_ok=True)
     now = datetime.now().strftime("%Y%m%d_%H%M%S")
-    stock, date = None, None
+    stock_identifier, date = None, None
 
-    # 🚀 1순위: AI Agent로 프롬프트에서 종목명 추출 (가장 정확함)
-    stock_info = extract_stock_with_ai_agent(prompt)
-    if stock_info["found"]:
-        stock = stock_info["stock_name"] or stock_info["ticker"]
-        # AI Agent가 추출한 정보를 meta에 저장
-        if meta is None:
-            meta = {}
-        meta["ai_extracted_stock_info"] = stock_info
+    # 🚀 최우선: meta에서 종목코드 직접 추출 (각 메인 파일에서 전달)
+    if meta and "stock_info" in meta:
+        stock_info_meta = meta["stock_info"]
+        if stock_info_meta and stock_info_meta.get("found"):
+            # 종목코드 우선, 없으면 종목명 사용
+            stock_code = stock_info_meta.get("stock_code") or stock_info_meta.get(
+                "ticker"
+            )
+            if stock_code:
+                stock_identifier = stock_code
+            else:
+                stock_identifier = stock_info_meta.get("stock_name")
+
+    # 🚀 1순위: AI Agent로 프롬프트에서 종목 정보 추출 (종목코드 우선)
+    if not stock_identifier:
+        stock_info = extract_stock_with_ai_agent(prompt)
+        if stock_info["found"]:
+            # 종목코드가 있으면 종목코드 우선, 없으면 종목명 사용
+            stock_identifier = stock_info["ticker"] or stock_info["stock_name"]
+            # AI Agent가 추출한 정보를 meta에 저장
+            if meta is None:
+                meta = {}
+            meta["ai_extracted_stock_info"] = stock_info
 
     # 2순위: LLM 응답에서 종목명 추출
-    if not stock:
-        stock = extract_stock_from_llm_response(response)
+    if not stock_identifier:
+        stock_identifier = extract_stock_from_llm_response(response)
 
     # 3순위: log_path가 주어지면 log에서 종목명 추출
-    if not stock and log_path:
-        stock = extract_stock_from_log(log_path)
+    if not stock_identifier and log_path:
+        stock_identifier = extract_stock_from_log(log_path)
 
     # 4순위: 기존 방식 fallback
-    if not stock and memory is not None:
-        stock, date = extract_stock_and_date_from_memory(memory)
+    if not stock_identifier and memory is not None:
+        stock_identifier, date = extract_stock_and_date_from_memory(memory)
 
     # 5순위: 구 방식 프롬프트 추출 (최후의 수단)
-    if not stock:
+    if not stock_identifier:
         stock_from_prompt_tuple = extract_info_from_prompt(prompt)
-        stock = stock_from_prompt_tuple[0]
+        stock_identifier = stock_from_prompt_tuple[0]
 
-    if not stock:
-        stock = "unknown"
+    if not stock_identifier:
+        stock_identifier = "unknown"
 
-    stock = safe_filename(stock)
-    if not stock:
-        stock = "unknown"
+    stock_identifier = safe_filename(stock_identifier)
+    if not stock_identifier:
+        stock_identifier = "unknown"
 
     if not date or date == "unknown":
         date = now
@@ -289,7 +304,7 @@ def save_interaction_log(
     _, analysis, _ = extract_info_from_prompt(prompt)
     analysis = safe_filename(analysis)
 
-    filename = f"{LOG_DIR}/json-agent-{stock}-{analysis}-at{date_only}-save{now}.json"
+    filename = f"{LOG_DIR}/json-agent-{stock_identifier}-{analysis}-at{date_only}-save{now}.json"
 
     # 🚀 첨부된 JSON 파일과 동일한 형식으로 저장
     # steps 데이터를 문자열 배열로 변환 (기존 형식에 맞춤)
