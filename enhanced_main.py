@@ -40,6 +40,9 @@ from app.data_collector.enhanced_financial_data_collector import (
 from app.llm import LLM
 from app.logger import logger
 
+# 🚀 io_logger 모듈을 import해서 일관된 로그 저장을 위해 사용해요
+from io_logger import save_interaction_log
+
 # 동적 종목 정보 추출을 위한 AI 에이전트 import
 try:
     from app.agent.dynamic_stock_extractor import DynamicStockExtractor
@@ -1002,26 +1005,81 @@ class EnhancedStockAnalysisSystem:
     def save_enhanced_results(
         self, results: Dict[str, Any], stock_info: Dict[str, Any]
     ) -> str:
-        """개선된 분석 결과를 JSON 파일로 저장해요"""
+        """🚀 io_logger를 사용해서 개선된 분석 결과를 일관된 형식으로 저장해요"""
         try:
-            # 파일명 생성
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            stock_identifier = (
-                stock_info.get("stock_code")
-                or stock_info.get("stock_name")
-                or "unknown"
+            # 사용자 프롬프트와 최종 응답 추출
+            user_prompt = results.get("user_prompt", "")
+
+            # 최종 응답 구성 (단계별 결과를 종합)
+            final_response = []
+
+            # 종목 감지 결과
+            if "step1_stock_detection" in results.get("steps", {}):
+                stock_detection = results["steps"]["step1_stock_detection"]
+                if stock_detection.get("detected"):
+                    final_response.append(
+                        f"📊 감지된 종목: {stock_detection.get('stock_name')} ({stock_detection.get('stock_code')})"
+                    )
+
+            # 분류 결과
+            if "step3_classification" in results.get("steps", {}):
+                classification = results["steps"]["step3_classification"]
+                if classification.get("performed"):
+                    final_response.append("🏷️ 종목 분류:")
+                    final_response.append(classification.get("response", ""))
+
+            # 상세 분석 결과
+            if "step4_detailed_analysis" in results.get("steps", {}):
+                analysis = results["steps"]["step4_detailed_analysis"]
+                if analysis.get("performed"):
+                    final_response.append("📈 상세 분석:")
+                    final_response.append(analysis.get("response", ""))
+
+            # 종합 요약
+            if "final_summary" in results:
+                final_response.append("📋 종합 요약:")
+                final_response.append(str(results["final_summary"]))
+
+            response_text = "\n\n".join(final_response)
+
+            # 단계별 정보 구성
+            steps_data = []
+            for step_key, step_data in results.get("steps", {}).items():
+                steps_data.append({"step_name": step_key, "step_data": step_data})
+
+            # 메타데이터 구성
+            meta_data = {
+                "analysis_flow": results.get("analysis_flow", "enhanced"),
+                "success": results.get("success", False),
+                "timestamp": results.get("timestamp"),
+                "stock_info": stock_info,
+                "data_quality": results.get("steps", {})
+                .get("step2_financial_data", {})
+                .get("data_quality", "없음"),
+                "enhanced_features": {
+                    "financial_data_used": results.get("steps", {})
+                    .get("step2_financial_data", {})
+                    .get("success", False),
+                    "enhanced_dart_used": "step2_enhanced_dart_data"
+                    in results.get("steps", {}),
+                    "classification_performed": results.get("steps", {})
+                    .get("step3_classification", {})
+                    .get("performed", False),
+                    "detailed_analysis_performed": results.get("steps", {})
+                    .get("step4_detailed_analysis", {})
+                    .get("performed", False),
+                },
+            }
+
+            # 🚀 io_logger를 사용해서 저장
+            filepath = save_interaction_log(
+                prompt=user_prompt,
+                response=response_text,
+                steps=steps_data,
+                meta=meta_data,
             )
-            filename = f"enhanced_analysis_{stock_identifier}_{timestamp}.json"
 
-            # results 디렉토리 생성
-            os.makedirs("results", exist_ok=True)
-            filepath = f"results/{filename}"
-
-            # JSON 저장
-            with open(filepath, "w", encoding="utf-8") as f:
-                json.dump(results, f, ensure_ascii=False, indent=2)
-
-            logger.info(f"💾 분석 결과 저장: {filepath}")
+            logger.info(f"💾 Enhanced 분석 결과 저장: {filepath}")
             return filepath
 
         except Exception as e:

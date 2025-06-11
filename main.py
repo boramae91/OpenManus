@@ -10,6 +10,9 @@ from app.agent.stock_classifier import StockClassifier
 from app.agent.stock_name_extractor import StockNameExtractor
 from app.logger import logger
 
+# 🚀 io_logger 모듈을 import해서 일관된 로그 저장을 위해 사용해요
+from io_logger import save_interaction_log
+
 # 동적 종목 정보 추출을 위한 AI 에이전트 import
 try:
     from app.agent.dynamic_stock_extractor import DynamicStockExtractor
@@ -21,49 +24,7 @@ except ImportError as e:
     DYNAMIC_EXTRACTOR_AVAILABLE = False
 
 
-def save_json_file(
-    content,
-    filename,
-    prompt="",
-    processing_time=0,
-    classification_data=None,
-    stock_info=None,
-):
-    """
-    분석 결과를 JSON 형식으로 저장하는 함수예요 (분류 정보 포함)
-    - content: 분석 결과 내용 (문자열)
-    - filename: 저장할 파일 이름
-    - prompt: 사용자가 입력한 질문 (이것이 key가 돼요)
-    - processing_time: 처리하는데 걸린 시간
-    - classification_data: 종목 분류 결과 (딕셔너리)
-    - stock_info: 종목 정보 (딕셔너리)
-    """
-
-    if not prompt.strip():
-        # 프롬프트가 비어있으면 기본 키를 사용해요
-        prompt = "User Question"
-
-        # 기존 형식 유지: 질문을 key로, 답변을 value로 저장
-    json_data = {prompt: content}  # 질문을 key로, 답변을 value로 저장해요
-
-    # 분류 정보가 있으면 추가 (기존 구조 유지하면서 확장)
-    if classification_data:
-        json_data["stock_classification"] = classification_data
-
-    # 종목 정보가 있으면 추가
-    if stock_info:
-        json_data["stock_info"] = stock_info
-
-    # 처리 시간과 타임스탬프는 별도 필드로 추가
-    if processing_time > 0:
-        json_data["processing_time_seconds"] = processing_time
-    json_data["timestamp"] = datetime.now().isoformat()
-
-    # JSON 파일로 저장해요 (한글도 제대로 저장되도록 설정)
-    with open(filename, "w", encoding="utf-8") as f:
-        json.dump(json_data, f, ensure_ascii=False, indent=2)
-
-    logger.info(f"Analysis result saved to JSON: {filename}")
+# 🚀 save_json_file 함수는 io_logger.save_interaction_log로 대체되었어요
 
 
 class ResultCollector:
@@ -254,11 +215,6 @@ def extract_stock_candidates_from_text(text):
             "거래량",
             "매출",
             "영업이익",
-            "코스피",
-            "코스닥",
-            "거래",
-            "전일",
-            "대비",
         }
         if match not in exclude_words and len(match) >= 2:
             candidates.append(match)
@@ -512,7 +468,7 @@ def find_most_frequent_stock_name(ai_response):
         "메리츠증권",
     ]
 
-    # 우선순위 종목들이 있는지 먼저 확인 (높은 가중치) - 정확한 매칭으로 개선
+    # 우선순위 종목들이 있는지 먼저 확인 (높은 가중치) - 정확한 매치로 개선
     for stock in priority_stocks:
         # 정확한 단어 경계를 사용하여 매치 (부분 매칭 방지)
         import re
@@ -1051,75 +1007,10 @@ def extract_stock_name_from_ai_response(response_text, fallback_prompt=""):
     return "GENERAL", None
 
 
-def clean_filename_part(text):
-    """
-    파일명에 사용할 수 없는 문자들을 제거하는 함수예요
-    - text: 정리할 텍스트
-    - 반환값: 파일명에 안전한 텍스트
-    """
-    if not text:
-        return "UNKNOWN"
-
-    # 줄바꿈과 탭 문자 제거
-    cleaned = re.sub(r"\s*\n\s*", "", text)
-    cleaned = re.sub(r"\s*\t\s*", "", cleaned)
-
-    # 파일명에 사용할 수 없는 문자들 제거 (Windows 기준)
-    illegal_chars = r'[<>:"/\\|?*\n\r\t]'
-    cleaned = re.sub(illegal_chars, "", cleaned)
-
-    # 연속된 공백을 하나로 통합
-    cleaned = re.sub(r"\s+", " ", cleaned)
-
-    # 앞뒤 공백 제거
-    cleaned = cleaned.strip()
-
-    # 길이 제한 (파일명이 너무 길어지지 않도록)
-    if len(cleaned) > 30:
-        cleaned = cleaned[:30]
-
-    # 비어있으면 기본값 반환
-    if not cleaned:
-        return "UNKNOWN"
-
-    return cleaned
+# 🚀 clean_filename_part 함수는 io_logger.safe_filename으로 대체되었어요
 
 
-def generate_json_filename(stock_name, stock_code=None, base_dir="results"):
-    """
-    JSON 파일명을 생성하는 함수예요 (사용자 요청 형식)
-    형식: JSON-종목코드-종목명-현재시간-save현재시간.json
-    - stock_name: 종목명 (영문)
-    - stock_code: 종목코드/티커 (선택사항)
-    - base_dir: 저장할 폴더명
-    """
-    # 현재 시간을 문자열로 변환 (년월일_시분초 형식)
-    current_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    save_timestamp = current_timestamp  # 현재시간과 저장시간이 동일해요
-
-    # 종목코드 부분 결정 및 정리
-    if stock_code:
-        # 종목코드가 있으면 정리해서 사용
-        code_part = clean_filename_part(stock_code)
-    else:
-        # 종목코드가 없으면 종목명에서 추출하거나 UNKNOWN 사용
-        code_part = convert_to_english_ticker(stock_name)
-        if code_part == stock_name and not (
-            code_part.isupper() and code_part.isalpha() and 2 <= len(code_part) <= 5
-        ):
-            code_part = "UNKNOWN"
-        code_part = clean_filename_part(code_part)
-
-    # 종목명 부분 정리 (파일명에 적합하게)
-    clean_stock_name = clean_filename_part(stock_name) if stock_name else "GENERAL"
-
-    # 파일명 생성 (사용자 요청 형식: JSON-종목코드-종목명-현재시간-save현재시간.json)
-    filename = f"JSON-{code_part}-{clean_stock_name}-{current_timestamp}-save{save_timestamp}.json"
-
-    # 전체 경로 생성
-    full_path = os.path.join(base_dir, filename)
-
-    return full_path
+# 🚀 generate_json_filename 함수는 io_logger.save_interaction_log가 자동으로 파일명을 생성하므로 제거되었어요
 
 
 async def main():
@@ -1396,12 +1287,6 @@ async def main():
             print(f"   🎯 종목코드: {final_stock_code}")
         print("\n--- END OF RESULTS ---\n")
 
-        # 결과 폴더 생성
-        results_dir = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "results"
-        )
-        os.makedirs(results_dir, exist_ok=True)
-
         # 수집된 결과 확인
         final_result = result_collector.get_result()
         if not final_result.strip():
@@ -1412,13 +1297,8 @@ async def main():
             if response:
                 final_result = response
 
-        # 📁 파일명 생성 (최종 종목 정보 사용)
-        json_filename = generate_json_filename(
-            final_stock_name, final_stock_code, results_dir
-        )
-
         logger.info(
-            f"📁 파일명 생성 완료: {final_stock_name} ({final_stock_code}) - {extraction_method}"
+            f"📁 종목 정보 준비 완료: {final_stock_name} ({final_stock_code}) - {extraction_method}"
         )
 
         # 분류 결과와 종목 정보 준비 (JSON에 포함할 메타데이터)
@@ -1439,15 +1319,35 @@ async def main():
         else:
             stock_info_for_json = None
 
-        # JSON 파일 생성해요
-        save_json_file(
-            final_result,
-            json_filename,
-            prompt,
-            processing_time,
-            classification_data_for_json,  # 분류 결과 포함
-            stock_info_for_json,  # 종목 정보 포함
-        )  # JSON 파일로 생성해요 (분류 정보 포함!)
+        # 🚀 io_logger를 사용해서 일관된 형식으로 JSON 파일 생성해요
+        json_filename = save_interaction_log(
+            prompt=prompt,
+            response=final_result,
+            steps=[
+                {
+                    "step": "stock_detection",
+                    "result": final_stock_info,
+                    "extraction_method": extraction_method,
+                },
+                {
+                    "step": "classification",
+                    "result": classification_data_for_json,
+                    "performed": classification_data_for_json is not None,
+                },
+                {
+                    "step": "analysis",
+                    "response": response,
+                    "processing_time": processing_time,
+                },
+            ],
+            meta={
+                "processing_time_seconds": processing_time,
+                "stock_classification": classification_data_for_json,
+                "stock_info": stock_info_for_json,
+                "extraction_method": extraction_method,
+                "timestamp": datetime.now().isoformat(),
+            },
+        )
 
         # 결과 파일 위치 출력
         print(f"\nResults saved to:")

@@ -10,54 +10,10 @@ from app.agent.stock_classifier import StockClassifier
 from app.flow.flow_factory import FlowFactory, FlowType
 from app.logger import logger
 
+# 🚀 io_logger 모듈을 import해서 일관된 로그 저장을 위해 사용해요
+from io_logger import save_interaction_log
 
-def save_json_file(
-    content,
-    filename,
-    prompt="",
-    processing_time=0,
-    flow_type="PLANNING",
-    classification_data=None,
-    stock_info=None,
-):
-    """
-    Flow 실행 결과를 JSON 형식으로 저장하는 함수예요 (분류 정보 포함)
-    - content: Flow 실행 결과 내용 (문자열)
-    - filename: 저장할 파일 이름
-    - prompt: 사용자가 입력한 질문 (이것이 key가 돼요)
-    - processing_time: 처리하는데 걸린 시간 (초 단위)
-    - flow_type: 실행한 Flow의 종류
-    - classification_data: 종목 분류 결과 (딕셔너리)
-    - stock_info: 종목 정보 (딕셔너리)
-    """
-
-    if not prompt.strip():
-        # 프롬프트가 비어있으면 기본 키를 사용해요
-        prompt = "User Flow Question"
-
-    # 기존 형식 유지: 질문을 key로, Flow 실행 결과를 value로 저장
-    json_data = {prompt: content}  # 질문을 key로, Flow 실행 결과를 value로 저장해요
-
-    # 분류 정보가 있으면 추가 (기존 구조 유지하면서 확장)
-    if classification_data:
-        json_data["stock_classification"] = classification_data
-
-    # 종목 정보가 있으면 추가
-    if stock_info:
-        json_data["stock_info"] = stock_info
-
-    # Flow 관련 정보와 처리 시간은 별도 필드로 추가
-    json_data["analysis_type"] = "Flow"
-    json_data["flow_type"] = flow_type
-    if processing_time > 0:
-        json_data["processing_time_seconds"] = processing_time
-    json_data["timestamp"] = datetime.now().isoformat()
-
-    # JSON 파일로 저장해요 (한글도 제대로 저장되도록 설정)
-    with open(filename, "w", encoding="utf-8") as f:
-        json.dump(json_data, f, ensure_ascii=False, indent=2)
-
-    logger.info(f"Flow result saved to JSON: {filename}")
+# 🚀 save_json_file 함수는 io_logger.save_interaction_log로 대체되었어요
 
 
 class ResultCollector:
@@ -263,82 +219,10 @@ def extract_company_name_from_prompt(prompt):
     return None
 
 
-def clean_filename_part(text):
-    """
-    파일명에 사용할 수 없는 문자들을 제거하는 함수예요
-    - text: 정리할 텍스트
-    - 반환값: 파일명에 안전한 텍스트
-    """
-    if not text:
-        return "UNKNOWN"
-
-    # 줄바꿈과 탭 문자 제거
-    cleaned = re.sub(r"\s*\n\s*", "", text)
-    cleaned = re.sub(r"\s*\t\s*", "", cleaned)
-
-    # 파일명에 사용할 수 없는 문자들 제거 (Windows 기준)
-    illegal_chars = r'[<>:"/\\|?*\n\r\t]'
-    cleaned = re.sub(illegal_chars, "", cleaned)
-
-    # 연속된 공백을 하나로 통합
-    cleaned = re.sub(r"\s+", " ", cleaned)
-
-    # 앞뒤 공백 제거
-    cleaned = cleaned.strip()
-
-    # 길이 제한 (파일명이 너무 길어지지 않도록)
-    if len(cleaned) > 30:
-        cleaned = cleaned[:30]
-
-    # 비어있으면 기본값 반환
-    if not cleaned:
-        return "UNKNOWN"
-
-    return cleaned
+# 🚀 clean_filename_part 함수는 io_logger.safe_filename으로 대체되었어요
 
 
-def generate_json_filename(
-    stock_name, stock_code=None, base_dir="results", file_type="flow"
-):
-    """
-    JSON 파일명을 생성하는 함수예요 (사용자 요청 형식)
-    형식: JSON-종목코드-종목명-현재시간-save현재시간.json
-    - stock_name: 종목명 (영문)
-    - stock_code: 종목코드/티커 (선택사항)
-    - base_dir: 저장할 폴더명
-    - file_type: 파일 타입 (flow, timeout, cancelled, error)
-    """
-    # 현재 시간을 문자열로 변환 (년월일_시분초 형식)
-    current_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    save_timestamp = current_timestamp  # 현재시간과 저장시간이 동일해요
-
-    # 종목코드 부분 결정 및 정리
-    if stock_code:
-        # 종목코드가 있으면 정리해서 사용
-        code_part = clean_filename_part(stock_code)
-    else:
-        # 종목코드가 없으면 종목명에서 추출하거나 UNKNOWN 사용
-        code_part = convert_to_english_ticker(stock_name)
-        if code_part == stock_name and not (
-            code_part.isupper() and code_part.isalpha() and 2 <= len(code_part) <= 5
-        ):
-            code_part = "UNKNOWN"
-        code_part = clean_filename_part(code_part)
-
-    # 종목명 부분 정리 (파일명에 적합하게)
-    clean_stock_name = clean_filename_part(stock_name) if stock_name else "GENERAL"
-
-    # 파일명 생성 (사용자 요청 형식: JSON-종목코드-종목명-현재시간-save현재시간.json)
-    if file_type == "flow":
-        filename = f"JSON-{code_part}-{clean_stock_name}-{current_timestamp}-save{save_timestamp}.json"
-    else:
-        # 특수한 경우 (timeout, cancelled, error)에는 파일명에 타입을 포함시켜요
-        filename = f"JSON-{code_part}-{clean_stock_name}-{file_type}-{current_timestamp}-save{save_timestamp}.json"
-
-    # 전체 경로 생성
-    full_path = os.path.join(base_dir, filename)
-
-    return full_path
+# 🚀 generate_json_filename 함수는 io_logger.save_interaction_log가 자동으로 파일명을 생성하므로 제거되었어요
 
 
 def extract_stock_candidates_from_text(text):
@@ -1068,10 +952,7 @@ async def run_flow():
 
             logger.info(f"최종 추출된 종목명: {stock_name}, 종목코드: {stock_code}")
 
-            # JSON 파일명 생성 (AI Flow 응답에서 추출한 종목명과 종목코드 사용)
-            json_filename = generate_json_filename(
-                stock_name, stock_code, results_dir, "flow"
-            )
+            # 🚀 io_logger가 자동으로 파일명을 생성하므로 별도 생성 불필요
 
             # 분류 결과와 종목 정보 준비 (JSON에 포함할 메타데이터)
             classification_data_for_json = None
@@ -1096,16 +977,37 @@ async def run_flow():
                     "source": "ai_flow_response",
                 }
 
-            # JSON 파일 생성해요
-            save_json_file(
-                final_result,
-                json_filename,
-                prompt,
-                elapsed_time,
-                "PLANNING",
-                classification_data_for_json,  # 분류 결과 포함
-                stock_info_for_json,  # 종목 정보 포함
-            )  # JSON 파일 생성해요 (분류 정보 포함!)
+            # 🚀 io_logger를 사용해서 일관된 형식으로 JSON 파일 생성해요
+            json_filename = save_interaction_log(
+                prompt=prompt,
+                response=final_result,
+                steps=[
+                    {
+                        "step": "stock_detection",
+                        "result": stock_info_for_json,
+                        "extraction_method": "AI Flow 응답 동적 추출",
+                    },
+                    {
+                        "step": "classification",
+                        "result": classification_data_for_json,
+                        "performed": classification_data_for_json is not None,
+                    },
+                    {
+                        "step": "flow_execution",
+                        "flow_type": "PLANNING",
+                        "response": flow_result,
+                        "processing_time": elapsed_time,
+                    },
+                ],
+                meta={
+                    "analysis_type": "Flow",
+                    "flow_type": "PLANNING",
+                    "processing_time_seconds": elapsed_time,
+                    "stock_classification": classification_data_for_json,
+                    "stock_info": stock_info_for_json,
+                    "timestamp": datetime.now().isoformat(),
+                },
+            )
 
             # 결과 파일 위치 출력
             print(f"\nResults saved to:")
@@ -1127,16 +1029,25 @@ async def run_flow():
             )
             os.makedirs(results_dir, exist_ok=True)
 
-            # 타임아웃의 경우 프롬프트에서 종목명과 종목코드 추출
-            stock_name, stock_code = extract_stock_name_from_ai_response(prompt)
+            # 🚀 io_logger가 자동으로 파일명을 생성하므로 별도 생성 불필요
 
-            json_filename = generate_json_filename(
-                stock_name, stock_code, results_dir, "timeout"
+            json_filename = save_interaction_log(
+                prompt=prompt,
+                response=timeout_message,
+                steps=[
+                    {
+                        "step": "timeout",
+                        "message": "Request processing timed out after 1 hour",
+                        "processing_time": 3600,
+                    }
+                ],
+                meta={
+                    "analysis_type": "Flow",
+                    "flow_type": "PLANNING",
+                    "status": "timeout",
+                    "timestamp": datetime.now().isoformat(),
+                },
             )
-
-            save_json_file(
-                timeout_message, json_filename, prompt, 3600, "PLANNING", None, None
-            )  # 타임아웃도 JSON으로 저장
 
             print(f"\nTimeout results saved to:")
             print(f" - JSON: {json_filename}")
@@ -1153,26 +1064,24 @@ async def run_flow():
         )
         os.makedirs(results_dir, exist_ok=True)
 
-        # 취소의 경우 프롬프트에서 종목명과 종목코드 추출
-        stock_name, stock_code = extract_stock_name_from_ai_response(
-            prompt if "prompt" in locals() else ""
-        )
+        # 🚀 io_logger가 자동으로 파일명을 생성하므로 별도 생성 불필요
 
-        json_filename = generate_json_filename(
-            stock_name if "stock_name" in locals() else "GENERAL",
-            stock_code if "stock_code" in locals() else None,
-            results_dir,
-            "cancelled",
-        )
-
-        save_json_file(
-            cancel_message,
-            json_filename,
-            prompt if "prompt" in locals() else "",
-            0,
-            "PLANNING",
-            None,  # 취소 시에는 분류 정보 없음
-            None,  # 취소 시에는 종목 정보 없음
+        json_filename = save_interaction_log(
+            prompt=prompt if "prompt" in locals() else "",
+            response=cancel_message,
+            steps=[
+                {
+                    "step": "cancelled",
+                    "message": "Operation cancelled by user",
+                    "processing_time": 0,
+                }
+            ],
+            meta={
+                "analysis_type": "Flow",
+                "flow_type": "PLANNING",
+                "status": "cancelled",
+                "timestamp": datetime.now().isoformat(),
+            },
         )
 
         print(f"\nCancellation results saved to:")
@@ -1190,23 +1099,20 @@ async def run_flow():
         )
         os.makedirs(results_dir, exist_ok=True)
 
-        # 에러의 경우 프롬프트에서 종목명과 종목코드 추출
-        stock_name, stock_code = extract_stock_name_from_ai_response(
-            prompt if "prompt" in locals() else ""
-        )
+        # 🚀 io_logger가 자동으로 파일명을 생성하므로 별도 생성 불필요
 
-        json_filename = generate_json_filename(
-            stock_name, stock_code, results_dir, "error"
-        )
-
-        save_json_file(
-            error_message,
-            json_filename,
-            prompt if "prompt" in locals() else "",
-            0,
-            "PLANNING",
-            None,  # 에러 시에는 분류 정보 없음
-            None,  # 에러 시에는 종목 정보 없음
+        json_filename = save_interaction_log(
+            prompt=prompt if "prompt" in locals() else "",
+            response=error_message,
+            steps=[
+                {"step": "error", "message": f"Error: {str(e)}", "processing_time": 0}
+            ],
+            meta={
+                "analysis_type": "Flow",
+                "flow_type": "PLANNING",
+                "status": "error",
+                "timestamp": datetime.now().isoformat(),
+            },
         )
 
         print(f"\nError results saved to:")
