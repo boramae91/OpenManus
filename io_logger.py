@@ -288,6 +288,10 @@ def save_interaction_log(
     if not stock_identifier:
         stock_identifier = "unknown"
 
+    # 🚀 "CODE" 접두사 제거 (파일명 깔끔하게)
+    if stock_identifier and stock_identifier.startswith("CODE"):
+        stock_identifier = stock_identifier[4:]  # "CODE" 제거
+
     stock_identifier = safe_filename(stock_identifier)
     if not stock_identifier:
         stock_identifier = "unknown"

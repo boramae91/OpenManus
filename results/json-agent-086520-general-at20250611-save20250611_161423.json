@@ -1,0 +1,14 @@
+{
+  "timestamp": "20250611_161423",
+  "prompt": "에코프로 분석",
+  "response": "분석결과",
+  "steps": [
+  ],
+  "meta": {
+    "stock_info": {
+        "stock_name": "CODE086520",
+        "stock_code": "086520",
+        "found": true
+    }
+}
+}

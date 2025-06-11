@@ -1,0 +1,944 @@
+{
+  "timestamp": "20250611_161010",
+  "prompt": "에코프로에 대해서 분석해줘",
+  "response": "📊 감지된 종목: 1. 에코프로 (086520)\n" +
+  "\n" +
+  "📋 종합 요약:\n" +
+  "\n" +
+  "{'analyzed_stock': {'name': '1. 에코프로', 'code': '086520', 'detection_method':" +
+  "'ai_ai_web_search_priority'}, 'data_sources': {'financial_data_collected': True," +
+  "'data_sources': ['yfinance', 'DART'], 'data_quality': '낮음'}, 'analysis_quality':" +
+  "{'classification_performed': False, 'detailed_analysis_performed': False," +
+  "'financial_data_enhanced': True}, 'key_insights': {'classification': None," +
+  "'investment_outlook': None, 'risk_factors': None, 'recommendation': None}}",
+  "steps": [
+    "",
+    "📊 감지된 종목: 1. 에코프로 (086520)",
+    "📈 재무데이터 수집 성공: yfinance, DART",
+    "🚀 Enhanced DART 데이터 수집 성공",
+    "📊 감지된 종목: 1. 에코프로 (086520)\n" +
+    "\n" +
+    "📋 종합 요약:\n" +
+    "\n" +
+    "{'analyzed_stock': {'name': '1. 에코프로', 'code': '086520', 'detection_method':" +
+    "'ai_ai_web_search_priority'}, 'data_sources': {'financial_data_collected': True," +
+    "'data_sources': ['yfinance', 'DART'], 'data_quality': '낮음'}, 'analysis_quality':" +
+    "{'classification_performed': False, 'detailed_analysis_performed': False," +
+    "'financial_data_enhanced': True}, 'key_insights': {'classification': None," +
+    "'investment_outlook': None, 'risk_factors': None, 'recommendation': None}}",
+    ""
+  ],
+  "meta": {
+    "analysis_flow": "enhanced",
+    "success": false,
+    "timestamp": "2025-06-11T16:09:40.716484",
+    "stock_info": {
+        "detected": true,
+        "stock_name": "1. 에코프로",
+        "stock_code": "086520",
+        "detection_method": "ai_ai_web_search_priority"
+    },
+    "data_quality": "낮음",
+    "enhanced_features": {
+        "financial_data_used": true,
+        "enhanced_dart_used": true,
+        "classification_performed": false,
+        "detailed_analysis_performed": false
+    },
+    "raw_data": {
+        "data_sources_summary": {
+            "yfinance_data_available": true,
+            "dart_basic_data_available": true,
+            "enhanced_dart_data_available": true
+        },
+        "yfinance_raw_data": {
+            "basic_info": {
+                "company_name": "086520.KS,0P0000AYIC,1314577",
+                "sector": "정보없음",
+                "industry": "정보없음",
+                "country": "정보없음",
+                "currency": "KRW",
+                "exchange": "KOE",
+                "ticker_symbol": "086520.KS"
+            },
+            "current_price_info": {
+                "current_price": 100300.0,
+                "previous_close": null,
+                "open_price": null,
+                "day_high": null,
+                "day_low": null,
+                "volume": null,
+                "market_cap": null,
+                "shares_outstanding": null
+            },
+            "financial_ratios": {
+                "pe_ratio": null,
+                "peg_ratio": null,
+                "pb_ratio": null,
+                "ps_ratio": null,
+                "dividend_yield": null,
+                "profit_margin": null,
+                "operating_margin": null,
+                "return_on_equity": null,
+                "return_on_assets": null,
+                "debt_to_equity": null,
+                "current_ratio": null,
+                "quick_ratio": null
+            },
+            "growth_metrics": {
+                "earnings_growth": null,
+                "revenue_growth": null,
+                "earnings_quarterly_growth": null,
+                "revenue_quarterly_growth": null
+            },
+            "price_history": {
+                "52_week_high": 105431.0106817844,
+                "52_week_low": 37750.0,
+                "avg_volume_3m": 812070.5333333333,
+                "price_change_1y": -56.206370666442496
+            },
+            "data_quality": "낮음",
+            "data_sources": [
+                "yfinance",
+                "DART"
+            ],
+            "collection_info": {
+                "success": true,
+                "errors": [],
+                "stock_info": {
+                    "stock_code": "086520",
+                    "stock_name": "1. 에코프로",
+                    "collection_timestamp": "2025-06-11T16:09:56.458788"
+                }
+            }
+        },
+        "dart_basic_raw_data": {
+            "company_info": {
+                "corp_name": "(주)에코프로",
+                "corp_code": "00536541",
+                "business_summary": "2148626675",
+                "established_date": "19981022",
+                "listing_date": "12",
+                "ceo_name": "송호준",
+                "address": "충청북도 청주시 청원구 오창읍 과학산업2로 587-40 주식회사 에코프로"
+            },
+            "financial_statements": {
+                "current_assets": 272506198320,
+                "non_current_assets": 1347611646904,
+                "total_assets": 1620117845224,
+                "current_liabilities": 283562847349,
+                "non_current_liabilities": 512398730573,
+                "total_liabilities": 795961577922,
+                "total_equity": 824156267302,
+                "revenue": 115003732207,
+                "operating_profit": 32312849871,
+                "net_income": -109348861644,
+                "debt_ratio": 0.97,
+                "operating_margin": 0.281,
+                "net_margin": -0.9508
+            },
+            "business_report": {
+                "main_business": "법인고유번호 00536541 기업의 주요사업",
+                "business_risks": "시장변동성, 경쟁심화 등",
+                "future_plans": "사업확장 및 기술개발 계획"
+            }
+        },
+        "enhanced_dart_raw_data": {
+            "collection_info": {
+                "success": true,
+                "stock_code": "086520",
+                "collected_at": "",
+                "error": ""
+            },
+            "financial_analysis": {
+                "success": true,
+                "corp_code": "00536541",
+                "bsns_year": "2024",
+                "collected_at": "2025-06-11T16:10:07.848449",
+                "individual_statements": {
+                    "asset_info": {
+                        "current_assets": 272506198320,
+                        "non_current_assets": 1347611646904,
+                        "total_assets": 1620117845224
+                    },
+                    "liability_info": {
+                        "current_liabilities": 283562847349,
+                        "non_current_liabilities": 512398730573,
+                        "total_liabilities": 795961577922
+                    },
+                    "equity_info": {
+                        "capital_stock": 13313835500,
+                        "total_equity": 824156267302
+                    },
+                    "income_info": {
+                        "revenue": 115003732207,
+                        "operating_income": -293038698088,
+                        "net_income": -109348861644
+                    }
+                },
+                "consolidated_statements": {
+                    "asset_info": {
+                        "current_assets": 272506198320,
+                        "non_current_assets": 1347611646904,
+                        "total_assets": 1620117845224
+                    },
+                    "liability_info": {
+                        "current_liabilities": 283562847349,
+                        "non_current_liabilities": 512398730573,
+                        "total_liabilities": 795961577922
+                    },
+                    "equity_info": {
+                        "capital_stock": 13313835500,
+                        "total_equity": 824156267302
+                    },
+                    "income_info": {
+                        "revenue": 115003732207,
+                        "operating_income": -293038698088,
+                        "net_income": -109348861644
+                    }
+                },
+                "quarterly_performance": [
+                    {
+                        "asset_info": {
+                            "current_assets": 202510378172,
+                            "non_current_assets": 1262849809673,
+                            "total_assets": 1465360187845
+                        },
+                        "liability_info": {
+                            "current_liabilities": 226268724955,
+                            "non_current_liabilities": 412607669610,
+                            "total_liabilities": 638876394565
+                        },
+                        "equity_info": {
+                            "capital_stock": 13313835500,
+                            "total_equity": 826483793280
+                        },
+                        "income_info": {
+                            "revenue": 17034649200,
+                            "operating_income": 3477622689,
+                            "net_income": -868536624
+                        },
+                        "period": "1분기"
+                    },
+                    {
+                        "asset_info": {
+                            "current_assets": 216464998882,
+                            "non_current_assets": 1402337977986,
+                            "total_assets": 1618802976868
+                        },
+                        "liability_info": {
+                            "current_liabilities": 166709060900,
+                            "non_current_liabilities": 612827967637,
+                            "total_liabilities": 779537028537
+                        },
+                        "equity_info": {
+                            "capital_stock": 13313835500,
+                            "total_equity": 839265948331
+                        },
+                        "income_info": {
+                            "revenue": 33640369259,
+                            "operating_income": 16301551180,
+                            "net_income": 11990936103
+                        },
+                        "period": "반기"
+                    },
+                    {
+                        "asset_info": {
+                            "current_assets": 173595786397,
+                            "non_current_assets": 1434219085699,
+                            "total_assets": 1607814872096
+                        },
+                        "liability_info": {
+                            "current_liabilities": 274071998755,
+                            "non_current_liabilities": 498800809573,
+                            "total_liabilities": 772872808328
+                        },
+                        "equity_info": {
+                            "capital_stock": 13313835500,
+                            "total_equity": 834942063768
+                        },
+                        "income_info": {
+                            "revenue": 26523624968,
+                            "operating_income": 4927261476,
+                            "net_income": -7246760191
+                        },
+                        "period": "3분기"
+                    },
+                    {
+                        "asset_info": {
+                            "current_assets": 272506198320,
+                            "non_current_assets": 1347611646904,
+                            "total_assets": 1620117845224
+                        },
+                        "liability_info": {
+                            "current_liabilities": 283562847349,
+                            "non_current_liabilities": 512398730573,
+                            "total_liabilities": 795961577922
+                        },
+                        "equity_info": {
+                            "capital_stock": 13313835500,
+                            "total_equity": 824156267302
+                        },
+                        "income_info": {
+                            "revenue": 115003732207,
+                            "operating_income": -293038698088,
+                            "net_income": -109348861644
+                        },
+                        "period": "연간"
+                    }
+                ]
+            },
+            "governance_analysis": {
+                "success": true,
+                "corp_code": "00536541",
+                "bsns_year": "2024",
+                "collected_at": "2025-06-11T16:10:08.892896",
+                "major_shareholders": [
+                    {
+                        "shareholder_name": "이동채",
+                        "relationship": "최대주주",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "송호준",
+                        "relationship": "발행회사의 임원",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "박재하",
+                        "relationship": "발행회사의 임원",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "최상운",
+                        "relationship": "발행회사의 임원",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "안태식",
+                        "relationship": "발행회사의 임원",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "(주)데이지파트너스",
+                        "relationship": "특수관계법인",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "이선이",
+                        "relationship": "친인척",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "이승환",
+                        "relationship": "친인척",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "이연수",
+                        "relationship": "친인척",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "김애희",
+                        "relationship": "친인척",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "강민석",
+                        "relationship": "친인척",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "강예리",
+                        "relationship": "친인척",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "강예지",
+                        "relationship": "친인척",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "계",
+                        "relationship": "",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "계",
+                        "relationship": "",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    }
+                ],
+                "executives": [
+                    {
+                        "name": "송호준",
+                        "position": "",
+                        "career": "",
+                        "main_career": "□ 서울대학교 경제학\n□ 삼성SDI, 엑센츄어 파트너",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김순주",
+                        "position": "",
+                        "career": "",
+                        "main_career": "□ 서강대학교 경영학 MBA 석사\n□ 유안타증권",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이수호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "□ 한국외국어대학교 경영정보(MIS) 석사\n□ ㈜동부",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "공효식",
+                        "position": "",
+                        "career": "",
+                        "main_career": "□ 서울대학교 교육대학원 석사\n□ CJ대한통운",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김형열",
+                        "position": "",
+                        "career": "",
+                        "main_career": "□ Indiana University School of Law 법학석사(LL.M.)\n□ 동양그룹, 유안타증권 변호사",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "장인원",
+                        "position": "",
+                        "career": "",
+                        "main_career": "□ 서울대학교 자원공학과\n□ 삼성물산",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정회림",
+                        "position": "",
+                        "career": "",
+                        "main_career": "□ 서울대학교 경제학 학사\n□ 삼정회계법인",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "최상운",
+                        "position": "",
+                        "career": "",
+                        "main_career": "□ 헬싱키 경제대학원\n□ 국민은행",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박재하",
+                        "position": "",
+                        "career": "",
+                        "main_career": "□ Wharton School  MBA 석사\n□ 삼성SDI, 삼성전자, 삼성물산",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김재정",
+                        "position": "",
+                        "career": "",
+                        "main_career": "□ Canegie Mellon Univ. phD\n□ 서울대학교 화학생물공학부 교수",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "안태식",
+                        "position": "",
+                        "career": "",
+                        "main_career": "□ University of Texas at Austin 경영학 박사\n□ 서울대학교 경영대학 명예교수",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "하종화",
+                        "position": "",
+                        "career": "",
+                        "main_career": "□ 건국대학교 세무행정학과 석사\n□ 세무법인 두리 회장",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "송정원",
+                        "position": "",
+                        "career": "",
+                        "main_career": "□ 서울대학교 경제학과\n□ 공정거래위원회",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이승환",
+                        "position": "",
+                        "career": "",
+                        "main_career": "□ 연세대학교 문화인류학/응용통계학 학사\n□ 삼정회계법인",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김성홍",
+                        "position": "",
+                        "career": "",
+                        "main_career": "□ 고려대학교 신문방송학사\n□ 한국조폐공사",
+                        "tenure": ""
+                    }
+                ]
+            },
+            "investment_analysis": {
+                "success": true,
+                "corp_code": "00536541",
+                "bsns_year": "2024",
+                "collected_at": "2025-06-11T16:10:09.486402",
+                "dividend_info": [
+                    {
+                        "dividend_classification": "주당액면가액(원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 100.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "(연결)당기순이익(백만원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": -205951.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "(별도)당기순이익(백만원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": -109349.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "(연결)주당순이익(원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": -1567.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "현금배당금총액(백만원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 13189.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주식배당금총액(백만원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 264.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "(연결)현금배당성향(%)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": -6.4,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "현금배당수익률(%)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 0.2,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "현금배당수익률(%)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 0.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주식배당수익률(%)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 0.9,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주식배당수익률(%)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 0.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주당 현금배당금(원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 100.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주당 현금배당금(원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 0.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주당 주식배당(주)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 0.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주당 주식배당(주)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 0.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    }
+                ],
+                "capital_changes": [
+                    {
+                        "date": "",
+                        "type": "2022.03.30",
+                        "issued_shares": 0,
+                        "issue_price": 0,
+                        "issue_amount": 0
+                    },
+                    {
+                        "date": "",
+                        "type": "2023.03.16",
+                        "issued_shares": 0,
+                        "issue_price": 0,
+                        "issue_amount": 0
+                    },
+                    {
+                        "date": "",
+                        "type": "2023.03.30",
+                        "issued_shares": 0,
+                        "issue_price": 0,
+                        "issue_amount": 0
+                    },
+                    {
+                        "date": "",
+                        "type": "2024.04.12",
+                        "issued_shares": 0,
+                        "issue_price": 0,
+                        "issue_amount": 0
+                    },
+                    {
+                        "date": "",
+                        "type": "2022.07.27",
+                        "issued_shares": 0,
+                        "issue_price": 0,
+                        "issue_amount": 0
+                    },
+                    {
+                        "date": "",
+                        "type": "2022.08.01",
+                        "issued_shares": 0,
+                        "issue_price": 0,
+                        "issue_amount": 0
+                    },
+                    {
+                        "date": "",
+                        "type": "2022.09.02",
+                        "issued_shares": 0,
+                        "issue_price": 0,
+                        "issue_amount": 0
+                    },
+                    {
+                        "date": "",
+                        "type": "2022.11.10",
+                        "issued_shares": 0,
+                        "issue_price": 0,
+                        "issue_amount": 0
+                    },
+                    {
+                        "date": "",
+                        "type": "2022.11.25",
+                        "issued_shares": 0,
+                        "issue_price": 0,
+                        "issue_amount": 0
+                    },
+                    {
+                        "date": "",
+                        "type": "2022.12.15",
+                        "issued_shares": 0,
+                        "issue_price": 0,
+                        "issue_amount": 0
+                    },
+                    {
+                        "date": "",
+                        "type": "2023.02.06",
+                        "issued_shares": 0,
+                        "issue_price": 0,
+                        "issue_amount": 0
+                    },
+                    {
+                        "date": "",
+                        "type": "2023.02.17",
+                        "issued_shares": 0,
+                        "issue_price": 0,
+                        "issue_amount": 0
+                    }
+                ],
+                "other_investments": [
+                    {
+                        "company_name": "㈜에코프로비엠",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "에코 오픈 이노베이션 조합 1호",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "강원-아이스퀘어 중소벤처펀드 2호",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "아이스퀘어 충청 엔젤징검다리 조합 1호",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "신한 아이스퀘어 벤처투자조합 제1호",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "신한 에코 벤처투자조합 제2호",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "PT. QMB NEW ENERGY MATERIALS",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Wuhan Power Battery Recycling Technology Co., Ltd",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "PT. Green Eco Nickel \n(구. PT. GEM INDONESIA NEW ENERGY MATERIALS)",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "에코프로 이차전지 벤처투자조합",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "PT Meiming NEW ENERGY MATERIALS",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜에코프로이노베이션",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜에코프로머티리얼즈",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜에코프로에이피",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜에코프로씨엔지",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "EcoPro America, Inc.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜에코로지스틱스",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "포항ISV그린테크1호VC",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜에코프로에이치엔",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "합계",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    }
+                ]
+            },
+            "disclosure_monitoring": {
+                "success": true,
+                "monitoring_period": "최근 30일",
+                "collected_at": "2025-06-11T16:10:10.082725",
+                "recent_disclosures": [
+                    {
+                        "corp_name": "에코프로",
+                        "report_name": "주식등의대량보유상황보고서(일반)",
+                        "receipt_number": "20250609000205",
+                        "receipt_date": "20250609",
+                        "submitter": "이동채",
+                        "remarks": ""
+                    },
+                    {
+                        "corp_name": "에코프로",
+                        "report_name": "[기재정정]단일판매ㆍ공급계약체결(자회사의 주요경영사항)              ",
+                        "receipt_number": "20250602900183",
+                        "receipt_date": "20250602",
+                        "submitter": "에코프로",
+                        "remarks": "코"
+                    },
+                    {
+                        "corp_name": "에코프로",
+                        "report_name": "주식등의대량보유상황보고서(일반)",
+                        "receipt_number": "20250530001715",
+                        "receipt_date": "20250530",
+                        "submitter": "이동채",
+                        "remarks": ""
+                    },
+                    {
+                        "corp_name": "에코프로",
+                        "report_name": "대규모기업집단현황공시[연1회(동일인용)]",
+                        "receipt_number": "20250530000121",
+                        "receipt_date": "20250530",
+                        "submitter": "이동채",
+                        "remarks": "공"
+                    },
+                    {
+                        "corp_name": "에코프로",
+                        "report_name": "대규모기업집단현황공시[연1회공시및1/4분기용(대표회사)]",
+                        "receipt_number": "20250529000329",
+                        "receipt_date": "20250529",
+                        "submitter": "에코프로",
+                        "remarks": "공"
+                    },
+                    {
+                        "corp_name": "에코프로",
+                        "report_name": "주식등의대량보유상황보고서(일반)",
+                        "receipt_number": "20250527000327",
+                        "receipt_date": "20250527",
+                        "submitter": "이동채",
+                        "remarks": ""
+                    },
+                    {
+                        "corp_name": "에코프로",
+                        "report_name": "주식등의대량보유상황보고서(일반)",
+                        "receipt_number": "20250515001555",
+                        "receipt_date": "20250515",
+                        "submitter": "이동채",
+                        "remarks": ""
+                    },
+                    {
+                        "corp_name": "에코프로",
+                        "report_name": "분기보고서 (2025.03)",
+                        "receipt_number": "20250515001533",
+                        "receipt_date": "20250515",
+                        "submitter": "에코프로",
+                        "remarks": ""
+                    }
+                ],
+                "important_notices": [],
+                "corrections": [
+                    {
+                        "corp_name": "에코프로",
+                        "report_name": "[기재정정]단일판매ㆍ공급계약체결(자회사의 주요경영사항)              ",
+                        "receipt_number": "20250602900183",
+                        "receipt_date": "20250602",
+                        "submitter": "에코프로",
+                        "remarks": "코",
+                        "correction_type": "정정"
+                    }
+                ]
+            }
+        },
+        "data_statistics": {
+            "total_data_points": 146,
+            "yfinance_data_points": 15,
+            "enhanced_dart_data_points": 131,
+            "data_completeness": "매우높음"
+        }
+    }
+}
+}
