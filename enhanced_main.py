@@ -100,7 +100,7 @@ class EnhancedStockAnalysisSystem:
 
     async def run_enhanced_analysis(self, user_prompt: str) -> Dict[str, Any]:
         """
-        개선된 분석 플로우의 메인 실행 함수
+        개선된 분석 플로우의 메인 실행 함수 (의도 분석 기반)
 
         Args:
             user_prompt: 사용자 입력 프롬프트
@@ -113,12 +113,20 @@ class EnhancedStockAnalysisSystem:
         results = {
             "user_prompt": user_prompt,
             "timestamp": datetime.now().isoformat(),
-            "analysis_flow": "enhanced",
+            "analysis_flow": "enhanced_intent_based",
             "success": False,
             "steps": {},
         }
 
         try:
+            # 🚀 NEW Step 0: 질문 의도 분석
+            logger.info("🎯 Step 0: 사용자 질문 의도 분석")
+            intent_analysis = await self.analyze_user_intent(user_prompt)
+            results["steps"]["step0_intent_analysis"] = intent_analysis
+            logger.info(
+                f"✅ 의도 분석 완료: {intent_analysis['primary_intent']} (신뢰도: {intent_analysis['confidence']})"
+            )
+
             # Step 1: 종목 및 종목코드 감지
             logger.info("📋 Step 1: 종목 및 종목코드 감지")
             stock_info = await self.extract_stock_info(user_prompt)
@@ -174,21 +182,37 @@ class EnhancedStockAnalysisSystem:
                     "ℹ️ Enhanced DART 데이터 수집 생략 (API 키 없음 또는 해외 종목)"
                 )
 
-            # Step 3: 재무데이터 기반 종목 분류 (Enhanced 데이터 포함)
-            logger.info("🏷️ Step 3: 재무데이터 기반 종목 분류")
-            classification_result = await self.perform_enhanced_classification(
-                user_prompt, stock_info, financial_data, enhanced_dart_data
-            )
-            results["steps"]["step3_classification"] = classification_result
+            # 🚀 NEW Step 3: 의도 기반 선택적 종목 분류
+            classification_result = {"performed": False}
+            if intent_analysis.get("needs_classification", False):
+                logger.info("🏷️ Step 3: 의도 기반 선택적 종목 분류")
+                classification_result = await self.perform_selective_classification(
+                    user_prompt,
+                    stock_info,
+                    financial_data,
+                    enhanced_dart_data,
+                    intent_analysis,
+                )
+                results["steps"]["step3_classification"] = classification_result
+                logger.info(
+                    f"✅ 선택적 분류 완료: {classification_result.get('performed', False)}"
+                )
+            else:
+                logger.info("⏭️ Step 3: 분류 생략 (의도 분석 결과)")
+                results["steps"]["step3_classification"] = {
+                    "performed": False,
+                    "reason": "의도 분석 결과 분류 불필요",
+                }
 
-            # Step 4: 재무데이터 기반 상세 분석 (Enhanced 데이터 포함)
-            logger.info("📈 Step 4: 재무데이터 기반 상세 분석")
-            analysis_result = await self.perform_enhanced_analysis(
+            # 🚀 NEW Step 4: 의도 맞춤형 상세 분석
+            logger.info("📈 Step 4: 의도 맞춤형 상세 분석")
+            analysis_result = await self.perform_intent_based_analysis(
                 user_prompt,
                 stock_info,
                 financial_data,
                 classification_result,
                 enhanced_dart_data,
+                intent_analysis,
             )
             results["steps"]["step4_detailed_analysis"] = analysis_result
 
@@ -458,11 +482,359 @@ class EnhancedStockAnalysisSystem:
 
         return result
 
+    async def analyze_user_intent(self, user_prompt: str) -> Dict[str, Any]:
+        """
+        🎯 사용자 질문의 의도를 분석하는 새로운 단계
+
+        질문 유형을 분석해서 맞춤형 분석을 위한 정보를 제공해요:
+        - 주가 문의: 현재 주가나 주가 동향에 대한 질문
+        - 재무분석: 재무제표나 재무비율 분석 요청
+        - 투자조언: 매수/매도 의견이나 투자 전략 문의
+        - 종목분류: 어떤 유형의 주식인지 분류 요청
+        - 기업정보: 회사 소개나 사업 내용 문의
+        - 단순조회: 간단한 정보 확인
+
+        Args:
+            user_prompt: 사용자 입력 프롬프트
+
+        Returns:
+            Dict: 의도 분석 결과
+        """
+        logger.info("🎯 사용자 질문 의도 분석 시작...")
+
+        intent_result = {
+            "primary_intent": "일반문의",
+            "secondary_intents": [],
+            "confidence": 0.0,
+            "needs_classification": False,
+            "analysis_focus": "종합분석",
+            "data_priority": "기본",
+            "keywords": [],
+        }
+
+        try:
+            # 🔍 의도 분석을 위한 키워드 패턴들
+            intent_patterns = {
+                "주가문의": {
+                    "keywords": [
+                        "주가",
+                        "가격",
+                        "시세",
+                        "얼마",
+                        "price",
+                        "현재가",
+                        "종가",
+                        "오늘",
+                        "어제",
+                        "최근",
+                    ],
+                    "patterns": [
+                        r"주가.*얼마",
+                        r"가격.*어떻게",
+                        r"얼마.*거래",
+                        r"현재.*주가",
+                    ],
+                    "focus": "주가동향",
+                    "data_priority": "실시간",
+                },
+                "재무분석": {
+                    "keywords": [
+                        "재무",
+                        "재무제표",
+                        "손익계산서",
+                        "대차대조표",
+                        "현금흐름표",
+                        "매출",
+                        "순이익",
+                        "부채비율",
+                        "ROE",
+                        "ROA",
+                        "PER",
+                        "PBR",
+                    ],
+                    "patterns": [
+                        r"재무.*분석",
+                        r"재무.*어떤",
+                        r"매출.*얼마",
+                        r"이익.*어느",
+                    ],
+                    "focus": "재무건전성",
+                    "data_priority": "재무데이터",
+                },
+                "투자조언": {
+                    "keywords": [
+                        "투자",
+                        "매수",
+                        "매도",
+                        "사야",
+                        "팔아야",
+                        "추천",
+                        "의견",
+                        "전망",
+                        "미래",
+                        "목표가",
+                    ],
+                    "patterns": [
+                        r"투자.*어떻게",
+                        r"사야.*할까",
+                        r"매수.*의견",
+                        r"전망.*어떻게",
+                    ],
+                    "focus": "투자의견",
+                    "data_priority": "종합",
+                },
+                "종목분류": {
+                    "keywords": [
+                        "분류",
+                        "유형",
+                        "어떤 주식",
+                        "어떤 종목",
+                        "성장주",
+                        "가치주",
+                        "우량주",
+                        "성격",
+                        "특성",
+                        "타입",
+                    ],
+                    "patterns": [
+                        r"어떤.*주식",
+                        r"어떤.*종목",
+                        r".*분류",
+                        r"유형.*무엇",
+                    ],
+                    "focus": "종목분류",
+                    "data_priority": "종합",
+                    "needs_classification": True,
+                },
+                "기업정보": {
+                    "keywords": [
+                        "회사",
+                        "기업",
+                        "사업",
+                        "업종",
+                        "무엇",
+                        "하는",
+                        "소개",
+                        "설명",
+                    ],
+                    "patterns": [
+                        r"회사.*무엇",
+                        r"기업.*설명",
+                        r"사업.*내용",
+                        r"무엇.*하는",
+                    ],
+                    "focus": "기업개요",
+                    "data_priority": "기본",
+                },
+                "배당정보": {
+                    "keywords": ["배당", "배당금", "배당률", "배당수익률", "dividend"],
+                    "patterns": [r"배당.*얼마", r"배당.*언제", r"배당.*정보"],
+                    "focus": "배당분석",
+                    "data_priority": "투자정보",
+                },
+            }
+
+            # 키워드 매칭으로 의도 점수 계산
+            intent_scores = {}
+            found_keywords = []
+
+            user_prompt_lower = user_prompt.lower()
+
+            for intent_name, intent_data in intent_patterns.items():
+                score = 0
+
+                # 키워드 매칭 점수
+                for keyword in intent_data["keywords"]:
+                    if keyword in user_prompt_lower:
+                        score += 2
+                        found_keywords.append(keyword)
+
+                # 패턴 매칭 점수 (더 높은 가중치)
+                for pattern in intent_data["patterns"]:
+                    if re.search(pattern, user_prompt_lower):
+                        score += 5
+
+                if score > 0:
+                    intent_scores[intent_name] = score
+
+            # 가장 높은 점수의 의도를 주 의도로 설정
+            if intent_scores:
+                primary_intent = max(intent_scores, key=intent_scores.get)
+                max_score = intent_scores[primary_intent]
+
+                # 신뢰도 계산 (최대 점수 기준으로 정규화)
+                confidence = min(max_score / 10.0, 1.0)
+
+                intent_result.update(
+                    {
+                        "primary_intent": primary_intent,
+                        "confidence": confidence,
+                        "analysis_focus": intent_patterns[primary_intent]["focus"],
+                        "data_priority": intent_patterns[primary_intent][
+                            "data_priority"
+                        ],
+                        "needs_classification": intent_patterns[primary_intent].get(
+                            "needs_classification", False
+                        ),
+                        "keywords": found_keywords,
+                    }
+                )
+
+                # 2차 의도들 (점수가 절반 이상인 것들)
+                threshold = max_score * 0.5
+                secondary_intents = [
+                    intent
+                    for intent, score in intent_scores.items()
+                    if intent != primary_intent and score >= threshold
+                ]
+                intent_result["secondary_intents"] = secondary_intents
+
+                logger.info(
+                    f"🎯 의도 분석 완료: {primary_intent} (점수: {max_score}, 신뢰도: {confidence:.2f})"
+                )
+                if secondary_intents:
+                    logger.info(f"🔍 2차 의도: {', '.join(secondary_intents)}")
+            else:
+                logger.info("🤔 명확한 의도를 감지하지 못했습니다 - 일반 분석 진행")
+                intent_result["confidence"] = 0.3  # 기본 신뢰도
+
+        except Exception as e:
+            logger.error(f"❌ 의도 분석 중 오류: {e}")
+            intent_result["error"] = str(e)
+            intent_result["confidence"] = 0.1
+
+        return intent_result
+
     def _is_korean_stock(self, stock_code: str) -> bool:
         """한국 주식인지 확인해요 (6자리 숫자면 한국 주식)"""
         if not stock_code:
             return False
         return len(stock_code) == 6 and stock_code.isdigit()
+
+    async def perform_selective_classification(
+        self,
+        user_prompt: str,
+        stock_info: Dict,
+        financial_data: Dict,
+        enhanced_dart_data: Dict = None,
+        intent_analysis: Dict = None,
+    ) -> Dict[str, Any]:
+        """
+        🏷️ 의도 분석 기반 선택적 종목 분류
+
+        사용자가 명시적으로 분류를 요청한 경우에만 실행하는 개선된 분류 시스템이에요.
+        기존처럼 무조건 분류하지 않고, 사용자의 진짜 의도에 따라 선택적으로 분류해요.
+
+        Args:
+            user_prompt: 사용자 질문
+            stock_info: 감지된 종목 정보
+            financial_data: 수집된 재무데이터
+            enhanced_dart_data: Enhanced DART 데이터
+            intent_analysis: 의도 분석 결과
+
+        Returns:
+            Dict: 선택적 분류 결과
+        """
+        try:
+            logger.info("🏷️ 선택적 분류 실행 - 의도 기반")
+
+            # 의도 분석 결과 확인
+            primary_intent = intent_analysis.get("primary_intent", "일반문의")
+            confidence = intent_analysis.get("confidence", 0.0)
+
+            logger.info(f"🎯 주 의도: {primary_intent} (신뢰도: {confidence:.2f})")
+
+            # 분류가 필요한지 다시 한번 확인
+            if not intent_analysis.get("needs_classification", False):
+                return {
+                    "performed": False,
+                    "reason": "의도 분석 결과 분류가 필요하지 않음",
+                    "primary_intent": primary_intent,
+                }
+
+            # 🎯 분류에 최적화된 프롬프트 구성
+            classification_prompt = f"""
+사용자의 종목 분류 요청: {user_prompt}
+
+감지된 종목: {stock_info.get('stock_name', '정보없음')} ({stock_info.get('stock_code', '정보없음')})
+사용자 의도: {primary_intent} (분류 전문 요청)
+"""
+
+            # 재무데이터가 있으면 포함해서 분류 (더 정확한 분류를 위해)
+            if financial_data.get("success"):
+                financial_summary = self.financial_collector.get_analysis_summary(
+                    financial_data
+                )
+                classification_prompt += f"""
+
+실제 재무데이터:
+{financial_summary}
+"""
+
+            # Enhanced DART 데이터 요약 생성
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                dart_summary = self._create_dart_summary(enhanced_dart_data)
+                classification_prompt += f"""
+
+{dart_summary}
+"""
+
+            # 🎯 분류 전용 지시사항 (기존의 획일적 분석 지시사항과 차별화)
+            classification_prompt += """
+
+🏷️ **종목 분류 전문 지시사항**:
+위 실제 재무정보를 바탕으로 정확한 종목 분류를 수행해주세요.
+
+분류 기준:
+1. **우량주**: 안정적 수익, 높은 신뢰도, 꾸준한 배당
+2. **고성장주**: 높은 성장률, 미래 성장 잠재력
+3. **가치주**: 저평가 상태, 내재가치 대비 저가
+4. **자산주**: 순자산 대비 저가, 자산 가치 중심
+5. **턴어라운드주**: 실적 회복 기대, 구조조정 중
+6. **시클주**: 경기 변동과 연동성 높음
+7. **배당주**: 안정적이고 높은 배당 수익률
+
+**결과 형식**:
+- 주 분류: [분류명]
+- 분류 근거: [구체적 재무지표 기반 설명]
+- 신뢰도: [높음/보통/낮음]
+- 주요 특징: [3가지 핵심 특징]
+
+사용자가 종목 분류를 요청했으므로, 위 분류에만 집중해서 정확하고 구체적으로 답변해주세요.
+"""
+
+            # Stock Classifier 실행
+            self.stock_classifier.memory.clear()
+            self.stock_classifier.update_memory("user", classification_prompt)
+
+            classification_response = ""
+            run_result = await self.stock_classifier.run()
+
+            if hasattr(run_result, "__aiter__"):
+                async for response in run_result:
+                    classification_response += response + "\n"
+            else:
+                classification_response = str(run_result)
+
+            return {
+                "performed": True,
+                "method": "selective_intent_based_classification",
+                "response": classification_response.strip(),
+                "financial_data_used": financial_data.get("success", False),
+                "enhanced_dart_used": enhanced_dart_data
+                and enhanced_dart_data.get("success", False),
+                "primary_intent": primary_intent,
+                "confidence": confidence,
+                "classification_focus": "전문분류",
+            }
+
+        except Exception as e:
+            logger.error(f"선택적 분류 중 오류: {e}")
+            return {
+                "performed": False,
+                "error": str(e),
+                "primary_intent": intent_analysis.get("primary_intent", "오류"),
+            }
 
     async def perform_enhanced_classification(
         self,
@@ -580,6 +952,254 @@ class EnhancedStockAnalysisSystem:
         except Exception as e:
             logger.error(f"분류 중 오류: {e}")
             return {"performed": False, "error": str(e)}
+
+    async def perform_intent_based_analysis(
+        self,
+        user_prompt: str,
+        stock_info: Dict,
+        financial_data: Dict,
+        classification_result: Dict,
+        enhanced_dart_data: Dict = None,
+        intent_analysis: Dict = None,
+    ) -> Dict[str, Any]:
+        """
+        📈 의도 맞춤형 상세 분석 (개선된 핵심 기능!)
+
+        사용자의 질문 의도에 따라 완전히 다른 분석을 수행하는 혁신적인 시스템이에요!
+        기존처럼 획일적인 5단계 분석이 아니라, 사용자가 진짜 원하는 정보에 집중해요.
+
+        Args:
+            user_prompt: 사용자 질문
+            stock_info: 감지된 종목 정보
+            financial_data: 수집된 재무데이터
+            classification_result: 분류 결과
+            enhanced_dart_data: Enhanced DART 데이터
+            intent_analysis: 의도 분석 결과
+
+        Returns:
+            Dict: 맞춤형 분석 결과
+        """
+        try:
+            logger.info("📈 의도 맞춤형 분석 시작...")
+
+            # 의도 분석 결과 추출
+            primary_intent = intent_analysis.get("primary_intent", "일반문의")
+            analysis_focus = intent_analysis.get("analysis_focus", "종합분석")
+            data_priority = intent_analysis.get("data_priority", "기본")
+            confidence = intent_analysis.get("confidence", 0.0)
+
+            logger.info(
+                f"🎯 맞춤형 분석 - 의도: {primary_intent}, 포커스: {analysis_focus}, 신뢰도: {confidence:.2f}"
+            )
+
+            # 🎯 의도별 맞춤형 분석 프롬프트 구성
+            analysis_prompt = f"""
+사용자의 핵심 질문: {user_prompt}
+
+분석 대상: {stock_info.get('stock_name', '정보없음')} ({stock_info.get('stock_code', '정보없음')})
+감지된 의도: {primary_intent}
+분석 포커스: {analysis_focus}
+"""
+
+            # 재무데이터 포함 (항상 참고자료로 제공)
+            basic_financial_included = False
+            if financial_data.get("success"):
+                financial_summary = self.financial_collector.get_analysis_summary(
+                    financial_data
+                )
+                analysis_prompt += f"""
+
+📊 **참고 재무데이터**:
+{financial_summary}
+"""
+                basic_financial_included = True
+
+            # Enhanced DART 데이터 포함
+            enhanced_dart_included = False
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                enhanced_summary = self._create_comprehensive_dart_analysis(
+                    enhanced_dart_data
+                )
+                if enhanced_summary:
+                    analysis_prompt += f"""
+
+🚀 **Enhanced DART 상세정보**:
+{enhanced_summary}
+"""
+                    enhanced_dart_included = True
+
+            # 분류 결과 포함 (분류가 수행된 경우만)
+            if classification_result.get("performed"):
+                analysis_prompt += f"""
+
+🏷️ **종목 분류 결과**:
+{classification_result.get('response', '')}
+"""
+
+            # 🚀 의도별 맞춤형 분석 지시사항 (핵심 개선 포인트!)
+            custom_instructions = self._generate_custom_analysis_instructions(
+                primary_intent, analysis_focus, data_priority, user_prompt
+            )
+
+            analysis_prompt += f"""
+
+{custom_instructions}
+"""
+
+            logger.info(f"🎯 맞춤형 지시사항 생성 완료 - 의도: {primary_intent}")
+
+            # Manus 에이전트 실행
+            self.manus_agent.memory.clear()
+            self.manus_agent.update_memory("user", analysis_prompt)
+
+            analysis_response = ""
+            run_result = await self.manus_agent.run()
+
+            if hasattr(run_result, "__aiter__"):
+                async for response in run_result:
+                    analysis_response += response + "\n"
+            else:
+                analysis_response = str(run_result)
+
+            return {
+                "performed": True,
+                "method": f"intent_based_analysis_{primary_intent}",
+                "response": analysis_response.strip(),
+                "primary_intent": primary_intent,
+                "analysis_focus": analysis_focus,
+                "data_priority": data_priority,
+                "confidence": confidence,
+                "basic_financial_data_used": basic_financial_included,
+                "enhanced_dart_data_used": enhanced_dart_included,
+                "classification_included": classification_result.get(
+                    "performed", False
+                ),
+                "customization_level": (
+                    "높음"
+                    if confidence > 0.7
+                    else "보통" if confidence > 0.4 else "낮음"
+                ),
+            }
+
+        except Exception as e:
+            logger.error(f"의도 맞춤형 분석 중 오류: {e}")
+            return {
+                "performed": False,
+                "error": str(e),
+                "primary_intent": intent_analysis.get("primary_intent", "오류"),
+            }
+
+    def _generate_custom_analysis_instructions(
+        self,
+        primary_intent: str,
+        analysis_focus: str,
+        data_priority: str,
+        user_prompt: str,
+    ) -> str:
+        """
+        🎯 의도별 맞춤형 분석 지시사항 생성 (핵심 차별화 기능!)
+
+        사용자의 질문 의도에 따라 완전히 다른 분석 지시사항을 만들어요.
+        이제 획일적인 5단계 분석이 아니라 진짜 원하는 답변을 받을 수 있어요!
+        """
+
+        # 🎯 의도별 맞춤형 지시사항
+        custom_instructions = {
+            "주가문의": f"""
+🎯 **주가 문의 전용 분석**:
+사용자가 "{user_prompt}"라고 질문했습니다. 주가와 가격 동향에 집중해서 답변해주세요.
+
+**분석 포커스**:
+1. **현재 주가 수준 평가** - 고평가/적정/저평가 판단
+2. **최근 주가 동향 분석** - 상승/하락 요인과 흐름
+3. **주가 전망** - 단기/중기 목표가와 방향성
+4. **매수/매도 타이밍** - 현재 시점의 투자 의견
+
+**재무데이터 활용법**: 주가 정당성 평가를 위한 밸류에이션 중심
+**답변 스타일**: 구체적 수치와 명확한 투자 의견 제시
+""",
+            "재무분석": f"""
+🎯 **재무분석 전용 분석**:
+사용자가 "{user_prompt}"라고 질문했습니다. 재무제표와 재무지표 분석에 집중해주세요.
+
+**분석 포커스**:
+1. **수익성 분석** - 매출, 영업이익, 순이익 증감과 마진율
+2. **안정성 분석** - 부채비율, 유동비율, 이자보상배수
+3. **성장성 분석** - 매출/이익 성장률, 확장 계획
+4. **효율성 분석** - ROE, ROA, 총자산회전율
+
+**재무데이터 활용법**: 모든 재무지표를 상세히 분석하고 동종업계 비교
+**답변 스타일**: 구체적 재무비율과 수치 기반 전문적 분석
+""",
+            "투자조언": f"""
+🎯 **투자조언 전용 분석**:
+사용자가 "{user_prompt}"라고 질문했습니다. 명확한 투자 의견과 전략을 제시해주세요.
+
+**분석 포커스**:
+1. **투자 추천 등급** - 매수/보유/매도 명확한 의견
+2. **목표가 제시** - 구체적 목표 주가와 달성 기간
+3. **투자 리스크** - 주요 위험 요인과 대응 방안
+4. **포트폴리오 비중** - 적정 투자 비중과 분산 전략
+
+**재무데이터 활용법**: 투자 의사결정을 위한 핵심 지표 중심
+**답변 스타일**: 실행 가능한 구체적 투자 가이드라인 제공
+""",
+            "종목분류": f"""
+🎯 **종목분류 전용 분석**:
+사용자가 "{user_prompt}"라고 질문했습니다. 정확한 종목 분류와 특성 분석에 집중해주세요.
+
+**분석 포커스**:
+1. **주요 분류** - 우량주/성장주/가치주/배당주 등 명확한 분류
+2. **분류 근거** - 재무지표 기반 객관적 분류 기준
+3. **투자 특성** - 해당 분류의 투자 특징과 장단점
+4. **비교 분석** - 동일 분류 내 다른 종목과의 비교
+
+**재무데이터 활용법**: 분류 기준에 맞는 핵심 지표 집중 분석
+**답변 스타일**: 명확한 분류 결과와 근거 중심
+""",
+            "기업정보": f"""
+🎯 **기업정보 전용 분석**:
+사용자가 "{user_prompt}"라고 질문했습니다. 회사 소개와 사업 내용에 집중해주세요.
+
+**분석 포커스**:
+1. **사업 개요** - 주력 사업과 수익 구조
+2. **시장 지위** - 업계 내 위치와 경쟁력
+3. **성장 동력** - 미래 성장 사업과 전략
+4. **기업 특징** - 독특한 강점과 차별화 요소
+
+**재무데이터 활용법**: 사업 성과를 보여주는 참고 자료로 활용
+**답변 스타일**: 이해하기 쉬운 회사 소개와 사업 설명
+""",
+            "배당정보": f"""
+🎯 **배당정보 전용 분석**:
+사용자가 "{user_prompt}"라고 질문했습니다. 배당 관련 모든 정보에 집중해주세요.
+
+**분석 포커스**:
+1. **배당 현황** - 현재 배당금, 배당률, 배당수익률
+2. **배당 이력** - 과거 배당 패턴과 증감 추이
+3. **배당 정책** - 회사의 배당 철학과 향후 계획
+4. **배당 매력도** - 배당 투자 관점에서의 평가
+
+**재무데이터 활용법**: 배당 지급 능력과 지속가능성 평가
+**답변 스타일**: 배당 투자자를 위한 실용적 정보 제공
+""",
+        }
+
+        # 해당 의도의 맞춤형 지시사항 반환 (없으면 일반 분석)
+        if primary_intent in custom_instructions:
+            return custom_instructions[primary_intent]
+        else:
+            # 일반 문의의 경우 기본적이지만 사용자 질문에 집중하는 지시사항
+            return f"""
+🎯 **맞춤형 일반 분석**:
+사용자가 "{user_prompt}"라고 질문했습니다. 이 질문에 정확히 답변하는 것에 집중해주세요.
+
+**분석 포커스**: 사용자 질문의 핵심 의도 파악하여 맞춤형 답변
+**재무데이터 활용법**: 질문 답변에 필요한 정보만 선별적으로 활용
+**답변 스타일**: 질문에 직접적이고 구체적으로 답변
+
+❗ 중요: 획일적인 분석보다는 사용자의 구체적 질문에 정확히 답변해주세요.
+"""
 
     def _create_dart_summary(self, enhanced_dart_data: Dict) -> str:
         """Enhanced DART 데이터 요약 생성"""
