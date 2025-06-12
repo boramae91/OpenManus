@@ -1,0 +1,1959 @@
+{
+  "timestamp": "20250612_102510",
+  "prompt": "내가 펀드매니저인데 삼성전자를 지금 사야할까?",
+  "response": "📊 감지된 종목: None (005930)\n" +
+  "\n" +
+  "📈 상세 분석:\n" +
+  "\n" +
+  "Step 4: Observed output of cmd `browser_use` executed:\n" +
+  "Search results for 'Samsung Electronics latest news June 2025':\n" +
+  "\n" +
+  "1. Samsung To Unveil HU8000F Hotel TV Series at HITEC 2025\n" +
+  "URL:" +
+  "https://news.samsung.com/global/samsung-to-unveil-hu8000f-hotel-tv-series-at-hitec-2025\n" +
+  "Description:  2 hours ago  ·  Samsung Electronics today announced the upcoming" +
+  "global launch of the HU8000F series, its 2025 Hospitality TV. Available in six" +
+  "sizes — 43″, 50″ ... \n" +
+  "\n" +
+  "Metadata:\n" +
+  "- Total results: 1\n" +
+  "- Language: en\n" +
+  "- Country: us\n" +
+  "Step 5: Observed output of cmd `browser_use` executed:\n" +
+  "Extracted from page:\n" +
+  "{'text': \"Samsung is set to unveil its new HU8000F Hotel TV Series at the HITEC" +
+  "2025 event. This launch is part of Samsung's strategy to expand its presence in" +
+  "the hospitality industry by providing advanced TV solutions tailored for hotels." +
+  "The HU8000F series is expected to offer features that cater specifically to" +
+  "hotel environments, potentially enhancing guest experiences and operational" +
+  "efficiency for hotel operators. The market impact of this launch could be" +
+  "significant as it positions Samsung as a key player in the hotel TV market," +
+  "potentially increasing its market share and influencing trends in hotel" +
+  "technology solutions.\", 'metadata': {'source': 'Samsung Global Newsroom'}}\n" +
+  "\n" +
+  "Step 6: ### Summary of Findings\n" +
+  "\n" +
+  "**Market Analysis:**\n" +
+  "- Samsung is launching the HU8000F Hotel TV Series at HITEC 2025, targeting the" +
+  "hospitality industry.\n" +
+  "- This move could enhance Samsung's market position in hotel technology" +
+  "solutions, potentially increasing market share.\n" +
+  "\n" +
+  "**Next Steps:**\n" +
+  "\n" +
+  "1. **Financial Analysis:**\n" +
+  "- Review the financial data provided earlier to assess Samsung's financial" +
+  "health and growth prospects.\n" +
+  "\n" +
+  "2. **Investment Recommendation:**\n" +
+  "- Based on the market and financial analysis, provide a clear investment" +
+  "recommendation, including target price, risk factors, and portfolio strategy.\n" +
+  "\n" +
+  "Let's proceed with the financial analysis. I'll summarize the key financial" +
+  "metrics and their implications.\n" +
+  "### Financial Analysis Summary\n" +
+  "\n" +
+  "**Key Financial Metrics:**\n" +
+  "\n" +
+  "- **Current Price:** 59,500 KRW\n" +
+  "- **52-Week Range:** 49,269 - 87,188 KRW\n" +
+  "- **Market Cap:** 392 trillion KRW\n" +
+  "- **ROE:** 9.23%\n" +
+  "- **Debt Ratio:** 2.741\n" +
+  "- **Dividend Yield:** 245% (Note: This seems unusually high and may need" +
+  "verification)\n" +
+  "- **Revenue Growth:** 10%\n" +
+  "- **Earnings Growth:** -99.9%\n" +
+  "\n" +
+  "**Implications:**\n" +
+  "\n" +
+  "- **Valuation:** The current price is closer to the lower end of the 52-week" +
+  "range, suggesting potential undervaluation.\n" +
+  "- **Profitability:** A positive ROE indicates efficient use of equity, but the" +
+  "negative earnings growth is a concern.\n" +
+  "- **Financial Health:** A low debt ratio suggests strong financial stability.\n" +
+  "- **Growth Prospects:** Revenue growth is positive, but the sharp decline in" +
+  "earnings needs investigation.\n" +
+  "\n" +
+  "### Investment Recommendation\n" +
+  "\n" +
+  "1. **Recommendation:** **Hold/Buy** if you believe in the long-term growth" +
+  "potential and market expansion strategies like the new TV series launch.\n" +
+  "2. **Target Price:** Aim for a recovery towards the mid-point of the 52-week" +
+  "range, around 70,000 KRW, within the next 6-12 months.\n" +
+  "3. **Risk Factors:** Monitor earnings performance and market reactions to new" +
+  "product launches.\n" +
+  "4. **Portfolio Strategy:** Consider a moderate allocation, balancing with other" +
+  "tech stocks to mitigate risks.\n" +
+  "\n" +
+  "If you need further assistance or specific actions, feel free to ask!\n" +
+  "Step 7: Observed output of cmd `terminate` executed:\n" +
+  "The interaction has been completed with status: success\n" +
+  "\n" +
+  "📋 종합 요약:\n" +
+  "\n" +
+  "{'analyzed_stock': {'name': None, 'code': '005930', 'detection_method':" +
+  "'ai_ai_web_search_priority'}, 'data_sources': {'financial_data_collected': True," +
+  "'data_sources': ['yfinance', 'DART'], 'data_quality': '보통'}, 'analysis_quality':" +
+  "{'classification_performed': False, 'detailed_analysis_performed': True," +
+  "'financial_data_enhanced': True}, 'key_insights': {'classification': None," +
+  "'investment_outlook': '중립적', 'risk_factors': None, 'recommendation': None}}",
+  "steps": [
+    "",
+    "📊 감지된 종목: None (005930)",
+    "📈 재무데이터 수집 성공: yfinance, DART",
+    "🚀 Enhanced DART 데이터 수집 성공",
+    "📊 상세 분석 완료",
+    "📊 감지된 종목: None (005930)\n" +
+    "\n" +
+    "📈 상세 분석:\n" +
+    "\n" +
+    "Step 4: Observed output of cmd `browser_use` executed:\n" +
+    "Search results for 'Samsung Electronics latest news June 2025':\n" +
+    "\n" +
+    "1. Samsung To Unveil HU8000F Hotel TV Series at HITEC 2025\n" +
+    "URL:" +
+    "https://news.samsung.com/global/samsung-to-unveil-hu8000f-hotel-tv-series-at-hitec-2025\n" +
+    "Description:  2 hours ago  ·  Samsung Electronics today announced the upcoming" +
+    "global launch of the HU8000F series, its 2025 Hospitality TV. Available in six" +
+    "sizes — 43″, 50″ ... \n" +
+    "\n" +
+    "Metadata:\n" +
+    "- Total results: 1\n" +
+    "- Language: en\n" +
+    "- Country: us\n" +
+    "Step 5: Observed output of cmd `browser_use` executed:\n" +
+    "Extracted from page:\n" +
+    "{'text': \"Samsung is set to unveil its new HU8000F Hotel TV Series at the HITEC" +
+    "2025 event. This launch is part of Samsung's strategy to expand its presence in" +
+    "the hospitality industry by providing advanced TV solutions tailored for hotels." +
+    "The HU8000F series is expected to offer features that cater specifically to" +
+    "hotel environments, potentially enhancing guest experiences and operational" +
+    "efficiency for hotel operators. The market impact of this launch could be" +
+    "significant as it positions Samsung as a key player in the hotel TV market," +
+    "potentially increasing its market share and influencing trends in hotel" +
+    "technology solutions.\", 'metadata': {'source': 'Samsung Global Newsroom'}}\n" +
+    "\n" +
+    "Step 6: ### Summary of Findings\n" +
+    "\n" +
+    "**Market Analysis:**\n" +
+    "- Samsung is launching the HU8000F Hotel TV Series at HITEC 2025, targeting the" +
+    "hospitality industry.\n" +
+    "- This move could enhance Samsung's market position in hotel technology" +
+    "solutions, potentially increasing market share.\n" +
+    "\n" +
+    "**Next Steps:**\n" +
+    "\n" +
+    "1. **Financial Analysis:**\n" +
+    "- Review the financial data provided earlier to assess Samsung's financial" +
+    "health and growth prospects.\n" +
+    "\n" +
+    "2. **Investment Recommendation:**\n" +
+    "- Based on the market and financial analysis, provide a clear investment" +
+    "recommendation, including target price, risk factors, and portfolio strategy.\n" +
+    "\n" +
+    "Let's proceed with the financial analysis. I'll summarize the key financial" +
+    "metrics and their implications.\n" +
+    "### Financial Analysis Summary\n" +
+    "\n" +
+    "**Key Financial Metrics:**\n" +
+    "\n" +
+    "- **Current Price:** 59,500 KRW\n" +
+    "- **52-Week Range:** 49,269 - 87,188 KRW\n" +
+    "- **Market Cap:** 392 trillion KRW\n" +
+    "- **ROE:** 9.23%\n" +
+    "- **Debt Ratio:** 2.741\n" +
+    "- **Dividend Yield:** 245% (Note: This seems unusually high and may need" +
+    "verification)\n" +
+    "- **Revenue Growth:** 10%\n" +
+    "- **Earnings Growth:** -99.9%\n" +
+    "\n" +
+    "**Implications:**\n" +
+    "\n" +
+    "- **Valuation:** The current price is closer to the lower end of the 52-week" +
+    "range, suggesting potential undervaluation.\n" +
+    "- **Profitability:** A positive ROE indicates efficient use of equity, but the" +
+    "negative earnings growth is a concern.\n" +
+    "- **Financial Health:** A low debt ratio suggests strong financial stability.\n" +
+    "- **Growth Prospects:** Revenue growth is positive, but the sharp decline in" +
+    "earnings needs investigation.\n" +
+    "\n" +
+    "### Investment Recommendation\n" +
+    "\n" +
+    "1. **Recommendation:** **Hold/Buy** if you believe in the long-term growth" +
+    "potential and market expansion strategies like the new TV series launch.\n" +
+    "2. **Target Price:** Aim for a recovery towards the mid-point of the 52-week" +
+    "range, around 70,000 KRW, within the next 6-12 months.\n" +
+    "3. **Risk Factors:** Monitor earnings performance and market reactions to new" +
+    "product launches.\n" +
+    "4. **Portfolio Strategy:** Consider a moderate allocation, balancing with other" +
+    "tech stocks to mitigate risks.\n" +
+    "\n" +
+    "If you need further assistance or specific actions, feel free to ask!\n" +
+    "Step 7: Observed output of cmd `terminate` executed:\n" +
+    "The interaction has been completed with status: success\n" +
+    "\n" +
+    "📋 종합 요약:\n" +
+    "\n" +
+    "{'analyzed_stock': {'name': None, 'code': '005930', 'detection_method':" +
+    "'ai_ai_web_search_priority'}, 'data_sources': {'financial_data_collected': True," +
+    "'data_sources': ['yfinance', 'DART'], 'data_quality': '보통'}, 'analysis_quality':" +
+    "{'classification_performed': False, 'detailed_analysis_performed': True," +
+    "'financial_data_enhanced': True}, 'key_insights': {'classification': None," +
+    "'investment_outlook': '중립적', 'risk_factors': None, 'recommendation': None}}",
+    ""
+  ],
+  "meta": {
+    "analysis_flow": "enhanced_intent_based",
+    "success": false,
+    "timestamp": "2025-06-12T10:23:54.248556",
+    "stock_info": {
+        "detected": true,
+        "stock_name": null,
+        "stock_code": "005930",
+        "detection_method": "ai_ai_web_search_priority"
+    },
+    "data_quality": "보통",
+    "enhanced_features": {
+        "financial_data_used": true,
+        "enhanced_dart_used": true,
+        "classification_performed": false,
+        "detailed_analysis_performed": true
+    },
+    "raw_data": {
+        "data_sources_summary": {
+            "yfinance_data_available": true,
+            "dart_basic_data_available": true,
+            "enhanced_dart_data_available": true
+        },
+        "yfinance_raw_data": {
+            "basic_info": {
+                "company_name": "Samsung Electronics Co., Ltd.",
+                "sector": "Technology",
+                "industry": "Consumer Electronics",
+                "country": "South Korea",
+                "currency": "KRW",
+                "exchange": "KSC",
+                "ticker_symbol": "005930.KS"
+            },
+            "current_price_info": {
+                "current_price": 59500.0,
+                "previous_close": 59900.0,
+                "open_price": 59700.0,
+                "day_high": 60000.0,
+                "day_low": 59300.0,
+                "volume": 3813623,
+                "market_cap": 392015153987584,
+                "shares_outstanding": 5919640064
+            },
+            "financial_ratios": {
+                "pe_ratio": null,
+                "peg_ratio": null,
+                "pb_ratio": null,
+                "ps_ratio": 1.2723806,
+                "dividend_yield": 2.45,
+                "profit_margin": 0.113690004,
+                "operating_margin": 0.08447,
+                "return_on_equity": 0.09228,
+                "return_on_assets": 0.04153,
+                "debt_to_equity": 2.741,
+                "current_ratio": 2.467,
+                "quick_ratio": 1.763
+            },
+            "growth_metrics": {
+                "earnings_growth": -0.999,
+                "revenue_growth": 0.1,
+                "earnings_quarterly_growth": 0.213,
+                "revenue_quarterly_growth": null
+            },
+            "price_history": {
+                "52_week_high": 87188.48844178082,
+                "52_week_low": 49269.3359375,
+                "avg_volume_3m": 17665727.97777778,
+                "price_change_1y": -20.364469623543883
+            },
+            "data_quality": "보통",
+            "data_sources": [
+                "yfinance",
+                "DART"
+            ],
+            "collection_info": {
+                "success": true,
+                "errors": [],
+                "stock_info": {
+                    "stock_code": "005930",
+                    "stock_name": null,
+                    "collection_timestamp": "2025-06-12T10:24:08.401760"
+                }
+            }
+        },
+        "dart_basic_raw_data": {
+            "company_info": {
+                "corp_name": "삼성전자(주)",
+                "corp_code": "00126380",
+                "business_summary": "1248100998",
+                "established_date": "19690113",
+                "listing_date": "12",
+                "ceo_name": "전영현",
+                "address": "경기도 수원시 영통구  삼성로 129 (매탄동)"
+            },
+            "financial_statements": {
+                "current_assets": 82320322000000,
+                "non_current_assets": 242645805000000,
+                "total_assets": 324966127000000,
+                "current_liabilities": 80157976000000,
+                "non_current_liabilities": 8411494000000,
+                "total_liabilities": 88569470000000,
+                "total_equity": 236396657000000,
+                "revenue": 209052241000000,
+                "operating_profit": 12361034000000,
+                "net_income": 23582565000000,
+                "debt_ratio": 0.37,
+                "operating_margin": 0.0591,
+                "net_margin": 0.1128
+            },
+            "business_report": {
+                "main_business": "법인고유번호 00126380 기업의 주요사업",
+                "business_risks": "시장변동성, 경쟁심화 등",
+                "future_plans": "사업확장 및 기술개발 계획"
+            }
+        },
+        "enhanced_dart_raw_data": {
+            "collection_info": {
+                "success": true,
+                "stock_code": "005930",
+                "collected_at": "",
+                "error": ""
+            },
+            "financial_analysis": {
+                "success": true,
+                "corp_code": "00126380",
+                "bsns_year": "2024",
+                "collected_at": "2025-06-12T10:24:10.874097",
+                "individual_statements": {
+                    "asset_info": {
+                        "current_assets": 82320322000000,
+                        "non_current_assets": 242645805000000,
+                        "total_assets": 324966127000000
+                    },
+                    "liability_info": {
+                        "current_liabilities": 80157976000000,
+                        "non_current_liabilities": 8411494000000,
+                        "total_liabilities": 88569470000000
+                    },
+                    "equity_info": {
+                        "capital_stock": 897514000000,
+                        "total_equity": 236396657000000
+                    },
+                    "income_info": {
+                        "revenue": 209052241000000,
+                        "operating_income": 12361034000000,
+                        "net_income": 23582565000000
+                    }
+                },
+                "consolidated_statements": {
+                    "asset_info": {
+                        "current_assets": 82320322000000,
+                        "non_current_assets": 242645805000000,
+                        "total_assets": 324966127000000
+                    },
+                    "liability_info": {
+                        "current_liabilities": 80157976000000,
+                        "non_current_liabilities": 8411494000000,
+                        "total_liabilities": 88569470000000
+                    },
+                    "equity_info": {
+                        "capital_stock": 897514000000,
+                        "total_equity": 236396657000000
+                    },
+                    "income_info": {
+                        "revenue": 209052241000000,
+                        "operating_income": 12361034000000,
+                        "net_income": 23582565000000
+                    }
+                },
+                "quarterly_performance": [
+                    {
+                        "asset_info": {
+                            "current_assets": 82288911000000,
+                            "non_current_assets": 229794377000000,
+                            "total_assets": 312083288000000
+                        },
+                        "liability_info": {
+                            "current_liabilities": 49615928000000,
+                            "non_current_liabilities": 30327907000000,
+                            "total_liabilities": 79943835000000
+                        },
+                        "equity_info": {
+                            "capital_stock": 897514000000,
+                            "total_equity": 232139453000000
+                        },
+                        "income_info": {
+                            "revenue": 51239617000000,
+                            "operating_income": 2007380000000,
+                            "net_income": 9737437000000
+                        },
+                        "period": "1분기"
+                    },
+                    {
+                        "asset_info": {
+                            "current_assets": 85822049000000,
+                            "non_current_assets": 231813389000000,
+                            "total_assets": 317635438000000
+                        },
+                        "liability_info": {
+                            "current_liabilities": 50124508000000,
+                            "non_current_liabilities": 30640186000000,
+                            "total_liabilities": 80764694000000
+                        },
+                        "equity_info": {
+                            "capital_stock": 897514000000,
+                            "total_equity": 236870744000000
+                        },
+                        "income_info": {
+                            "revenue": 53734118000000,
+                            "operating_income": 7222491000000,
+                            "net_income": 7098417000000
+                        },
+                        "period": "반기"
+                    },
+                    {
+                        "asset_info": {
+                            "current_assets": 88773816000000,
+                            "non_current_assets": 234608995000000,
+                            "total_assets": 323382811000000
+                        },
+                        "liability_info": {
+                            "current_liabilities": 74771238000000,
+                            "non_current_liabilities": 8539578000000,
+                            "total_liabilities": 83310816000000
+                        },
+                        "equity_info": {
+                            "capital_stock": 897514000000,
+                            "total_equity": 240071995000000
+                        },
+                        "income_info": {
+                            "revenue": 55828922000000,
+                            "operating_income": 4504920000000,
+                            "net_income": 5694610000000
+                        },
+                        "period": "3분기"
+                    },
+                    {
+                        "asset_info": {
+                            "current_assets": 82320322000000,
+                            "non_current_assets": 242645805000000,
+                            "total_assets": 324966127000000
+                        },
+                        "liability_info": {
+                            "current_liabilities": 80157976000000,
+                            "non_current_liabilities": 8411494000000,
+                            "total_liabilities": 88569470000000
+                        },
+                        "equity_info": {
+                            "capital_stock": 897514000000,
+                            "total_equity": 236396657000000
+                        },
+                        "income_info": {
+                            "revenue": 209052241000000,
+                            "operating_income": 12361034000000,
+                            "net_income": 23582565000000
+                        },
+                        "period": "연간"
+                    }
+                ]
+            },
+            "governance_analysis": {
+                "success": true,
+                "corp_code": "00126380",
+                "bsns_year": "2024",
+                "collected_at": "2025-06-12T10:24:12.100787",
+                "major_shareholders": [
+                    {
+                        "shareholder_name": "삼성생명보험㈜",
+                        "relationship": "최대주주 본인",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "홍라희",
+                        "relationship": "최대주주의 특수관계인",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "홍라희",
+                        "relationship": "최대주주의 특수관계인",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "이재용",
+                        "relationship": "최대주주의 특수관계인",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "이재용",
+                        "relationship": "최대주주의 특수관계인",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "이부진",
+                        "relationship": "계열회사 임원",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "이부진",
+                        "relationship": "계열회사 임원",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "이서현",
+                        "relationship": "계열회사 임원",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "이서현",
+                        "relationship": "계열회사 임원",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "한종희",
+                        "relationship": "계열회사 임원",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "경계현",
+                        "relationship": "계열회사 임원",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "삼성생명보험㈜",
+                        "relationship": "최대주주 본인",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "노태문",
+                        "relationship": "계열회사 임원",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "박학규",
+                        "relationship": "계열회사 임원",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "이정배",
+                        "relationship": "계열회사 임원",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "김한조",
+                        "relationship": "계열회사 임원",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "조혜경",
+                        "relationship": "계열회사 임원",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "삼성생명보험㈜\n(특별계정)",
+                        "relationship": "최대주주 본인",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "삼성생명보험㈜\n(특별계정)",
+                        "relationship": "최대주주 본인",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "삼성물산㈜",
+                        "relationship": "계열회사",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "삼성화재해상보험㈜",
+                        "relationship": "계열회사",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "삼성복지재단",
+                        "relationship": "출연 재단",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "삼성문화재단",
+                        "relationship": "출연 재단",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "삼성생명공익재단",
+                        "relationship": "출연 재단",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "계",
+                        "relationship": "",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "계",
+                        "relationship": "",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    }
+                ],
+                "executives": [
+                    {
+                        "name": "한종희",
+                        "position": "",
+                        "career": "",
+                        "main_career": "ㆍ인하대 전자공학 학사ㆍ삼성전자 DX부문장",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "노태문",
+                        "position": "",
+                        "career": "",
+                        "main_career": "ㆍ포항공대 전자전기공학 박사ㆍ삼성전자 MX사업부장",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이정배",
+                        "position": "",
+                        "career": "",
+                        "main_career": "ㆍ서울대 전자공학 박사ㆍ삼성전자 메모리사업부장",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김한조",
+                        "position": "",
+                        "career": "",
+                        "main_career": "ㆍ연세대 불어불문학 학사ㆍ하나금융지주 부회장",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김준성",
+                        "position": "",
+                        "career": "",
+                        "main_career": "ㆍCarnegie Mellon대 \n   경제학/산업공학 학사ㆍ싱가포르 투자청 \n   토탈리턴그룹 이사",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "허은녕",
+                        "position": "",
+                        "career": "",
+                        "main_career": "ㆍPennsylvania State대\n   자원경제학 박사ㆍ서울대 공과대학 교수",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "유명희",
+                        "position": "",
+                        "career": "",
+                        "main_career": "ㆍVanderbilt대 법학 박사ㆍ산업통상자원부 \n   통상교섭본부 본부장",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "신제윤",
+                        "position": "",
+                        "career": "",
+                        "main_career": "ㆍ서울대 경제학 학사ㆍ금융위원회 위원장",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "조혜경",
+                        "position": "",
+                        "career": "",
+                        "main_career": "ㆍ서울대 로봇공학 박사ㆍ한성대 AI응용학과 교수",
+                        "tenure": ""
+                    }
+                ]
+            },
+            "investment_analysis": {
+                "success": true,
+                "corp_code": "00126380",
+                "bsns_year": "2024",
+                "collected_at": "2025-06-12T10:24:12.917477",
+                "dividend_info": [
+                    {
+                        "dividend_classification": "주당액면가액(원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 100.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "(연결)당기순이익(백만원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 33621363.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "(별도)당기순이익(백만원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 23582565.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "(연결)주당순이익(원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 4950.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "현금배당금총액(백만원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 9810767.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주식배당금총액(백만원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 0.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "(연결)현금배당성향(%)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 29.2,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "현금배당수익률(%)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 2.7,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "현금배당수익률(%)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 3.3,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주식배당수익률(%)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 0.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주식배당수익률(%)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 0.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주당 현금배당금(원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 1446.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주당 현금배당금(원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 1447.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주당 주식배당(주)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 0.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주당 주식배당(주)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 0.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    }
+                ],
+                "capital_changes": [
+                    {
+                        "date": "",
+                        "type": "-",
+                        "issued_shares": 0,
+                        "issue_price": 0,
+                        "issue_amount": 0
+                    },
+                    {
+                        "date": "",
+                        "type": "-",
+                        "issued_shares": 0,
+                        "issue_price": 0,
+                        "issue_amount": 0
+                    }
+                ],
+                "other_investments": [
+                    {
+                        "company_name": "삼성전기㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "세메스㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SME",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SDMA",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEMA",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SAVINA",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEIN",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "TSE",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEAU",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SIEL",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SRI-Bangalore",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SJC",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "삼성전자서비스㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SRJ",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SCIC",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEHK",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SET",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "TSEC",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SSEC",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SESC",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "TSTC",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SSS",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SCS",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "삼성전자판매㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SSCX",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SESS",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "TSLED",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SSCR",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "TSST Japan",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "STE",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Semiconductor \nPortal Inc.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Nanosys Inc.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "One-Blue, LLC",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Sentiance NV",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "삼성전자로지텍㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Mantis Vision Ltd.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Leman Micro Devices SA",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Sensifree LTD",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Unispectral Ltd.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Quobyte, Inc.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Afero, Inc.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Graphcore Limited",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Fasetto, Inc.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "삼성메디슨㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜삼성글로벌리서치",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "삼성벤처투자㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SVIC 21호 신기술투자조합",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SVIC 22호 신기술투자조합",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SVIC 26호 신기술투자조합",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "삼성SDI㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SVIC 28호 신기술투자조합",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SVIC 32호 신기술투자조합",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SVIC 33호 신기술투자조합",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SVIC 42호 신기술투자조합",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SVIC 45호 신기술투자조합",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SVIC 52호 신기술투자조합",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SVIC 56호 신기술투자조합",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SVIC 57호 신기술투자조합",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "반도체성장 전문투자형 \n사모 투자신탁",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "시스템반도체 상생 \n전문투자형 사모 투자신탁",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "삼성중공업㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "반도체 생태계 일반 \n사모 투자신탁",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜희망별숲",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜레인보우로보틱스",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜아이마켓코리아",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜케이티스카이라이프",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "모나용평㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "에이테크솔루션㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜원익홀딩스",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜원익아이피에스",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜동진쎄미켐",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜호텔신라",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "솔브레인㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜에스앤에스텍",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜와이씨",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜케이씨텍",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜엘오티베큠",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜뉴파워프라즈마",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜에프에스티",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜디엔에프",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Marvell",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SoundHound Inc.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜제일기획",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "한국경제신문㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜한국비지니스금융대부",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜싸이버뱅크",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "화인칩스㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜인켈",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "인텔렉추얼디스커버리㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜말타니",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜팬택자산관리",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜인공지능연구원",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜미코세라믹스",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "삼성에스디에스㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "에스지신성건설㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜우방",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜삼보컴퓨터",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "대우산업개발㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "대우송도개발㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "자일자동차㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "성원건설㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜인희",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "JNT(반도체펀드)",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "L&S(반도체펀드)",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "삼성바이오로직스㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "베어포트리조트",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEA",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SECA",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEDA",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEM",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SELA",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEASA",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SECH",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEUK",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEL",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "삼성디스플레이㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEHG",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEF",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEI",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SESA",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEP",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEH",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SELS",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEBN",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEEH",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SENA",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "스테코㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SESK",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEPOL",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEAG",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SERC",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SERK",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEO",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SGE",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SEEG",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SSA",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SAPL",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "합계",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    }
+                ]
+            },
+            "disclosure_monitoring": {
+                "success": true,
+                "monitoring_period": "최근 30일",
+                "collected_at": "2025-06-12T10:24:13.713236",
+                "recent_disclosures": [
+                    {
+                        "corp_name": "삼성전자",
+                        "report_name": "최대주주등소유주식변동신고서              ",
+                        "receipt_number": "20250604800428",
+                        "receipt_date": "20250604",
+                        "submitter": "삼성전자",
+                        "remarks": "유"
+                    },
+                    {
+                        "corp_name": "삼성전자",
+                        "report_name": "대규모기업집단현황공시[연1회(동일인용)]",
+                        "receipt_number": "20250602000137",
+                        "receipt_date": "20250602",
+                        "submitter": "이재용",
+                        "remarks": "공"
+                    },
+                    {
+                        "corp_name": "삼성전자",
+                        "report_name": "대규모기업집단현황공시[연1회공시및1/4분기용(대표회사)]",
+                        "receipt_number": "20250602000112",
+                        "receipt_date": "20250602",
+                        "submitter": "삼성전자",
+                        "remarks": "공"
+                    },
+                    {
+                        "corp_name": "삼성전자",
+                        "report_name": "기업지배구조보고서공시              ",
+                        "receipt_number": "20250530801005",
+                        "receipt_date": "20250530",
+                        "submitter": "삼성전자",
+                        "remarks": "유"
+                    },
+                    {
+                        "corp_name": "삼성전자",
+                        "report_name": "자기주식처분결과보고서",
+                        "receipt_number": "20250528000650",
+                        "receipt_date": "20250528",
+                        "submitter": "삼성전자",
+                        "remarks": ""
+                    },
+                    {
+                        "corp_name": "삼성전자",
+                        "report_name": "주식등의대량보유상황보고서(일반)",
+                        "receipt_number": "20250523000612",
+                        "receipt_date": "20250523",
+                        "submitter": "삼성물산",
+                        "remarks": ""
+                    },
+                    {
+                        "corp_name": "삼성전자",
+                        "report_name": "주요사항보고서(자기주식처분결정)",
+                        "receipt_number": "20250523000601",
+                        "receipt_date": "20250523",
+                        "submitter": "삼성전자",
+                        "remarks": ""
+                    },
+                    {
+                        "corp_name": "삼성전자",
+                        "report_name": "자기주식취득결과보고서",
+                        "receipt_number": "20250516000403",
+                        "receipt_date": "20250516",
+                        "submitter": "삼성전자",
+                        "remarks": ""
+                    },
+                    {
+                        "corp_name": "삼성전자",
+                        "report_name": "주식등의대량보유상황보고서(일반)",
+                        "receipt_number": "20250516000386",
+                        "receipt_date": "20250516",
+                        "submitter": "삼성물산",
+                        "remarks": ""
+                    },
+                    {
+                        "corp_name": "삼성전자",
+                        "report_name": "동일인등출자계열회사와의상품ㆍ용역거래변경",
+                        "receipt_number": "20250515002447",
+                        "receipt_date": "20250515",
+                        "submitter": "삼성전자",
+                        "remarks": "공"
+                    },
+                    {
+                        "corp_name": "삼성전자",
+                        "report_name": "동일인등출자계열회사와의상품ㆍ용역거래변경",
+                        "receipt_number": "20250515002395",
+                        "receipt_date": "20250515",
+                        "submitter": "삼성전자",
+                        "remarks": "공"
+                    },
+                    {
+                        "corp_name": "삼성전자",
+                        "report_name": "동일인등출자계열회사와의상품ㆍ용역거래변경",
+                        "receipt_number": "20250515002341",
+                        "receipt_date": "20250515",
+                        "submitter": "삼성전자",
+                        "remarks": "공"
+                    },
+                    {
+                        "corp_name": "삼성전자",
+                        "report_name": "분기보고서 (2025.03)",
+                        "receipt_number": "20250515001922",
+                        "receipt_date": "20250515",
+                        "submitter": "삼성전자",
+                        "remarks": ""
+                    }
+                ],
+                "important_notices": [
+                    {
+                        "corp_name": "삼성전자",
+                        "report_name": "주요사항보고서(자기주식처분결정)",
+                        "receipt_number": "20250523000601",
+                        "receipt_date": "20250523",
+                        "submitter": "삼성전자",
+                        "remarks": "",
+                        "importance_reason": "'주요사항보고서' 관련 공시"
+                    }
+                ],
+                "corrections": []
+            }
+        },
+        "data_statistics": {
+            "total_data_points": 283,
+            "yfinance_data_points": 34,
+            "enhanced_dart_data_points": 249,
+            "data_completeness": "매우높음"
+        }
+    },
+    "ai_extracted_stock_info": {
+        "stock_name": "삼성전자",
+        "ticker": "005930",
+        "stock_code": "005930",
+        "found": true,
+        "stock_type": "korean",
+        "market": "KRX",
+        "prompt": "내가 펀드매니저인데 삼성전자를 지금 사야할까?"
+    }
+}
+}
