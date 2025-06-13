@@ -7,6 +7,7 @@
 - AI 응답 분석 대신 입력 시점에서 바로 종목명 감지
 """
 
+import asyncio
 import logging
 import re
 from typing import List, Optional, Tuple
@@ -16,13 +17,12 @@ logger = logging.getLogger(__name__)
 
 class StockNameExtractor:
     """
-    사용자 프롬프트에서 종목명을 추출하는 전용 에이전트예요
+    사용자 프롬프트에서 종목명과 종목코드를 추출하는 AI 에이전트입니다.
 
-    주요 기능:
-    - 한국 주식 종목명 인식 (삼성바이오로직스, 삼성전자 등)
-    - 해외 주식 종목명 인식 (Apple, Tesla 등)
-    - 종목코드 인식 (005930, AAPL 등)
-    - 영문 티커 변환
+    **개선된 기능:**
+    1. 정적 매핑 테이블 우선 시도
+    2. 매핑 실패 시 웹검색을 통한 동적 종목 감지
+    3. 해외 종목 지원 강화 (록히드마틴, 방산업체 등)
     """
 
     def __init__(self):
@@ -131,17 +131,206 @@ class StockNameExtractor:
         self.korean_code_pattern = r"\b(\d{6})\b"  # 한국 6자리 종목코드
         self.us_ticker_pattern = r"\b([A-Z]{1,5})\b"  # 미국 티커 (1-5글자 대문자)
 
+        # 웹검색 도구 초기화 (동적 종목 감지용)
+        self._web_search_tool = None
+
         logger.info("종목명 추출 에이전트가 초기화되었습니다.")
+
+    def _get_web_search_tool(self):
+        """웹검색 도구를 지연 로딩으로 가져옵니다"""
+        if self._web_search_tool is None:
+            from app.tool.web_search import WebSearch
+
+            self._web_search_tool = WebSearch()
+        return self._web_search_tool
+
+    async def search_stock_dynamically(
+        self, query: str
+    ) -> Tuple[Optional[str], Optional[str]]:
+        """
+        웹검색을 통해 동적으로 종목 정보를 찾습니다.
+
+        Args:
+            query: 검색할 종목명 (예: "록히드마틴", "Lockheed Martin" 등)
+
+        Returns:
+            Tuple[종목명(영문), 종목코드/티커]: 검색 결과
+        """
+        try:
+            logger.info(f"🌐 웹검색으로 종목 정보 검색 시작: {query}")
+
+            # 검색 쿼리 구성 (다양한 형태로 시도)
+            search_queries = [
+                f"{query} stock ticker symbol",
+                f"{query} 주식 종목코드",
+                f"{query} stock price NYSE NASDAQ",
+                f'"{query}" stock market ticker',
+            ]
+
+            for search_query in search_queries:
+                try:
+                    # 웹검색 실행
+                    web_search = self._get_web_search_tool()
+                    search_result = await web_search.execute(
+                        query=search_query, num_results=3, fetch_content=False
+                    )
+
+                    if search_result and search_result.results:
+                        # 검색 결과에서 종목 정보 추출
+                        stock_info = self._extract_stock_from_search_results(
+                            search_result.results, query
+                        )
+                        if stock_info[0]:  # 종목명이 발견되면
+                            logger.info(
+                                f"✅ 웹검색 성공: {query} -> {stock_info[0]} ({stock_info[1]})"
+                            )
+                            return stock_info
+
+                except Exception as e:
+                    logger.warning(f"⚠️ 검색 쿼리 '{search_query}' 실패: {e}")
+                    continue
+
+            logger.warning(f"❌ 모든 웹검색 시도 실패: {query}")
+            return None, None
+
+        except Exception as e:
+            logger.error(f"❌ 동적 종목 검색 중 오류: {e}")
+            return None, None
+
+    def _extract_stock_from_search_results(
+        self, search_results, original_query: str
+    ) -> Tuple[Optional[str], Optional[str]]:
+        """
+        검색 결과에서 종목 정보를 추출합니다.
+
+        Args:
+            search_results: 웹검색 결과 리스트
+            original_query: 원본 검색어
+
+        Returns:
+            Tuple[종목명(영문), 종목코드/티커]: 추출된 종목 정보
+        """
+        import re
+
+        # 종목코드/티커 패턴들
+        ticker_patterns = [
+            r"\b([A-Z]{1,5})\b",  # 1-5자리 대문자 (미국 티커)
+            r"NYSE:\s*([A-Z]{1,5})",  # NYSE:AAPL 형태
+            r"NASDAQ:\s*([A-Z]{1,5})",  # NASDAQ:MSFT 형태
+            r"Ticker:\s*([A-Z]{1,5})",  # Ticker: LMT 형태
+            r"Symbol:\s*([A-Z]{1,5})",  # Symbol: BA 형태
+            r"\(([A-Z]{1,5})\)",  # (LMT) 형태
+        ]
+
+        # 회사명 정규화 패턴들
+        company_patterns = [
+            r"(.*?)\s+\([A-Z]{1,5}\)",  # 회사명 (티커) 형태
+            r"(.*?)\s+Stock",  # 회사명 Stock 형태
+            r"(.*?)\s+Corporation",  # 회사명 Corporation 형태
+            r"(.*?)\s+Inc\.",  # 회사명 Inc. 형태
+        ]
+
+        found_tickers = []
+        found_companies = []
+
+        # 검색 결과에서 정보 추출
+        for result in search_results:
+            text_to_search = f"{result.title} {result.description}".lower()
+
+            # 원본 쿼리와 유사한지 확인 (관련성 체크)
+            query_lower = original_query.lower()
+            if (
+                query_lower not in text_to_search
+                and self._calculate_similarity(query_lower, text_to_search) < 0.3
+            ):
+                continue  # 관련성이 낮으면 스킵
+
+            # 티커 추출
+            for pattern in ticker_patterns:
+                matches = re.findall(
+                    pattern, result.title + " " + result.description, re.IGNORECASE
+                )
+                for match in matches:
+                    ticker = match.upper()
+                    # 일반적인 단어 제외
+                    if ticker not in [
+                        "THE",
+                        "AND",
+                        "FOR",
+                        "YOU",
+                        "ARE",
+                        "NOT",
+                        "BUT",
+                        "CAN",
+                        "NEW",
+                        "GET",
+                    ]:
+                        found_tickers.append(ticker)
+
+            # 회사명 추출
+            for pattern in company_patterns:
+                matches = re.findall(pattern, result.title, re.IGNORECASE)
+                for match in matches:
+                    company = match.strip()
+                    if len(company) > 2:
+                        found_companies.append(company)
+
+        # 가장 빈번한 티커와 회사명 선택
+        if found_tickers:
+            from collections import Counter
+
+            most_common_ticker = Counter(found_tickers).most_common(1)[0][0]
+
+            # 적절한 회사명 찾기
+            company_name = None
+            if found_companies:
+                most_common_company = Counter(found_companies).most_common(1)[0][0]
+                company_name = self._normalize_company_name(most_common_company)
+            else:
+                # 회사명이 없으면 원본 쿼리를 정규화하여 사용
+                company_name = self._normalize_company_name(original_query)
+
+            return company_name, most_common_ticker
+
+        return None, None
+
+    def _calculate_similarity(self, text1: str, text2: str) -> float:
+        """두 텍스트의 유사도를 계산합니다 (간단한 단어 기반)"""
+        words1 = set(text1.lower().split())
+        words2 = set(text2.lower().split())
+        intersection = words1.intersection(words2)
+        union = words1.union(words2)
+        return len(intersection) / len(union) if union else 0
+
+    def _normalize_company_name(self, name: str) -> str:
+        """회사명을 정규화하여 영문 형태로 변환합니다"""
+        # 기본 정리
+        name = name.strip().upper()
+
+        # 일반적인 기업 접미사 제거
+        suffixes = [
+            " CORPORATION",
+            " CORP",
+            " INC",
+            " LTD",
+            " LIMITED",
+            " COMPANY",
+            " CO",
+        ]
+        for suffix in suffixes:
+            if name.endswith(suffix):
+                name = name[: -len(suffix)].strip()
+
+        # 공백을 언더스코어로 변경
+        return name.replace(" ", "_")
 
     def extract_from_prompt(self, prompt: str) -> Tuple[Optional[str], Optional[str]]:
         """
         사용자 프롬프트에서 종목명과 종목코드를 추출해요
 
-        Args:
-            prompt: 사용자가 입력한 프롬프트
-
-        Returns:
-            Tuple[종목명(영문), 종목코드]: 추출된 종목 정보
+        **개선된 로직:**
+        1. 기존 매핑 테이블 우선 시도
+        2. 실패 시 웹검색을 통한 동적 감지
         """
         if not prompt or not prompt.strip():
             return None, None
@@ -182,17 +371,115 @@ class StockNameExtractor:
                 logger.info(f"해외 티커 발견: {stock_code}")
                 return stock_code, stock_code
 
-        # 4. 패턴 기반 한글 종목명 추출 (비활성화 - 정확성을 위해)
-        # 정확한 매핑에만 의존하여 오탐을 방지합니다
-        # korean_match = self._extract_korean_pattern(prompt)
-        # if korean_match:
-        #     english_ticker = self._convert_to_english(korean_match)
-        #     logger.info(f"패턴 기반 한국 종목: {korean_match} -> {english_ticker}")
-        #     return english_ticker, None
+        # 4. 🆕 웹검색을 통한 동적 종목 감지
+        logger.info("🌐 매핑 테이블에서 찾지 못함, 웹검색 시도...")
+        try:
+            # 비동기 함수를 동기적으로 실행
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+            # 프롬프트에서 종목명으로 보이는 부분 추출
+            potential_stock_names = self._extract_potential_stock_names(prompt)
+
+            for potential_name in potential_stock_names:
+                stock_name, ticker = loop.run_until_complete(
+                    self.search_stock_dynamically(potential_name)
+                )
+                if stock_name and ticker:
+                    logger.info(
+                        f"✅ 웹검색으로 종목 발견: {potential_name} -> {stock_name} ({ticker})"
+                    )
+                    return stock_name, ticker
+
+        except Exception as e:
+            logger.warning(f"⚠️ 웹검색 중 오류: {e}")
+        finally:
+            try:
+                loop.close()
+            except:
+                pass
 
         # 5. 아무것도 찾지 못한 경우
         logger.info("프롬프트에서 종목명을 찾지 못했습니다.")
         return None, None
+
+    def _extract_potential_stock_names(self, prompt: str) -> list:
+        """프롬프트에서 종목명으로 보이는 단어들을 추출합니다"""
+        import re
+
+        potential_names = []
+
+        # 한글 회사명 패턴 (2-20글자)
+        korean_pattern = r"([가-힣]{2,20})"
+        korean_matches = re.findall(korean_pattern, prompt)
+
+        # 영문 회사명 패턴 (2-30글자, 대소문자 혼합)
+        english_pattern = r"\b([A-Za-z][A-Za-z\s]{1,29})\b"
+        english_matches = re.findall(english_pattern, prompt)
+
+        # 제외할 일반적인 단어들
+        exclude_korean = {
+            "분석",
+            "종목",
+            "기업",
+            "정보",
+            "결과",
+            "전망",
+            "투자",
+            "주식",
+            "시장",
+            "에서",
+            "에게",
+            "에게서",
+            "에는",
+            "에도",
+            "에만",
+            "에서도",
+            "대해",
+            "대해서",
+            "분석해",
+            "알려",
+            "설명",
+            "요약",
+            "보고서",
+            "리포트",
+        }
+
+        exclude_english = {
+            "about",
+            "analysis",
+            "stock",
+            "market",
+            "company",
+            "report",
+            "the",
+            "and",
+            "for",
+            "with",
+            "analysis",
+            "please",
+            "tell",
+            "me",
+            "give",
+            "write",
+        }
+
+        # 한글 후보 추가
+        for match in korean_matches:
+            if match not in exclude_korean and len(match) >= 2:
+                potential_names.append(match)
+
+        # 영문 후보 추가
+        for match in english_matches:
+            cleaned = match.strip()
+            if cleaned.lower() not in exclude_english and len(cleaned) >= 2:
+                potential_names.append(cleaned)
+
+        # 중복 제거 및 길이순 정렬 (긴 것이 더 구체적일 가능성)
+        unique_names = list(set(potential_names))
+        unique_names.sort(key=len, reverse=True)
+
+        return unique_names[:3]  # 상위 3개만 시도
 
     def _extract_stock_code(self, text: str) -> Optional[str]:
         """텍스트에서 종목코드 추출"""

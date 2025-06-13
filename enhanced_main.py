@@ -386,7 +386,7 @@ class EnhancedStockAnalysisSystem:
             return result
 
     def _parse_ai_stock_response(self, ai_response: str, method: str) -> Dict[str, Any]:
-        """AI 에이전트 응답에서 종목 정보 파싱"""
+        """AI 에이전트 응답에서 종목 정보 파싱 (한국 + 해외 종목 지원)"""
         result = {
             "detected": False,
             "stock_name": None,
@@ -397,25 +397,89 @@ class EnhancedStockAnalysisSystem:
         if not ai_response:
             return result
 
-        # main.py의 extract_stock_code_from_browser_results 로직 활용
-        # 브라우저 검색 결과에서 종목코드 패턴들
+        logger.info(f"🔍 AI 응답 파싱 시작: {ai_response[:200]}...")
+
+        # 1. 구조화된 패턴 우선 검색 (AI가 명시적으로 출력한 형태)
+        structured_patterns = [
+            # "종목명: XXX" 형태
+            r"종목명\s*[:：]\s*([가-힣A-Za-z0-9\s&\-\.]+?)(?=\s*\n|$)",
+            # "종목코드: XXX" 형태 (한국 6자리 + 해외 티커)
+            r"종목코드\s*[:：]\s*([A-Z0-9]{2,6})(?=\s*\n|$)",
+        ]
+
+        name_matches = []
+        code_matches = []
+
+        for i, pattern in enumerate(structured_patterns):
+            matches = re.findall(pattern, ai_response, re.IGNORECASE | re.MULTILINE)
+            if i == 0:  # 종목명 패턴
+                name_matches.extend([m.strip() for m in matches])
+            else:  # 종목코드 패턴
+                code_matches.extend([m.strip() for m in matches])
+
+        # 구조화된 패턴에서 매칭 성공
+        if name_matches and code_matches:
+            result["detected"] = True
+            result["stock_name"] = name_matches[0]
+            result["stock_code"] = code_matches[0]
+            logger.info(
+                f"✅ 구조화된 패턴 매칭 성공: {result['stock_name']} ({result['stock_code']})"
+            )
+            return result
+
+        # 2. 괄호 패턴 검색 (한국 + 해외)
+        bracket_patterns = [
+            # 한국 종목: "삼성전자(005930)" 또는 "한화오션(A042660)"
+            r"([가-힣A-Za-z0-9\s&\-\.]+)\s*\(\s*A?([0-9]{6})\s*\)",
+            # 해외 종목: "Lockheed Martin Corporation (LMT)" 또는 "Apple (AAPL)"
+            r"([A-Za-z\s&\-\.]+?)\s*\(\s*([A-Z]{2,5})\s*\)",
+            # 혼합 패턴: "Company Name (TICKER)" 형태
+            r"([가-힣A-Za-z0-9\s&\-\.]+?)\s*\(\s*([A-Z0-9]{2,6})\s*\)",
+        ]
+
+        found_codes = []
+        found_names = []
+
+        for pattern in bracket_patterns:
+            matches = re.findall(pattern, ai_response, re.IGNORECASE | re.MULTILINE)
+            for match in matches:
+                if isinstance(match, tuple) and len(match) == 2:
+                    name, code = match
+                    name = name.strip()
+                    code = code.strip()
+
+                    # 유효성 검증
+                    if self._is_valid_stock_info(name, code):
+                        found_names.append(name)
+                        found_codes.append(code)
+                        logger.info(f"🎯 괄호 패턴에서 발견: {name} ({code})")
+
+        # 괄호 패턴에서 매칭 성공
+        if found_codes and found_names:
+            from collections import Counter
+
+            most_common_code = Counter(found_codes).most_common(1)[0][0]
+            most_common_name = Counter(found_names).most_common(1)[0][0]
+
+            result["detected"] = True
+            result["stock_code"] = most_common_code
+            result["stock_name"] = most_common_name
+            logger.info(
+                f"✅ 괄호 패턴 매칭 성공: {result['stock_name']} ({result['stock_code']})"
+            )
+            return result
+
+        # 3. 브라우저 검색 결과 패턴 (기존 로직 유지)
         browser_patterns = [
             # Company Guide 패턴: "한화오션(A042660) | 업종분석"
             r"([가-힣A-Za-z0-9\s&\-\.]+)\(A([0-9]{6})\)\s*\|\s*업종분석",
-            # 일반 괄호 패턴: "삼성전자(005930)"
-            r"([가-힣A-Za-z0-9\s&\-\.]+)\(A?([0-9]{6})\)",
             # URL 패턴: "gicode=A042660"
             r"gicode=A([0-9]{6})",
             # 브라우저 출력 패턴: "한화오션 042660"
             r"([가-힣A-Za-z0-9\s&\-\.]+)\s+([0-9]{6})",
             # 직접 언급 패턴: "종목코드: 042660"
             r"종목코드:\s*([0-9]{6})",
-            # Step 결과 패턴에서 추출
-            r"Step\s+\d+:.*?([0-9]{6})",
         ]
-
-        found_codes = []
-        found_names = []
 
         for pattern in browser_patterns:
             matches = re.findall(pattern, ai_response, re.IGNORECASE | re.MULTILINE)
@@ -432,13 +496,13 @@ class EnhancedStockAnalysisSystem:
                 else:
                     found_codes.append(match)
 
-        # 가장 자주 나타나는 종목코드 선택
+        # 브라우저 패턴에서 한국 종목코드 발견
         if found_codes:
             from collections import Counter
 
             most_common_code = Counter(found_codes).most_common(1)[0][0]
 
-            # 종목코드 유효성 검사
+            # 한국 종목코드 유효성 검사
             if len(most_common_code) == 6 and most_common_code.isdigit():
                 if most_common_code.startswith(("0", "1", "2", "3")):
                     result["detected"] = True
@@ -449,9 +513,63 @@ class EnhancedStockAnalysisSystem:
                         most_common_name = Counter(found_names).most_common(1)[0][0]
                         result["stock_name"] = most_common_name.strip()
 
+                    logger.info(
+                        f"✅ 브라우저 패턴 매칭 성공: {result['stock_name']} ({result['stock_code']})"
+                    )
                     return result
 
+        logger.warning("❌ AI 응답에서 종목 정보를 찾지 못했습니다.")
         return result
+
+    def _is_valid_stock_info(self, name: str, code: str) -> bool:
+        """종목명과 코드의 유효성을 검증합니다"""
+        if not name or not code:
+            return False
+
+        name = name.strip()
+        code = code.strip()
+
+        # 이름 길이 체크
+        if len(name) < 2 or len(name) > 50:
+            return False
+
+        # 제외할 일반적인 단어들
+        exclude_words = {
+            "Company",
+            "Inc",
+            "Corp",
+            "Ltd",
+            "분석",
+            "정보",
+            "결과",
+            "PDF",
+            "URL",
+            "Description",
+            "Metadata",
+            "Search",
+            "results",
+            "http",
+            "www",
+            "com",
+            "html",
+            "Step",
+            "Observed",
+            "output",
+        }
+
+        if name in exclude_words:
+            return False
+
+        # 코드 유효성 검사
+        # 한국 종목코드 (6자리 숫자)
+        if re.match(r"^\d{6}$", code):
+            return True
+
+        # 해외 티커 (2-5글자 알파벳)
+        if re.match(r"^[A-Z]{2,5}$", code):
+            return True
+
+        return False
 
     def _fallback_pattern_matching(self, prompt: str) -> Dict[str, Any]:
         """폴백용 정규식 패턴 매칭"""

@@ -30,7 +30,6 @@ from app.schema import (
     ToolChoice,
 )
 
-
 REASONING_MODELS = ["o1", "o3-mini"]
 MULTIMODAL_MODELS = [
     "gpt-4-vision-preview",
@@ -537,9 +536,7 @@ class LLM:
             multimodal_content = (
                 [{"type": "text", "text": content}]
                 if isinstance(content, str)
-                else content
-                if isinstance(content, list)
-                else []
+                else content if isinstance(content, list) else []
             )
 
             # Add images to content
@@ -647,7 +644,7 @@ class LLM:
         system_msgs: Optional[List[Union[dict, Message]]] = None,
         timeout: int = 300,
         tools: Optional[List[dict]] = None,
-        tool_choice: TOOL_CHOICE_TYPE = ToolChoice.AUTO,  # type: ignore
+        tool_choice: Union[TOOL_CHOICE_TYPE, dict] = ToolChoice.AUTO,  # type: ignore
         temperature: Optional[float] = None,
         **kwargs,
     ) -> ChatCompletionMessage | None:
@@ -674,8 +671,22 @@ class LLM:
         """
         try:
             # Validate tool_choice
-            if tool_choice not in TOOL_CHOICE_VALUES:
-                raise ValueError(f"Invalid tool_choice: {tool_choice}")
+            # tool_choice는 문자열("auto", "none", "required") 또는
+            # OpenAI API의 function call 형식 dict을 허용합니다
+            if isinstance(tool_choice, str) and tool_choice not in TOOL_CHOICE_VALUES:
+                raise ValueError(f"Invalid tool_choice string: {tool_choice}")
+            elif isinstance(tool_choice, dict):
+                # OpenAI API function call 형식 검증
+                if not (
+                    tool_choice.get("type") == "function"
+                    and isinstance(tool_choice.get("function"), dict)
+                    and "name" in tool_choice.get("function", {})
+                ):
+                    raise ValueError(f"Invalid tool_choice dict format: {tool_choice}")
+            elif not isinstance(tool_choice, str):
+                raise ValueError(
+                    f"Invalid tool_choice type: {type(tool_choice)}, expected str or dict"
+                )
 
             # Check if the model supports images
             supports_images = self.model in MULTIMODAL_MODELS
@@ -688,15 +699,17 @@ class LLM:
                 messages = self.format_messages(messages, supports_images)
 
             # 메시지 유효성 검사: 'tool' 역할 메시지가 'tool_calls'가 있는 메시지 다음에 와야 함
-            tool_call_ids = {}  # 현재 유효한 tool_call_id 목록 {id: assistant_message_index}
-            
+            tool_call_ids = (
+                {}
+            )  # 현재 유효한 tool_call_id 목록 {id: assistant_message_index}
+
             # 먼저 모든 assistant 메시지에서 tool_call_id를 수집
             for i, msg in enumerate(messages):
                 if msg.get("role") == "assistant" and msg.get("tool_calls"):
                     for tool_call in msg["tool_calls"]:
                         if isinstance(tool_call, dict) and "id" in tool_call:
                             tool_call_ids[tool_call["id"]] = i
-            
+
             # 이제 tool 메시지를 검증하고 정리
             messages_to_keep = []
             for i, msg in enumerate(messages):
@@ -708,12 +721,16 @@ class LLM:
                         if i > tool_call_ids[tool_call_id]:
                             messages_to_keep.append(msg)
                         else:
-                            logger.warning(f"Removing tool message at position {i} that appears before its assistant message: {msg}")
+                            logger.warning(
+                                f"Removing tool message at position {i} that appears before its assistant message: {msg}"
+                            )
                     else:
-                        logger.warning(f"Removing invalid tool message at position {i} with unknown tool_call_id: {msg}")
+                        logger.warning(
+                            f"Removing invalid tool message at position {i} with unknown tool_call_id: {msg}"
+                        )
                 else:
                     messages_to_keep.append(msg)
-            
+
             messages = messages_to_keep
 
             # Calculate input token count
