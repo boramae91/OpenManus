@@ -15,7 +15,6 @@ from app.llm import LLM
 from app.tool.base import BaseTool, ToolResult
 from app.tool.web_search import WebSearch
 
-
 _BROWSER_DESCRIPTION = """\
 A powerful browser automation tool that allows interaction with web pages through various actions.
 * This tool provides commands for controlling a browser session, navigating web pages, and extracting information
@@ -379,9 +378,25 @@ class BrowserUseTool(BaseTool, Generic[Context]):
                         )
 
                     page = await context.get_current_page()
-                    import markdownify
+                    current_url = page.url
 
-                    content = markdownify.markdownify(await page.content())
+                    # PDF 파일인지 확인 (URL에 .pdf가 있거나 Content-Type이 PDF인 경우)
+                    is_pdf = (
+                        current_url.lower().endswith(".pdf")
+                        or "pdf" in current_url.lower()
+                        or await self._is_pdf_content_type(page)
+                    )
+
+                    if is_pdf:
+                        # PDF 파일인 경우 전용 처리 로직 사용
+                        return await self._extract_pdf_content(
+                            current_url, goal, max_content_length
+                        )
+                    else:
+                        # 일반 웹페이지 처리 (기존 로직)
+                        import markdownify
+
+                        content = markdownify.markdownify(await page.content())
 
                     prompt = f"""\
 Your task is to extract the content of the page. You will be given a page and a goal, and you should extract all relevant information around this goal from the page. If the goal is vague, summarize the page. Respond in json format.
@@ -537,6 +552,194 @@ Page content:
             )
         except Exception as e:
             return ToolResult(error=f"Failed to get browser state: {str(e)}")
+
+    async def _is_pdf_content_type(self, page) -> bool:
+        """
+        페이지의 Content-Type이 PDF인지 확인하는 헬퍼 함수입니다.
+        브라우저에서 PDF 뷰어로 열린 경우를 감지하는 데 사용됩니다.
+        """
+        try:
+            # 페이지의 응답 헤더에서 Content-Type 확인
+            response = page.context._page.main_frame.page.context._pages[
+                0
+            ]._main_frame._response
+            if response and response.headers:
+                content_type = response.headers.get("content-type", "").lower()
+                return "application/pdf" in content_type
+        except Exception:
+            # 헤더 확인 실패 시 False 반환
+            pass
+        return False
+
+    async def _extract_pdf_content(
+        self, pdf_url: str, goal: str, max_content_length: int
+    ) -> ToolResult:
+        """
+        PDF 파일에서 내용을 추출하는 전용 메서드입니다.
+
+        이 메서드는 PDF 처리 라이브러리를 사용하여 PDF 파일의 텍스트를 직접 추출합니다.
+        브라우저에서 PDF를 제대로 렌더링하지 못하는 문제를 해결하기 위해 만들어졌습니다.
+
+        매개변수:
+            pdf_url (str): PDF 파일의 URL
+            goal (str): 추출 목표 (어떤 정보를 찾고 있는지)
+            max_content_length (int): 최대 콘텐츠 길이
+
+        반환값:
+            ToolResult: 추출된 PDF 내용과 분석 결과
+        """
+        try:
+            # PDF 처리 유틸리티 import
+            from loguru import logger
+
+            from app.utils.pdf_reader import extract_pdf_text
+
+            logger.info(f"📄 PDF 파일에서 내용 추출 시도: {pdf_url}")
+
+            # PDF에서 텍스트 추출
+            pdf_result = extract_pdf_text(pdf_url)
+
+            if not pdf_result["success"]:
+                return ToolResult(
+                    error=f"PDF 텍스트 추출 실패: {pdf_result.get('error', '알 수 없는 오류')}"
+                )
+
+            extracted_text = pdf_result["text"]
+            extraction_method = pdf_result["method"]
+
+            if not extracted_text.strip():
+                return ToolResult(
+                    error="PDF에서 텍스트를 추출했지만 내용이 비어있습니다"
+                )
+
+            # 텍스트가 너무 길면 자르기
+            if len(extracted_text) > max_content_length:
+                extracted_text = (
+                    extracted_text[:max_content_length] + "\n\n[텍스트가 잘림...]"
+                )
+
+            # AI를 사용하여 목표에 맞는 내용 추출 (실패 시 원본 텍스트 반환)
+            try:
+                prompt = f"""\
+PDF 문서에서 다음 목표에 맞는 내용을 추출하고 분석해주세요. JSON 형식으로 응답해주세요.
+
+추출 목표: {goal}
+
+PDF 내용 (추출 방법: {extraction_method}):
+{extracted_text}
+
+다음 형식으로 응답해주세요:
+{{
+    "text": "추출된 주요 내용",
+    "metadata": {{
+        "source": "PDF",
+        "extraction_method": "{extraction_method}",
+        "url": "{pdf_url}"
+    }}
+}}
+"""
+
+                messages = [{"role": "system", "content": prompt}]
+
+                # Define extraction function schema
+                extraction_function = {
+                    "type": "function",
+                    "function": {
+                        "name": "extract_pdf_content",
+                        "description": "PDF 문서에서 목표에 맞는 내용을 추출합니다",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "text": {
+                                    "type": "string",
+                                    "description": "추출된 주요 내용",
+                                },
+                                "metadata": {
+                                    "type": "object",
+                                    "properties": {
+                                        "source": {"type": "string"},
+                                        "extraction_method": {"type": "string"},
+                                        "url": {"type": "string"},
+                                    },
+                                },
+                            },
+                            "required": ["text", "metadata"],
+                        },
+                    },
+                }
+
+                # AI 모델을 사용하여 내용 분석 (타임아웃과 재시도 제한 추가)
+                response = await self.llm.ask_tool(
+                    messages,
+                    tools=[extraction_function],
+                    tool_choice={
+                        "type": "function",
+                        "function": {"name": "extract_pdf_content"},
+                    },
+                )
+
+                # 함수 호출 결과 파싱
+                if response and response.tool_calls:
+                    import json
+
+                    # 첫 번째 tool call 결과 사용
+                    tool_call = response.tool_calls[0]
+                    function_args = json.loads(tool_call.function.arguments)
+
+                    logger.info(
+                        f"✅ PDF 내용 추출 및 AI 분석 성공 (방법: {extraction_method})"
+                    )
+
+                    return ToolResult(
+                        output=f"📄 PDF에서 내용을 성공적으로 추출하고 분석했습니다 (방법: {extraction_method})",
+                        metadata=function_args,
+                    )
+                else:
+                    # 함수 호출이 없는 경우 기본 응답 사용
+                    analysis_result = (
+                        response.content
+                        if response and response.content
+                        else "AI 분석 실패"
+                    )
+
+                    return ToolResult(
+                        output=f"📄 PDF에서 내용을 추출했습니다 (방법: {extraction_method})",
+                        metadata={
+                            "text": analysis_result,
+                            "metadata": {
+                                "source": "PDF",
+                                "extraction_method": extraction_method,
+                                "url": pdf_url,
+                            },
+                        },
+                    )
+
+            except Exception as llm_error:
+                # LLM 호출 실패 시 원본 PDF 텍스트를 그대로 반환
+                logger.warning(
+                    f"⚠️ AI 분석 실패, 원본 PDF 텍스트 반환: {str(llm_error)}"
+                )
+
+                return ToolResult(
+                    output=f"📄 PDF에서 텍스트를 추출했습니다 (AI 분석 실패로 원본 반환, 방법: {extraction_method})",
+                    metadata={
+                        "text": extracted_text,
+                        "metadata": {
+                            "source": "PDF",
+                            "extraction_method": extraction_method,
+                            "url": pdf_url,
+                            "ai_analysis_error": str(llm_error),
+                        },
+                    },
+                )
+
+        except ImportError:
+            return ToolResult(
+                error="PDF 처리 라이브러리가 설치되지 않았습니다. 'pip install PyPDF2 pdfplumber pymupdf' 를 실행해주세요."
+            )
+        except Exception as e:
+            logger.error(f"❌ PDF 내용 추출 중 오류: {str(e)}")
+            return ToolResult(error=f"PDF 내용 추출 중 오류가 발생했습니다: {str(e)}")
 
     async def cleanup(self):
         """Clean up browser resources."""

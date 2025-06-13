@@ -83,9 +83,28 @@ class SearchResponse(ToolResult):
 
             # Add content preview if available
             if result.raw_content:
-                content_preview = result.raw_content[:1000].replace("\n", " ").strip()
-                if len(result.raw_content) > 1000:
-                    content_preview += "..."
+                # PDF 파일인 경우 더 많은 내용을 표시 (5000자), 일반 웹페이지는 1000자
+                is_pdf_content = (
+                    "[PDF 파일" in result.raw_content
+                    or "--- 페이지" in result.raw_content
+                    or result.url.lower().endswith(".pdf")
+                )
+
+                if is_pdf_content:
+                    # PDF인 경우 더 많은 내용 표시
+                    content_preview = (
+                        result.raw_content[:5000].replace("\n", " ").strip()
+                    )
+                    if len(result.raw_content) > 5000:
+                        content_preview += "..."
+                else:
+                    # 일반 웹페이지인 경우 기존 제한 유지
+                    content_preview = (
+                        result.raw_content[:1000].replace("\n", " ").strip()
+                    )
+                    if len(result.raw_content) > 1000:
+                        content_preview += "..."
+
                 result_text.append(f"   Content: {content_preview}")
 
         # Add metadata at the bottom if available
@@ -109,14 +128,18 @@ class WebContentFetcher:
     @staticmethod
     async def fetch_content(url: str, timeout: int = 10) -> Optional[str]:
         """
-        Fetch and extract the main content from a webpage.
+        웹페이지 또는 PDF 파일에서 내용을 추출합니다.
 
-        Args:
-            url: The URL to fetch content from
-            timeout: Request timeout in seconds
+        이 함수는 URL이 PDF 파일인지 자동으로 감지하고,
+        PDF인 경우 전용 처리 로직을 사용하여 텍스트를 추출합니다.
+        일반 웹페이지인 경우에는 HTML 파싱을 통해 내용을 추출합니다.
 
-        Returns:
-            Extracted text content or None if fetching fails
+        매개변수:
+            url: 내용을 가져올 URL
+            timeout: 요청 제한 시간 (초)
+
+        반환값:
+            추출된 텍스트 내용 또는 실패 시 None
         """
         headers = {
             "WebSearch": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
@@ -134,19 +157,68 @@ class WebContentFetcher:
                 )
                 return None
 
-            # Parse HTML with BeautifulSoup
-            soup = BeautifulSoup(response.text, "html.parser")
+            # PDF 파일인지 확인 (URL 확장자 또는 Content-Type 기준)
+            content_type = response.headers.get("content-type", "").lower()
+            is_pdf = (
+                url.lower().endswith(".pdf")
+                or "application/pdf" in content_type
+                or response.content.startswith(b"%PDF")
+            )
 
-            # Remove script and style elements
-            for script in soup(["script", "style", "header", "footer", "nav"]):
-                script.extract()
+            if is_pdf:
+                # PDF 파일인 경우 전용 처리 로직 사용
+                try:
+                    import io
 
-            # Get text content
-            text = soup.get_text(separator="\n", strip=True)
+                    from app.utils.pdf_reader import extract_pdf_text
 
-            # Clean up whitespace and limit size (100KB max)
-            text = " ".join(text.split())
-            return text[:10000] if text else None
+                    logger.info(f"📄 PDF 파일 감지됨: {url}")
+
+                    # PDF 바이너리 데이터로 텍스트 추출
+                    pdf_data = io.BytesIO(response.content)
+                    pdf_result = extract_pdf_text(pdf_data)
+
+                    if pdf_result.get("success", False):
+                        extracted_text = pdf_result.get("text", "")
+                        logger.info(
+                            f"✅ PDF 텍스트 추출 성공 (길이: {len(extracted_text)} 문자)"
+                        )
+
+                        # 길이 제한을 늘려서 더 많은 PDF 내용을 포함 (50KB)
+                        if len(extracted_text) > 50000:
+                            extracted_text = (
+                                extracted_text[:50000] + "\n\n[PDF 내용이 잘림...]"
+                            )
+
+                        return extracted_text if extracted_text.strip() else None
+                    else:
+                        logger.warning(
+                            f"❌ PDF 텍스트 추출 실패: {pdf_result.get('error', '알 수 없는 오류')}"
+                        )
+                        return "[PDF 파일 - 내용 추출 실패]"
+
+                except ImportError:
+                    logger.warning(
+                        "⚠️ PDF 처리 라이브러리가 없어서 PDF 내용을 추출할 수 없습니다"
+                    )
+                    return "[PDF 파일 - 처리 라이브러리 없음]"
+                except Exception as e:
+                    logger.warning(f"❌ PDF 처리 중 오류: {str(e)}")
+                    return "[PDF 파일 - 처리 오류]"
+            else:
+                # 일반 웹페이지 처리 (기존 로직)
+                soup = BeautifulSoup(response.text, "html.parser")
+
+                # Remove script and style elements
+                for script in soup(["script", "style", "header", "footer", "nav"]):
+                    script.extract()
+
+                # Get text content
+                text = soup.get_text(separator="\n", strip=True)
+
+                # Clean up whitespace and limit size (10KB max)
+                text = " ".join(text.split())
+                return text[:10000] if text else None
 
         except Exception as e:
             logger.warning(f"Error fetching content from {url}: {e}")

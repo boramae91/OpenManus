@@ -18,3 +18,11 @@ python-dateutil>=2.8.0  # 날짜 처리
 lxml>=4.9.0             # XML 파싱 (yfinance 성능 향상)
 beautifulsoup4>=4.12.0  # HTML 파싱
 openpyxl>=3.1.0         # Excel 파일 처리 (DART 데이터)
+
+# PDF 처리 라이브러리 추가 (향상된 문서 분석을 위해)
+# AI가 PDF 형태의 기업 보고서, 재무제표, 분석 리포트를 읽을 수 있게 해주는 도구들
+PyPDF2>=3.0.1          # PDF 텍스트 추출 기본 라이브러리 (간단한 PDF 처리)
+pdfplumber>=0.11.0     # PDF 표와 복잡한 레이아웃 처리 (재무제표 분석에 유용)
+pymupdf>=1.24.0        # 고성능 PDF 처리 (대용량 보고서 처리)
+pdfminer.six>=20231228 # 복잡한 PDF 레이아웃 분석 (복잡한 기업 보고서 처리)
+pypdf>=4.2.0           # 최신 PDF 처리 라이브러리 (안정성 향상)
