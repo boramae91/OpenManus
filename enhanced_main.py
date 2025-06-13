@@ -13,6 +13,7 @@
 """
 
 import asyncio
+import glob
 import json
 import os
 import re
@@ -26,6 +27,8 @@ load_dotenv()  # .env 파일에서 환경변수 로딩
 import sys
 from datetime import datetime
 from typing import Any, Dict, Optional, Tuple
+
+import pandas as pd
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -87,6 +90,9 @@ class EnhancedStockAnalysisSystem:
             dart_api_key=dart_api_key
         )
 
+        # 🏢 Dataset 매핑 테이블 로드 (ticker_bbg 변환용)
+        self.stock_mapping_table = self._load_stock_mapping_tables()
+
         # 결과 저장용
         self.analysis_results = {}
 
@@ -140,6 +146,28 @@ class EnhancedStockAnalysisSystem:
             logger.info(
                 f"✅ 감지된 종목: {stock_info['stock_name']} ({stock_info['stock_code']})"
             )
+
+            # 🏢 Step 1.5: ticker_bbg 매핑 시도
+            logger.info("🏷️ Step 1.5: ticker_bbg 매핑 시도")
+            ticker_bbg = self.get_ticker_bbg_from_name(
+                stock_name=stock_info.get("stock_name"),
+                stock_code=stock_info.get("stock_code"),
+            )
+
+            # stock_info에 ticker_bbg 정보 추가
+            stock_info["ticker_bbg"] = ticker_bbg
+            stock_info["original_stock_code"] = stock_info.get("stock_code")
+            stock_info["original_stock_name"] = stock_info.get("stock_name")
+
+            if ticker_bbg != (
+                stock_info.get("stock_code") or stock_info.get("stock_name")
+            ):
+                logger.info(f"🎯 ticker_bbg 매핑 성공: {ticker_bbg}")
+            else:
+                logger.info("ℹ️ ticker_bbg 매핑: 원본 코드 유지")
+
+            # 분석 결과에 매핑 정보 업데이트
+            results["steps"]["step1_stock_detection"] = stock_info
 
             # Step 2: 재무데이터 수집 (기본 + Enhanced DART)
             logger.info("📊 Step 2: 실제 재무데이터 수집")
@@ -710,6 +738,151 @@ class EnhancedStockAnalysisSystem:
         if not stock_code:
             return False
         return len(stock_code) == 6 and stock_code.isdigit()
+
+    def _load_stock_mapping_tables(self) -> Dict[str, pd.DataFrame]:
+        """
+        Dataset CSV 파일들을 로드해서 종목명과 ticker_bbg를 매핑하는 테이블을 생성합니다.
+        """
+        logger.info("📊 종목 매핑 테이블 로드 시작...")
+
+        mapping_tables = {}
+
+        try:
+            # dataset-bbg-*.csv 파일들 찾기
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            dataset_files = glob.glob(os.path.join(current_dir, "dataset-bbg-*.csv"))
+
+            for file_path in dataset_files:
+                logger.info(f"📁 데이터셋 로드: {os.path.basename(file_path)}")
+
+                try:
+                    # CSV 파일 읽기
+                    df = pd.read_csv(file_path)
+
+                    # 파일명에서 지수명 추출 (예: KOSPI Index, KOSDAQ Index)
+                    filename = os.path.basename(file_path)
+                    market_index = filename.split("-")[2].replace(
+                        " ", "_"
+                    )  # KOSPI Index -> KOSPI_Index
+
+                    # 필요한 컬럼이 있는지 확인
+                    required_cols = ["ticker_bbg"]
+                    if not all(col in df.columns for col in required_cols):
+                        logger.warning(f"⚠️ 필수 컬럼 누락: {file_path}")
+                        continue
+
+                    # 매핑 테이블에 저장
+                    mapping_tables[market_index] = df
+                    logger.info(f"✅ {market_index}: {len(df)} 종목 로드 완료")
+
+                except Exception as e:
+                    logger.error(f"❌ 파일 로드 실패 {file_path}: {e}")
+                    continue
+
+            # 전체 매핑 테이블도 생성 (모든 지수 통합)
+            if mapping_tables:
+                all_stocks = pd.concat(mapping_tables.values(), ignore_index=True)
+                mapping_tables["ALL"] = all_stocks
+                logger.info(f"✅ 전체 통합 테이블: {len(all_stocks)} 종목")
+
+            logger.info(f"🎯 총 {len(mapping_tables)} 개 매핑 테이블 로드 완료")
+
+        except Exception as e:
+            logger.error(f"❌ 매핑 테이블 로드 실패: {e}")
+            mapping_tables = {}
+
+        return mapping_tables
+
+    def get_ticker_bbg_from_name(self, stock_name: str, stock_code: str = None) -> str:
+        """
+        종목명 또는 종목코드로부터 ticker_bbg를 찾아서 반환합니다.
+
+        Args:
+            stock_name: 종목명 (한글 또는 영문)
+            stock_code: 종목코드 (선택사항)
+
+        Returns:
+            str: ticker_bbg 또는 원본 종목코드
+        """
+        if not self.stock_mapping_table:
+            logger.warning("⚠️ 매핑 테이블이 없어서 원본 종목코드를 반환합니다")
+            return stock_code or stock_name
+
+        try:
+            # 전체 통합 테이블 사용
+            df = self.stock_mapping_table.get("ALL")
+            if df is None or df.empty:
+                logger.warning("⚠️ 통합 매핑 테이블이 비어있습니다")
+                return stock_code or stock_name
+
+            # 1. 종목코드로 먼저 찾기 (가장 정확함)
+            if stock_code:
+                # 한국 종목코드는 6자리 숫자
+                if re.match(r"^\d{6}$", stock_code):
+                    # ticker_bbg에서 종목코드 부분 추출해서 매칭
+                    matched = df[
+                        df["ticker_bbg"].str.contains(f"{stock_code} KS", na=False)
+                    ]
+                    if not matched.empty:
+                        ticker_bbg = matched.iloc[0]["ticker_bbg"]
+                        logger.info(
+                            f"✅ 종목코드 매칭 성공: {stock_code} -> {ticker_bbg}"
+                        )
+                        return ticker_bbg
+
+                # 해외 종목코드 직접 매칭
+                matched = df[df["ticker_bbg"].str.contains(stock_code, na=False)]
+                if not matched.empty:
+                    ticker_bbg = matched.iloc[0]["ticker_bbg"]
+                    logger.info(f"✅ 종목코드 매칭 성공: {stock_code} -> {ticker_bbg}")
+                    return ticker_bbg
+
+            # 2. 종목명으로 찾기 (한글 우선)
+            if stock_name:
+                # 한글명 매칭 (NAME_KOREAN 컬럼)
+                if "NAME_KOREAN" in df.columns:
+                    matched = df[df["NAME_KOREAN"].str.contains(stock_name, na=False)]
+                    if not matched.empty:
+                        ticker_bbg = matched.iloc[0]["ticker_bbg"]
+                        logger.info(
+                            f"✅ 한글명 매칭 성공: {stock_name} -> {ticker_bbg}"
+                        )
+                        return ticker_bbg
+
+                # 영문명 매칭 (NAME 컬럼)
+                if "NAME" in df.columns:
+                    matched = df[
+                        df["NAME"].str.contains(
+                            stock_name.upper(), na=False, case=False
+                        )
+                    ]
+                    if not matched.empty:
+                        ticker_bbg = matched.iloc[0]["ticker_bbg"]
+                        logger.info(
+                            f"✅ 영문명 매칭 성공: {stock_name} -> {ticker_bbg}"
+                        )
+                        return ticker_bbg
+
+                # 부분 매칭 시도 (더 관대한 매칭)
+                if "NAME_KOREAN" in df.columns:
+                    for _, row in df.iterrows():
+                        if (
+                            pd.notna(row["NAME_KOREAN"])
+                            and stock_name in row["NAME_KOREAN"]
+                        ):
+                            ticker_bbg = row["ticker_bbg"]
+                            logger.info(
+                                f"✅ 부분 매칭 성공: {stock_name} -> {ticker_bbg}"
+                            )
+                            return ticker_bbg
+
+            # 3. 매칭 실패
+            logger.warning(f"⚠️ 매칭 실패: {stock_name} ({stock_code}) - 원본 반환")
+            return stock_code or stock_name
+
+        except Exception as e:
+            logger.error(f"❌ ticker_bbg 매핑 중 오류: {e}")
+            return stock_code or stock_name
 
     async def perform_selective_classification(
         self,
@@ -1628,6 +1801,28 @@ class EnhancedStockAnalysisSystem:
     ) -> str:
         """🚀 io_logger를 사용해서 개선된 분석 결과를 일관된 형식으로 저장해요 (원본 데이터 포함)"""
         try:
+            # 🏢 ticker_bbg 매핑 시도
+            original_stock_code = stock_info.get("stock_code")
+            original_stock_name = stock_info.get("stock_name")
+
+            # dataset에서 ticker_bbg 가져오기
+            ticker_bbg = self.get_ticker_bbg_from_name(
+                stock_name=original_stock_name, stock_code=original_stock_code
+            )
+
+            # stock_info 업데이트 (ticker_bbg 정보 추가)
+            updated_stock_info = stock_info.copy()
+            updated_stock_info["ticker_bbg"] = ticker_bbg
+            updated_stock_info["original_stock_code"] = original_stock_code
+            updated_stock_info["original_stock_name"] = original_stock_name
+
+            # 파일명에 사용할 종목 코드를 ticker_bbg로 교체
+            if ticker_bbg != (original_stock_code or original_stock_name):
+                logger.info(
+                    f"📊 파일명 종목코드 변환: {original_stock_code or original_stock_name} -> {ticker_bbg}"
+                )
+                updated_stock_info["stock_code"] = ticker_bbg  # 파일명 생성용으로 교체
+
             # 사용자 프롬프트와 최종 응답 추출
             user_prompt = results.get("user_prompt", "")
 
@@ -1641,6 +1836,7 @@ class EnhancedStockAnalysisSystem:
                     final_response.append(
                         f"📊 감지된 종목: {stock_detection.get('stock_name')} ({stock_detection.get('stock_code')})"
                     )
+                    final_response.append(f"🏷️ ticker_bbg: {ticker_bbg}")
 
             # 분류 결과
             if "step3_classification" in results.get("steps", {}):
@@ -1699,7 +1895,7 @@ class EnhancedStockAnalysisSystem:
                 "analysis_flow": results.get("analysis_flow", "enhanced"),
                 "success": results.get("success", False),
                 "timestamp": results.get("timestamp"),
-                "stock_info": stock_info,
+                "stock_info": updated_stock_info,  # 🏢 ticker_bbg가 포함된 업데이트된 정보 사용
                 "data_quality": results.get("steps", {})
                 .get("step2_financial_data", {})
                 .get("data_quality", "없음"),
@@ -1715,6 +1911,7 @@ class EnhancedStockAnalysisSystem:
                     "detailed_analysis_performed": results.get("steps", {})
                     .get("step4_detailed_analysis", {})
                     .get("performed", False),
+                    "ticker_bbg_mapping_used": True,  # 🏢 ticker_bbg 매핑 사용 표시
                 },
                 # 🚀 원본 데이터 섹션 추가
                 "raw_data": raw_data_section,

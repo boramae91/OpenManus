@@ -247,12 +247,19 @@ def save_interaction_log(
     # 🚀 최우선: meta에서 종목코드 직접 추출 (각 메인 파일에서 전달)
     if meta and "stock_info" in meta:
         stock_info_meta = meta["stock_info"]
-        if stock_info_meta and stock_info_meta.get("found"):
-            # 종목코드 우선, 없으면 종목명 사용
+        if stock_info_meta and (
+            stock_info_meta.get("found") or stock_info_meta.get("detected")
+        ):
+            # ticker_bbg 최우선, 그 다음 종목코드, 없으면 종목명 사용
+            ticker_bbg = stock_info_meta.get("ticker_bbg")
             stock_code = stock_info_meta.get("stock_code") or stock_info_meta.get(
                 "ticker"
             )
-            if stock_code:
+
+            if ticker_bbg:
+                # ticker_bbg를 파일명에 적합하게 변환 (띄어쓰기를 언더스코어로, 특수문자 처리)
+                stock_identifier = ticker_bbg.replace(" ", "_").replace("/", "_")
+            elif stock_code:
                 stock_identifier = stock_code
             else:
                 stock_identifier = stock_info_meta.get("stock_name")
