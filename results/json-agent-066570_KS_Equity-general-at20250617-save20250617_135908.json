@@ -1,0 +1,4055 @@
+{
+  "timestamp": "20250617_135908",
+  "prompt": "LG전자에 대해서 분석해줘",
+  "response": "📊 감지된 종목: LG전자 (066570)\n" +
+  "\n" +
+  "🏷️ ticker_bbg: 066570 KS Equity\n" +
+  "\n" +
+  "📈 상세 분석:\n" +
+  "\n" +
+  "Step 4: To provide a comprehensive analysis of LG전자 (종목코드: 066570), I'll break" +
+  "down the task into several steps:\n" +
+  "\n" +
+  "1. **Financial Analysis**: Review the provided financial data to highlight key" +
+  "financial metrics and trends.\n" +
+  "2. **Growth and Performance**: Analyze growth metrics and performance" +
+  "indicators.\n" +
+  "3. **Corporate Governance and Investment Information**: Examine corporate" +
+  "governance, major shareholders, and recent investment information.\n" +
+  "4. **Recent Disclosures and Insights**: Look into recent disclosures and any" +
+  "special insights from Enhanced DART.\n" +
+  "\n" +
+  "Let's start with the financial analysis and growth metrics. I'll summarize the" +
+  "key points from the provided data:\n" +
+  "\n" +
+  "### Financial Analysis\n" +
+  "- **Current Stock Price**: 71,800 KRW\n" +
+  "- **Market Capitalization**: 12,321,383,514,112 KRW\n" +
+  "- **52-Week High/Low**: 114,699.76 KRW / 64,100 KRW\n" +
+  "- **1-Year Return**: -27.73%\n" +
+  "- **Debt Ratio**: 57.793%\n" +
+  "- **ROE (Return on Equity)**: 4.56%\n" +
+  "- **Dividend Yield**: 139.00%\n" +
+  "\n" +
+  "### Growth and Performance\n" +
+  "- **Revenue Growth**: 7.80%\n" +
+  "- **Earnings Growth**: 52.20%\n" +
+  "\n" +
+  "### Corporate Governance and Investment Information\n" +
+  "- **Number of Registered Executives**: 319\n" +
+  "- **Recent Dividend Rate**: 5000.0%\n" +
+  "- **Recent Dividend**: 0 KRW\n" +
+  "- **Capital Change History**: 2 events\n" +
+  "\n" +
+  "### Recent Disclosures and Insights\n" +
+  "- **Recent Disclosures**: 4 in the last 30 days\n" +
+  "  - Inquiry response (unconfirmed) on 2025-06-05\n" +
+  "  - Correction of monetary loan decision on 2025-06-05\n" +
+  "  - Large corporate group status disclosure on 2025-05-30\n" +
+  "- **Correction Disclosure**: 1\n" +
+  "\n" +
+  "### Special Insights\n" +
+  "- Enhanced DART provides unique insights into corporate governance, dividend" +
+  "policy, and real-time disclosures, which are crucial for investment decisions.\n" +
+  "\n" +
+  "### Next Steps\n" +
+  "If you need further analysis or specific insights into any of these areas," +
+  "please let me know. I can also assist with additional data retrieval or more" +
+  "detailed analysis using web browsing or other tools if required.\n" +
+  "Step 5: Observed output of cmd `browser_use` executed:\n" +
+  "Search results for 'LG전자 066570 latest news and analysis':\n" +
+  "\n" +
+  "1. LG전자(066570) | 기업정보, 재무제표, 최신 뉴스 분석 - 투자\n" +
+  "   URL: https://m.invest.zum.com/stock/066570/\n" +
+  "Description:  LG전자의 주가가 3.99% 하락하여 72,200원에 마감되었습니다. 이 하락은 미국에서 냉장고와 세탁기 등 가전제품에" +
+  "50%의 고율 관세가 부과된 소식에 따른 것으로 보입니다. \n" +
+  "Content: LG전자(066570) | 기업정보, 재무제표, 최신 뉴스 분석 데일리 브리핑 종목이 포함된 ETF 1 주가 정보 주가 시가총액" +
+  "등락률 거래량 투자 지표 PER PBR EPS DPS 배당수익률 - 인사이트&뉴스 더 보기 No data 뉴스 정보가 없습니다. 공시 정보 더" +
+  "보기 No data 공시 정보가 없습니다. 증권사리포트 더 보기 No data 관련 자료가 없습니다. 기업 정보 기업명 사업영역 상장일 산업분야" +
+  "거래소 주소 사업 현황\n" +
+  "\n" +
+  "Metadata:\n" +
+  "- Total results: 1\n" +
+  "- Language: en\n" +
+  "- Country: us\n" +
+  "Step 6: Observed output of cmd `browser_use` executed:\n" +
+  "Extracted from page:\n" +
+  "{'text': 'LG전자의 주가가 0.28% 하락하여 72,000원에 마감되었습니다. 이 하락세는 특별한 외부 요인 없이도 나타났지만, AI" +
+  "인재 확보를 위한 노력과 관련된 여러 행사 소식이 있었습니다. 이러한 활동은 장기적으로 기업의 경쟁력 강화에 기여할 것으로 기대되지만, 단기적인" +
+  "주가에는 큰 영향을 미치지 않은 것으로 보입니다. LG전자는 글로벌 최대 AI 학회에서 우수 인력 확보에 나섰습니다. 또한, 삼성·LG전자" +
+  "이스라엘 주재원들이 요르단으로 대피한 소식도 전해졌습니다.', 'metadata': {'source': 'LG전자(066570) | 기업정보," +
+  "재무제표, 최신 뉴스 분석'}}\n" +
+  "\n" +
+  "Step 7: Here's a summary of the latest insights about LG전자:\n" +
+  "\n" +
+  "### Latest News and Analysis\n" +
+  "- **Stock Movement**: LG전자의 주가가 0.28% 하락하여 72,000원에 마감되었습니다.\n" +
+  "- **AI Talent Acquisition**: The company is actively participating in global AI" +
+  "conferences to secure top talent, which is expected to enhance long-term" +
+  "competitiveness.\n" +
+  "- **Geopolitical Movement**: Reports indicate that Samsung and LG Electronics" +
+  "personnel in Israel have been relocated to Jordan.\n" +
+  "\n" +
+  "### Next Steps\n" +
+  "If you need further analysis or specific insights, consider the following" +
+  "options:\n" +
+  "\n" +
+  "1. **Detailed Financial Analysis**: Dive deeper into specific financial metrics" +
+  "or historical performance.\n" +
+  "2. **Market Sentiment Analysis**: Explore social media or forums for investor" +
+  "sentiment.\n" +
+  "3. **Competitor Analysis**: Compare LG전자 with its competitors to understand its" +
+  "market position.\n" +
+  "\n" +
+  "Let me know if you want to explore any of these areas or if there's anything" +
+  "else you'd like to focus on!\n" +
+  "Step 8: Observed output of cmd `terminate` executed:\n" +
+  "The interaction has been completed with status: success\n" +
+  "\n" +
+  "📋 종합 요약:\n" +
+  "\n" +
+  "{'analyzed_stock': {'name': 'LG전자', 'code': '066570', 'detection_method':" +
+  "'ai_ai_web_search_priority'}, 'data_sources': {'financial_data_collected': True," +
+  "'data_sources': ['yfinance', 'DART'], 'data_quality': '보통'}, 'analysis_quality':" +
+  "{'detailed_analysis_performed': True, 'financial_data_enhanced': True}," +
+  "'key_insights': {'classification': None, 'investment_outlook': '중립적'," +
+  "'risk_factors': None, 'recommendation': None}}",
+  "steps": [
+    "",
+    "📊 감지된 종목: LG전자 (066570)",
+    "📈 재무데이터 수집 성공: yfinance, DART",
+    "🚀 Enhanced DART 데이터 수집 성공",
+    "📊 상세 분석 완료",
+    "📊 감지된 종목: LG전자 (066570)\n" +
+    "\n" +
+    "🏷️ ticker_bbg: 066570 KS Equity\n" +
+    "\n" +
+    "📈 상세 분석:\n" +
+    "\n" +
+    "Step 4: To provide a comprehensive analysis of LG전자 (종목코드: 066570), I'll break" +
+    "down the task into several steps:\n" +
+    "\n" +
+    "1. **Financial Analysis**: Review the provided financial data to highlight key" +
+    "financial metrics and trends.\n" +
+    "2. **Growth and Performance**: Analyze growth metrics and performance" +
+    "indicators.\n" +
+    "3. **Corporate Governance and Investment Information**: Examine corporate" +
+    "governance, major shareholders, and recent investment information.\n" +
+    "4. **Recent Disclosures and Insights**: Look into recent disclosures and any" +
+    "special insights from Enhanced DART.\n" +
+    "\n" +
+    "Let's start with the financial analysis and growth metrics. I'll summarize the" +
+    "key points from the provided data:\n" +
+    "\n" +
+    "### Financial Analysis\n" +
+    "- **Current Stock Price**: 71,800 KRW\n" +
+    "- **Market Capitalization**: 12,321,383,514,112 KRW\n" +
+    "- **52-Week High/Low**: 114,699.76 KRW / 64,100 KRW\n" +
+    "- **1-Year Return**: -27.73%\n" +
+    "- **Debt Ratio**: 57.793%\n" +
+    "- **ROE (Return on Equity)**: 4.56%\n" +
+    "- **Dividend Yield**: 139.00%\n" +
+    "\n" +
+    "### Growth and Performance\n" +
+    "- **Revenue Growth**: 7.80%\n" +
+    "- **Earnings Growth**: 52.20%\n" +
+    "\n" +
+    "### Corporate Governance and Investment Information\n" +
+    "- **Number of Registered Executives**: 319\n" +
+    "- **Recent Dividend Rate**: 5000.0%\n" +
+    "- **Recent Dividend**: 0 KRW\n" +
+    "- **Capital Change History**: 2 events\n" +
+    "\n" +
+    "### Recent Disclosures and Insights\n" +
+    "- **Recent Disclosures**: 4 in the last 30 days\n" +
+    "  - Inquiry response (unconfirmed) on 2025-06-05\n" +
+    "  - Correction of monetary loan decision on 2025-06-05\n" +
+    "  - Large corporate group status disclosure on 2025-05-30\n" +
+    "- **Correction Disclosure**: 1\n" +
+    "\n" +
+    "### Special Insights\n" +
+    "- Enhanced DART provides unique insights into corporate governance, dividend" +
+    "policy, and real-time disclosures, which are crucial for investment decisions.\n" +
+    "\n" +
+    "### Next Steps\n" +
+    "If you need further analysis or specific insights into any of these areas," +
+    "please let me know. I can also assist with additional data retrieval or more" +
+    "detailed analysis using web browsing or other tools if required.\n" +
+    "Step 5: Observed output of cmd `browser_use` executed:\n" +
+    "Search results for 'LG전자 066570 latest news and analysis':\n" +
+    "\n" +
+    "1. LG전자(066570) | 기업정보, 재무제표, 최신 뉴스 분석 - 투자\n" +
+    "   URL: https://m.invest.zum.com/stock/066570/\n" +
+    "Description:  LG전자의 주가가 3.99% 하락하여 72,200원에 마감되었습니다. 이 하락은 미국에서 냉장고와 세탁기 등 가전제품에" +
+    "50%의 고율 관세가 부과된 소식에 따른 것으로 보입니다. \n" +
+    "Content: LG전자(066570) | 기업정보, 재무제표, 최신 뉴스 분석 데일리 브리핑 종목이 포함된 ETF 1 주가 정보 주가 시가총액" +
+    "등락률 거래량 투자 지표 PER PBR EPS DPS 배당수익률 - 인사이트&뉴스 더 보기 No data 뉴스 정보가 없습니다. 공시 정보 더" +
+    "보기 No data 공시 정보가 없습니다. 증권사리포트 더 보기 No data 관련 자료가 없습니다. 기업 정보 기업명 사업영역 상장일 산업분야" +
+    "거래소 주소 사업 현황\n" +
+    "\n" +
+    "Metadata:\n" +
+    "- Total results: 1\n" +
+    "- Language: en\n" +
+    "- Country: us\n" +
+    "Step 6: Observed output of cmd `browser_use` executed:\n" +
+    "Extracted from page:\n" +
+    "{'text': 'LG전자의 주가가 0.28% 하락하여 72,000원에 마감되었습니다. 이 하락세는 특별한 외부 요인 없이도 나타났지만, AI" +
+    "인재 확보를 위한 노력과 관련된 여러 행사 소식이 있었습니다. 이러한 활동은 장기적으로 기업의 경쟁력 강화에 기여할 것으로 기대되지만, 단기적인" +
+    "주가에는 큰 영향을 미치지 않은 것으로 보입니다. LG전자는 글로벌 최대 AI 학회에서 우수 인력 확보에 나섰습니다. 또한, 삼성·LG전자" +
+    "이스라엘 주재원들이 요르단으로 대피한 소식도 전해졌습니다.', 'metadata': {'source': 'LG전자(066570) | 기업정보," +
+    "재무제표, 최신 뉴스 분석'}}\n" +
+    "\n" +
+    "Step 7: Here's a summary of the latest insights about LG전자:\n" +
+    "\n" +
+    "### Latest News and Analysis\n" +
+    "- **Stock Movement**: LG전자의 주가가 0.28% 하락하여 72,000원에 마감되었습니다.\n" +
+    "- **AI Talent Acquisition**: The company is actively participating in global AI" +
+    "conferences to secure top talent, which is expected to enhance long-term" +
+    "competitiveness.\n" +
+    "- **Geopolitical Movement**: Reports indicate that Samsung and LG Electronics" +
+    "personnel in Israel have been relocated to Jordan.\n" +
+    "\n" +
+    "### Next Steps\n" +
+    "If you need further analysis or specific insights, consider the following" +
+    "options:\n" +
+    "\n" +
+    "1. **Detailed Financial Analysis**: Dive deeper into specific financial metrics" +
+    "or historical performance.\n" +
+    "2. **Market Sentiment Analysis**: Explore social media or forums for investor" +
+    "sentiment.\n" +
+    "3. **Competitor Analysis**: Compare LG전자 with its competitors to understand its" +
+    "market position.\n" +
+    "\n" +
+    "Let me know if you want to explore any of these areas or if there's anything" +
+    "else you'd like to focus on!\n" +
+    "Step 8: Observed output of cmd `terminate` executed:\n" +
+    "The interaction has been completed with status: success\n" +
+    "\n" +
+    "📋 종합 요약:\n" +
+    "\n" +
+    "{'analyzed_stock': {'name': 'LG전자', 'code': '066570', 'detection_method':" +
+    "'ai_ai_web_search_priority'}, 'data_sources': {'financial_data_collected': True," +
+    "'data_sources': ['yfinance', 'DART'], 'data_quality': '보통'}, 'analysis_quality':" +
+    "{'detailed_analysis_performed': True, 'financial_data_enhanced': True}," +
+    "'key_insights': {'classification': None, 'investment_outlook': '중립적'," +
+    "'risk_factors': None, 'recommendation': None}}",
+    ""
+  ],
+  "meta": {
+    "analysis_flow": "enhanced_intent_based",
+    "success": false,
+    "timestamp": "2025-06-17T13:57:11.853097",
+    "stock_info": {
+        "detected": true,
+        "stock_name": "LG전자",
+        "stock_code": "066570 KS Equity",
+        "detection_method": "ai_ai_web_search_priority",
+        "ticker_bbg": "066570 KS Equity",
+        "original_stock_code": "066570",
+        "original_stock_name": "LG전자"
+    },
+    "data_quality": "보통",
+    "enhanced_features": {
+        "financial_data_used": true,
+        "enhanced_dart_used": true,
+        "detailed_analysis_performed": true,
+        "ticker_bbg_mapping_used": true
+    },
+    "raw_data": {
+        "data_sources_summary": {
+            "yfinance_data_available": true,
+            "dart_basic_data_available": true,
+            "enhanced_dart_data_available": true
+        },
+        "yfinance_raw_data": {
+            "basic_info": {
+                "company_name": "LG Electronics Inc.",
+                "sector": "Technology",
+                "industry": "Consumer Electronics",
+                "country": "South Korea",
+                "currency": "KRW",
+                "exchange": "KSC",
+                "ticker_symbol": "066570.KS"
+            },
+            "current_price_info": {
+                "current_price": 71800.0,
+                "previous_close": 72000.0,
+                "open_price": 72200.0,
+                "day_high": 73500.0,
+                "day_low": 71800.0,
+                "volume": 346599,
+                "market_cap": 12321383514112,
+                "shares_outstanding": 162884992
+            },
+            "financial_ratios": {
+                "pe_ratio": null,
+                "peg_ratio": null,
+                "pb_ratio": null,
+                "ps_ratio": 0.13786606,
+                "dividend_yield": 1.39,
+                "profit_margin": 0.00774,
+                "operating_margin": 0.055370003,
+                "return_on_equity": 0.04563,
+                "return_on_assets": 0.03283,
+                "debt_to_equity": 57.793,
+                "current_ratio": 1.301,
+                "quick_ratio": 0.705
+            },
+            "growth_metrics": {
+                "earnings_growth": 0.522,
+                "revenue_growth": 0.078,
+                "earnings_quarterly_growth": 0.683,
+                "revenue_quarterly_growth": null
+            },
+            "price_history": {
+                "52_week_high": 114699.7569692239,
+                "52_week_low": 64100.0,
+                "avg_volume_3m": 498268.1,
+                "price_change_1y": -27.725069006185883
+            },
+            "data_quality": "보통",
+            "data_sources": [
+                "yfinance",
+                "DART"
+            ],
+            "collection_info": {
+                "success": true,
+                "errors": [],
+                "stock_info": {
+                    "stock_code": "066570",
+                    "stock_name": "LG전자",
+                    "collection_timestamp": "2025-06-17T13:57:47.141844"
+                }
+            }
+        },
+        "dart_basic_raw_data": {
+            "company_info": {
+                "corp_name": "LG전자(주)",
+                "corp_code": "00401731",
+                "business_summary": "1078614075",
+                "established_date": "20020401",
+                "listing_date": "12",
+                "ceo_name": "조주완",
+                "address": "서울특별시 영등포구  여의대로 128 LG트윈타워"
+            },
+            "financial_statements": {
+                "current_assets": 11936997000000,
+                "non_current_assets": 22961485000000,
+                "total_assets": 34898482000000,
+                "current_liabilities": 14608535000000,
+                "non_current_liabilities": 8812896000000,
+                "total_liabilities": 23421431000000,
+                "total_equity": 11477051000000,
+                "revenue": 30762552000000,
+                "operating_profit": 558964000000,
+                "net_income": 1136633000000,
+                "debt_ratio": 2.04,
+                "operating_margin": 0.0182,
+                "net_margin": 0.0369
+            },
+            "business_report": {
+                "main_business": "법인고유번호 00401731 기업의 주요사업",
+                "business_risks": "시장변동성, 경쟁심화 등",
+                "future_plans": "사업확장 및 기술개발 계획"
+            }
+        },
+        "enhanced_dart_raw_data": {
+            "collection_info": {
+                "success": true,
+                "stock_code": "066570",
+                "collected_at": "",
+                "error": ""
+            },
+            "financial_analysis": {
+                "success": true,
+                "corp_code": "00401731",
+                "bsns_year": "2024",
+                "collected_at": "2025-06-17T13:58:08.958808",
+                "individual_statements": {
+                    "asset_info": {
+                        "current_assets": 11936997000000,
+                        "non_current_assets": 22961485000000,
+                        "total_assets": 34898482000000
+                    },
+                    "liability_info": {
+                        "current_liabilities": 14608535000000,
+                        "non_current_liabilities": 8812896000000,
+                        "total_liabilities": 23421431000000
+                    },
+                    "equity_info": {
+                        "capital_stock": 904169000000,
+                        "total_equity": 11477051000000
+                    },
+                    "income_info": {
+                        "revenue": 30762552000000,
+                        "operating_income": 558964000000,
+                        "net_income": 1136633000000
+                    }
+                },
+                "consolidated_statements": {
+                    "asset_info": {
+                        "current_assets": 11936997000000,
+                        "non_current_assets": 22961485000000,
+                        "total_assets": 34898482000000
+                    },
+                    "liability_info": {
+                        "current_liabilities": 14608535000000,
+                        "non_current_liabilities": 8812896000000,
+                        "total_liabilities": 23421431000000
+                    },
+                    "equity_info": {
+                        "capital_stock": 904169000000,
+                        "total_equity": 11477051000000
+                    },
+                    "income_info": {
+                        "revenue": 30762552000000,
+                        "operating_income": 558964000000,
+                        "net_income": 1136633000000
+                    }
+                },
+                "quarterly_performance": [
+                    {
+                        "asset_info": {
+                            "current_assets": 11648489000000,
+                            "non_current_assets": 21611010000000,
+                            "total_assets": 33259499000000
+                        },
+                        "liability_info": {
+                            "current_liabilities": 13896677000000,
+                            "non_current_liabilities": 8100273000000,
+                            "total_liabilities": 21996950000000
+                        },
+                        "equity_info": {
+                            "capital_stock": 904169000000,
+                            "total_equity": 11262549000000
+                        },
+                        "income_info": {
+                            "revenue": 7750009000000,
+                            "operating_income": 285516000000,
+                            "net_income": 821094000000
+                        },
+                        "period": "1분기"
+                    },
+                    {
+                        "asset_info": {
+                            "current_assets": 12414144000000,
+                            "non_current_assets": 21711524000000,
+                            "total_assets": 34125668000000
+                        },
+                        "liability_info": {
+                            "current_liabilities": 13400426000000,
+                            "non_current_liabilities": 8846217000000,
+                            "total_liabilities": 22246643000000
+                        },
+                        "equity_info": {
+                            "capital_stock": 904169000000,
+                            "total_equity": 11879025000000
+                        },
+                        "income_info": {
+                            "revenue": 8139511000000,
+                            "operating_income": 593259000000,
+                            "net_income": 733744000000
+                        },
+                        "period": "반기"
+                    },
+                    {
+                        "asset_info": {
+                            "current_assets": 12109508000000,
+                            "non_current_assets": 21853508000000,
+                            "total_assets": 33963016000000
+                        },
+                        "liability_info": {
+                            "current_liabilities": 13972222000000,
+                            "non_current_liabilities": 8730282000000,
+                            "total_liabilities": 22702504000000
+                        },
+                        "equity_info": {
+                            "capital_stock": 904169000000,
+                            "total_equity": 11260512000000
+                        },
+                        "income_info": {
+                            "revenue": 7482191000000,
+                            "operating_income": -153748000000,
+                            "net_income": -431560000000
+                        },
+                        "period": "3분기"
+                    },
+                    {
+                        "asset_info": {
+                            "current_assets": 11936997000000,
+                            "non_current_assets": 22961485000000,
+                            "total_assets": 34898482000000
+                        },
+                        "liability_info": {
+                            "current_liabilities": 14608535000000,
+                            "non_current_liabilities": 8812896000000,
+                            "total_liabilities": 23421431000000
+                        },
+                        "equity_info": {
+                            "capital_stock": 904169000000,
+                            "total_equity": 11477051000000
+                        },
+                        "income_info": {
+                            "revenue": 30762552000000,
+                            "operating_income": 558964000000,
+                            "net_income": 1136633000000
+                        },
+                        "period": "연간"
+                    }
+                ]
+            },
+            "governance_analysis": {
+                "success": true,
+                "corp_code": "00401731",
+                "bsns_year": "2024",
+                "collected_at": "2025-06-17T13:58:10.127218",
+                "major_shareholders": [
+                    {
+                        "shareholder_name": "㈜LG",
+                        "relationship": "최대주주 본인",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "권봉석",
+                        "relationship": "계열회사 임원",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "조주완",
+                        "relationship": "계열회사 임원",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "계",
+                        "relationship": "",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    },
+                    {
+                        "shareholder_name": "계",
+                        "relationship": "",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": ""
+                    }
+                ],
+                "executives": [
+                    {
+                        "name": "조주완",
+                        "position": "",
+                        "career": "",
+                        "main_career": "연세대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박형세",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Indiana대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김명욱",
+                        "position": "",
+                        "career": "",
+                        "main_career": "경북대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김민국",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김민수",
+                        "position": "",
+                        "career": "",
+                        "main_career": "UIUC(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김사녕",
+                        "position": "",
+                        "career": "",
+                        "main_career": "동아대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김석규",
+                        "position": "",
+                        "career": "",
+                        "main_career": "연세대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김선형",
+                        "position": "",
+                        "career": "",
+                        "main_career": "고려대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김성재",
+                        "position": "",
+                        "career": "",
+                        "main_career": "연세대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김수연",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김승종",
+                        "position": "",
+                        "career": "",
+                        "main_career": "중앙대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김영수",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부산대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정대화",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Washington대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김용국",
+                        "position": "",
+                        "career": "",
+                        "main_career": "㈜LG법무팀/책임, George Town대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김용석",
+                        "position": "",
+                        "career": "",
+                        "main_career": "MIT(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김용진",
+                        "position": "",
+                        "career": "",
+                        "main_career": "경북대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김유재",
+                        "position": "",
+                        "career": "",
+                        "main_career": "한양대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김의도",
+                        "position": "",
+                        "career": "",
+                        "main_career": "고려대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김이권",
+                        "position": "",
+                        "career": "",
+                        "main_career": "에이스냉동공조 이사(19.03~), Thunderbird대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김일욱",
+                        "position": "",
+                        "career": "",
+                        "main_career": "KAIST(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김재일",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부경대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김재철",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Amazon(US), University of Texas(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김정택",
+                        "position": "",
+                        "career": "",
+                        "main_career": "대전대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김병훈",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김종호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "고려대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김주용",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Boston대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김진규",
+                        "position": "",
+                        "career": "",
+                        "main_career": "LG디스플레이/부장, 성균관대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김찬수",
+                        "position": "",
+                        "career": "",
+                        "main_career": "고려대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김창민",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김창환",
+                        "position": "",
+                        "career": "",
+                        "main_career": "동아대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김철",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부산대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김태년",
+                        "position": "",
+                        "career": "",
+                        "main_career": "영남대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김태완",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김태훈",
+                        "position": "",
+                        "career": "",
+                        "main_career": "아주대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김영락",
+                        "position": "",
+                        "career": "",
+                        "main_career": "워싱턴대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김학현",
+                        "position": "",
+                        "career": "",
+                        "main_career": "고려대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김혁기",
+                        "position": "",
+                        "career": "",
+                        "main_career": "한양대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김형수",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김효은",
+                        "position": "",
+                        "career": "",
+                        "main_career": "P&G/VP, 연세대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "남혜성",
+                        "position": "",
+                        "career": "",
+                        "main_career": "아모레퍼시픽, 삼양사, 성균관대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "노규찬",
+                        "position": "",
+                        "career": "",
+                        "main_career": "KAIST(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "노숙희",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "노영남",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Thunderbird대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "류승호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "포항공대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "류안동",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김원범",
+                        "position": "",
+                        "career": "",
+                        "main_career": "워싱턴대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "문병헌",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "민동선",
+                        "position": "",
+                        "career": "",
+                        "main_career": "한국외대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "민홍기",
+                        "position": "",
+                        "career": "",
+                        "main_career": "㈜LG자동차부품팀, ㈜LG경영전략팀, 서울대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박근직",
+                        "position": "",
+                        "career": "",
+                        "main_career": "영남대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박동선",
+                        "position": "",
+                        "career": "",
+                        "main_career": "KAIST(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박병주",
+                        "position": "",
+                        "career": "",
+                        "main_career": "INSEAD(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박상현",
+                        "position": "",
+                        "career": "",
+                        "main_career": "인하대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박영은",
+                        "position": "",
+                        "career": "",
+                        "main_career": "한국외대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박완규",
+                        "position": "",
+                        "career": "",
+                        "main_career": "성균관대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박용",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "백승태",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박용준",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Thunderbird대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박용호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "동아대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박원재",
+                        "position": "",
+                        "career": "",
+                        "main_career": "미래에셋증권, 고려대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박인섭",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박인욱",
+                        "position": "",
+                        "career": "",
+                        "main_career": "한양대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박재성",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박정원",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박종선",
+                        "position": "",
+                        "career": "",
+                        "main_career": "경북대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박준성",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서강대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박충현",
+                        "position": "",
+                        "career": "",
+                        "main_career": "㈜LG전자팀, 아주대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "오세기",
+                        "position": "",
+                        "career": "",
+                        "main_career": "KAIST(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박태인",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "반병선",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Boston대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "배정현",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부산대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "백선필",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Thunderbird대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "백승민",
+                        "position": "",
+                        "career": "",
+                        "main_career": "성균관대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "백찬",
+                        "position": "",
+                        "career": "",
+                        "main_career": "인하대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "백태권",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Thunderbird대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "변효식",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부산대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "서동명",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "서영덕",
+                        "position": "",
+                        "career": "",
+                        "main_career": "경북대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "왕철민",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부산대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "서영무",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Thunderbird대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "서정원",
+                        "position": "",
+                        "career": "",
+                        "main_career": "KAIST(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "서주원",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "서흥규",
+                        "position": "",
+                        "career": "",
+                        "main_career": "㈜LG기획팀, Tufts대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "손대기",
+                        "position": "",
+                        "career": "",
+                        "main_career": "고려대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "손성주",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부산대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "손진석",
+                        "position": "",
+                        "career": "",
+                        "main_career": "고려대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "손창우",
+                        "position": "",
+                        "career": "",
+                        "main_career": "고려대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "손태익",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "송계영",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "유원",
+                        "position": "",
+                        "career": "",
+                        "main_career": "경희대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "송시용",
+                        "position": "",
+                        "career": "",
+                        "main_career": "KAIST(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "송영한",
+                        "position": "",
+                        "career": "",
+                        "main_career": "KAIST(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "송익환",
+                        "position": "",
+                        "career": "",
+                        "main_career": "한국외대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "송준명",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Duke대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "송홍성",
+                        "position": "",
+                        "career": "",
+                        "main_career": "디스플레이, 경북대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "신동훈",
+                        "position": "",
+                        "career": "",
+                        "main_career": "고려대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "신정은",
+                        "position": "",
+                        "career": "",
+                        "main_career": "게이오대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "신현재",
+                        "position": "",
+                        "career": "",
+                        "main_career": "경북대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "신효식",
+                        "position": "",
+                        "career": "",
+                        "main_career": "한양대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "심상보",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Stanford대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "윤태봉",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "심인구",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "안경모",
+                        "position": "",
+                        "career": "",
+                        "main_career": "KAIST(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "안혁성",
+                        "position": "",
+                        "career": "",
+                        "main_career": "명지대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "양정휴",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "양희구",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "엄기표",
+                        "position": "",
+                        "career": "",
+                        "main_career": "한국외대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "엄위상",
+                        "position": "",
+                        "career": "",
+                        "main_career": "광주과기원(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "여창욱",
+                        "position": "",
+                        "career": "",
+                        "main_career": "한양대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "오성훈",
+                        "position": "",
+                        "career": "",
+                        "main_career": "인하대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "오승진",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김창태",
+                        "position": "",
+                        "career": "",
+                        "main_career": "LG 이노텍 CFO, 서울대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "은석현",
+                        "position": "",
+                        "career": "",
+                        "main_career": "LG마그나 이사(`22.01~), 보쉬코리아 영업매니지먼트/상무, 서울대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "오재윤",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "오해진",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "오혜원",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서강대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "우덕구",
+                        "position": "",
+                        "career": "",
+                        "main_career": "성균관대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "우승봉",
+                        "position": "",
+                        "career": "",
+                        "main_career": "연세대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "원종화",
+                        "position": "",
+                        "career": "",
+                        "main_career": "연세대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "위성윤",
+                        "position": "",
+                        "career": "",
+                        "main_career": "연세대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "유시목",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "유우진",
+                        "position": "",
+                        "career": "",
+                        "main_career": "The Wharton School University of Pennsylvania",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "윤성일",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Thunderbird대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이삼수",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "윤훈기",
+                        "position": "",
+                        "career": "",
+                        "main_career": "충남대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이길노",
+                        "position": "",
+                        "career": "",
+                        "main_career": "전북대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이동언",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이동철",
+                        "position": "",
+                        "career": "",
+                        "main_career": "연세대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이범섭",
+                        "position": "",
+                        "career": "",
+                        "main_career": "홍익대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이병훈",
+                        "position": "",
+                        "career": "",
+                        "main_career": "고려대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이상봉",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부산대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이석수",
+                        "position": "",
+                        "career": "",
+                        "main_career": "고려대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이석수",
+                        "position": "",
+                        "career": "",
+                        "main_career": "경북대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이성진",
+                        "position": "",
+                        "career": "",
+                        "main_career": "하이케어솔루션 이사(`22.03~), SK매직, SK네트웍스, 듀크대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이석우",
+                        "position": "",
+                        "career": "",
+                        "main_career": "미국 국립표준기술원/부국장, 백악관 사물 인터넷부문 혁신연구위원, Millennial Net/CTO, MIT(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이소연",
+                        "position": "",
+                        "career": "",
+                        "main_career": "전북대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이승규",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이승기",
+                        "position": "",
+                        "career": "",
+                        "main_career": "KAIST(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이승엽",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Fudan대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이영민",
+                        "position": "",
+                        "career": "",
+                        "main_career": "11번가, 연세대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이용찬",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부산대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이윤석",
+                        "position": "",
+                        "career": "",
+                        "main_career": "고려대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이재승",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이재천",
+                        "position": "",
+                        "career": "",
+                        "main_career": "LS Automotive, Mckinsey, Dell, 카이스트(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이정두",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서강대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이재성",
+                        "position": "",
+                        "career": "",
+                        "main_career": "하이엠솔루텍 이사(`21.03~), 부산대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이정희",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이종호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부산대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이준노",
+                        "position": "",
+                        "career": "",
+                        "main_career": "SK디앤디, 카독, 한양대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이준배",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이준성",
+                        "position": "",
+                        "career": "",
+                        "main_career": "연세대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이준성",
+                        "position": "",
+                        "career": "",
+                        "main_career": "고려대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이준행",
+                        "position": "",
+                        "career": "",
+                        "main_career": "MIT(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이춘택",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Thunderbird대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이충섭",
+                        "position": "",
+                        "career": "",
+                        "main_career": "현대카드/이사, 크레딧스위스/부문장, 서울대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이태진",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Thunderbird대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이재웅",
+                        "position": "",
+                        "career": "",
+                        "main_career": "조지타운대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이한욱",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이향은",
+                        "position": "",
+                        "career": "",
+                        "main_career": "성신여대 조교수, 서울대 (박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이현진",
+                        "position": "",
+                        "career": "",
+                        "main_career": "창원대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이형일",
+                        "position": "",
+                        "career": "",
+                        "main_career": "경북대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이홍수",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이희성",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Cornell대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "임광훈",
+                        "position": "",
+                        "career": "",
+                        "main_career": "MIT(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "임기용",
+                        "position": "",
+                        "career": "",
+                        "main_career": "연세대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "임대진",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Syracuse대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "임병록",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Northwestern대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이천국",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "임상무",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Washington대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "임선경",
+                        "position": "",
+                        "career": "",
+                        "main_career": "포항공대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "임정수",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "장보영",
+                        "position": "",
+                        "career": "",
+                        "main_career": "NANYANG대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "장석진",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울시립대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "장석호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Thunderbird대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "장정훈",
+                        "position": "",
+                        "career": "",
+                        "main_career": "중앙일보/부장, KAIST(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "장진호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "조지워싱턴(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "장태진",
+                        "position": "",
+                        "career": "",
+                        "main_career": "고려대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "전홍걸",
+                        "position": "",
+                        "career": "",
+                        "main_career": "연세대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이철배",
+                        "position": "",
+                        "career": "",
+                        "main_career": "KAIST(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정대희",
+                        "position": "",
+                        "career": "",
+                        "main_career": "동아대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정상호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부산대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정성한",
+                        "position": "",
+                        "career": "",
+                        "main_career": "한국외대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정성현",
+                        "position": "",
+                        "career": "",
+                        "main_career": "중앙대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정수진",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Loro Piana, L'Oreal Korea, 삼성전자, 성균관대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정순호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "NIKE, KAIST(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정연욱",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Thunderbird대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정영학",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정욱준",
+                        "position": "",
+                        "career": "",
+                        "main_career": "중앙대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정원진",
+                        "position": "",
+                        "career": "",
+                        "main_career": "㈜LG기획팀, 성균관대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이충환",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Washington대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정인식",
+                        "position": "",
+                        "career": "",
+                        "main_career": "George Washington대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정재웅",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정재훈",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "제영호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부산대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "조봉수",
+                        "position": "",
+                        "career": "",
+                        "main_career": "포항공대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "조상현",
+                        "position": "",
+                        "career": "",
+                        "main_career": "한화생명보험, KAIST(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "조성태",
+                        "position": "",
+                        "career": "",
+                        "main_career": "고려대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "조정범",
+                        "position": "",
+                        "career": "",
+                        "main_career": "맥킨지, 미시건대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "조청대",
+                        "position": "",
+                        "career": "",
+                        "main_career": "인하대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "조협",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이현욱",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부산대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "지인숙",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Apple(US), 삼성전자, University of Texas(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "지형섭",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "차현승",
+                        "position": "",
+                        "career": "",
+                        "main_career": "숭실대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "채상철",
+                        "position": "",
+                        "career": "",
+                        "main_career": "연세대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "최규남",
+                        "position": "",
+                        "career": "",
+                        "main_career": "USC(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "최봉현",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "최성수",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "최승윤",
+                        "position": "",
+                        "career": "",
+                        "main_career": "인하대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "최윤호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Northwestern대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "최준혁",
+                        "position": "",
+                        "career": "",
+                        "main_career": "경희대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "장익환",
+                        "position": "",
+                        "career": "",
+                        "main_career": "경북대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "최진학",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서강대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "최활수",
+                        "position": "",
+                        "career": "",
+                        "main_career": "성균관대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "하건호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부산대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "한은정",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Amazon(US), UCLA(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "한창희",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Minnesota대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "허순재",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "허정찬",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "허정호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "홍성혁",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부산대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "홍순열",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부산대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "강수진",
+                        "position": "",
+                        "career": "",
+                        "main_career": "(現)고려대 법학전문대학원 교수, 법무법인 율촌/로고스 변호사, 공정거래위원회 송무담당관, 대전/서울/수원지방검찰청 검사, Harvard대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정규황",
+                        "position": "",
+                        "career": "",
+                        "main_career": "McGill대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "홍진기",
+                        "position": "",
+                        "career": "",
+                        "main_career": "충남대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "황금식",
+                        "position": "",
+                        "career": "",
+                        "main_career": "건국대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "황상문",
+                        "position": "",
+                        "career": "",
+                        "main_career": "창원대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "황용순",
+                        "position": "",
+                        "career": "",
+                        "main_career": "성균관대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "황윤희",
+                        "position": "",
+                        "career": "",
+                        "main_career": "성신여대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "황원재",
+                        "position": "",
+                        "career": "",
+                        "main_career": "KAIST(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "황종하",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "강용석",
+                        "position": "",
+                        "career": "",
+                        "main_career": "연세대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김성혁",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김영재",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Stanford대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정기현",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Meta, Google, UC Berkeley(MBA), 서울대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김용태",
+                        "position": "",
+                        "career": "",
+                        "main_career": "경북대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박수현",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서강대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박종민",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박형호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "KAIST(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "서한별",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "윤승용",
+                        "position": "",
+                        "career": "",
+                        "main_career": "연세대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "윤영우",
+                        "position": "",
+                        "career": "",
+                        "main_career": "연세대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "임효준",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정두경",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부산대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "우정훈",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Columbia대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정수화",
+                        "position": "",
+                        "career": "",
+                        "main_career": "UIUC(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정수헌",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Stanford대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정연채",
+                        "position": "",
+                        "career": "",
+                        "main_career": "하이텔레서비스 이사(`22.03~), 한국외대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "곽도영",
+                        "position": "",
+                        "career": "",
+                        "main_career": "한양대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김경남",
+                        "position": "",
+                        "career": "",
+                        "main_career": "성균관대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김동욱",
+                        "position": "",
+                        "career": "",
+                        "main_career": "NHN엔터테인먼트 페이코사업본부장/총괄이사, 네이버 검색/포털개발센터장/이사, 플랫폼본부장/이사, KAIST(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김병열",
+                        "position": "",
+                        "career": "",
+                        "main_career": "고려대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김상용",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "류충렬",
+                        "position": "",
+                        "career": "",
+                        "main_career": "(現)KAIST 경영공학부 교수, (現)예금보험공사 자문위원, (現)흥국화재보험 사외이사(~`24.03), Queen's대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김양순",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부경대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김영준",
+                        "position": "",
+                        "career": "",
+                        "main_career": "SKT, 서울대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김재승",
+                        "position": "",
+                        "career": "",
+                        "main_career": "연세대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김종용",
+                        "position": "",
+                        "career": "",
+                        "main_career": "하이프라자 이사(`22.03~),성균관대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김종필",
+                        "position": "",
+                        "career": "",
+                        "main_career": "동아대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김종희",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김진경",
+                        "position": "",
+                        "career": "",
+                        "main_career": "University of Southern California(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박상호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "경북대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박인성",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Microsoft/Principal Engineer, Purdue대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박준은",
+                        "position": "",
+                        "career": "",
+                        "main_career": "고려대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "서승우",
+                        "position": "",
+                        "career": "",
+                        "main_career": "(現)서울대 전기정보공학부 교수, (現)서울대 지능형자동차 IT연구센터장, (現)대한전자공학회 회장, 미국 스탠포드대 CARS 방문교수, LG전자 미래기술포럼 기술자문, 서울대학교 정보보안센터장, Pennsylvania대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박희욱",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "백기문",
+                        "position": "",
+                        "career": "",
+                        "main_career": "한국외대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "송성원",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Thunderbird대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "신석홍",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "안준홍",
+                        "position": "",
+                        "career": "",
+                        "main_career": "㈜LG전자팀장, 영남대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "오세천",
+                        "position": "",
+                        "career": "",
+                        "main_career": "LG CNS홍보담당/상무, 중앙대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "우종진",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Thunderbird대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "유병헌",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Washington대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "유성준",
+                        "position": "",
+                        "career": "",
+                        "main_career": "하누리 이사(`19.03~), Cornell대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "윤대식",
+                        "position": "",
+                        "career": "",
+                        "main_career": "중앙대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이상구",
+                        "position": "",
+                        "career": "",
+                        "main_career": "(現)서울대 컴퓨터공학부 교수, (現)국제지식서비스학회 상임이사, (現)SK가스 사외이사(~`24.03), Northwestern대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이강원",
+                        "position": "",
+                        "career": "",
+                        "main_career": "KAIST(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이동선",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이상용",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Texas Instruments/Director, University of Southern California(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이일환",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부산대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이재현",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이정석",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Northwestern대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "임병대",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Sycracuse대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "장진혁",
+                        "position": "",
+                        "career": "",
+                        "main_career": "SK플래닛 11번가, Ohio주립대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "전홍주",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Thunderbird대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정재철",
+                        "position": "",
+                        "career": "",
+                        "main_career": "경북대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "권봉석",
+                        "position": "",
+                        "career": "",
+                        "main_career": "㈜LG시너지팀/전무, ㈜LG전자 대표이사/사장, Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정필원",
+                        "position": "",
+                        "career": "",
+                        "main_career": "한국외대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "조병하",
+                        "position": "",
+                        "career": "",
+                        "main_career": "삼성전자/VP, George Mason대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "조휘재",
+                        "position": "",
+                        "career": "",
+                        "main_career": "연세대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "진심원",
+                        "position": "",
+                        "career": "",
+                        "main_career": "KAIST(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "최성봉",
+                        "position": "",
+                        "career": "",
+                        "main_career": "연세대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "최호진",
+                        "position": "",
+                        "career": "",
+                        "main_career": "한국외대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "허재철",
+                        "position": "",
+                        "career": "",
+                        "main_career": "한양대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "홍성표",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "황성걸",
+                        "position": "",
+                        "career": "",
+                        "main_career": "홍익대 산업디자인학 교수, Percentile/대표, Motorola코리아/소비자경험디자인센터장, 연세대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "Jaime de Jaraiz",
+                        "position": "",
+                        "career": "",
+                        "main_career": "휴스턴대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "류재철",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Illinois대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "강길성",
+                        "position": "",
+                        "career": "",
+                        "main_career": "하누리 감사(`21.03~), 에이스냉동공조 감사(`20.03~), 에릭슨엘지 감사(`21.03~), 기획재정부, 국민경제자문회의, 서울시립대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "강성민",
+                        "position": "",
+                        "career": "",
+                        "main_career": "부산대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "강성진",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Columbia대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "강승원",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Thunderbird대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "강제남",
+                        "position": "",
+                        "career": "",
+                        "main_career": "광주과학기술원(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "강진용",
+                        "position": "",
+                        "career": "",
+                        "main_career": "경상대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "공성배",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "곽정호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "포항공대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "구지영",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "권순욱",
+                        "position": "",
+                        "career": "",
+                        "main_career": "한국외대",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "박일평",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Harman International/VP, Columbia대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "권순일",
+                        "position": "",
+                        "career": "",
+                        "main_career": "한서대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "권혁범",
+                        "position": "",
+                        "career": "",
+                        "main_career": "호텔롯데, Cornell대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "권혁진",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김건우",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김건욱",
+                        "position": "",
+                        "career": "",
+                        "main_career": "연세대(박사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김경락",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서경대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김광호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "아주대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김남수",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Boston대(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김동민",
+                        "position": "",
+                        "career": "",
+                        "main_career": "Aalto대(舊Helsinki경제대)(석사)",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김동원",
+                        "position": "",
+                        "career": "",
+                        "main_career": "KAIST(박사)",
+                        "tenure": ""
+                    }
+                ]
+            },
+            "investment_analysis": {
+                "success": true,
+                "corp_code": "00401731",
+                "bsns_year": "2024",
+                "collected_at": "2025-06-17T13:58:10.916387",
+                "dividend_info": [
+                    {
+                        "dividend_classification": "주당액면가액(원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 5000.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "(연결)당기순이익(백만원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 367515.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "(별도)당기순이익(백만원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 1136633.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "(연결)주당순이익(원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 2036.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "현금배당금총액(백만원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 180925.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주식배당금총액(백만원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 0.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "(연결)현금배당성향(%)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 49.2,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "현금배당수익률(%)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 1.19,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "현금배당수익률(%)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 2.59,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주식배당수익률(%)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 0.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주식배당수익률(%)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 0.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주당 현금배당금(원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 1000.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주당 현금배당금(원)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 1050.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주당 주식배당(주)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 0.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    },
+                    {
+                        "dividend_classification": "주당 주식배당(주)",
+                        "dividend_per_share": 0,
+                        "dividend_rate": 0.0,
+                        "record_date": "",
+                        "payment_date": ""
+                    }
+                ],
+                "capital_changes": [
+                    {
+                        "date": "",
+                        "type": "-",
+                        "issued_shares": 0,
+                        "issue_price": 0,
+                        "issue_amount": 0
+                    },
+                    {
+                        "date": "",
+                        "type": "-",
+                        "issued_shares": 0,
+                        "issue_price": 0,
+                        "issue_amount": 0
+                    }
+                ],
+                "other_investments": [
+                    {
+                        "company_name": "엘지디스플레이㈜ ",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜아크릴",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LEDDARTECH INC.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜브이에이코퍼레이션",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜비바이노베이션",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜티랩스",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Bossa Nova Robotics",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "China Mobility Fund, L.P.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Gyrfalcon Technology Inc.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "KIWIGRID GMBH",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "MANIV MOBILITY II, L.P.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Sonatus",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜하누리",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Mojo Vision",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "ALTAVAGROUP",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "VIOLA VENTURES V, LP.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "VUEREAL Inc.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Washlava",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "그로스 엑셀러레이션 펀드",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "나라엠텍",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "레메디",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "스트라드비젼㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "씨앤엠",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜하이텔레서비스",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "이노프라",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "이엔테크놀로지㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "인공지능연구원",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "인텔렉추얼디스커버리",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜맥스웨이브",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "지이모션",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "창조경제바이오펀드",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "충북창조경제혁신펀드",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "퓨처플레이㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "플레넷",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "한국S/W공제조합",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "KSV ESPORTS",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "새솔테크(주)",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Fractal EMS",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "레티널",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Moodify",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "바른손투자펀드",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "비하이스마트지역혁신 투자조합",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "에버엑스 주식회사",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LVIS Corporation",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜디사일로",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜엑스플라이어",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Commsignia, Inc.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LX판토스신항에코물류",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "신선고",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "엑스업",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "파운드오브제",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "마스킷",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "큐컴버스",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Sleepwave",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "옵트에이아이",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SOUNDABLE HEALTH",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "ALPHA INTELLIGENCE FUND",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜피트니스캔디",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜하이프라자",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "하이엠솔루텍㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "하이케어솔루션㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Stratio",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "기타",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜하이비차저",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "더웨이브톡",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "고퀄",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "엘지이노텍㈜ ",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Arcelik-LG Klima Sanayi ve Ticaret A.S.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "CYBELLUM",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "EIC PROPERTIES PTE LTD.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "GUANGDONG SMART LIFE TECHNOLOGY CO., LTD",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Hitachi-LG Data Storage Inc.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LG Electronics Fund I LLC",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEAF",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEAK",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEAP",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEAR",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜로보스타 ",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEAS",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEBR",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGECB",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGECH",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGECI",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGECL",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEDF",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEEG",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEEH",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEFL",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜로보티즈 ",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEGF",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEHK",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEHZ",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGERC",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEID",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEIL",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEIN",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEJP",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGELF",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEMA",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜에임퓨처",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEMC",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEME",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEML",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEMS",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGENT",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGENV",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEOT",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEPH",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEPN",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEPR",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "미래에셋LG전자 신성장투자조합 1호",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEPS",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEQA",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEQH",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGERA",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGERD",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGESA",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGESL",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGESR",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGESY",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGETA",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "에릭슨엘지㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGETH",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGETK",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGETR",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGETT",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEUR",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEUS",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEVH",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEVZ",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEWR",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LG-LHT Aircraft Solutions GmbH",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "에이스냉동공조㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LG-LHT Passenger Solutions GmbH",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGSI",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGESJ",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Rinse Inc.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "ZKW Austria Immobilien Holding GmbH",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "ZKW Holding GmbH",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LG ELECTRONICS FUND II LLC",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "NOVA FUND",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGEDV",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SideChef",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "엘지마그나 이파워트레인㈜",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "LGESQ",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "BEAR ROBOTICS",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "Athom",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "mo-sys",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "나라엠앤디㈜ ",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "인베니아㈜ ",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "㈜엔젤로보틱스",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "AEYE, INC.",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "SmartRent",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "GCT SEMICONDUCTOR",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    },
+                    {
+                        "company_name": "합계",
+                        "business_type": "",
+                        "investment_amount": 0,
+                        "ownership_ratio": 0.0,
+                        "acquisition_date": ""
+                    }
+                ]
+            },
+            "disclosure_monitoring": {
+                "success": true,
+                "monitoring_period": "최근 30일",
+                "collected_at": "2025-06-17T13:58:11.725440",
+                "recent_disclosures": [
+                    {
+                        "corp_name": "LG전자",
+                        "report_name": "조회공시요구(풍문또는보도)에대한답변(미확정)              ",
+                        "receipt_number": "20250605800302",
+                        "receipt_date": "20250605",
+                        "submitter": "LG전자",
+                        "remarks": "유"
+                    },
+                    {
+                        "corp_name": "LG전자",
+                        "report_name": "[기재정정]금전대여결정              ",
+                        "receipt_number": "20250605800189",
+                        "receipt_date": "20250605",
+                        "submitter": "LG전자",
+                        "remarks": "유"
+                    },
+                    {
+                        "corp_name": "LG전자",
+                        "report_name": "대규모기업집단현황공시[연1회공시및1/4분기용(개별회사)]",
+                        "receipt_number": "20250530002206",
+                        "receipt_date": "20250530",
+                        "submitter": "LG전자",
+                        "remarks": "공"
+                    },
+                    {
+                        "corp_name": "LG전자",
+                        "report_name": "기업지배구조보고서공시              ",
+                        "receipt_number": "20250530800134",
+                        "receipt_date": "20250530",
+                        "submitter": "LG전자",
+                        "remarks": "유"
+                    }
+                ],
+                "important_notices": [],
+                "corrections": [
+                    {
+                        "corp_name": "LG전자",
+                        "report_name": "[기재정정]금전대여결정              ",
+                        "receipt_number": "20250605800189",
+                        "receipt_date": "20250605",
+                        "submitter": "LG전자",
+                        "remarks": "유",
+                        "correction_type": "정정"
+                    }
+                ]
+            }
+        },
+        "data_statistics": {
+            "total_data_points": 580,
+            "yfinance_data_points": 34,
+            "enhanced_dart_data_points": 546,
+            "data_completeness": "매우높음"
+        }
+    }
+}
+}

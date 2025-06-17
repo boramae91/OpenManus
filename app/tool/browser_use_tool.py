@@ -589,149 +589,39 @@ Page content:
             ToolResult: 추출된 PDF 내용과 분석 결과
         """
         try:
-            # PDF 처리 유틸리티 import
+            # PDF 처리 유틸리티 import (단순 텍스트 추출)
             from loguru import logger
 
-            from app.utils.pdf_reader import extract_pdf_text
+            from app.utils.pdf_reader import PDFReader
 
-            logger.info(f"📄 PDF 파일에서 내용 추출 시도: {pdf_url}")
+            logger.info(f"📄 브라우저에서 PDF 파일 자동 감지: {pdf_url}")
 
-            # PDF에서 텍스트 추출
-            pdf_result = extract_pdf_text(pdf_url)
+            # PDF 리더로 단순 텍스트 추출 (AI 분석 없음)
+            pdf_reader = PDFReader(max_chars=100000)
+            extracted_text = await pdf_reader.read_pdf(pdf_url, max_chars=None)
 
-            if not pdf_result["success"]:
-                return ToolResult(
-                    error=f"PDF 텍스트 추출 실패: {pdf_result.get('error', '알 수 없는 오류')}"
-                )
-
-            extracted_text = pdf_result["text"]
-            extraction_method = pdf_result["method"]
-
-            if not extracted_text.strip():
+            if not extracted_text or not extracted_text.strip():
                 return ToolResult(
                     error="PDF에서 텍스트를 추출했지만 내용이 비어있습니다"
                 )
 
-            # 텍스트가 너무 길면 자르기
-            if len(extracted_text) > max_content_length:
-                extracted_text = (
-                    extracted_text[:max_content_length] + "\n\n[텍스트가 잘림...]"
-                )
+            logger.info(f"✅ PDF 텍스트 추출 성공 (길이: {len(extracted_text):,} 문자)")
 
-            # AI를 사용하여 목표에 맞는 내용 추출 (실패 시 원본 텍스트 반환)
-            try:
-                prompt = f"""\
-PDF 문서에서 다음 목표에 맞는 내용을 추출하고 분석해주세요. JSON 형식으로 응답해주세요.
-
-추출 목표: {goal}
-
-PDF 내용 (추출 방법: {extraction_method}):
-{extracted_text}
-
-다음 형식으로 응답해주세요:
-{{
-    "text": "추출된 주요 내용",
-    "metadata": {{
-        "source": "PDF",
-        "extraction_method": "{extraction_method}",
-        "url": "{pdf_url}"
-    }}
-}}
-"""
-
-                messages = [{"role": "system", "content": prompt}]
-
-                # Define extraction function schema
-                extraction_function = {
-                    "type": "function",
-                    "function": {
-                        "name": "extract_pdf_content",
-                        "description": "PDF 문서에서 목표에 맞는 내용을 추출합니다",
-                        "parameters": {
-                            "type": "object",
-                            "properties": {
-                                "text": {
-                                    "type": "string",
-                                    "description": "추출된 주요 내용",
-                                },
-                                "metadata": {
-                                    "type": "object",
-                                    "properties": {
-                                        "source": {"type": "string"},
-                                        "extraction_method": {"type": "string"},
-                                        "url": {"type": "string"},
-                                    },
-                                },
-                            },
-                            "required": ["text", "metadata"],
-                        },
+            # 전체 내용을 그대로 반환 (요약 없음)
+            return ToolResult(
+                output=f"📄 PDF 파일 텍스트 추출 완료 - {pdf_url}",
+                metadata={
+                    "text": f"[PDF 파일 텍스트 추출 완료 - {pdf_url}]\n\n{extracted_text}",
+                    "metadata": {
+                        "source": "PDF",
+                        "url": pdf_url,
+                        "goal": goal,
+                        "processing_type": "simple_text_extraction",
                     },
-                }
+                },
+            )
 
-                # AI 모델을 사용하여 내용 분석 (타임아웃과 재시도 제한 추가)
-                response = await self.llm.ask_tool(
-                    messages,
-                    tools=[extraction_function],
-                    tool_choice={
-                        "type": "function",
-                        "function": {"name": "extract_pdf_content"},
-                    },
-                )
-
-                # 함수 호출 결과 파싱
-                if response and response.tool_calls:
-                    import json
-
-                    # 첫 번째 tool call 결과 사용
-                    tool_call = response.tool_calls[0]
-                    function_args = json.loads(tool_call.function.arguments)
-
-                    logger.info(
-                        f"✅ PDF 내용 추출 및 AI 분석 성공 (방법: {extraction_method})"
-                    )
-
-                    return ToolResult(
-                        output=f"📄 PDF에서 내용을 성공적으로 추출하고 분석했습니다 (방법: {extraction_method})",
-                        metadata=function_args,
-                    )
-                else:
-                    # 함수 호출이 없는 경우 기본 응답 사용
-                    analysis_result = (
-                        response.content
-                        if response and response.content
-                        else "AI 분석 실패"
-                    )
-
-                    return ToolResult(
-                        output=f"📄 PDF에서 내용을 추출했습니다 (방법: {extraction_method})",
-                        metadata={
-                            "text": analysis_result,
-                            "metadata": {
-                                "source": "PDF",
-                                "extraction_method": extraction_method,
-                                "url": pdf_url,
-                            },
-                        },
-                    )
-
-            except Exception as llm_error:
-                # LLM 호출 실패 시 원본 PDF 텍스트를 그대로 반환
-                logger.warning(
-                    f"⚠️ AI 분석 실패, 원본 PDF 텍스트 반환: {str(llm_error)}"
-                )
-
-                return ToolResult(
-                    output=f"📄 PDF에서 텍스트를 추출했습니다 (AI 분석 실패로 원본 반환, 방법: {extraction_method})",
-                    metadata={
-                        "text": extracted_text,
-                        "metadata": {
-                            "source": "PDF",
-                            "extraction_method": extraction_method,
-                            "url": pdf_url,
-                            "ai_analysis_error": str(llm_error),
-                        },
-                    },
-                )
+        # 복잡한 AI 분석 대신 단순 텍스트 추출만 수행
 
         except ImportError:
             return ToolResult(

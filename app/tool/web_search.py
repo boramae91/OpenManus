@@ -166,35 +166,32 @@ class WebContentFetcher:
             )
 
             if is_pdf:
-                # PDF 파일인 경우 전용 처리 로직 사용
+                # PDF 파일인 경우 청크 처리 없이 전체 텍스트 추출
                 try:
                     import io
 
-                    from app.utils.pdf_reader import extract_pdf_text
+                    from app.utils.pdf_reader import PDFReader
 
-                    logger.info(f"📄 PDF 파일 감지됨: {url}")
+                    logger.info(f"📄 PDF 파일 자동 감지됨: {url}")
 
-                    # PDF 바이너리 데이터로 텍스트 추출
+                    # PDF 리더로 전체 텍스트 추출 (청크 분석 없음)
+                    pdf_reader = PDFReader(max_chars=100000)  # 100KB까지 허용
                     pdf_data = io.BytesIO(response.content)
-                    pdf_result = extract_pdf_text(pdf_data)
 
-                    if pdf_result.get("success", False):
-                        extracted_text = pdf_result.get("text", "")
+                    # 단순 텍스트 추출 (분석 없음)
+                    extracted_text = await pdf_reader.read_pdf(pdf_data, max_chars=None)
+
+                    if extracted_text and extracted_text.strip():
                         logger.info(
-                            f"✅ PDF 텍스트 추출 성공 (길이: {len(extracted_text)} 문자)"
+                            f"✅ PDF 텍스트 추출 성공 (길이: {len(extracted_text):,} 문자)"
                         )
 
-                        # 길이 제한을 늘려서 더 많은 PDF 내용을 포함 (50KB)
-                        if len(extracted_text) > 50000:
-                            extracted_text = (
-                                extracted_text[:50000] + "\n\n[PDF 내용이 잘림...]"
-                            )
-
-                        return extracted_text if extracted_text.strip() else None
+                        # 전체 내용을 그대로 반환 (요약 없음)
+                        return (
+                            f"[PDF 파일 텍스트 추출 완료 - {url}]\n\n{extracted_text}"
+                        )
                     else:
-                        logger.warning(
-                            f"❌ PDF 텍스트 추출 실패: {pdf_result.get('error', '알 수 없는 오류')}"
-                        )
+                        logger.warning(f"❌ PDF 텍스트 추출 실패: 빈 내용")
                         return "[PDF 파일 - 내용 추출 실패]"
 
                 except ImportError:
