@@ -34,7 +34,8 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # 모듈 import
 from app.agent.manus import Manus
-from app.agent.stock_classifier import StockClassifier
+
+# 종목 분류 기능 제거 - from app.agent.stock_classifier import StockClassifier
 from app.agent.stock_name_extractor import StockNameExtractor
 from app.data_collector import FinancialDataCollector
 from app.data_collector.enhanced_financial_data_collector import (
@@ -69,7 +70,7 @@ class EnhancedStockAnalysisSystem:
 
         # 에이전트들 초기화
         self.llm = LLM()
-        self.stock_classifier = StockClassifier(llm=self.llm)
+        # 종목 분류 기능 제거 - self.stock_classifier = StockClassifier(llm=self.llm)
         self.manus_agent = Manus(llm=self.llm)
 
         # 🤖 종목 감지용 AI 에이전트들 초기화
@@ -210,30 +211,12 @@ class EnhancedStockAnalysisSystem:
                     "ℹ️ Enhanced DART 데이터 수집 생략 (API 키 없음 또는 해외 종목)"
                 )
 
-            # 🚀 NEW Step 3: 의도 기반 선택적 종목 분류
-            classification_result = {"performed": False}
-            if intent_analysis.get("needs_classification", False):
-                logger.info("🏷️ Step 3: 의도 기반 선택적 종목 분류")
-                classification_result = await self.perform_selective_classification(
-                    user_prompt,
-                    stock_info,
-                    financial_data,
-                    enhanced_dart_data,
-                    intent_analysis,
-                )
-                results["steps"]["step3_classification"] = classification_result
-                logger.info(
-                    f"✅ 선택적 분류 완료: {classification_result.get('performed', False)}"
-                )
-            else:
-                logger.info("⏭️ Step 3: 분류 생략 (의도 분석 결과)")
-                results["steps"]["step3_classification"] = {
-                    "performed": False,
-                    "reason": "의도 분석 결과 분류 불필요",
-                }
+            # Step 3: 종목 분류 기능 제거 (기능 단순화)
+            logger.info("⏭️ Step 3: 종목 분류 기능 제거됨 (시스템 단순화)")
+            classification_result = {"performed": False, "reason": "분류 기능 제거됨"}
 
-            # 🚀 NEW Step 4: 의도 맞춤형 상세 분석
-            logger.info("📈 Step 4: 의도 맞춤형 상세 분석")
+            # Step 3: 의도 맞춤형 상세 분석 (분류 기능 제거로 번호 조정)
+            logger.info("📈 Step 3: 의도 맞춤형 상세 분석")
             analysis_result = await self.perform_intent_based_analysis(
                 user_prompt,
                 stock_info,
@@ -242,15 +225,15 @@ class EnhancedStockAnalysisSystem:
                 enhanced_dart_data,
                 intent_analysis,
             )
-            results["steps"]["step4_detailed_analysis"] = analysis_result
+            results["steps"]["step3_detailed_analysis"] = analysis_result
 
-            # Step 5: 종합 결과 정리
-            logger.info("📋 Step 5: 종합 결과 정리")
+            # Step 4: 종합 결과 정리
+            logger.info("📋 Step 4: 종합 결과 정리")
             final_summary = self.create_comprehensive_summary(results)
             results["final_summary"] = final_summary
 
-            # Step 6: JSON 파일 저장
-            logger.info("💾 Step 6: 결과 저장")
+            # Step 5: JSON 파일 저장
+            logger.info("💾 Step 5: 결과 저장")
             saved_file = self.save_enhanced_results(results, stock_info)
             results["saved_file"] = saved_file
 
@@ -652,7 +635,7 @@ class EnhancedStockAnalysisSystem:
             "primary_intent": "일반문의",
             "secondary_intents": [],
             "confidence": 0.0,
-            "needs_classification": False,
+            # 분류 기능 제거됨 - "needs_classification": False,
             "analysis_focus": "종합분석",
             "data_priority": "기본",
             "keywords": [],
@@ -750,7 +733,7 @@ class EnhancedStockAnalysisSystem:
                     ],
                     "focus": "종목분류",
                     "data_priority": "종합",
-                    "needs_classification": True,
+                    # 분류 기능 제거됨 - "needs_classification": True,
                 },
                 "기업정보": {
                     "keywords": [
@@ -819,9 +802,7 @@ class EnhancedStockAnalysisSystem:
                         "data_priority": intent_patterns[primary_intent][
                             "data_priority"
                         ],
-                        "needs_classification": intent_patterns[primary_intent].get(
-                            "needs_classification", False
-                        ),
+                        # 분류 기능 제거됨 - "needs_classification": intent_patterns[primary_intent].get("needs_classification", False),
                         "keywords": found_keywords,
                     }
                 )
@@ -1002,247 +983,9 @@ class EnhancedStockAnalysisSystem:
             logger.error(f"❌ ticker_bbg 매핑 중 오류: {e}")
             return stock_code or stock_name
 
-    async def perform_selective_classification(
-        self,
-        user_prompt: str,
-        stock_info: Dict,
-        financial_data: Dict,
-        enhanced_dart_data: Dict = None,
-        intent_analysis: Dict = None,
-    ) -> Dict[str, Any]:
-        """
-        🏷️ 의도 분석 기반 선택적 종목 분류
+    # 종목 분류 기능 제거됨 - perform_selective_classification 메서드 삭제
 
-        사용자가 명시적으로 분류를 요청한 경우에만 실행하는 개선된 분류 시스템이에요.
-        기존처럼 무조건 분류하지 않고, 사용자의 진짜 의도에 따라 선택적으로 분류해요.
-
-        Args:
-            user_prompt: 사용자 질문
-            stock_info: 감지된 종목 정보
-            financial_data: 수집된 재무데이터
-            enhanced_dart_data: Enhanced DART 데이터
-            intent_analysis: 의도 분석 결과
-
-        Returns:
-            Dict: 선택적 분류 결과
-        """
-        try:
-            logger.info("🏷️ 선택적 분류 실행 - 의도 기반")
-
-            # 의도 분석 결과 확인
-            primary_intent = intent_analysis.get("primary_intent", "일반문의")
-            confidence = intent_analysis.get("confidence", 0.0)
-
-            logger.info(f"🎯 주 의도: {primary_intent} (신뢰도: {confidence:.2f})")
-
-            # 분류가 필요한지 다시 한번 확인
-            if not intent_analysis.get("needs_classification", False):
-                return {
-                    "performed": False,
-                    "reason": "의도 분석 결과 분류가 필요하지 않음",
-                    "primary_intent": primary_intent,
-                }
-
-            # 🎯 분류에 최적화된 프롬프트 구성
-            classification_prompt = f"""
-사용자의 종목 분류 요청: {user_prompt}
-
-감지된 종목: {stock_info.get('stock_name', '정보없음')} ({stock_info.get('stock_code', '정보없음')})
-사용자 의도: {primary_intent} (분류 전문 요청)
-"""
-
-            # 재무데이터가 있으면 포함해서 분류 (더 정확한 분류를 위해)
-            if financial_data.get("success"):
-                financial_summary = self.financial_collector.get_analysis_summary(
-                    financial_data
-                )
-                classification_prompt += f"""
-
-실제 재무데이터:
-{financial_summary}
-"""
-
-            # Enhanced DART 데이터 요약 생성
-            if enhanced_dart_data and enhanced_dart_data.get("success"):
-                dart_summary = self._create_dart_summary(enhanced_dart_data)
-                classification_prompt += f"""
-
-{dart_summary}
-"""
-
-            # 🎯 분류 전용 지시사항 (기존의 획일적 분석 지시사항과 차별화)
-            classification_prompt += """
-
-🏷️ **종목 분류 전문 지시사항**:
-위 실제 재무정보를 바탕으로 정확한 종목 분류를 수행해주세요.
-
-분류 기준:
-1. **우량주**: 안정적 수익, 높은 신뢰도, 꾸준한 배당
-2. **고성장주**: 높은 성장률, 미래 성장 잠재력
-3. **가치주**: 저평가 상태, 내재가치 대비 저가
-4. **자산주**: 순자산 대비 저가, 자산 가치 중심
-5. **턴어라운드주**: 실적 회복 기대, 구조조정 중
-6. **시클주**: 경기 변동과 연동성 높음
-7. **배당주**: 안정적이고 높은 배당 수익률
-
-**결과 형식**:
-- 주 분류: [분류명]
-- 분류 근거: [구체적 재무지표 기반 설명]
-- 신뢰도: [높음/보통/낮음]
-- 주요 특징: [3가지 핵심 특징]
-
-사용자가 종목 분류를 요청했으므로, 위 분류에만 집중해서 정확하고 구체적으로 답변해주세요.
-"""
-
-            # Stock Classifier 실행
-            self.stock_classifier.memory.clear()
-            self.stock_classifier.update_memory("user", classification_prompt)
-
-            classification_response = ""
-            run_result = await self.stock_classifier.run()
-
-            if hasattr(run_result, "__aiter__"):
-                async for response in run_result:
-                    classification_response += response + "\n"
-            else:
-                classification_response = str(run_result)
-
-            return {
-                "performed": True,
-                "method": "selective_intent_based_classification",
-                "response": classification_response.strip(),
-                "financial_data_used": financial_data.get("success", False),
-                "enhanced_dart_used": enhanced_dart_data
-                and enhanced_dart_data.get("success", False),
-                "primary_intent": primary_intent,
-                "confidence": confidence,
-                "classification_focus": "전문분류",
-            }
-
-        except Exception as e:
-            logger.error(f"선택적 분류 중 오류: {e}")
-            return {
-                "performed": False,
-                "error": str(e),
-                "primary_intent": intent_analysis.get("primary_intent", "오류"),
-            }
-
-    async def perform_enhanced_classification(
-        self,
-        user_prompt: str,
-        stock_info: Dict,
-        financial_data: Dict,
-        enhanced_dart_data: Dict = None,
-    ) -> Dict[str, Any]:
-        """
-        재무데이터를 활용한 개선된 종목 분류
-
-        Args:
-            user_prompt: 사용자 질문
-            stock_info: 감지된 종목 정보
-            financial_data: 수집된 재무데이터
-
-        Returns:
-            Dict: 분류 결과
-        """
-        try:
-            # 분류 키워드 감지
-            classification_keywords = [
-                "분류",
-                "classify",
-                "유형",
-                "type",
-                "저성장주",
-                "우량주",
-                "고성장주",
-                "자산주",
-                "턴어라운드주",
-                "시이클주",
-                "기타주",
-                "어떤 종류",
-                "어떤 유형",
-                "분석",
-                "analyze",
-                "어떤 주식",
-                "어떤 종목",
-                "성격",
-                "특성",
-            ]
-
-            should_classify = any(
-                keyword in user_prompt.lower() for keyword in classification_keywords
-            )
-
-            if not should_classify:
-                # 종목이 감지되면 자동으로 분류 실행
-                should_classify = stock_info["detected"]
-
-            if should_classify:
-                logger.info("🏷️ 종목 분류 실행...")
-
-                # 재무데이터가 있으면 포함해서 분류
-                if financial_data.get("success"):
-                    financial_summary = self.financial_collector.get_analysis_summary(
-                        financial_data
-                    )
-
-                    # Enhanced DART 데이터 요약 생성
-                    dart_summary = ""
-                    if enhanced_dart_data and enhanced_dart_data.get("success"):
-                        dart_summary = self._create_dart_summary(enhanced_dart_data)
-
-                    enhanced_prompt = f"""
-다음 종목에 대한 분류를 수행해주세요:
-
-사용자 질문: {user_prompt}
-
-실제 재무데이터:
-{financial_summary}
-
-{dart_summary}
-
-위 실제 재무정보를 바탕으로 정확한 분류를 수행해주세요.
-"""
-                else:
-                    enhanced_prompt = (
-                        f"다음 종목에 대한 분류를 수행해주세요: {user_prompt}"
-                    )
-
-                # Stock Classifier 실행
-                # reset() 대신 memory.clear() 사용
-                self.stock_classifier.memory.clear()
-                self.stock_classifier.update_memory("user", enhanced_prompt)
-
-                classification_response = ""
-                # run()을 await으로 호출하고 결과를 직접 사용
-                run_result = await self.stock_classifier.run()
-                # run_result가 제너레이터라면 반복하여 수집
-                if hasattr(run_result, "__aiter__"):
-                    async for response in run_result:
-                        classification_response += response + "\n"
-                else:
-                    # 단일 결과라면 바로 사용
-                    classification_response = str(run_result)
-
-                return {
-                    "performed": True,
-                    "method": (
-                        "enhanced_with_financial_data"
-                        if financial_data.get("success")
-                        else "standard"
-                    ),
-                    "response": classification_response.strip(),
-                    "financial_data_used": financial_data.get("success", False),
-                }
-            else:
-                return {
-                    "performed": False,
-                    "reason": "분류 키워드나 종목이 감지되지 않음",
-                }
-
-        except Exception as e:
-            logger.error(f"분류 중 오류: {e}")
-            return {"performed": False, "error": str(e)}
+    # 종목 분류 기능 제거됨 - perform_enhanced_classification 메서드 삭제
 
     async def perform_intent_based_analysis(
         self,
@@ -1319,13 +1062,7 @@ class EnhancedStockAnalysisSystem:
 """
                     enhanced_dart_included = True
 
-            # 분류 결과 포함 (분류가 수행된 경우만)
-            if classification_result.get("performed"):
-                analysis_prompt += f"""
-
-🏷️ **종목 분류 결과**:
-{classification_result.get('response', '')}
-"""
+            # 분류 기능 제거됨 - 분류 결과 포함 로직 삭제
 
             # 🚀 의도별 맞춤형 분석 지시사항 (핵심 개선 포인트!)
             custom_instructions = self._generate_custom_analysis_instructions(
@@ -1362,9 +1099,7 @@ class EnhancedStockAnalysisSystem:
                 "confidence": confidence,
                 "basic_financial_data_used": basic_financial_included,
                 "enhanced_dart_data_used": enhanced_dart_included,
-                "classification_included": classification_result.get(
-                    "performed", False
-                ),
+                # 분류 기능 제거됨 - "classification_included": classification_result.get("performed", False),
                 "customization_level": (
                     "높음"
                     if confidence > 0.7
@@ -1753,13 +1488,7 @@ class EnhancedStockAnalysisSystem:
                     enhanced_dart_included = True
                     logger.info("✅ Enhanced DART 데이터를 분석에 포함했습니다")
 
-            # 🏷️ 분류 결과 포함
-            if classification_result.get("performed"):
-                analysis_prompt += f"""
-🏷️ **AI 종목 분류 결과**:
-{classification_result.get('response', '')}
-
-"""
+            # 분류 기능 제거됨 - 분류 결과 포함 로직 삭제
 
             # 🎯 통합 분석 지시사항
             analysis_method = "통합분석"
@@ -1836,9 +1565,7 @@ class EnhancedStockAnalysisSystem:
                 "response": analysis_response.strip(),
                 "basic_financial_data_used": basic_financial_included,
                 "enhanced_dart_data_used": enhanced_dart_included,
-                "classification_included": classification_result.get(
-                    "performed", False
-                ),
+                # 분류 기능 제거됨 - "classification_included": classification_result.get("performed", False),
                 "analysis_completeness": (
                     "완전통합"
                     if (basic_financial_included and enhanced_dart_included)
@@ -1858,8 +1585,8 @@ class EnhancedStockAnalysisSystem:
         """전체 분석 결과의 종합 요약을 생성해요"""
         stock_info = results["steps"].get("step1_stock_detection", {})
         financial_data = results["steps"].get("step2_financial_data", {})
-        classification = results["steps"].get("step3_classification", {})
-        analysis = results["steps"].get("step4_detailed_analysis", {})
+        # 분류 기능 제거됨 - classification = results["steps"].get("step3_classification", {})
+        analysis = results["steps"].get("step3_detailed_analysis", {})
 
         return {
             "analyzed_stock": {
@@ -1873,11 +1600,11 @@ class EnhancedStockAnalysisSystem:
                 "data_quality": financial_data.get("data_quality", "없음"),
             },
             "analysis_quality": {
-                "classification_performed": classification.get("performed", False),
+                # 분류 기능 제거됨 - "classification_performed": classification.get("performed", False),
                 "detailed_analysis_performed": analysis.get("performed", False),
                 "financial_data_enhanced": financial_data.get("success", False),
             },
-            "key_insights": self.extract_key_insights(classification, analysis),
+            "key_insights": self.extract_key_insights({}, analysis),
         }
 
     def extract_key_insights(
@@ -1891,16 +1618,7 @@ class EnhancedStockAnalysisSystem:
             "recommendation": None,
         }
 
-        # 분류 결과에서 핵심 정보 추출
-        if classification.get("performed"):
-            class_response = classification.get("response", "")
-            # 간단한 키워드 기반 추출 (실제로는 더 정교한 NLP 처리 필요)
-            if "우량주" in class_response:
-                insights["classification"] = "우량주"
-            elif "고성장주" in class_response:
-                insights["classification"] = "고성장주"
-            elif "자산주" in class_response:
-                insights["classification"] = "자산주"
+        # 분류 기능 제거됨 - 분류 결과에서 핵심 정보 추출 로직 삭제
 
         # 분석 결과에서 투자 전망 추출
         if analysis.get("performed"):
@@ -1957,15 +1675,11 @@ class EnhancedStockAnalysisSystem:
                     final_response.append(f"🏷️ ticker_bbg: {ticker_bbg}")
 
             # 분류 결과
-            if "step3_classification" in results.get("steps", {}):
-                classification = results["steps"]["step3_classification"]
-                if classification.get("performed"):
-                    final_response.append("🏷️ 종목 분류:")
-                    final_response.append(classification.get("response", ""))
+            # 분류 기능 제거됨 - step3_classification 관련 로직 삭제
 
             # 상세 분석 결과
-            if "step4_detailed_analysis" in results.get("steps", {}):
-                analysis = results["steps"]["step4_detailed_analysis"]
+            if "step3_detailed_analysis" in results.get("steps", {}):
+                analysis = results["steps"]["step3_detailed_analysis"]
                 if analysis.get("performed"):
                     final_response.append("📈 상세 분석:")
                     final_response.append(analysis.get("response", ""))
@@ -1995,9 +1709,8 @@ class EnhancedStockAnalysisSystem:
                     "success"
                 ):
                     steps_text.append("🚀 Enhanced DART 데이터 수집 성공")
-                elif step_key == "step3_classification" and step_data.get("performed"):
-                    steps_text.append("🏷️ 종목 분류 완료")
-                elif step_key == "step4_detailed_analysis" and step_data.get(
+                    # 분류 기능 제거됨 - elif step_key == "step3_classification" and step_data.get("performed"):
+                elif step_key == "step3_detailed_analysis" and step_data.get(
                     "performed"
                 ):
                     steps_text.append("📊 상세 분석 완료")
@@ -2023,11 +1736,9 @@ class EnhancedStockAnalysisSystem:
                     .get("success", False),
                     "enhanced_dart_used": "step2_enhanced_dart_data"
                     in results.get("steps", {}),
-                    "classification_performed": results.get("steps", {})
-                    .get("step3_classification", {})
-                    .get("performed", False),
+                    # 분류 기능 제거됨 - "classification_performed": results.get("steps", {}).get("step3_classification", {}).get("performed", False),
                     "detailed_analysis_performed": results.get("steps", {})
-                    .get("step4_detailed_analysis", {})
+                    .get("step3_detailed_analysis", {})
                     .get("performed", False),
                     "ticker_bbg_mapping_used": True,  # 🏢 ticker_bbg 매핑 사용 표시
                 },
