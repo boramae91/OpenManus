@@ -60,10 +60,9 @@ except ImportError as e:
     DYNAMIC_EXTRACTOR_AVAILABLE = False
 
 from app.utils.large_pdf_analyzer import LargePDFAnalyzer
-from app.utils.pdf_reader import PDFReader
 
-# PDF 처리는 이제 웹 검색 도구에서 자동으로 처리됩니다
-# 대용량 PDF는 별도 분석기로 전문 분석 수행
+# 기존 PDFReader는 제거하고 LargePDFAnalyzer로 완전 대체
+# 대용량 PDF 원문 추출을 위한 전용 시스템 사용
 
 
 class EnhancedStockAnalysisSystem:

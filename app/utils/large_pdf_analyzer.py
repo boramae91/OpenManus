@@ -33,7 +33,7 @@ from app.agent.manus import Manus
 
 # OpenManus 모듈들 import
 from app.llm import LLM
-from app.utils.pdf_reader import ChunkProcessor, PDFReader
+from app.utils.pdf_reader import ChunkProcessor, extract_pdf_text
 
 logging.getLogger("pdfminer").setLevel(logging.ERROR)
 warnings.filterwarnings("ignore", category=UserWarning, module="pdfminer")
@@ -63,8 +63,7 @@ class LargePDFAnalyzer:
         self.llm = llm if llm else LLM()
         self.manus_agent = Manus(llm=self.llm)
 
-        # PDF 처리기 초기화 (무제한 크기로 설정)
-        self.pdf_reader = PDFReader(max_chars=1000000)  # 100만자로 설정 (None 대신)
+        # 청크 처리기만 초기화 (PDFReader 제거)
         self.chunk_processor = ChunkProcessor(
             chunk_size=25000,  # 25KB 청크 (더 큰 청크로 효율성 향상)
             overlap_size=2000,  # 2KB 겹침 (맥락 보존)

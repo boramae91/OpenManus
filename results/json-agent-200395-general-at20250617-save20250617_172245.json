@@ -1,0 +1,145 @@
+{
+  "timestamp": "20250617_172245",
+  "prompt": "????",
+  "response": "📊 감지된 종목: KOSPI (200395)\n" +
+  "\n" +
+  "🏷️ ticker_bbg: 200395\n" +
+  "\n" +
+  "📋 종합 요약:\n" +
+  "\n" +
+  "{'analyzed_stock': {'name': 'KOSPI', 'code': '200395', 'detection_method':" +
+  "'ai_ai_web_search_priority'}, 'data_sources': {'financial_data_collected': True," +
+  "'data_sources': ['yfinance', 'DART'], 'data_quality': '낮음'}, 'analysis_quality':" +
+  "{'detailed_analysis_performed': False, 'financial_data_enhanced': True}," +
+  "'key_insights': {'classification': None, 'investment_outlook': None," +
+  "'risk_factors': None, 'recommendation': None}}",
+  "steps": [
+    "",
+    "📊 감지된 종목: KOSPI (200395)",
+    "📈 재무데이터 수집 성공: yfinance, DART",
+    ""
+  ],
+  "meta": {
+    "analysis_flow": "enhanced_intent_based",
+    "success": false,
+    "timestamp": "2025-06-17T17:21:03.056052",
+    "stock_info": {
+        "detected": true,
+        "stock_name": "KOSPI",
+        "stock_code": "200395",
+        "detection_method": "ai_ai_web_search_priority",
+        "ticker_bbg": "200395",
+        "original_stock_code": "200395",
+        "original_stock_name": "KOSPI"
+    },
+    "data_quality": "낮음",
+    "enhanced_features": {
+        "financial_data_used": true,
+        "enhanced_dart_used": false,
+        "detailed_analysis_performed": false,
+        "ticker_bbg_mapping_used": true
+    },
+    "raw_data": {
+        "data_sources_summary": {
+            "yfinance_data_available": true,
+            "dart_basic_data_available": true,
+            "enhanced_dart_data_available": false
+        },
+        "yfinance_raw_data": {
+            "basic_info": {
+                "company_name": "정보없음",
+                "sector": "정보없음",
+                "industry": "정보없음",
+                "country": "정보없음",
+                "currency": "KRW",
+                "exchange": "정보없음",
+                "ticker_symbol": "200395.KQ"
+            },
+            "current_price_info": {
+                "current_price": null,
+                "previous_close": null,
+                "open_price": null,
+                "day_high": null,
+                "day_low": null,
+                "volume": null,
+                "market_cap": null,
+                "shares_outstanding": null
+            },
+            "financial_ratios": {
+                "pe_ratio": null,
+                "peg_ratio": null,
+                "pb_ratio": null,
+                "ps_ratio": null,
+                "dividend_yield": null,
+                "profit_margin": null,
+                "operating_margin": null,
+                "return_on_equity": null,
+                "return_on_assets": null,
+                "debt_to_equity": null,
+                "current_ratio": null,
+                "quick_ratio": null
+            },
+            "growth_metrics": {
+                "earnings_growth": null,
+                "revenue_growth": null,
+                "earnings_quarterly_growth": null,
+                "revenue_quarterly_growth": null
+            },
+            "price_history": {
+                "52_week_high": null,
+                "52_week_low": null,
+                "avg_volume_3m": null,
+                "price_change_1y": null
+            },
+            "data_quality": "낮음",
+            "data_sources": [
+                "yfinance",
+                "DART"
+            ],
+            "collection_info": {
+                "success": true,
+                "errors": [],
+                "stock_info": {
+                    "stock_code": "200395",
+                    "stock_name": "KOSPI",
+                    "collection_timestamp": "2025-06-17T17:21:50.235853"
+                }
+            }
+        },
+        "dart_basic_raw_data": {
+            "company_info": {
+                "corp_name": "종목코드_200395",
+                "corp_code": "정보없음",
+                "business_summary": "DART API 연결 실패",
+                "established_date": "정보없음",
+                "listing_date": "정보없음",
+                "ceo_name": "정보없음",
+                "address": "정보없음"
+            },
+            "financial_statements": {
+                "revenue": 0,
+                "operating_profit": 0,
+                "net_income": 0,
+                "total_assets": 0,
+                "total_liabilities": 0,
+                "total_equity": 0,
+                "cash_and_equivalents": 0,
+                "data_source": "fallback_no_dart_connection",
+                "note": "DART API 연결 실패로 기본값 사용"
+            },
+            "business_report": {
+                "main_business": "DART 연결 실패",
+                "business_risks": "정보없음",
+                "future_plans": "정보없음"
+            }
+        },
+        "enhanced_dart_raw_data": {},
+        "data_statistics": {
+            "total_data_points": 10,
+            "yfinance_data_points": 10,
+            "enhanced_dart_data_points": 0,
+            "data_completeness": "낮음"
+        }
+    }
+}
+}
