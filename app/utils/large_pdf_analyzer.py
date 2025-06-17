@@ -17,8 +17,12 @@ AI가 단계별로 꼼꼼히 분석해서 JSON 파일로 정리해 줍니다.
 
 import asyncio
 import json
+
+# PDF 처리 경고 숨기기
+import logging
 import os
 import re
+import warnings
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
@@ -30,6 +34,9 @@ from app.agent.manus import Manus
 # OpenManus 모듈들 import
 from app.llm import LLM
 from app.utils.pdf_reader import ChunkProcessor, PDFReader
+
+logging.getLogger("pdfminer").setLevel(logging.ERROR)
+warnings.filterwarnings("ignore", category=UserWarning, module="pdfminer")
 
 
 class LargePDFAnalyzer:
@@ -70,6 +77,104 @@ class LargePDFAnalyzer:
         logger.info(
             f"📊 설정값: 청크크기={self.chunk_processor.chunk_size:,}자, 겹침={self.chunk_processor.overlap_size:,}자"
         )
+
+    async def extract_raw_text_only(
+        self,
+        pdf_path: str,
+        company_name: str = "분석대상회사",
+        save_to_json: bool = True,
+    ) -> Dict[str, Any]:
+        """
+        PDF에서 원문만 추출해서 JSON으로 저장하는 함수 (AI 분석 없이)
+
+        기존 PDF 처리를 완전히 대체하는 대용량 지원 버전:
+        - 100만+ 글자 지원
+        - 원문 그대로 추출
+        - AI 분석/요약 없음
+        - 빠른 처리 속도
+
+        Args:
+            pdf_path: PDF 파일 경로
+            company_name: 회사명 (파일명에서 자동 추출 가능)
+            save_to_json: JSON 파일로 저장 여부
+
+        Returns:
+            Dict: 추출된 원문과 메타데이터
+        """
+        start_time = datetime.now()
+        logger.info(f"📄 대용량 PDF 원문 추출 시작: {pdf_path}")
+
+        # 결과 저장용 구조 초기화
+        result = {
+            "metadata": {
+                "pdf_path": pdf_path,
+                "company_name": company_name,
+                "extraction_start_time": start_time.isoformat(),
+                "success": False,
+                "mode": "raw_text_only",
+                "total_text_length": 0,
+                "extraction_method": "large_pdf_analyzer",
+                "version": "LargePDFAnalyzer_v1.0_RawText",
+            },
+            "raw_content": {},
+            "content_preview": "",
+            "saved_file": None,
+        }
+
+        try:
+            # 🔍 PDF 전체 텍스트 추출 (무제한 크기)
+            logger.info("📖 대용량 PDF 텍스트 추출 중...")
+            extraction_result = await self._extract_full_text(pdf_path)
+
+            if not extraction_result["success"]:
+                result["metadata"]["error"] = extraction_result["error"]
+                return result
+
+            full_text = extraction_result["full_text"]
+            result["metadata"]["total_text_length"] = len(full_text)
+            result["metadata"]["pages_processed"] = extraction_result.get(
+                "pages_processed", []
+            )
+            result["metadata"]["extraction_method_detail"] = extraction_result.get(
+                "extraction_method", "unknown"
+            )
+
+            # 원문 전체 저장
+            result["raw_content"] = {
+                "full_text": full_text,
+                "text_length": len(full_text),
+                "note": "원문 그대로 추출됨 (AI 분석/요약 없음)",
+            }
+
+            # 미리보기용 (처음 2000자)
+            result["content_preview"] = full_text[:2000] + (
+                "..." if len(full_text) > 2000 else ""
+            )
+
+            # ⏱️ 처리 시간 계산
+            end_time = datetime.now()
+            processing_time = (end_time - start_time).total_seconds()
+            result["metadata"]["extraction_end_time"] = end_time.isoformat()
+            result["metadata"]["total_processing_time"] = f"{processing_time:.2f}초"
+            result["metadata"]["success"] = True
+
+            logger.info(
+                f"✅ 원문 추출 완료: {len(full_text):,}자 (처리시간: {processing_time:.1f}초)"
+            )
+
+            # 💾 JSON 파일로 저장
+            if save_to_json:
+                save_path = await self._save_raw_text_results(result, company_name)
+                result["saved_file"] = save_path
+                logger.info(f"💾 원문 저장 완료: {save_path}")
+
+            return result
+
+        except Exception as e:
+            logger.error(f"❌ PDF 원문 추출 중 오류 발생: {str(e)}")
+            result["metadata"]["error"] = f"원문 추출 중 오류: {str(e)}"
+            result["metadata"]["success"] = False
+            return result
 
     async def analyze_large_report(
         self,
@@ -674,6 +779,44 @@ class LargePDFAnalyzer:
         except Exception as e:
             logger.error(f"❌ 분석 결과 저장 실패: {str(e)}")
             return f"저장 실패: {str(e)}"
+
+    async def _save_raw_text_results(
+        self, result: Dict[str, Any], company_name: str
+    ) -> str:
+        """
+        원문 추출 결과를 JSON 파일로 저장하는 함수
+
+        Args:
+            result: 추출 결과 딕셔너리
+            company_name: 회사명
+
+        Returns:
+            str: 저장된 파일 경로
+        """
+        try:
+            # 저장 디렉토리 생성
+            save_directory = "results"
+            os.makedirs(save_directory, exist_ok=True)
+
+            # 파일명 생성 (원문추출 전용)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            safe_company_name = "".join(
+                c for c in company_name if c.isalnum() or c in " -_"
+            ).strip()[:50]
+
+            filename = f"PDF-RAW-{safe_company_name}-{timestamp}.json"
+            save_path = os.path.join(save_directory, filename)
+
+            # JSON 파일로 저장
+            with open(save_path, "w", encoding="utf-8") as f:
+                json.dump(result, f, ensure_ascii=False, indent=2)
+
+            logger.info(f"💾 원문 JSON 파일 저장 완료: {save_path}")
+            return save_path
+
+        except Exception as e:
+            logger.error(f"❌ 원문 결과 저장 중 오류: {e}")
+            return ""
 
 
 # 사용 예시 함수

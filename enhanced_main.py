@@ -2011,11 +2011,11 @@ class EnhancedStockAnalysisSystem:
                 if not any(char.isalpha() for char in company_name):
                     company_name = "분석대상회사"
 
-            # PDF 분석 실행
-            analysis_result = await pdf_analyzer.analyze_large_pdf(
+            # 📄 원문 추출 모드로 PDF 분석 실행 (AI 분석 없이)
+            analysis_result = await pdf_analyzer.extract_raw_text_only(
                 pdf_path=pdf_path,
                 company_name=company_name,
-                report_type="business_quarterly",  # 기본값으로 사업보고서 설정
+                save_to_json=True,  # JSON 파일로 자동 저장
             )
 
             if analysis_result.get("success"):
