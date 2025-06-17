@@ -1722,7 +1722,7 @@ class EnhancedStockAnalysisSystem:
                 ):
                     steps_text.append("📊 상세 분석 완료")
 
-            steps_text.append(response_text)  # 전체 응답 내용
+            # 전체 응답 내용을 steps에 중복 추가하지 않음 (response 필드에 이미 있음)
             steps_text.append("")  # 마지막은 빈 문자열
 
             # 📊 원본 데이터 추가 준비
