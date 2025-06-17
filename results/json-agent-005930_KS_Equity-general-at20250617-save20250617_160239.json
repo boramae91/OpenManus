@@ -1,6 +1,6 @@
 {
-  "timestamp": "20250617_134638",
-  "prompt": "삼성전자에 대해서 가치투자를 전문으로 하는 애널리스트 처럼 분석해줘",
+  "timestamp": "20250617_160239",
+  "prompt": "삼성전자 5년치 주가데이터를 가져와줘",
   "response": "📊 감지된 종목: 삼성전자 (005930)\n" +
   "\n" +
   "🏷️ ticker_bbg: 005930 KS Equity\n" +
@@ -8,14 +8,13 @@
   "📈 상세 분석:\n" +
   "\n" +
   "Step 4: Observed output of cmd `browser_use` executed:\n" +
-  "Search results for 'Samsung Electronics 2025 analysis and news':\n" +
+  "Search results for 'Samsung Electronics 005930 5-year stock price history':\n" +
   "\n" +
-  "1. Samsung Electronics Announces First Quarter 2025 Results\n" +
-  "URL:" +
-  "https://news.samsung.com/global/samsung-electronics-announces-first-quarter-2025-results\n" +
-  "Description:  Apr 30, 2025  ·  Samsung Electronics today reported financial" +
-  "results for the first quarter ended March 31, 2025. The Company posted KRW 79.14" +
-  "trillion in ... \n" +
+  "1. Samsung Electronics Co., Ltd. (005930.KS) Stock Historical Prices ...\n" +
+  "   URL: https://finance.yahoo.com/quote/005930.KS/history/\n" +
+  "Description:  Samsung Electronics Co., Ltd. (005930.KS) ; Feb 7, 2025," +
+  "53,900.00, 54,200.00 ; Feb 6, 2025, 53,400.00, 54,000.00 ; Feb 5, 2025," +
+  "53,600.00, 53,800.00 ; Feb 4, 2025 ... \n" +
   "\n" +
   "Metadata:\n" +
   "- Total results: 1\n" +
@@ -23,51 +22,16 @@
   "- Country: us\n" +
   "Step 5: Observed output of cmd `browser_use` executed:\n" +
   "Extracted from page:\n" +
-  "{'text': 'Samsung Electronics has announced its financial results for the first" +
-  "quarter of 2025. The company reported a consolidated revenue of KRW 65 trillion," +
-  "which is a 10% increase compared to the same period last year. The operating" +
-  "profit for the quarter was KRW 9 trillion, marking a 15% increase year-on-year." +
-  "This growth was primarily driven by strong performance in the semiconductor and" +
-  "mobile divisions. The semiconductor division saw a significant increase in" +
-  "demand for memory chips, while the mobile division benefited from the successful" +
-  "launch of new flagship smartphones. Looking ahead, Samsung expects continued" +
-  "growth in the semiconductor market, driven by increasing demand for" +
-  "high-performance computing and 5G technologies. The company also plans to expand" +
-  "its presence in the automotive semiconductor market. In the mobile division," +
-  "Samsung aims to maintain its leadership position by focusing on innovation and" +
-  "expanding its 5G smartphone lineup. Overall, Samsung is optimistic about its" +
-  "growth prospects for the remainder of 2025, with expectations of sustained" +
-  "demand across its key business areas.', 'metadata': {'source': 'Samsung Global" +
-  "Newsroom'}}\n" +
+  "{'text': 'Oops, something went wrong', 'metadata': {'source': 'Yahoo Finance'}}\n" +
   "\n" +
-  "Step 6: Based on the extracted insights, here's a summary and the next steps for" +
-  "the analysis:\n" +
+  "Step 6: Observed output of cmd `browser_use` executed:\n" +
+  "Scrolled down by 1000 pixels\n" +
+  "Step 7: Observed output of cmd `browser_use` executed:\n" +
+  "Extracted from page:\n" +
+  "{'text': 'Oops, something went wrong', 'metadata': {'source': 'Yahoo Finance'}}\n" +
   "\n" +
-  "### Summary of Extracted Insights\n" +
-  "- **Revenue and Profit Growth**: Samsung Electronics reported a 10% increase in" +
-  "revenue and a 15% increase in operating profit for Q1 2025, driven by strong" +
-  "performance in the semiconductor and mobile divisions.\n" +
-  "- **Future Outlook**: The company expects continued growth in the semiconductor" +
-  "market, driven by high-performance computing and 5G technologies. It also plans" +
-  "to expand in the automotive semiconductor market and maintain leadership in the" +
-  "mobile division with a focus on innovation and 5G smartphones.\n" +
-  "\n" +
-  "### Next Steps\n" +
-  "1. **Investment Recommendation**: Based on the positive growth outlook and" +
-  "strong performance, consider a \"Buy\" recommendation if the current market" +
-  "conditions align with these insights.\n" +
-  "2. **Target Price**: Analyze historical price trends and industry benchmarks to" +
-  "set a realistic target price.\n" +
-  "3. **Investment Risks**: Identify potential risks such as market volatility," +
-  "competition, and technological changes.\n" +
-  "4. **Portfolio Allocation**: Suggest an appropriate allocation based on risk" +
-  "tolerance and diversification needs.\n" +
-  "\n" +
-  "To refine the target price and risk assessment, further analysis of historical" +
-  "stock performance and industry trends may be needed. If you need more detailed" +
-  "financial modeling or specific data, let me know how you'd like to proceed!\n" +
-  "Step 7: Observed output of cmd `terminate` executed:\n" +
-  "The interaction has been completed with status: success\n" +
+  "Step 8: Observed output of cmd `terminate` executed:\n" +
+  "The interaction has been completed with status: failure\n" +
   "\n" +
   "📋 종합 요약:\n" +
   "\n" +
@@ -83,88 +47,12 @@
     "📈 재무데이터 수집 성공: yfinance, DART",
     "🚀 Enhanced DART 데이터 수집 성공",
     "📊 상세 분석 완료",
-    "📊 감지된 종목: 삼성전자 (005930)\n" +
-    "\n" +
-    "🏷️ ticker_bbg: 005930 KS Equity\n" +
-    "\n" +
-    "📈 상세 분석:\n" +
-    "\n" +
-    "Step 4: Observed output of cmd `browser_use` executed:\n" +
-    "Search results for 'Samsung Electronics 2025 analysis and news':\n" +
-    "\n" +
-    "1. Samsung Electronics Announces First Quarter 2025 Results\n" +
-    "URL:" +
-    "https://news.samsung.com/global/samsung-electronics-announces-first-quarter-2025-results\n" +
-    "Description:  Apr 30, 2025  ·  Samsung Electronics today reported financial" +
-    "results for the first quarter ended March 31, 2025. The Company posted KRW 79.14" +
-    "trillion in ... \n" +
-    "\n" +
-    "Metadata:\n" +
-    "- Total results: 1\n" +
-    "- Language: en\n" +
-    "- Country: us\n" +
-    "Step 5: Observed output of cmd `browser_use` executed:\n" +
-    "Extracted from page:\n" +
-    "{'text': 'Samsung Electronics has announced its financial results for the first" +
-    "quarter of 2025. The company reported a consolidated revenue of KRW 65 trillion," +
-    "which is a 10% increase compared to the same period last year. The operating" +
-    "profit for the quarter was KRW 9 trillion, marking a 15% increase year-on-year." +
-    "This growth was primarily driven by strong performance in the semiconductor and" +
-    "mobile divisions. The semiconductor division saw a significant increase in" +
-    "demand for memory chips, while the mobile division benefited from the successful" +
-    "launch of new flagship smartphones. Looking ahead, Samsung expects continued" +
-    "growth in the semiconductor market, driven by increasing demand for" +
-    "high-performance computing and 5G technologies. The company also plans to expand" +
-    "its presence in the automotive semiconductor market. In the mobile division," +
-    "Samsung aims to maintain its leadership position by focusing on innovation and" +
-    "expanding its 5G smartphone lineup. Overall, Samsung is optimistic about its" +
-    "growth prospects for the remainder of 2025, with expectations of sustained" +
-    "demand across its key business areas.', 'metadata': {'source': 'Samsung Global" +
-    "Newsroom'}}\n" +
-    "\n" +
-    "Step 6: Based on the extracted insights, here's a summary and the next steps for" +
-    "the analysis:\n" +
-    "\n" +
-    "### Summary of Extracted Insights\n" +
-    "- **Revenue and Profit Growth**: Samsung Electronics reported a 10% increase in" +
-    "revenue and a 15% increase in operating profit for Q1 2025, driven by strong" +
-    "performance in the semiconductor and mobile divisions.\n" +
-    "- **Future Outlook**: The company expects continued growth in the semiconductor" +
-    "market, driven by high-performance computing and 5G technologies. It also plans" +
-    "to expand in the automotive semiconductor market and maintain leadership in the" +
-    "mobile division with a focus on innovation and 5G smartphones.\n" +
-    "\n" +
-    "### Next Steps\n" +
-    "1. **Investment Recommendation**: Based on the positive growth outlook and" +
-    "strong performance, consider a \"Buy\" recommendation if the current market" +
-    "conditions align with these insights.\n" +
-    "2. **Target Price**: Analyze historical price trends and industry benchmarks to" +
-    "set a realistic target price.\n" +
-    "3. **Investment Risks**: Identify potential risks such as market volatility," +
-    "competition, and technological changes.\n" +
-    "4. **Portfolio Allocation**: Suggest an appropriate allocation based on risk" +
-    "tolerance and diversification needs.\n" +
-    "\n" +
-    "To refine the target price and risk assessment, further analysis of historical" +
-    "stock performance and industry trends may be needed. If you need more detailed" +
-    "financial modeling or specific data, let me know how you'd like to proceed!\n" +
-    "Step 7: Observed output of cmd `terminate` executed:\n" +
-    "The interaction has been completed with status: success\n" +
-    "\n" +
-    "📋 종합 요약:\n" +
-    "\n" +
-    "{'analyzed_stock': {'name': '삼성전자', 'code': '005930', 'detection_method':" +
-    "'ai_ai_web_search_priority'}, 'data_sources': {'financial_data_collected': True," +
-    "'data_sources': ['yfinance', 'DART'], 'data_quality': '보통'}, 'analysis_quality':" +
-    "{'detailed_analysis_performed': True, 'financial_data_enhanced': True}," +
-    "'key_insights': {'classification': None, 'investment_outlook': '중립적'," +
-    "'risk_factors': None, 'recommendation': None}}",
     ""
   ],
   "meta": {
     "analysis_flow": "enhanced_intent_based",
     "success": false,
-    "timestamp": "2025-06-17T13:44:08.519048",
+    "timestamp": "2025-06-17T16:00:03.034777",
     "stock_info": {
         "detected": true,
         "stock_name": "삼성전자",
@@ -198,20 +86,20 @@
                 "ticker_symbol": "005930.KS"
             },
             "current_price_info": {
-                "current_price": 58600.0,
+                "current_price": 58100.0,
                 "previous_close": 57200.0,
                 "open_price": 57800.0,
                 "day_high": 59800.0,
                 "day_low": 57400.0,
-                "volume": 19945719,
-                "market_cap": 386138229440512,
+                "volume": 30610667,
+                "market_cap": 382843553316864,
                 "shares_outstanding": 5919640064
             },
             "financial_ratios": {
                 "pe_ratio": null,
                 "peg_ratio": null,
                 "pb_ratio": null,
-                "ps_ratio": 1.2533057,
+                "ps_ratio": 1.242612,
                 "dividend_yield": 2.53,
                 "profit_margin": 0.113690004,
                 "operating_margin": 0.08447,
@@ -230,8 +118,8 @@
             "price_history": {
                 "52_week_high": 87188.48844178082,
                 "52_week_low": 49269.3359375,
-                "avg_volume_3m": 17559009.355555557,
-                "price_change_1y": -23.371318154550472
+                "avg_volume_3m": 17677507.066666666,
+                "price_change_1y": -23.89527495349372
             },
             "data_quality": "보통",
             "data_sources": [
@@ -244,7 +132,7 @@
                 "stock_info": {
                     "stock_code": "005930",
                     "stock_name": "삼성전자",
-                    "collection_timestamp": "2025-06-17T13:44:23.118063"
+                    "collection_timestamp": "2025-06-17T16:00:18.347230"
                 }
             }
         },
@@ -290,8 +178,29 @@
                 "success": true,
                 "corp_code": "00126380",
                 "bsns_year": "2024",
-                "collected_at": "2025-06-17T13:44:40.466494",
+                "collected_at": "2025-06-17T16:01:09.853829",
                 "individual_statements": {
+                    "asset_info": {
+                        "current_assets": 82320322000000,
+                        "non_current_assets": 242645805000000,
+                        "total_assets": 324966127000000
+                    },
+                    "liability_info": {
+                        "current_liabilities": 80157976000000,
+                        "non_current_liabilities": 8411494000000,
+                        "total_liabilities": 88569470000000
+                    },
+                    "equity_info": {
+                        "capital_stock": 897514000000,
+                        "total_equity": 236396657000000
+                    },
+                    "income_info": {
+                        "revenue": 209052241000000,
+                        "operating_income": 12361034000000,
+                        "net_income": 23582565000000
+                    }
+                },
+                "consolidated_statements": {
                     "asset_info": {
                         "current_assets": 82320322000000,
                         "non_current_assets": 242645805000000,
@@ -407,7 +316,7 @@
                 "success": true,
                 "corp_code": "00126380",
                 "bsns_year": "2024",
-                "collected_at": "2025-06-17T13:45:12.548942",
+                "collected_at": "2025-06-17T16:01:12.543937",
                 "major_shareholders": [
                     {
                         "shareholder_name": "삼성생명보험㈜",
@@ -662,7 +571,7 @@
                 "success": true,
                 "corp_code": "00126380",
                 "bsns_year": "2024",
-                "collected_at": "2025-06-17T13:45:28.200907",
+                "collected_at": "2025-06-17T16:01:13.656483",
                 "dividend_info": [
                     {
                         "dividend_classification": "주당액면가액(원)",
@@ -1758,7 +1667,7 @@
             "disclosure_monitoring": {
                 "success": true,
                 "monitoring_period": "최근 30일",
-                "collected_at": "2025-06-17T13:45:28.982826",
+                "collected_at": "2025-06-17T16:01:14.517718",
                 "recent_disclosures": [
                     {
                         "corp_name": "삼성전자",
@@ -1832,9 +1741,9 @@
             }
         },
         "data_statistics": {
-            "total_data_points": 266,
+            "total_data_points": 277,
             "yfinance_data_points": 34,
-            "enhanced_dart_data_points": 232,
+            "enhanced_dart_data_points": 243,
             "data_completeness": "매우높음"
         }
     }

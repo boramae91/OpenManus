@@ -59,10 +59,11 @@ except ImportError as e:
     logger.warning(f"동적 종목 추출 에이전트 로드 실패: {e}")
     DYNAMIC_EXTRACTOR_AVAILABLE = False
 
+from app.utils.large_pdf_analyzer import LargePDFAnalyzer
 from app.utils.pdf_reader import PDFReader
 
 # PDF 처리는 이제 웹 검색 도구에서 자동으로 처리됩니다
-# (여기서는 별도의 PDF 처리 함수 불필요)
+# 대용량 PDF는 별도 분석기로 전문 분석 수행
 
 
 class EnhancedStockAnalysisSystem:
@@ -133,6 +134,13 @@ class EnhancedStockAnalysisSystem:
         }
 
         try:
+            # 🔍 PDF 감지 및 자동 분석 실행
+            pdf_analysis_result = await self._check_and_analyze_pdf(user_prompt)
+            if pdf_analysis_result.get("pdf_detected"):
+                results["steps"]["pdf_large_analysis"] = pdf_analysis_result
+                logger.info("📄 PDF 분석 완료 - PDF 기반 종합 분석 수행됨")
+                # PDF 분석이 완료되면 해당 결과를 바탕으로 추가 분석 수행 가능
+
             # 🚀 NEW Step 0: 질문 의도 분석
             logger.info("🎯 Step 0: 사용자 질문 의도 분석")
             intent_analysis = await self.analyze_user_intent(user_prompt)
@@ -1928,6 +1936,105 @@ class EnhancedStockAnalysisSystem:
                 count += 1
         return count
 
+    async def _check_and_analyze_pdf(self, user_prompt: str) -> Dict[str, Any]:
+        """
+        사용자 질문에서 PDF 파일을 감지하고 자동으로 대용량 PDF 분석을 실행해요
+
+        Args:
+            user_prompt: 사용자 입력 프롬프트
+
+        Returns:
+            Dict: PDF 분석 결과
+        """
+        result = {
+            "pdf_detected": False,
+            "pdf_path": None,
+            "analysis_completed": False,
+            "analysis_result": None,
+            "error": None,
+        }
+
+        try:
+            # PDF 경로 패턴 감지 (윈도우/리눅스 경로 형식)
+            import os
+            import re
+
+            # 다양한 PDF 경로 패턴 매칭
+            pdf_patterns = [
+                r"([A-Za-z]:[\\/][^\s]+\.pdf)",  # 윈도우 절대경로
+                r"(\/[^\s]+\.pdf)",  # 리눅스 절대경로
+                r"([^\s]+\.pdf)",  # 상대경로 또는 파일명만
+                r'"([^"]+\.pdf)"',  # 따옴표로 감싼 경로
+                r"'([^']+\.pdf)'",  # 작은따옴표로 감싼 경로
+            ]
+
+            pdf_path = None
+            for pattern in pdf_patterns:
+                matches = re.findall(pattern, user_prompt, re.IGNORECASE)
+                if matches:
+                    potential_path = matches[0]
+                    # 파일이 실제로 존재하는지 확인
+                    if os.path.exists(potential_path):
+                        pdf_path = potential_path
+                        break
+                    else:
+                        # 상대경로인 경우 현재 디렉토리 기준으로 다시 시도
+                        current_dir_path = os.path.join(os.getcwd(), potential_path)
+                        if os.path.exists(current_dir_path):
+                            pdf_path = current_dir_path
+                            break
+
+            if not pdf_path:
+                logger.info("📄 PDF 파일이 감지되지 않았습니다")
+                return result
+
+            result["pdf_detected"] = True
+            result["pdf_path"] = pdf_path
+            logger.info(f"📄 PDF 파일 감지됨: {pdf_path}")
+
+            # 대용량 PDF 분석기 초기화 및 실행
+            logger.info("🚀 대용량 PDF 분석 시작...")
+            pdf_analyzer = LargePDFAnalyzer()
+
+            # PDF에서 회사명 추출 시도 (파일명에서 추출)
+            filename = os.path.basename(pdf_path)
+            company_name = (
+                filename.replace(".pdf", "").replace("_", " ").replace("-", " ")
+            )
+
+            # 사용자 프롬프트에서 회사명 힌트 찾기
+            if any(
+                keyword in user_prompt.lower()
+                for keyword in ["분석", "보고서", "리포트"]
+            ):
+                # 회사명이 명시되지 않은 경우 파일명 사용
+                if not any(char.isalpha() for char in company_name):
+                    company_name = "분석대상회사"
+
+            # PDF 분석 실행
+            analysis_result = await pdf_analyzer.analyze_large_pdf(
+                pdf_path=pdf_path,
+                company_name=company_name,
+                report_type="business_quarterly",  # 기본값으로 사업보고서 설정
+            )
+
+            if analysis_result.get("success"):
+                result["analysis_completed"] = True
+                result["analysis_result"] = analysis_result
+                logger.info("✅ 대용량 PDF 분석 완료!")
+                logger.info(
+                    f"💾 분석 결과 저장됨: {analysis_result.get('saved_file', '알 수 없음')}"
+                )
+            else:
+                result["error"] = analysis_result.get("error", "PDF 분석 실패")
+                logger.error(f"❌ PDF 분석 실패: {result['error']}")
+
+        except Exception as e:
+            result["error"] = f"PDF 분석 중 오류: {str(e)}"
+            logger.error(f"❌ PDF 감지/분석 중 오류: {e}")
+
+        return result
+
 
 async def main():
     """메인 실행 함수 - 한 번 실행하고 자동 종료"""
@@ -1964,6 +2071,23 @@ async def main():
         # 결과 출력
         if results["success"]:
             print("\n✅ 분석 완료!")
+
+            # PDF 분석 결과 출력
+            pdf_analysis = results.get("steps", {}).get("pdf_large_analysis", {})
+            if pdf_analysis.get("pdf_detected"):
+                print(f"📄 PDF 분석: {pdf_analysis['pdf_path']}")
+                if pdf_analysis.get("analysis_completed"):
+                    pdf_result = pdf_analysis.get("analysis_result", {})
+                    print(
+                        f"📄 PDF 분석 완료: {pdf_result.get('saved_file', '파일 저장됨')}"
+                    )
+                    print(
+                        f"📄 분석 대상: {pdf_result.get('company_name', '알 수 없음')}"
+                    )
+                else:
+                    print(
+                        f"❌ PDF 분석 실패: {pdf_analysis.get('error', '알 수 없는 오류')}"
+                    )
 
             # 종합 요약 출력
             summary = results.get("final_summary", {})

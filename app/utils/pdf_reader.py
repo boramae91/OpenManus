@@ -481,27 +481,42 @@ def extract_pdf_text(
         else:
             print("오류:", result['error'])
     """
-    if isinstance(source, str):
-        # URL인지 파일 경로인지 판단
-        parsed = urlparse(source)
-        if parsed.scheme in ("http", "https"):
-            # URL인 경우
-            return pdf_reader.extract_text_from_url(source)
+    try:
+        # PDFReader 인스턴스 생성
+        pdf_reader = PDFReader(max_chars=100000)
+
+        if isinstance(source, str):
+            # URL인지 파일 경로인지 판단
+            parsed = urlparse(source)
+            if parsed.scheme in ("http", "https"):
+                # URL인 경우 - 직접 처리
+                return _extract_text_from_url(source, pdf_reader)
+            else:
+                # 파일 경로인 경우 - 직접 처리
+                return _extract_text_from_file(source, pdf_reader)
+
+        elif isinstance(source, Path):
+            # Path 객체인 경우 - 직접 처리
+            return _extract_text_from_file(str(source), pdf_reader)
+
+        elif isinstance(source, io.BytesIO):
+            # 바이너리 데이터인 경우 - 직접 처리
+            return _extract_text_from_bytes(source, pdf_reader)
+
         else:
-            # 파일 경로인 경우
-            return pdf_reader.extract_text_from_file(source)
+            # 지원하지 않는 타입
+            error_msg = f"지원하지 않는 소스 타입: {type(source)}"
+            logger.error(f"❌ {error_msg}")
+            return {
+                "success": False,
+                "text": "",
+                "pages": [],
+                "method": "none",
+                "error": error_msg,
+            }
 
-    elif isinstance(source, Path):
-        # Path 객체인 경우
-        return pdf_reader.extract_text_from_file(source)
-
-    elif isinstance(source, io.BytesIO):
-        # 바이너리 데이터인 경우
-        return pdf_reader.extract_text_from_bytes(source)
-
-    else:
-        # 지원하지 않는 타입
-        error_msg = f"지원하지 않는 소스 타입: {type(source)}"
+    except Exception as e:
+        error_msg = f"PDF 텍스트 추출 중 오류: {str(e)}"
         logger.error(f"❌ {error_msg}")
         return {
             "success": False,
@@ -509,6 +524,86 @@ def extract_pdf_text(
             "pages": [],
             "method": "none",
             "error": error_msg,
+        }
+
+
+def _extract_text_from_url(
+    url: str, pdf_reader: PDFReader
+) -> Dict[str, Union[str, List[str], bool]]:
+    """URL에서 PDF 다운로드 후 텍스트 추출"""
+    try:
+        import requests
+
+        response = requests.get(url, timeout=30)
+        response.raise_for_status()
+
+        pdf_data = io.BytesIO(response.content)
+        return _extract_text_from_bytes(pdf_data, pdf_reader)
+
+    except Exception as e:
+        return {
+            "success": False,
+            "text": "",
+            "pages": [],
+            "method": "url_download_failed",
+            "error": f"URL에서 PDF 다운로드 실패: {str(e)}",
+        }
+
+
+def _extract_text_from_file(
+    file_path: str, pdf_reader: PDFReader
+) -> Dict[str, Union[str, List[str], bool]]:
+    """로컬 파일에서 PDF 텍스트 추출"""
+    try:
+        with open(file_path, "rb") as file:
+            pdf_data = io.BytesIO(file.read())
+            return _extract_text_from_bytes(pdf_data, pdf_reader)
+
+    except Exception as e:
+        return {
+            "success": False,
+            "text": "",
+            "pages": [],
+            "method": "file_read_failed",
+            "error": f"파일 읽기 실패: {str(e)}",
+        }
+
+
+def _extract_text_from_bytes(
+    pdf_data: io.BytesIO, pdf_reader: PDFReader
+) -> Dict[str, Union[str, List[str], bool]]:
+    """PDF 바이너리 데이터에서 텍스트 추출"""
+    try:
+        # PDFReader의 라이브러리들을 차례로 시도
+        for lib_name, extract_method in pdf_reader.pdf_libraries:
+            try:
+                pdf_data.seek(0)  # 스트림 포지션 초기화
+                result = extract_method(pdf_data)
+
+                if result.get("success", False) and result.get("text", "").strip():
+                    logger.info(f"✅ PDF 텍스트 추출 성공 (라이브러리: {lib_name})")
+                    return result
+
+            except Exception as e:
+                logger.warning(f"⚠️ {lib_name} 라이브러리 실패: {e}")
+                continue
+
+        # 모든 라이브러리 실패
+        return {
+            "success": False,
+            "text": "",
+            "pages": [],
+            "method": "all_libraries_failed",
+            "error": "모든 PDF 처리 라이브러리에서 텍스트 추출 실패",
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "text": "",
+            "pages": [],
+            "method": "extraction_error",
+            "error": f"PDF 처리 중 오류: {str(e)}",
         }
 
 

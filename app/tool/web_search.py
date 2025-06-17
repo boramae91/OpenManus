@@ -91,18 +91,18 @@ class SearchResponse(ToolResult):
                 )
 
                 if is_pdf_content:
-                    # PDF인 경우 더 많은 내용 표시
+                    # PDF인 경우 더 많은 내용 표시 (10000자로 증가)
+                    content_preview = (
+                        result.raw_content[:10000].replace("\n", " ").strip()
+                    )
+                    if len(result.raw_content) > 10000:
+                        content_preview += "..."
+                else:
+                    # 일반 웹페이지인 경우 제한 증가 (5000자로 증가)
                     content_preview = (
                         result.raw_content[:5000].replace("\n", " ").strip()
                     )
                     if len(result.raw_content) > 5000:
-                        content_preview += "..."
-                else:
-                    # 일반 웹페이지인 경우 기존 제한 유지
-                    content_preview = (
-                        result.raw_content[:1000].replace("\n", " ").strip()
-                    )
-                    if len(result.raw_content) > 1000:
                         content_preview += "..."
 
                 result_text.append(f"   Content: {content_preview}")
@@ -170,20 +170,20 @@ class WebContentFetcher:
                 try:
                     import io
 
-                    from app.utils.pdf_reader import PDFReader
+                    from app.utils.pdf_reader import extract_pdf_text
 
                     logger.info(f"📄 PDF 파일 자동 감지됨: {url}")
 
-                    # PDF 리더로 전체 텍스트 추출 (청크 분석 없음)
-                    pdf_reader = PDFReader(max_chars=100000)  # 100KB까지 허용
+                    # PDF 바이너리 데이터로 단순 텍스트 추출 (분석 없음)
                     pdf_data = io.BytesIO(response.content)
+                    pdf_result = extract_pdf_text(pdf_data)
 
-                    # 단순 텍스트 추출 (분석 없음)
-                    extracted_text = await pdf_reader.read_pdf(pdf_data, max_chars=None)
+                    if pdf_result.get("success", False) and pdf_result.get("text"):
+                        extracted_text = pdf_result["text"]
+                        extraction_method = pdf_result.get("method", "unknown")
 
-                    if extracted_text and extracted_text.strip():
                         logger.info(
-                            f"✅ PDF 텍스트 추출 성공 (길이: {len(extracted_text):,} 문자)"
+                            f"✅ PDF 텍스트 추출 성공 (길이: {len(extracted_text):,} 문자, 방법: {extraction_method})"
                         )
 
                         # 전체 내용을 그대로 반환 (요약 없음)
@@ -191,8 +191,9 @@ class WebContentFetcher:
                             f"[PDF 파일 텍스트 추출 완료 - {url}]\n\n{extracted_text}"
                         )
                     else:
-                        logger.warning(f"❌ PDF 텍스트 추출 실패: 빈 내용")
-                        return "[PDF 파일 - 내용 추출 실패]"
+                        error_msg = pdf_result.get("error", "알 수 없는 오류")
+                        logger.warning(f"❌ PDF 텍스트 추출 실패: {error_msg}")
+                        return f"[PDF 파일 - 내용 추출 실패: {error_msg}]"
 
                 except ImportError:
                     logger.warning(

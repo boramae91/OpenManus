@@ -223,9 +223,9 @@ class BrowserUseTool(BaseTool, Generic[Context]):
             try:
                 context = await self._ensure_browser_initialized()
 
-                # Get max content length from config
+                # Get max content length from config (기본값을 10000으로 증가)
                 max_content_length = getattr(
-                    config.browser_config, "max_content_length", 2000
+                    config.browser_config, "max_content_length", 10000
                 )
 
                 # Navigation actions
@@ -592,20 +592,23 @@ Page content:
             # PDF 처리 유틸리티 import (단순 텍스트 추출)
             from loguru import logger
 
-            from app.utils.pdf_reader import PDFReader
+            from app.utils.pdf_reader import extract_pdf_text
 
             logger.info(f"📄 브라우저에서 PDF 파일 자동 감지: {pdf_url}")
 
-            # PDF 리더로 단순 텍스트 추출 (AI 분석 없음)
-            pdf_reader = PDFReader(max_chars=100000)
-            extracted_text = await pdf_reader.read_pdf(pdf_url, max_chars=None)
+            # PDF URL에서 단순 텍스트 추출 (AI 분석 없음)
+            pdf_result = extract_pdf_text(pdf_url)
 
-            if not extracted_text or not extracted_text.strip():
-                return ToolResult(
-                    error="PDF에서 텍스트를 추출했지만 내용이 비어있습니다"
-                )
+            if not pdf_result.get("success", False) or not pdf_result.get("text"):
+                error_msg = pdf_result.get("error", "알 수 없는 오류")
+                return ToolResult(error=f"PDF 텍스트 추출 실패: {error_msg}")
 
-            logger.info(f"✅ PDF 텍스트 추출 성공 (길이: {len(extracted_text):,} 문자)")
+            extracted_text = pdf_result["text"]
+            extraction_method = pdf_result.get("method", "unknown")
+
+            logger.info(
+                f"✅ PDF 텍스트 추출 성공 (길이: {len(extracted_text):,} 문자, 방법: {extraction_method})"
+            )
 
             # 전체 내용을 그대로 반환 (요약 없음)
             return ToolResult(
@@ -617,6 +620,7 @@ Page content:
                         "url": pdf_url,
                         "goal": goal,
                         "processing_type": "simple_text_extraction",
+                        "extraction_method": extraction_method,
                     },
                 },
             )

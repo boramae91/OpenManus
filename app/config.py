@@ -84,7 +84,8 @@ class BrowserSettings(BaseModel):
         None, description="Proxy settings for the browser"
     )
     max_content_length: int = Field(
-        2000, description="Maximum length for content retrieval operations"
+        10000,
+        description="Maximum length for content retrieval operations (증가된 기본값)",
     )
 
 
