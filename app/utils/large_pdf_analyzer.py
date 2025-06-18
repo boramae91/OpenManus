@@ -329,11 +329,9 @@ class LargePDFAnalyzer:
                     "error": f"PDF 파일을 찾을 수 없습니다: {pdf_path}",
                 }
 
-            # 무제한 크기로 PDF 텍스트 추출
-            from app.utils.pdf_reader import extract_pdf_text
-
-            logger.info(f"📄 PDF 텍스트 추출 시도: {pdf_path}")
-            pdf_result = extract_pdf_text(pdf_path)
+            # 🚀 직접 PDF 텍스트 추출 (PDFReader 의존성 제거)
+            logger.info(f"📄 대용량 PDF 직접 추출 시도: {pdf_path}")
+            pdf_result = await self._direct_pdf_extraction(pdf_path)
 
             if not pdf_result.get("success", False):
                 return {
@@ -352,7 +350,9 @@ class LargePDFAnalyzer:
                 "success": True,
                 "full_text": full_text,
                 "text_length": len(full_text),
-                "extraction_method": pdf_result.get("extraction_method", "unknown"),
+                "extraction_method": pdf_result.get(
+                    "extraction_method", "direct_large_pdf"
+                ),
                 "pages_processed": pdf_result.get("pages", []),
                 "total_pages": len(pdf_result.get("pages", [])),
             }
@@ -360,6 +360,150 @@ class LargePDFAnalyzer:
         except Exception as e:
             logger.error(f"❌ PDF 텍스트 추출 중 오류: {str(e)}")
             return {"success": False, "error": f"PDF 텍스트 추출 오류: {str(e)}"}
+
+    async def _direct_pdf_extraction(self, pdf_path: str) -> Dict[str, Any]:
+        """
+        🚀 PDFReader 없이 직접 PDF 텍스트 추출 (대용량 특화)
+
+        Args:
+            pdf_path: PDF 파일 경로
+
+        Returns:
+            Dict: 추출 결과
+        """
+        import io
+
+        # 지원하는 PDF 라이브러리들 (우선순위 순서)
+        extraction_methods = [
+            ("pdfplumber", self._extract_with_pdfplumber),
+            ("pymupdf", self._extract_with_pymupdf),
+            ("pypdf", self._extract_with_pypdf),
+        ]
+
+        # PDF 파일을 바이너리로 읽기
+        try:
+            with open(pdf_path, "rb") as file:
+                pdf_data = io.BytesIO(file.read())
+        except Exception as e:
+            return {"success": False, "error": f"PDF 파일 읽기 실패: {str(e)}"}
+
+        # 각 라이브러리를 순차 시도
+        for method_name, method_func in extraction_methods:
+            try:
+                pdf_data.seek(0)  # 스트림 포지션 초기화
+                result = await method_func(pdf_data)
+
+                if result.get("success", False) and result.get("full_text", "").strip():
+                    logger.info(f"✅ 대용량 PDF 추출 성공 (방법: {method_name})")
+                    result["extraction_method"] = f"direct_{method_name}"
+                    return result
+
+            except Exception as e:
+                logger.warning(f"⚠️ {method_name} 추출 실패: {e}")
+                continue
+
+        # 모든 방법 실패
+        return {
+            "success": False,
+            "error": "모든 PDF 추출 방법 실패 - 파일이 손상되었거나 지원되지 않는 형식",
+            "full_text": "",
+            "pages": [],
+        }
+
+    async def _extract_with_pdfplumber(self, pdf_data: io.BytesIO) -> Dict[str, Any]:
+        """pdfplumber로 PDF 텍스트 추출"""
+        try:
+            import pdfplumber
+
+            full_text = ""
+            pages = []
+
+            with pdfplumber.open(pdf_data) as pdf:
+                for page_num, page in enumerate(pdf.pages, 1):
+                    try:
+                        page_text = page.extract_text() or ""
+                        full_text += page_text + "\n"
+                        pages.append(f"페이지 {page_num}: {len(page_text)}자")
+                    except Exception as e:
+                        logger.warning(f"⚠️ 페이지 {page_num} 추출 실패: {e}")
+                        continue
+
+            return {
+                "success": True,
+                "full_text": full_text.strip(),
+                "pages": pages,
+                "total_pages": len(pages),
+            }
+
+        except ImportError:
+            return {"success": False, "error": "pdfplumber 라이브러리가 설치되지 않음"}
+        except Exception as e:
+            return {"success": False, "error": f"pdfplumber 추출 오류: {str(e)}"}
+
+    async def _extract_with_pymupdf(self, pdf_data: io.BytesIO) -> Dict[str, Any]:
+        """PyMuPDF(fitz)로 PDF 텍스트 추출"""
+        try:
+            import fitz  # PyMuPDF
+
+            full_text = ""
+            pages = []
+
+            doc = fitz.open(stream=pdf_data.read(), filetype="pdf")
+
+            for page_num in range(doc.page_count):
+                try:
+                    page = doc[page_num]
+                    page_text = page.get_text() or ""
+                    full_text += page_text + "\n"
+                    pages.append(f"페이지 {page_num + 1}: {len(page_text)}자")
+                except Exception as e:
+                    logger.warning(f"⚠️ 페이지 {page_num + 1} 추출 실패: {e}")
+                    continue
+
+            doc.close()
+
+            return {
+                "success": True,
+                "full_text": full_text.strip(),
+                "pages": pages,
+                "total_pages": len(pages),
+            }
+
+        except ImportError:
+            return {"success": False, "error": "PyMuPDF 라이브러리가 설치되지 않음"}
+        except Exception as e:
+            return {"success": False, "error": f"PyMuPDF 추출 오류: {str(e)}"}
+
+    async def _extract_with_pypdf(self, pdf_data: io.BytesIO) -> Dict[str, Any]:
+        """PyPDF로 PDF 텍스트 추출"""
+        try:
+            from pypdf import PdfReader
+
+            full_text = ""
+            pages = []
+
+            reader = PdfReader(pdf_data)
+
+            for page_num, page in enumerate(reader.pages, 1):
+                try:
+                    page_text = page.extract_text() or ""
+                    full_text += page_text + "\n"
+                    pages.append(f"페이지 {page_num}: {len(page_text)}자")
+                except Exception as e:
+                    logger.warning(f"⚠️ 페이지 {page_num} 추출 실패: {e}")
+                    continue
+
+            return {
+                "success": True,
+                "full_text": full_text.strip(),
+                "pages": pages,
+                "total_pages": len(pages),
+            }
+
+        except ImportError:
+            return {"success": False, "error": "PyPDF 라이브러리가 설치되지 않음"}
+        except Exception as e:
+            return {"success": False, "error": f"PyPDF 추출 오류: {str(e)}"}
 
     async def _analyze_report_structure(
         self, full_text: str, report_type: str
