@@ -1331,29 +1331,51 @@ class EnhancedStockAnalysisSystem:
             # 현재: 원문 추출 모드 (빠름, 요약 없음)
             company_name = stock_info.get("stock_name", "분석대상회사")
 
-            # PDF 분석 수행 (원문 추출 모드)
+            # PDF 분석 수행 (원문 추출 모드, 별도 파일 저장하지 않음)
             pdf_result = await self.large_pdf_analyzer.extract_raw_text_only(
-                pdf_path=pdf_path, company_name=company_name, save_to_json=True
+                pdf_path=pdf_path,
+                company_name=company_name,
+                save_to_json=False,  # 🔧 별도 저장 비활성화
             )
 
             if pdf_result.get("metadata", {}).get("success", False):
                 logger.info("✅ PDF 분석 완료!")
+
+                # 📄 PDF 분석 결과를 분석 응답에 포함
                 return {
                     "pdf_detected": True,
                     "pdf_path": pdf_path,
                     "analysis_completed": True,
+                    "pdf_content": {  # 🚀 PDF 내용을 직접 포함
+                        "raw_text": pdf_result.get("raw_content", {}).get(
+                            "full_text", ""
+                        ),
+                        "text_length": pdf_result.get("metadata", {}).get(
+                            "total_text_length", 0
+                        ),
+                        "pages_info": pdf_result.get("metadata", {}).get(
+                            "pages_processed", []
+                        ),
+                        "processing_time": pdf_result.get("metadata", {}).get(
+                            "total_processing_time", "정보없음"
+                        ),
+                        "extraction_method": pdf_result.get("metadata", {}).get(
+                            "extraction_method_detail", ""
+                        ),
+                        "pdf_url": pdf_path,
+                    },
                     "analysis_result": {
                         "company_name": company_name,
                         "text_length": pdf_result.get("metadata", {}).get(
                             "total_text_length", 0
                         ),
-                        "saved_file": pdf_result.get("saved_file"),
                         "processing_time": pdf_result.get("metadata", {}).get(
                             "total_processing_time", "정보없음"
                         ),
                         "content_preview": pdf_result.get("content_preview", ""),
                     },
                 }
+
             else:
                 error_msg = pdf_result.get("metadata", {}).get(
                     "error", "알 수 없는 오류"
@@ -2019,17 +2041,21 @@ class EnhancedStockAnalysisSystem:
     def _prepare_raw_data_for_json(self, results: Dict[str, Any]) -> Dict[str, Any]:
         """
         JSON 저장을 위한 원본 데이터 준비
-        yfinance와 DART에서 가져온 모든 원본 데이터를 정리해요
+        yfinance, DART, PDF, CrewAI에서 가져온 모든 원본 데이터를 정리해요
         """
         raw_data = {
             "data_sources_summary": {
                 "yfinance_data_available": False,
                 "dart_basic_data_available": False,
                 "enhanced_dart_data_available": False,
+                "pdf_data_available": False,
+                "crewai_sector_analysis_available": False,  # 🚀 CrewAI 섹터 분석 추가
             },
             "yfinance_raw_data": {},
             "dart_basic_raw_data": {},
             "enhanced_dart_raw_data": {},
+            "pdf_raw_data": {},
+            "crewai_sector_analysis_raw_data": {},  # 🚀 CrewAI 원본 데이터 섹션 추가
         }
 
         try:
@@ -2094,10 +2120,156 @@ class EnhancedStockAnalysisSystem:
                 raw_data["enhanced_dart_raw_data"] = enhanced_dart_raw
                 logger.info("✅ Enhanced DART 원본 데이터 JSON 준비 완료")
 
-            # 3. 📊 데이터 소스별 통계 정보 추가
+            # 3. 📄 PDF 원본 데이터 추출
+            pdf_analysis = results.get("steps", {}).get("pdf_large_analysis", {})
+            if pdf_analysis.get("pdf_detected") and pdf_analysis.get("pdf_content"):
+                raw_data["data_sources_summary"]["pdf_data_available"] = True
+
+                # PDF 원본 데이터를 포함
+                pdf_raw = {
+                    "pdf_metadata": {
+                        "pdf_url": pdf_analysis.get("pdf_path", ""),
+                        "analysis_completed": pdf_analysis.get(
+                            "analysis_completed", False
+                        ),
+                        "text_length": pdf_analysis.get("pdf_content", {}).get(
+                            "text_length", 0
+                        ),
+                        "processing_time": pdf_analysis.get("pdf_content", {}).get(
+                            "processing_time", ""
+                        ),
+                        "extraction_method": pdf_analysis.get("pdf_content", {}).get(
+                            "extraction_method", ""
+                        ),
+                        "total_pages": len(
+                            pdf_analysis.get("pdf_content", {}).get("pages_info", [])
+                        ),
+                    },
+                    "pdf_full_text": pdf_analysis.get("pdf_content", {}).get(
+                        "raw_text", ""
+                    ),
+                    "pages_breakdown": pdf_analysis.get("pdf_content", {}).get(
+                        "pages_info", []
+                    ),
+                    "extraction_info": {
+                        "source_type": "company_report",
+                        "language": "auto_detected",
+                        "note": "PDF 내용이 기존 JSON 파일에 통합되어 별도 파일 저장하지 않음",
+                    },
+                }
+
+                raw_data["pdf_raw_data"] = pdf_raw
+                logger.info(
+                    "✅ PDF 원본 데이터 JSON 준비 완료 - 별도 파일 저장 없이 통합"
+                )
+
+            # 4. 🎯 CrewAI 섹터 분석 원본 데이터 추출 (새로 추가!)
+            sector_analysis = results.get("steps", {}).get(
+                "step2_5_sector_analysis", {}
+            )
+            if sector_analysis and not sector_analysis.get("error"):
+                raw_data["data_sources_summary"][
+                    "crewai_sector_analysis_available"
+                ] = True
+
+                # CrewAI 섹터 분석의 모든 과정과 결과를 포함
+                crewai_raw = {
+                    "sector_detection_process": {
+                        "detected_sector": sector_analysis.get("detected_sector", ""),
+                        "sector_korean_name": sector_analysis.get(
+                            "sector_korean_name", ""
+                        ),
+                        "detection_method": sector_analysis.get("detection_method", ""),
+                        "detection_confidence": sector_analysis.get(
+                            "detection_confidence", 0.0
+                        ),
+                        "detection_timestamp": sector_analysis.get(
+                            "detection_timestamp", ""
+                        ),
+                    },
+                    "activated_team_info": {
+                        "team_name": sector_analysis.get("activated_team", {}).get(
+                            "team_name", ""
+                        ),
+                        "team_description": sector_analysis.get(
+                            "activated_team", {}
+                        ).get("team_description", ""),
+                        "total_experts": len(
+                            sector_analysis.get("activated_team", {}).get("experts", [])
+                        ),
+                        "experts_details": sector_analysis.get(
+                            "activated_team", {}
+                        ).get("experts", []),
+                        "collaboration_strategy": sector_analysis.get(
+                            "activated_team", {}
+                        ).get("collaboration_strategy", ""),
+                        "report_structure": sector_analysis.get(
+                            "activated_team", {}
+                        ).get("report_structure", {}),
+                    },
+                    "analysis_depth_info": {
+                        "selected_depth": sector_analysis.get("analysis_depth", ""),
+                        "selected_experts_count": sector_analysis.get(
+                            "selected_experts_count", 0
+                        ),
+                        "selected_experts": sector_analysis.get("selected_experts", []),
+                        "cost_per_analysis": sector_analysis.get(
+                            "cost_estimation", {}
+                        ).get("cost_per_analysis", 0.0),
+                        "cache_ttl_hours": sector_analysis.get(
+                            "cost_estimation", {}
+                        ).get("cache_ttl_hours", 0),
+                    },
+                    "expert_analysis_results": {
+                        "individual_analyses": sector_analysis.get(
+                            "expert_analysis_results", []
+                        ),
+                        "synthesis_result": sector_analysis.get("synthesis_result", ""),
+                        "total_analysis_time": sector_analysis.get(
+                            "total_processing_time", ""
+                        ),
+                    },
+                    "one_hot_activation_metrics": {
+                        "traditional_cost": sector_analysis.get("cost_savings", {}).get(
+                            "traditional_cost", 0.0
+                        ),
+                        "one_hot_cost": sector_analysis.get("cost_savings", {}).get(
+                            "one_hot_cost", 0.0
+                        ),
+                        "savings_amount": sector_analysis.get("cost_savings", {}).get(
+                            "savings_amount", 0.0
+                        ),
+                        "savings_percentage": sector_analysis.get(
+                            "cost_savings", {}
+                        ).get("savings_percentage", 0.0),
+                        "efficiency_gain": sector_analysis.get("cost_savings", {}).get(
+                            "efficiency_description", ""
+                        ),
+                    },
+                    "cache_and_performance": {
+                        "cache_used": sector_analysis.get("cache_used", False),
+                        "cache_key": sector_analysis.get("cache_key", ""),
+                        "performance_stats": sector_analysis.get(
+                            "performance_stats", {}
+                        ),
+                    },
+                    "sector_specific_insights": {
+                        "sector_context": sector_analysis.get("sector_context", {}),
+                        "key_metrics": sector_analysis.get("sector_key_metrics", []),
+                        "sector_trends": sector_analysis.get("sector_trends", ""),
+                        "industry_outlook": sector_analysis.get("industry_outlook", ""),
+                    },
+                }
+
+                raw_data["crewai_sector_analysis_raw_data"] = crewai_raw
+                logger.info(
+                    "✅ CrewAI 섹터 분석 원본 데이터 JSON 준비 완료 - One-Hot Activation 전체 과정 포함"
+                )
+
+            # 5. 📊 데이터 소스별 통계 정보 추가
             raw_data["data_statistics"] = self._calculate_data_statistics(raw_data)
 
-            logger.info("📊 원본 데이터 JSON 준비 완료")
+            logger.info("📊 원본 데이터 JSON 준비 완료 (PDF + CrewAI 포함)")
 
         except Exception as e:
             logger.error(f"❌ 원본 데이터 준비 중 오류: {e}")
@@ -2106,11 +2278,13 @@ class EnhancedStockAnalysisSystem:
         return raw_data
 
     def _calculate_data_statistics(self, raw_data: Dict[str, Any]) -> Dict[str, Any]:
-        """원본 데이터의 통계 정보를 계산해요"""
+        """원본 데이터의 통계 정보를 계산해요 (PDF + CrewAI 포함)"""
         stats = {
             "total_data_points": 0,
             "yfinance_data_points": 0,
             "enhanced_dart_data_points": 0,
+            "pdf_data_points": 0,
+            "crewai_data_points": 0,  # 🚀 CrewAI 데이터 포인트 추가
             "data_completeness": "정보없음",
         }
 
@@ -2136,17 +2310,94 @@ class EnhancedStockAnalysisSystem:
                         dart_count += self._count_nested_dict_values(section_data)
                 stats["enhanced_dart_data_points"] = dart_count
 
+            # 🚀 PDF 데이터 포인트 계산
+            pdf_data = raw_data.get("pdf_raw_data", {})
+            if pdf_data:
+                pdf_count = 0
+                # PDF 텍스트 길이를 데이터 포인트로 환산 (1000자 = 1포인트)
+                pdf_text = pdf_data.get("pdf_full_text", "")
+                if pdf_text:
+                    pdf_count += max(1, len(pdf_text) // 1000)  # 최소 1포인트
+
+                # 메타데이터도 포인트로 계산
+                pdf_metadata = pdf_data.get("pdf_metadata", {})
+                if pdf_metadata:
+                    pdf_count += sum(1 for v in pdf_metadata.values() if v)
+
+                # 페이지 정보도 포인트로 계산
+                pages_info = pdf_data.get("pages_breakdown", [])
+                if pages_info:
+                    pdf_count += len(pages_info)
+
+                stats["pdf_data_points"] = pdf_count
+
+            # 🚀 CrewAI 섹터 분석 데이터 포인트 계산 (새로 추가!)
+            crewai_data = raw_data.get("crewai_sector_analysis_raw_data", {})
+            if crewai_data:
+                crewai_count = 0
+
+                # 섹터 감지 프로세스 포인트
+                sector_detection = crewai_data.get("sector_detection_process", {})
+                if sector_detection:
+                    crewai_count += sum(1 for v in sector_detection.values() if v)
+
+                # 활성화된 팀 정보 포인트
+                team_info = crewai_data.get("activated_team_info", {})
+                if team_info:
+                    crewai_count += sum(1 for v in team_info.values() if v)
+                    # 전문가 상세 정보는 개수로 계산
+                    experts = team_info.get("experts_details", [])
+                    crewai_count += len(experts) * 5  # 전문가당 5포인트
+
+                # 분석 깊이 정보 포인트
+                depth_info = crewai_data.get("analysis_depth_info", {})
+                if depth_info:
+                    crewai_count += sum(1 for v in depth_info.values() if v)
+
+                # 전문가 분석 결과 포인트
+                analysis_results = crewai_data.get("expert_analysis_results", {})
+                if analysis_results:
+                    individual_analyses = analysis_results.get(
+                        "individual_analyses", []
+                    )
+                    crewai_count += (
+                        len(individual_analyses) * 10
+                    )  # 개별 분석당 10포인트
+
+                    # 종합 결과도 길이에 따라 포인트 계산
+                    synthesis = analysis_results.get("synthesis_result", "")
+                    if synthesis:
+                        crewai_count += max(1, len(synthesis) // 500)  # 500자당 1포인트
+
+                # One-Hot 활성화 메트릭 포인트
+                activation_metrics = crewai_data.get("one_hot_activation_metrics", {})
+                if activation_metrics:
+                    crewai_count += sum(1 for v in activation_metrics.values() if v)
+
+                # 섹터별 인사이트 포인트
+                sector_insights = crewai_data.get("sector_specific_insights", {})
+                if sector_insights:
+                    crewai_count += sum(1 for v in sector_insights.values() if v)
+                    # 핵심 지표는 개수로 계산
+                    key_metrics = sector_insights.get("key_metrics", [])
+                    crewai_count += len(key_metrics)
+
+                stats["crewai_data_points"] = crewai_count
+
             # 총 데이터 포인트
             stats["total_data_points"] = (
-                stats["yfinance_data_points"] + stats["enhanced_dart_data_points"]
+                stats["yfinance_data_points"]
+                + stats["enhanced_dart_data_points"]
+                + stats["pdf_data_points"]
+                + stats["crewai_data_points"]  # 🚀 CrewAI 포함
             )
 
-            # 데이터 완성도 평가
-            if stats["total_data_points"] > 100:
+            # 데이터 완성도 평가 (CrewAI 포함하여 기준 다시 상향 조정)
+            if stats["total_data_points"] > 300:  # CrewAI 포함하여 기준 다시 상향
                 stats["data_completeness"] = "매우높음"
-            elif stats["total_data_points"] > 50:
+            elif stats["total_data_points"] > 150:
                 stats["data_completeness"] = "높음"
-            elif stats["total_data_points"] > 20:
+            elif stats["total_data_points"] > 75:
                 stats["data_completeness"] = "보통"
             else:
                 stats["data_completeness"] = "낮음"
