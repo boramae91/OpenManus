@@ -28,6 +28,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
+import aiohttp  # 🌐 URL PDF 다운로드용 추가!
 from loguru import logger
 
 from app.agent.manus import Manus
@@ -404,24 +405,26 @@ class LargePDFAnalyzer:
 
         60만 글자도 안전하게 처리할 수 있도록 최적화되어 있어요.
         여러 PDF 라이브러리를 시도해서 가장 좋은 결과를 얻습니다.
+        URL PDF도 자동으로 다운로드해서 처리합니다.
 
         Args:
-            pdf_path: PDF 파일 경로
+            pdf_path: PDF 파일 경로 또는 URL
 
         Returns:
             Dict: 추출 결과와 메타데이터
         """
         try:
-            # PDF 파일 존재 확인
-            if not os.path.exists(pdf_path):
+            # 🌐 URL PDF인지 확인하고 다운로드
+            actual_pdf_path = await self._handle_pdf_source(pdf_path)
+            if not actual_pdf_path:
                 return {
                     "success": False,
-                    "error": f"PDF 파일을 찾을 수 없습니다: {pdf_path}",
+                    "error": f"PDF 소스를 처리할 수 없습니다: {pdf_path}",
                 }
 
             # 🚀 직접 PDF 텍스트 추출 (PDFReader 의존성 제거)
-            logger.info(f"📄 대용량 PDF 직접 추출 시도: {pdf_path}")
-            pdf_result = await self._direct_pdf_extraction(pdf_path)
+            logger.info(f"📄 대용량 PDF 직접 추출 시도: {actual_pdf_path}")
+            pdf_result = await self._direct_pdf_extraction(actual_pdf_path)
 
             if not pdf_result.get("success", False):
                 return {
@@ -445,18 +448,94 @@ class LargePDFAnalyzer:
                 ),
                 "pages_processed": pdf_result.get("pages", []),
                 "total_pages": len(pdf_result.get("pages", [])),
+                "original_source": pdf_path,
+                "processed_file": actual_pdf_path,
             }
 
         except Exception as e:
             logger.error(f"❌ PDF 텍스트 추출 중 오류: {str(e)}")
             return {"success": False, "error": f"PDF 텍스트 추출 오류: {str(e)}"}
 
+    async def _handle_pdf_source(self, pdf_path: str) -> Optional[str]:
+        """
+        🌐 PDF 소스 처리 (로컬 파일 또는 URL 직접 처리)
+
+        URL인 경우 메모리에서 직접 처리하고, 로컬 파일인 경우 그대로 반환합니다.
+        다운로드 없이 스트림으로 처리해서 더 빠르고 효율적입니다.
+
+        Args:
+            pdf_path: PDF 파일 경로 또는 URL
+
+        Returns:
+            str: 처리 가능한 경로 또는 URL (실패시 None)
+        """
+        try:
+            # URL인지 확인
+            if pdf_path.startswith(("http://", "https://")):
+                logger.info(f"🌐 URL PDF 감지, 메모리에서 직접 처리: {pdf_path}")
+                # URL 그대로 반환 - _direct_pdf_extraction에서 직접 처리
+                return pdf_path
+
+            # 로컬 파일인지 확인
+            elif os.path.exists(pdf_path):
+                logger.info(f"📁 로컬 PDF 파일 확인: {pdf_path}")
+                return pdf_path
+
+            # 파일을 찾을 수 없음
+            else:
+                logger.error(f"❌ PDF 파일을 찾을 수 없습니다: {pdf_path}")
+                return None
+
+        except Exception as e:
+            logger.error(f"❌ PDF 소스 처리 중 오류: {str(e)}")
+            return None
+
+    async def _download_pdf_from_url(self, url: str) -> Optional[str]:
+        """
+        🌐 URL에서 PDF 스트림 가져오기 (메모리 처리용)
+
+        Args:
+            url: PDF 파일 URL
+
+        Returns:
+            io.BytesIO: PDF 데이터 스트림 (실패시 None)
+        """
+        import aiohttp
+
+        try:
+            # HTTP 요청으로 PDF 스트림 가져오기
+            timeout = aiohttp.ClientTimeout(total=60)  # 60초 타임아웃
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                logger.info(f"📥 PDF 스트림 로드 시작: {url}")
+
+                async with session.get(url) as response:
+                    if response.status == 200:
+                        # 메모리로 직접 로드
+                        pdf_data = await response.read()
+
+                        if pdf_data and len(pdf_data) > 0:
+                            logger.info(
+                                f"✅ PDF 스트림 로드 완료: {len(pdf_data):,} bytes"
+                            )
+                            return io.BytesIO(pdf_data)
+                        else:
+                            logger.error("❌ PDF 데이터가 비어있습니다")
+                            return None
+                    else:
+                        logger.error(f"❌ HTTP 오류: {response.status} - {url}")
+                        return None
+
+        except Exception as e:
+            logger.error(f"❌ PDF 스트림 로드 실패: {str(e)}")
+            return None
+
     async def _direct_pdf_extraction(self, pdf_path: str) -> Dict[str, Any]:
         """
         🚀 PDFReader 없이 직접 PDF 텍스트 추출 (대용량 특화)
+        로컬 파일과 URL PDF 모두 지원 (다운로드 없이 메모리 처리)
 
         Args:
-            pdf_path: PDF 파일 경로
+            pdf_path: PDF 파일 경로 또는 URL
 
         Returns:
             Dict: 추출 결과
@@ -470,12 +549,19 @@ class LargePDFAnalyzer:
             ("pypdf", self._extract_with_pypdf),
         ]
 
-        # PDF 파일을 바이너리로 읽기
+        # PDF 데이터 준비 (로컬 파일 또는 URL)
         try:
-            with open(pdf_path, "rb") as file:
-                pdf_data = io.BytesIO(file.read())
+            if pdf_path.startswith(("http://", "https://")):
+                # 🌐 URL PDF - 메모리에서 직접 처리
+                pdf_data = await self._download_pdf_from_url(pdf_path)
+                if not pdf_data:
+                    return {"success": False, "error": f"URL PDF 로드 실패: {pdf_path}"}
+            else:
+                # 📁 로컬 파일 - 파일에서 읽기
+                with open(pdf_path, "rb") as file:
+                    pdf_data = io.BytesIO(file.read())
         except Exception as e:
-            return {"success": False, "error": f"PDF 파일 읽기 실패: {str(e)}"}
+            return {"success": False, "error": f"PDF 데이터 준비 실패: {str(e)}"}
 
         # 각 라이브러리를 순차 시도
         for method_name, method_func in extraction_methods:
@@ -486,6 +572,11 @@ class LargePDFAnalyzer:
                 if result.get("success", False) and result.get("full_text", "").strip():
                     logger.info(f"✅ 대용량 PDF 추출 성공 (방법: {method_name})")
                     result["extraction_method"] = f"direct_{method_name}"
+                    result["source_type"] = (
+                        "URL"
+                        if pdf_path.startswith(("http://", "https://"))
+                        else "로컬파일"
+                    )
                     return result
 
             except Exception as e:
@@ -497,7 +588,6 @@ class LargePDFAnalyzer:
             "success": False,
             "error": "모든 PDF 추출 방법 실패 - 파일이 손상되었거나 지원되지 않는 형식",
             "full_text": "",
-            "pages": [],
         }
 
     async def _extract_with_pdfplumber(self, pdf_data: io.BytesIO) -> Dict[str, Any]:
