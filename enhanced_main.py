@@ -133,12 +133,13 @@ class EnhancedStockAnalysisSystem:
         }
 
         try:
-            # 🔍 PDF 감지 및 자동 분석 실행
-            pdf_analysis_result = await self._check_and_analyze_pdf(user_prompt)
-            if pdf_analysis_result.get("pdf_detected"):
-                results["steps"]["pdf_large_analysis"] = pdf_analysis_result
-                logger.info("📄 PDF 분석 완료 - PDF 기반 종합 분석 수행됨")
-                # PDF 분석이 완료되면 해당 결과를 바탕으로 추가 분석 수행 가능
+            # 🚫 PDF 감지 및 자동 분석 실행 (비활성화됨)
+            # pdf_analysis_result = await self._check_and_analyze_pdf(user_prompt)
+            # if pdf_analysis_result.get("pdf_detected"):
+            #     results["steps"]["pdf_large_analysis"] = pdf_analysis_result
+            #     logger.info("📄 PDF 분석 완료 - PDF 기반 종합 분석 수행됨")
+            #     # PDF 분석이 완료되면 해당 결과를 바탕으로 추가 분석 수행 가능
+            logger.info("📄 PDF 처리가 비활성화되었습니다")
 
             # 🚀 NEW Step 0: 질문 의도 분석
             logger.info("🎯 Step 0: 사용자 질문 의도 분석")
@@ -2071,22 +2072,22 @@ async def main():
         if results["success"]:
             print("\n✅ 분석 완료!")
 
-            # PDF 분석 결과 출력
-            pdf_analysis = results.get("steps", {}).get("pdf_large_analysis", {})
-            if pdf_analysis.get("pdf_detected"):
-                print(f"📄 PDF 분석: {pdf_analysis['pdf_path']}")
-                if pdf_analysis.get("analysis_completed"):
-                    pdf_result = pdf_analysis.get("analysis_result", {})
-                    print(
-                        f"📄 PDF 분석 완료: {pdf_result.get('saved_file', '파일 저장됨')}"
-                    )
-                    print(
-                        f"📄 분석 대상: {pdf_result.get('company_name', '알 수 없음')}"
-                    )
-                else:
-                    print(
-                        f"❌ PDF 분석 실패: {pdf_analysis.get('error', '알 수 없는 오류')}"
-                    )
+            # PDF 분석 결과 출력 (비활성화됨)
+            # pdf_analysis = results.get("steps", {}).get("pdf_large_analysis", {})
+            # if pdf_analysis.get("pdf_detected"):
+            #     print(f"📄 PDF 분석: {pdf_analysis['pdf_path']}")
+            #     if pdf_analysis.get("analysis_completed"):
+            #         pdf_result = pdf_analysis.get("analysis_result", {})
+            #         print(
+            #             f"📄 PDF 분석 완료: {pdf_result.get('saved_file', '파일 저장됨')}"
+            #         )
+            #         print(
+            #             f"📄 분석 대상: {pdf_result.get('company_name', '알 수 없음')}"
+            #         )
+            #     else:
+            #         print(
+            #             f"❌ PDF 분석 실패: {pdf_analysis.get('error', '알 수 없는 오류')}"
+            #         )
 
             # 종합 요약 출력
             summary = results.get("final_summary", {})

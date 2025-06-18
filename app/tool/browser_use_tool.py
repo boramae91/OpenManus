@@ -1,12 +1,13 @@
 import asyncio
 import base64
 import json
-from typing import Generic, Optional, TypeVar
+from typing import Any, Dict, Generic, Optional, TypeVar
 
 from browser_use import Browser as BrowserUseBrowser
 from browser_use import BrowserConfig
 from browser_use.browser.context import BrowserContext, BrowserContextConfig
 from browser_use.dom.service import DomService
+from loguru import logger
 from pydantic import Field, field_validator
 from pydantic_core.core_schema import ValidationInfo
 
@@ -36,6 +37,41 @@ Context = TypeVar("Context")
 
 
 class BrowserUseTool(BaseTool, Generic[Context]):
+    """
+    OpenManus 브라우저 제어 도구 (PDF 중복 추출 방지 기능 포함)
+
+    이 도구는 AI 에이전트가 실제 웹 브라우저를 조작할 수 있게 해주는 강력한 도구입니다:
+    - 웹 페이지 방문, 검색, 클릭, 스크롤 등 모든 브라우저 작업 수행
+    - PDF 파일 자동 감지 및 텍스트 추출 (중복 추출 방지)
+    - 복잡한 웹 애플리케이션 조작
+    - 스크린샷 촬영 및 시각적 분석
+    """
+
+    def __init__(self, headless: bool = True):
+        """
+        브라우저 도구 초기화
+
+        Args:
+            headless: True면 브라우저가 화면에 보이지 않음 (기본값)
+        """
+        super().__init__()
+        self.browser: Optional[BrowserUseBrowser] = None
+        self.context: Optional[BrowserContext] = None
+        self.headless = headless
+        self.lock = asyncio.Lock()
+        self.dom_service: Optional[DomService] = None
+
+        # 🚀 PDF 캐싱 시스템 추가 (중복 추출 방지)
+        self.pdf_cache: Dict[str, Dict[str, Any]] = {}
+        logger.info("🔧 브라우저 도구 초기화 완료 (PDF 캐싱 시스템 활성화)")
+
+        self.web_search_tool: WebSearch = Field(default_factory=WebSearch, exclude=True)
+
+        # Context for generic functionality
+        self.tool_context: Optional[Context] = Field(default=None, exclude=True)
+
+        self.llm: Optional[LLM] = Field(default_factory=LLM)
+
     name: str = "browser_use"
     description: str = _BROWSER_DESCRIPTION
     parameters: dict = {
@@ -120,17 +156,6 @@ class BrowserUseTool(BaseTool, Generic[Context]):
         },
     }
 
-    lock: asyncio.Lock = Field(default_factory=asyncio.Lock)
-    browser: Optional[BrowserUseBrowser] = Field(default=None, exclude=True)
-    context: Optional[BrowserContext] = Field(default=None, exclude=True)
-    dom_service: Optional[DomService] = Field(default=None, exclude=True)
-    web_search_tool: WebSearch = Field(default_factory=WebSearch, exclude=True)
-
-    # Context for generic functionality
-    tool_context: Optional[Context] = Field(default=None, exclude=True)
-
-    llm: Optional[LLM] = Field(default_factory=LLM)
-
     @field_validator("parameters", mode="before")
     def validate_parameters(cls, v: dict, info: ValidationInfo) -> dict:
         if not v:
@@ -140,7 +165,10 @@ class BrowserUseTool(BaseTool, Generic[Context]):
     async def _ensure_browser_initialized(self) -> BrowserContext:
         """Ensure browser and context are initialized."""
         if self.browser is None:
-            browser_config_kwargs = {"headless": False, "disable_security": True}
+            browser_config_kwargs = {
+                "headless": self.headless,
+                "disable_security": True,
+            }
 
             if config.browser_config:
                 from browser_use.browser.browser import ProxySettings
@@ -575,10 +603,12 @@ Page content:
         self, pdf_url: str, goal: str, max_content_length: int
     ) -> ToolResult:
         """
-        PDF 파일에서 내용을 추출하는 전용 메서드입니다.
+        PDF 파일에서 내용을 추출하는 전용 메서드입니다 (중복 추출 방지 기능 포함)
 
         이 메서드는 PDF 처리 라이브러리를 사용하여 PDF 파일의 텍스트를 직접 추출합니다.
         브라우저에서 PDF를 제대로 렌더링하지 못하는 문제를 해결하기 위해 만들어졌습니다.
+
+        🚀 새로운 기능: 같은 PDF URL에 대해서는 캐시된 결과를 재사용해서 중복 추출을 방지합니다.
 
         매개변수:
             pdf_url (str): PDF 파일의 URL
@@ -589,12 +619,30 @@ Page content:
             ToolResult: 추출된 PDF 내용과 분석 결과
         """
         try:
-            # PDF 처리 유틸리티 import (단순 텍스트 추출)
-            from loguru import logger
+            # 🔍 PDF 캐시 확인 (중복 추출 방지)
+            if pdf_url in self.pdf_cache:
+                logger.info(f"📄 PDF 캐시에서 재사용: {pdf_url}")
+                cached_result = self.pdf_cache[pdf_url]
 
+                return ToolResult(
+                    output=f"📄 PDF 파일 텍스트 추출 완료 (캐시됨) - {pdf_url}",
+                    metadata={
+                        "text": cached_result["text"],
+                        "metadata": {
+                            "source": "PDF",
+                            "url": pdf_url,
+                            "goal": goal,
+                            "processing_type": "cached_extraction",
+                            "extraction_method": cached_result["method"],
+                            "cache_hit": True,
+                        },
+                    },
+                )
+
+            # PDF 처리 유틸리티 import (단순 텍스트 추출)
             from app.utils.pdf_reader import extract_pdf_text
 
-            logger.info(f"📄 브라우저에서 PDF 파일 자동 감지: {pdf_url}")
+            logger.info(f"📄 브라우저에서 PDF 파일 자동 감지 (새로운 추출): {pdf_url}")
 
             # PDF URL에서 단순 텍스트 추출 (AI 분석 없음)
             pdf_result = extract_pdf_text(pdf_url)
@@ -606,8 +654,15 @@ Page content:
             extracted_text = pdf_result["text"]
             extraction_method = pdf_result.get("method", "unknown")
 
+            # 🚀 PDF 캐시에 저장 (중복 추출 방지)
+            self.pdf_cache[pdf_url] = {
+                "text": f"[PDF 파일 텍스트 추출 완료 - {pdf_url}]\n\n{extracted_text}",
+                "method": extraction_method,
+                "url": pdf_url,
+            }
+
             logger.info(
-                f"✅ PDF 텍스트 추출 성공 (길이: {len(extracted_text):,} 문자, 방법: {extraction_method})"
+                f"✅ PDF 텍스트 추출 성공 및 캐시 저장 (길이: {len(extracted_text):,} 문자, 방법: {extraction_method})"
             )
 
             # 전체 내용을 그대로 반환 (요약 없음)
@@ -621,6 +676,7 @@ Page content:
                         "goal": goal,
                         "processing_type": "simple_text_extraction",
                         "extraction_method": extraction_method,
+                        "cache_hit": False,
                     },
                 },
             )
@@ -645,6 +701,12 @@ Page content:
             if self.browser is not None:
                 await self.browser.close()
                 self.browser = None
+
+            # 🧹 PDF 캐시 정리
+            if hasattr(self, "pdf_cache"):
+                cache_count = len(self.pdf_cache)
+                self.pdf_cache.clear()
+                logger.info(f"🧹 PDF 캐시 정리 완료 ({cache_count}개 항목 삭제)")
 
     def __del__(self):
         """Ensure cleanup when object is destroyed."""
