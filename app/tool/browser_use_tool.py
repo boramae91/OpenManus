@@ -47,31 +47,6 @@ class BrowserUseTool(BaseTool, Generic[Context]):
     - 스크린샷 촬영 및 시각적 분석
     """
 
-    def __init__(self, headless: bool = True):
-        """
-        브라우저 도구 초기화
-
-        Args:
-            headless: True면 브라우저가 화면에 보이지 않음 (기본값)
-        """
-        super().__init__()
-        self.browser: Optional[BrowserUseBrowser] = None
-        self.context: Optional[BrowserContext] = None
-        self.headless = headless
-        self.lock = asyncio.Lock()
-        self.dom_service: Optional[DomService] = None
-
-        # 🚀 PDF 캐싱 시스템 추가 (중복 추출 방지)
-        self.pdf_cache: Dict[str, Dict[str, Any]] = {}
-        logger.info("🔧 브라우저 도구 초기화 완료 (PDF 캐싱 시스템 활성화)")
-
-        self.web_search_tool: WebSearch = Field(default_factory=WebSearch, exclude=True)
-
-        # Context for generic functionality
-        self.tool_context: Optional[Context] = Field(default=None, exclude=True)
-
-        self.llm: Optional[LLM] = Field(default_factory=LLM)
-
     name: str = "browser_use"
     description: str = _BROWSER_DESCRIPTION
     parameters: dict = {
@@ -156,19 +131,33 @@ class BrowserUseTool(BaseTool, Generic[Context]):
         },
     }
 
+    # 🚀 PDF 캐싱 시스템을 위한 Pydantic 필드들
+    lock: asyncio.Lock = Field(default_factory=asyncio.Lock)
+    browser: Optional[BrowserUseBrowser] = Field(default=None, exclude=True)
+    context: Optional[BrowserContext] = Field(default=None, exclude=True)
+    dom_service: Optional[DomService] = Field(default=None, exclude=True)
+    web_search_tool: WebSearch = Field(default_factory=WebSearch, exclude=True)
+    pdf_cache: Dict[str, Dict[str, Any]] = Field(default_factory=dict, exclude=True)
+
+    # Context for generic functionality
+    tool_context: Optional[Context] = Field(default=None, exclude=True)
+
+    llm: Optional[LLM] = Field(default_factory=LLM)
+
     @field_validator("parameters", mode="before")
     def validate_parameters(cls, v: dict, info: ValidationInfo) -> dict:
         if not v:
             raise ValueError("Parameters cannot be empty")
         return v
 
+    def model_post_init(self, __context):
+        """Pydantic 초기화 후 PDF 캐시 시스템 로깅"""
+        logger.info("🔧 브라우저 도구 초기화 완료 (PDF 캐싱 시스템 활성화)")
+
     async def _ensure_browser_initialized(self) -> BrowserContext:
         """Ensure browser and context are initialized."""
         if self.browser is None:
-            browser_config_kwargs = {
-                "headless": self.headless,
-                "disable_security": True,
-            }
+            browser_config_kwargs = {"headless": False, "disable_security": True}
 
             if config.browser_config:
                 from browser_use.browser.browser import ProxySettings
@@ -251,9 +240,9 @@ class BrowserUseTool(BaseTool, Generic[Context]):
             try:
                 context = await self._ensure_browser_initialized()
 
-                # Get max content length from config (기본값을 10000으로 증가)
+                # Get max content length from config (웹페이지 전체 분석을 위해 25000으로 증가)
                 max_content_length = getattr(
-                    config.browser_config, "max_content_length", 10000
+                    config.browser_config, "max_content_length", 25000
                 )
 
                 # Navigation actions
@@ -426,12 +415,20 @@ class BrowserUseTool(BaseTool, Generic[Context]):
 
                         content = markdownify.markdownify(await page.content())
 
+                    # 🚀 스마트한 콘텐츠 처리: 잘린 경우 안내 메시지 추가
+                    if len(content) > max_content_length:
+                        truncated_content = content[:max_content_length]
+                        truncation_note = f"\n\n[주의: 콘텐츠가 {max_content_length:,}자에서 잘렸습니다. 원본은 {len(content):,}자입니다.]"
+                        final_content = truncated_content + truncation_note
+                    else:
+                        final_content = content
+
                     prompt = f"""\
 Your task is to extract the content of the page. You will be given a page and a goal, and you should extract all relevant information around this goal from the page. If the goal is vague, summarize the page. Respond in json format.
 Extraction goal: {goal}
 
 Page content:
-{content[:max_content_length]}
+{final_content}
 """
                     messages = [{"role": "system", "content": prompt}]
 
