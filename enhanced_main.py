@@ -1208,6 +1208,10 @@ class EnhancedStockAnalysisSystem:
 
             company_name = stock_info.get("stock_name", "분석대상회사")
 
+            # 📄 사용자 선택: 원문 추출 vs AI 분석
+            # 현재: 원문 추출 모드 (빠름, 요약 없음)
+            company_name = stock_info.get("stock_name", "분석대상회사")
+
             # PDF 분석 수행 (원문 추출 모드)
             pdf_result = await self.large_pdf_analyzer.extract_raw_text_only(
                 pdf_path=pdf_path, company_name=company_name, save_to_json=True

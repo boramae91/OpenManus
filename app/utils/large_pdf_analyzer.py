@@ -16,6 +16,7 @@ AI가 단계별로 꼼꼼히 분석해서 JSON 파일로 정리해 줍니다.
 """
 
 import asyncio
+import io  # 🚀 io 모듈 추가!
 import json
 
 # PDF 처리 경고 숨기기
@@ -33,10 +34,99 @@ from app.agent.manus import Manus
 
 # OpenManus 모듈들 import
 from app.llm import LLM
-from app.utils.pdf_reader import ChunkProcessor, extract_pdf_text
+
+# 🚀 PDFReader 의존성 완전 제거! ChunkProcessor 독립 구현
 
 logging.getLogger("pdfminer").setLevel(logging.ERROR)
 warnings.filterwarnings("ignore", category=UserWarning, module="pdfminer")
+
+
+class IndependentChunkProcessor:
+    """
+    🚀 PDFReader와 완전히 독립된 청크 처리기
+
+    대용량 PDF를 위한 전용 청크 프로세서예요:
+    - PDFReader 의존성 완전 제거
+    - 60만+ 글자 지원
+    - 스마트 섹션 보존
+    """
+
+    def __init__(self, chunk_size: int = 25000, overlap_size: int = 2000):
+        """
+        독립 청크 프로세서 초기화
+
+        Args:
+            chunk_size: 각 청크의 최대 크기 (문자 수)
+            overlap_size: 청크 간 겹치는 부분 크기 (문맥 유지용)
+        """
+        self.chunk_size = chunk_size
+        self.overlap_size = overlap_size
+        logger.info(
+            f"🔧 독립 청크 프로세서 초기화 (청크: {chunk_size:,}자, 겹침: {overlap_size:,}자)"
+        )
+
+    def smart_chunk_text(
+        self, text: str, preserve_sections: bool = True
+    ) -> List[Dict[str, Any]]:
+        """
+        텍스트를 스마트하게 청크로 분할
+
+        Args:
+            text: 분할할 텍스트
+            preserve_sections: 섹션 구조 보존 여부
+
+        Returns:
+            List[Dict]: 청크 목록
+        """
+        if not text or len(text.strip()) == 0:
+            return []
+
+        chunks = []
+        start_pos = 0
+        chunk_id = 1
+
+        while start_pos < len(text):
+            # 청크 끝 위치 계산
+            end_pos = min(start_pos + self.chunk_size, len(text))
+
+            # 단어 경계에서 자르기 (preserve_sections가 True인 경우)
+            if preserve_sections and end_pos < len(text):
+                # 문장 끝이나 문단 끝에서 자르기 시도
+                for boundary in ["\n\n", "\n", ". ", "? ", "! "]:
+                    boundary_pos = text.rfind(boundary, start_pos, end_pos)
+                    if (
+                        boundary_pos > start_pos + self.chunk_size // 2
+                    ):  # 최소 절반 이상은 포함
+                        end_pos = boundary_pos + len(boundary)
+                        break
+
+            # 청크 텍스트 추출
+            chunk_text = text[start_pos:end_pos].strip()
+
+            if chunk_text:
+                chunks.append(
+                    {
+                        "chunk_id": chunk_id,
+                        "content": chunk_text,
+                        "start_pos": start_pos,
+                        "end_pos": end_pos,
+                        "length": len(chunk_text),
+                        "metadata": {
+                            "chunk_type": (
+                                "smart_section" if preserve_sections else "fixed_size"
+                            ),
+                            "overlap_start": max(0, start_pos - self.overlap_size),
+                            "overlap_end": min(len(text), end_pos + self.overlap_size),
+                        },
+                    }
+                )
+                chunk_id += 1
+
+            # 다음 청크 시작 위치 (겹침 고려)
+            start_pos = max(start_pos + 1, end_pos - self.overlap_size)
+
+        logger.info(f"📊 스마트 청킹 완료: {len(chunks)}개 청크 생성")
+        return chunks
 
 
 class LargePDFAnalyzer:
@@ -63,8 +153,8 @@ class LargePDFAnalyzer:
         self.llm = llm if llm else LLM()
         self.manus_agent = Manus(llm=self.llm)
 
-        # 청크 처리기만 초기화 (PDFReader 제거)
-        self.chunk_processor = ChunkProcessor(
+        # 🚀 독립 청크 처리기 초기화 (PDFReader 완전 제거!)
+        self.chunk_processor = IndependentChunkProcessor(
             chunk_size=25000,  # 25KB 청크 (더 큰 청크로 효율성 향상)
             overlap_size=2000,  # 2KB 겹침 (맥락 보존)
         )
