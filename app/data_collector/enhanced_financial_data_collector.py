@@ -604,10 +604,10 @@ class EnhancedDartDataCollector:
             for item in data.get("list", []):
                 dividend = {
                     "dividend_classification": item.get("se", ""),
-                    "dividend_per_share": self._safe_int(item.get("stock_knd", "0")),
-                    "dividend_rate": self._safe_float(item.get("thstrm", "0")),
-                    "record_date": item.get("record_date", ""),
-                    "payment_date": item.get("payment_date", ""),
+                    "current_year": self._safe_float(item.get("thstrm", "0")),  # 당기
+                    "previous_year": self._safe_float(item.get("frmtrm", "0")),  # 전기
+                    "two_years_ago": self._safe_float(item.get("lwfr", "0")),  # 전전기
+                    "settlement_date": item.get("stlm_dt", ""),  # 결산일자
                 }
                 dividend_data.append(dividend)
 
@@ -643,11 +643,15 @@ class EnhancedDartDataCollector:
             capital_data = []
             for item in data.get("list", []):
                 capital = {
-                    "date": item.get("isu_dt", ""),
-                    "type": item.get("isu_dcrs_de", ""),
-                    "issued_shares": self._safe_int(item.get("isu_stock_co", "0")),
-                    "issue_price": self._safe_int(item.get("isu_prc", "0")),
-                    "issue_amount": self._safe_int(item.get("isu_amount", "0")),
+                    "change_type": item.get(
+                        "isu_dcrs_mstvdv_amount", ""
+                    ),  # 증자감자구분
+                    "settlement_date": item.get("stlm_dt", ""),  # 결산일자
+                    "note": (
+                        "증자감자 실적이 없는 경우 '-' 표시"
+                        if item.get("isu_dcrs_mstvdv_amount") == "-"
+                        else ""
+                    ),
                 }
                 capital_data.append(capital)
 
@@ -724,12 +728,23 @@ class EnhancedDartDataCollector:
             for item in data.get("list", []):
                 investment = {
                     "company_name": item.get("inv_prm", ""),
-                    "business_type": item.get("bsns", ""),
-                    "investment_amount": self._safe_int(
-                        item.get("invstmnt_amount", "0")
-                    ),
-                    "ownership_ratio": self._safe_float(item.get("hold_stock_rt", "0")),
-                    "acquisition_date": item.get("acqs_dt", ""),
+                    "first_acquisition_date": item.get(
+                        "frst_acqs_de", ""
+                    ),  # 최초취득일자
+                    "investment_purpose": item.get("invstmnt_purps", ""),  # 투자목적
+                    "first_acquisition_amount": self._safe_int(
+                        item.get("frst_acqs_amount", "0")
+                    ),  # 최초취득금액
+                    "ending_shares": self._safe_int(
+                        item.get("trmend_blce_qy", "0")
+                    ),  # 기말보유수량
+                    "ownership_ratio": self._safe_float(
+                        item.get("trmend_blce_qota_rt", "0")
+                    ),  # 기말지분율
+                    "book_value": self._safe_int(
+                        item.get("trmend_blce_acntbk_amount", "0")
+                    ),  # 기말장부금액
+                    "settlement_date": item.get("stlm_dt", ""),  # 결산일자
                 }
                 investment_data.append(investment)
 
