@@ -370,16 +370,28 @@ class EnhancedDartDataCollector:
             if data.get("status") != "000":
                 return {"success": False, "error": f"API 오류: {data.get('message')}"}
 
+            # 🔍 디버깅: 전체 API 응답 로깅
+            logger.info(
+                f"📋 DART API 전체 응답: status={data.get('status')}, message={data.get('message')}"
+            )
+            logger.info(f"📊 DART API 주주 데이터 개수: {len(data.get('list', []))}")
+
             shareholders_data = []
             for item in data.get("list", []):
+                # ✅ 올바른 DART API 필드명 사용
+                hold_stock_co_raw = item.get("trmend_posesn_stock_co", "0")
+                hold_stock_rt_raw = item.get("trmend_posesn_stock_qota_rt", "0")
+
                 shareholder = {
                     "shareholder_name": item.get("nm", ""),
                     "relationship": item.get("relate", ""),
-                    "shares_held": self._safe_int(item.get("hold_stock_co", "0")),
-                    "ownership_ratio": self._safe_float(item.get("hold_stock_rt", "0")),
-                    "report_date": item.get("trmend_dt", ""),
+                    "shares_held": self._safe_int(hold_stock_co_raw),
+                    "ownership_ratio": self._safe_float(hold_stock_rt_raw),
+                    "report_date": item.get("stlm_dt", ""),  # 결산일자 사용
                 }
                 shareholders_data.append(shareholder)
+
+            logger.info(f"✅ 주주정보 {len(shareholders_data)}명 수집 완료")
 
             return {"success": True, "data": shareholders_data}
 
