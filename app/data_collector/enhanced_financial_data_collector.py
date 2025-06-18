@@ -10,12 +10,16 @@ Enhanced DART API 재무데이터 수집기
 4. 실시간 공시 모니터링 (최신 공시, 중요 공시 등)
 """
 
+import io
 import json
 import time
+import xml.etree.ElementTree as ET
+import zipfile
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import requests
+from bs4 import BeautifulSoup
 
 from app.logger import logger
 
@@ -784,16 +788,32 @@ class EnhancedDartDataCollector:
             recent_disclosures = self._get_recent_disclosures(corp_code, days)
             if recent_disclosures["success"]:
                 result["recent_disclosures"] = recent_disclosures["data"]
+            else:
+                result["recent_disclosures"] = []
+                result["recent_disclosures_error"] = recent_disclosures.get("error")
 
             # 중요 공시 알림
             important_notices = self._get_important_notices(corp_code, days)
             if important_notices["success"]:
                 result["important_notices"] = important_notices["data"]
+            else:
+                result["important_notices"] = []
+                result["important_notices_error"] = important_notices.get("error")
 
             # 정정공시 목록
             corrections = self._get_corrections(corp_code, days)
             if corrections["success"]:
                 result["corrections"] = corrections["data"]
+            else:
+                result["corrections"] = []
+                result["corrections_error"] = corrections.get("error")
+
+            # 통합 데이터 추가
+            result["data"] = {
+                "recent_disclosures": result["recent_disclosures"],
+                "important_notices": result["important_notices"],
+                "corrections": result["corrections"],
+            }
 
             logger.info(f"✅ 공시 모니터링 완료")
             return result
@@ -836,11 +856,19 @@ class EnhancedDartDataCollector:
 
             disclosure_data = []
             for item in data.get("list", []):
+                # 날짜 형식 변환 (YYYYMMDD → YYYY-MM-DD)
+                receipt_date = item.get("rcept_dt", "")
+                formatted_date = self._format_date(receipt_date)
+
+                # 보고서명 공백 제거
+                report_name = item.get("report_nm", "").strip()
+
                 disclosure = {
                     "corp_name": item.get("corp_name", ""),
-                    "report_name": item.get("report_nm", ""),
+                    "report_name": report_name,
                     "receipt_number": item.get("rcept_no", ""),
-                    "receipt_date": item.get("rcept_dt", ""),
+                    "receipt_date": formatted_date,
+                    "receipt_date_raw": receipt_date,  # 원본 날짜도 보관
                     "submitter": item.get("flr_nm", ""),
                     "remarks": item.get("rm", ""),
                 }
@@ -854,20 +882,25 @@ class EnhancedDartDataCollector:
     def _get_important_notices(self, corp_code: str, days: int) -> Dict[str, Any]:
         """중요 공시 알림 (주요사항보고서, 공정공시 등)"""
         try:
-            # 중요 공시 키워드
-            important_keywords = [
-                "주요사항보고서",
-                "공정공시",
-                "증자",
-                "감자",
-                "합병",
-                "분할",
-                "유상증자",
-                "무상증자",
-                "배당",
-                "영업양도",
-                "영업양수",
-            ]
+            # 중요 공시 키워드 (우선순위별 분류)
+            critical_keywords = {
+                "최고 중요": ["합병", "분할", "영업양도", "영업양수", "해산", "청산"],
+                "매우 중요": [
+                    "유상증자",
+                    "무상증자",
+                    "감자",
+                    "전환사채",
+                    "신주인수권부사채",
+                ],
+                "중요": [
+                    "주요사항보고서",
+                    "공정공시",
+                    "배당",
+                    "자기주식",
+                    "최대주주변동",
+                ],
+                "일반": ["기업지배구조", "감사보고서", "정기주주총회", "임시주주총회"],
+            }
 
             recent_disclosures = self._get_recent_disclosures(corp_code, days)
             if not recent_disclosures["success"]:
@@ -877,12 +910,43 @@ class EnhancedDartDataCollector:
             for disclosure in recent_disclosures["data"]:
                 report_name = disclosure.get("report_name", "")
 
-                # 중요 공시 필터링
-                for keyword in important_keywords:
-                    if keyword in report_name:
-                        disclosure["importance_reason"] = f"'{keyword}' 관련 공시"
-                        important_disclosures.append(disclosure)
+                # 중요도별 필터링
+                importance_level = None
+                matched_keyword = None
+
+                for level, keywords in critical_keywords.items():
+                    for keyword in keywords:
+                        if keyword in report_name:
+                            importance_level = level
+                            matched_keyword = keyword
+                            break
+                    if importance_level:
                         break
+
+                if importance_level:
+                    disclosure_copy = disclosure.copy()
+                    disclosure_copy["importance_level"] = importance_level
+                    disclosure_copy["importance_reason"] = (
+                        f"'{matched_keyword}' 관련 공시"
+                    )
+                    disclosure_copy["priority_score"] = self._calculate_priority_score(
+                        importance_level, matched_keyword
+                    )
+
+                    # 🆕 공시 내용 추가 (상위 3개 중요 공시만)
+                    if len(important_disclosures) < 3:
+                        content_summary = self._get_disclosure_content_summary(
+                            disclosure_copy.get("receipt_number", "")
+                        )
+                        if content_summary:
+                            disclosure_copy["content_summary"] = content_summary
+
+                    important_disclosures.append(disclosure_copy)
+
+            # 우선순위 순으로 정렬
+            important_disclosures.sort(
+                key=lambda x: x.get("priority_score", 0), reverse=True
+            )
 
             return {"success": True, "data": important_disclosures}
 
@@ -929,6 +993,117 @@ class EnhancedDartDataCollector:
             return float(value.replace(",", "")) if value and value != "-" else 0.0
         except:
             return 0.0
+
+    def _format_date(self, date_str: str) -> str:
+        """날짜 형식 변환 (YYYYMMDD → YYYY-MM-DD)"""
+        try:
+            if date_str and len(date_str) == 8:
+                return f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}"
+            return date_str
+        except:
+            return date_str
+
+    def _calculate_priority_score(self, importance_level: str, keyword: str) -> int:
+        """공시 우선순위 점수 계산"""
+        level_scores = {"최고 중요": 100, "매우 중요": 80, "중요": 60, "일반": 40}
+
+        # 특정 키워드에 대한 추가 점수
+        keyword_bonus = {
+            "합병": 20,
+            "분할": 20,
+            "영업양도": 15,
+            "영업양수": 15,
+            "유상증자": 15,
+            "무상증자": 10,
+            "감자": 15,
+            "주요사항보고서": 10,
+            "공정공시": 8,
+            "배당": 5,
+            "자기주식": 5,
+        }
+
+        base_score = level_scores.get(importance_level, 0)
+        bonus = keyword_bonus.get(keyword, 0)
+
+        return base_score + bonus
+
+    def _get_disclosure_content_summary(self, receipt_no: str) -> Optional[str]:
+        """공시 내용 요약 추출"""
+        try:
+            if not receipt_no or not self.dart_api_key:
+                return None
+
+            # DART API document.xml 호출
+            url = "https://opendart.fss.or.kr/api/document.xml"
+            params = {"crtfc_key": self.dart_api_key, "rcept_no": receipt_no}
+
+            response = requests.get(url, params=params, timeout=10)
+
+            if response.status_code != 200:
+                return None
+
+            # XML 파싱하여 ZIP 파일 추출
+
+            try:
+                # 응답이 ZIP 파일인 경우
+                zf = zipfile.ZipFile(io.BytesIO(response.content))
+                info_list = zf.infolist()
+
+                if not info_list:
+                    return None
+
+                # 첫 번째 파일 읽기
+                first_file = info_list[0]
+                xml_data = zf.read(first_file.filename)
+
+                # 인코딩 시도
+                try:
+                    xml_text = xml_data.decode("euc-kr")
+                except UnicodeDecodeError:
+                    try:
+                        xml_text = xml_data.decode("utf-8")
+                    except UnicodeDecodeError:
+                        xml_text = xml_data.decode("cp949", errors="ignore")
+
+                # HTML 태그 제거 및 텍스트 추출
+                soup = BeautifulSoup(xml_text, "html.parser")
+
+                # 주요 섹션 찾기
+                main_content = ""
+
+                # 1. 주요내용 섹션 찾기
+                for tag in soup.find_all(["p", "div", "span"]):
+                    text = tag.get_text(strip=True)
+                    if text and len(text) > 20:  # 의미있는 텍스트만
+                        main_content += text + " "
+                        if len(main_content) > 500:  # 적당한 길이로 제한
+                            break
+
+                # 2. 텍스트 정리
+                if main_content:
+                    # 불필요한 공백 제거
+                    main_content = " ".join(main_content.split())
+
+                    # 500자로 제한하고 마지막 문장 완성
+                    if len(main_content) > 500:
+                        main_content = main_content[:500]
+                        last_period = main_content.rfind(".")
+                        if last_period > 400:  # 적절한 위치에 마침표가 있으면
+                            main_content = main_content[: last_period + 1]
+                        else:
+                            main_content = main_content + "..."
+
+                    return main_content.strip()
+
+            except Exception as e:
+                logger.debug(f"공시 내용 파싱 오류: {e}")
+                return None
+
+        except Exception as e:
+            logger.debug(f"공시 내용 조회 오류: {e}")
+            return None
+
+        return None
 
     def get_corp_code_from_stock_code(
         self, stock_code: str, company_name: str = None
