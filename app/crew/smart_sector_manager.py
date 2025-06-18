@@ -313,9 +313,9 @@ class SmartSectorManager:
     async def _call_llm_for_analysis(self, prompt: str) -> str:
         """LLM을 통한 실제 분석"""
         try:
-            # 실제 LLM 호출 로직
-            response = await self.llm.achat(prompt)
-            return response.choices[0].message.content
+            # 실제 LLM 호출 로직 - ask 메서드 사용
+            response = await self.llm.ask([{"role": "user", "content": prompt}])
+            return response
         except Exception as e:
             logger.error(f"LLM 호출 실패: {e}")
             return f"LLM 분석 중 오류 발생: {str(e)}"
