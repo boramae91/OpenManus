@@ -39,6 +39,9 @@ from app.agent.manus import Manus
 
 # 종목 분류 기능 제거 - from app.agent.stock_classifier import StockClassifier
 from app.agent.stock_name_extractor import StockNameExtractor
+
+# 🚀 One-Hot Sector Activation 시스템 import
+from app.crew.smart_sector_manager import AnalysisDepth, SmartSectorManager
 from app.data_collector import FinancialDataCollector
 from app.data_collector.enhanced_financial_data_collector import (
     EnhancedDartDataCollector,
@@ -69,6 +72,7 @@ class EnhancedStockAnalysisSystem:
     """
     개선된 주식 분석 시스템 클래스
     실제 재무데이터를 기반으로 정확한 분석을 수행해요!
+    + 🚀 One-Hot Sector Activation으로 90% 비용 절감!
     """
 
     def __init__(self):
@@ -103,6 +107,15 @@ class EnhancedStockAnalysisSystem:
 
         # 📄 대용량 PDF 분석기 초기화 (새로 추가!)
         self.large_pdf_analyzer = LargePDFAnalyzer(llm=self.llm)
+
+        # 🚀 One-Hot Sector Activation 시스템 초기화 (핵심 혁신!)
+        try:
+            self.smart_sector_manager = SmartSectorManager(llm=self.llm)
+            logger.info("🎯 One-Hot 섹터 전문가 시스템 초기화 완료!")
+            logger.info("💰 비용 절감: 기존 55개 → 5개 에이전트 (90% 절약)")
+        except Exception as e:
+            logger.error(f"One-Hot 섹터 시스템 초기화 실패: {e}")
+            self.smart_sector_manager = None
 
         # 결과 저장용
         self.analysis_results = {}
@@ -198,6 +211,36 @@ class EnhancedStockAnalysisSystem:
             )
             results["steps"]["step2_financial_data"] = financial_data
 
+            # 🚀 Step 2.5: One-Hot 섹터 감지 및 활성화 (새로운 핵심 기능!)
+            sector_analysis_result = None
+            if self.smart_sector_manager:
+                logger.info("🎯 Step 2.5: GICS 섹터 감지 및 전문가 팀 활성화")
+                try:
+                    # 분석 깊이 자동 감지
+                    analysis_depth = self._detect_analysis_depth_from_prompt(
+                        user_prompt
+                    )
+
+                    # 섹터별 전문가 분석 수행
+                    sector_analysis_result = (
+                        await self.smart_sector_manager.analyze_with_optimal_team(
+                            user_prompt=user_prompt,
+                            stock_name=stock_info.get("stock_name"),
+                            stock_code=stock_info.get("stock_code"),
+                            financial_data=financial_data,
+                            analysis_depth=analysis_depth,
+                        )
+                    )
+
+                    results["steps"]["step2_5_sector_analysis"] = sector_analysis_result
+                    logger.info(
+                        f"✅ 섹터 전문가 분석 완료 - 섹터: {sector_analysis_result.get('detected_sector', '알 수 없음')}"
+                    )
+
+                except Exception as e:
+                    logger.error(f"섹터 전문가 분석 실패: {e}")
+                    results["steps"]["step2_5_sector_analysis"] = {"error": str(e)}
+
             if not financial_data["success"]:
                 logger.warning("⚠️ 기본 재무데이터 수집 실패 - 기존 방식으로 진행")
             else:
@@ -243,6 +286,7 @@ class EnhancedStockAnalysisSystem:
                 classification_result,
                 enhanced_dart_data,
                 intent_analysis,
+                sector_analysis_result,  # 🚀 섹터 전문가 분석 결과 추가
             )
             results["steps"]["step3_detailed_analysis"] = analysis_result
 
@@ -862,6 +906,80 @@ class EnhancedStockAnalysisSystem:
             return False
         return len(stock_code) == 6 and stock_code.isdigit()
 
+    def _detect_analysis_depth_from_prompt(self, user_prompt: str) -> AnalysisDepth:
+        """
+        🎯 사용자 프롬프트에서 분석 깊이 자동 감지
+
+        키워드 기반으로 사용자가 원하는 분석 수준을 파악해요:
+        - QUICK: 간단한 질문, 빠른 답변 필요
+        - STANDARD: 일반적인 분석 요청
+        - DEEP: 상세한 분석, 투자 결정 관련
+
+        Args:
+            user_prompt: 사용자 입력 프롬프트
+
+        Returns:
+            AnalysisDepth: 감지된 분석 깊이
+        """
+        prompt_lower = user_prompt.lower()
+
+        # DEEP 분석 키워드 (상세 분석 필요)
+        deep_keywords = [
+            "상세",
+            "자세히",
+            "깊이",
+            "투자",
+            "매수",
+            "매도",
+            "투자결정",
+            "포트폴리오",
+            "리스크",
+            "위험",
+            "전망",
+            "목표가",
+            "적정가",
+            "밸류에이션",
+            "dcf",
+            "재무제표",
+            "손익계산서",
+            "현금흐름",
+            "부채비율",
+            "수익성",
+        ]
+
+        # QUICK 분석 키워드 (빠른 답변)
+        quick_keywords = [
+            "간단히",
+            "빠르게",
+            "요약",
+            "개요",
+            "현재",
+            "지금",
+            "오늘",
+            "주가",
+            "시가총액",
+            "거래량",
+            "52주",
+            "배당",
+        ]
+
+        # 키워드 카운트
+        deep_count = sum(1 for keyword in deep_keywords if keyword in prompt_lower)
+        quick_count = sum(1 for keyword in quick_keywords if keyword in prompt_lower)
+
+        # 프롬프트 길이도 고려 (긴 질문 = 상세한 답변 원함)
+        prompt_length = len(user_prompt)
+
+        if deep_count >= 2 or prompt_length > 200:
+            logger.info("🔍 DEEP 분석 모드 감지 - 상세한 전문가 분석 수행")
+            return AnalysisDepth.DEEP
+        elif quick_count >= 2 or prompt_length < 50:
+            logger.info("⚡ QUICK 분석 모드 감지 - 빠른 핵심 분석 수행")
+            return AnalysisDepth.QUICK
+        else:
+            logger.info("📊 STANDARD 분석 모드 감지 - 균형잡힌 분석 수행")
+            return AnalysisDepth.STANDARD
+
     def _load_stock_mapping_tables(self) -> Dict[str, pd.DataFrame]:
         """
         Dataset CSV 파일들을 로드해서 종목명과 ticker_bbg를 매핑하는 테이블을 생성합니다.
@@ -1019,6 +1137,7 @@ class EnhancedStockAnalysisSystem:
         classification_result: Dict,
         enhanced_dart_data: Dict = None,
         intent_analysis: Dict = None,
+        sector_analysis: Dict = None,  # 🚀 새로운 섹터 분석 결과 추가
     ) -> Dict[str, Any]:
         """
         📈 의도 맞춤형 상세 분석 (개선된 핵심 기능!)
