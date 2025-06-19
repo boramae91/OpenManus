@@ -490,40 +490,140 @@ class LargePDFAnalyzer:
             logger.error(f"❌ PDF 소스 처리 중 오류: {str(e)}")
             return None
 
-    async def _download_pdf_from_url(self, url: str) -> Optional[str]:
+    async def _download_pdf_from_url(self, url: str) -> Optional[io.BytesIO]:
         """
         🌐 URL에서 PDF 스트림 가져오기 (메모리 처리용)
+        브라우저 에뮬레이션으로 접근 제한 우회 + HTML 리다이렉트 자동 추적
 
         Args:
             url: PDF 파일 URL
 
         Returns:
-            io.BytesIO: PDF 데이터 스트림 (실패시 None)
+            Optional[io.BytesIO]: PDF 데이터 스트림 (실패시 None)
         """
+        import re
+
         import aiohttp
 
         try:
+            # 🌐 브라우저 에뮬레이션 헤더 (접근 제한 우회용)
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "Accept": "application/pdf,application/octet-stream,*/*;q=0.9",
+                "Accept-Language": "ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3",
+                "Accept-Encoding": "gzip, deflate, br",
+                "DNT": "1",
+                "Connection": "keep-alive",
+                "Upgrade-Insecure-Requests": "1",
+            }
+
+            current_url = url
+            max_redirects = 3  # 최대 3번 리다이렉트 추적
+
             # HTTP 요청으로 PDF 스트림 가져오기
             timeout = aiohttp.ClientTimeout(total=60)  # 60초 타임아웃
-            async with aiohttp.ClientSession(timeout=timeout) as session:
-                logger.info(f"📥 PDF 스트림 로드 시작: {url}")
+            async with aiohttp.ClientSession(
+                timeout=timeout, headers=headers
+            ) as session:
 
-                async with session.get(url) as response:
-                    if response.status == 200:
-                        # 메모리로 직접 로드
-                        pdf_data = await response.read()
+                for redirect_count in range(max_redirects + 1):
+                    logger.info(
+                        f"📥 PDF 스트림 로드 시도 ({redirect_count+1}/{max_redirects+1}): {current_url}"
+                    )
 
-                        if pdf_data and len(pdf_data) > 0:
-                            logger.info(
-                                f"✅ PDF 스트림 로드 완료: {len(pdf_data):,} bytes"
-                            )
-                            return io.BytesIO(pdf_data)
+                    async with session.get(
+                        current_url, allow_redirects=True
+                    ) as response:
+                        logger.info(
+                            f"📡 HTTP 응답: {response.status} | Content-Type: {response.headers.get('content-type', '알 수 없음')}"
+                        )
+
+                        if response.status == 200:
+                            # Content-Type 검증
+                            content_type = response.headers.get(
+                                "content-type", ""
+                            ).lower()
+
+                            # 🎯 PDF 콘텐츠인지 확인
+                            if (
+                                "application/pdf" in content_type
+                                or "application/octet-stream" in content_type
+                            ):
+                                pdf_data = await response.read()
+
+                                if pdf_data and len(pdf_data) > 1000:  # 최소 1KB 이상
+                                    # PDF 헤더 검증
+                                    pdf_header = pdf_data[:8]
+                                    if pdf_header.startswith(b"%PDF-"):
+                                        logger.info(
+                                            f"✅ 유효한 PDF 스트림 로드 완료: {len(pdf_data):,} bytes"
+                                        )
+                                        return io.BytesIO(pdf_data)
+
+                            # 🔄 HTML 리다이렉트 페이지인 경우 실제 PDF URL 추출
+                            elif "text/html" in content_type:
+                                html_content = await response.text()
+                                logger.warning(
+                                    f"⚠️ HTML 페이지 감지, 리다이렉트 URL 추출 시도..."
+                                )
+
+                                # HTML에서 리다이렉트 URL 패턴 찾기
+                                redirect_patterns = [
+                                    r'<meta[^>]+http-equiv="refresh"[^>]+content="[^;]*;\s*URL=([^"]+)"',  # meta refresh
+                                    r'window\.location\.href\s*=\s*["\']([^"\']+)["\']',  # JavaScript redirect
+                                    r'document\.location\s*=\s*["\']([^"\']+)["\']',  # document.location
+                                    r'href="([^"]*\.pdf[^"]*)"',  # 직접 PDF 링크
+                                ]
+
+                                redirect_url = None
+                                for pattern in redirect_patterns:
+                                    match = re.search(
+                                        pattern, html_content, re.IGNORECASE
+                                    )
+                                    if match:
+                                        potential_url = match.group(1)
+                                        # 상대 URL을 절대 URL로 변환
+                                        if potential_url.startswith("http"):
+                                            redirect_url = potential_url
+                                        elif potential_url.startswith("/"):
+                                            from urllib.parse import urljoin
+
+                                            redirect_url = urljoin(
+                                                current_url, potential_url
+                                            )
+                                        break
+
+                                if redirect_url and redirect_url != current_url:
+                                    logger.info(
+                                        f"🔄 리다이렉트 URL 발견: {redirect_url}"
+                                    )
+                                    current_url = redirect_url
+                                    continue  # 다시 시도
+                                else:
+                                    logger.error(
+                                        "❌ 유효한 리다이렉트 URL을 찾을 수 없음"
+                                    )
+                                    logger.error(
+                                        f"📄 HTML 내용 미리보기: {html_content[:500]}"
+                                    )
+                                    return None
+
+                            # PDF도 HTML도 아닌 경우
+                            else:
+                                logger.error(
+                                    f"❌ 지원하지 않는 콘텐츠 타입: {content_type}"
+                                )
+                                return None
+
                         else:
-                            logger.error("❌ PDF 데이터가 비어있습니다")
+                            logger.error(
+                                f"❌ HTTP 오류: {response.status} - {current_url}"
+                            )
                             return None
-                    else:
-                        logger.error(f"❌ HTTP 오류: {response.status} - {url}")
-                        return None
+
+                # 최대 리다이렉트 횟수 초과
+                logger.error(f"❌ 최대 리다이렉트 횟수 ({max_redirects}) 초과")
+                return None
 
         except Exception as e:
             logger.error(f"❌ PDF 스트림 로드 실패: {str(e)}")
