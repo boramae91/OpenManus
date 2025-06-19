@@ -1,0 +1,951 @@
+{
+  "timestamp": "20250619_111323",
+  "prompt": "?????? ?? ????? ???? ???",
+  "response": "📊 감지된 종목: such as 3S (060310)\n" +
+  "\n" +
+  "🏷️ ticker_bbg: 060310 KS Equity\n" +
+  "\n" +
+  "🏢 GICS 섹터: Information Technology\n" +
+  "\n" +
+  "📋 종합 요약:\n" +
+  "\n" +
+  "{'analyzed_stock': {'name': 'such as 3S', 'code': '060310', 'ticker_bbg':" +
+  "'060310 KS Equity', 'gics_sector': 'Information Technology', 'market_index':" +
+  "'KOSDAQ Index', 'detection_method': 'ai_ai_web_search_priority'}," +
+  "'data_sources': {'financial_data_collected': True, 'data_sources': ['yfinance'," +
+  "'DART'], 'data_quality': '낮음', 'manus_information_collected': False," +
+  "'data_richness_score': 0.0}, 'analysis_quality':" +
+  "{'information_collection_performed': False," +
+  "'crewai_comprehensive_analysis_performed': False, 'financial_data_enhanced':" +
+  "True, 'workflow_type': 'manus_first_crewai_synthesis'}, 'key_insights':" +
+  "{'information_collection_quality': '알 수 없음', 'crewai_analysis_quality': '실패'," +
+  "'overall_analysis_depth': '낮음', 'data_integration_success': False}}",
+  "steps": [
+    "",
+    "📊 감지된 종목: such as 3S (060310)",
+    "🏢 GICS 섹터: Information Technology",
+    "📈 재무데이터 수집 성공: yfinance, DART",
+    "🚀 Enhanced DART 데이터 수집 성공",
+    ""
+  ],
+  "meta": {
+    "analysis_flow": "enhanced_manus_first_crewai_synthesis",
+    "success": false,
+    "timestamp": "2025-06-19T11:12:14.394092",
+    "stock_info": {
+        "detected": true,
+        "stock_name": "such as 3S",
+        "stock_code": "060310 KS Equity",
+        "detection_method": "ai_ai_web_search_priority",
+        "ticker_bbg": "060310 KS Equity",
+        "gics_sector": "Information Technology",
+        "mapped_company_name": "3S KOREA CO LTD",
+        "market_index": "KOSDAQ Index",
+        "original_stock_code": "060310",
+        "original_stock_name": "such as 3S"
+    },
+    "data_quality": "낮음",
+    "enhanced_features": {
+        "financial_data_used": true,
+        "enhanced_dart_used": true,
+        "detailed_analysis_performed": false,
+        "ticker_bbg_mapping_used": true,
+        "gics_sector_detected": true,
+        "dataset_sector_mapping_used": true
+    },
+    "raw_data": {
+        "data_sources_summary": {
+            "yfinance_data_available": true,
+            "dart_basic_data_available": true,
+            "enhanced_dart_data_available": true,
+            "pdf_data_available": false,
+            "manus_collection_available": false,
+            "crewai_comprehensive_analysis_available": false
+        },
+        "yfinance_raw_data": {
+            "basic_info": {
+                "company_name": "060310.KS,0P0000BZDN,436056",
+                "sector": "정보없음",
+                "industry": "정보없음",
+                "country": "정보없음",
+                "currency": "KRW",
+                "exchange": "KOE",
+                "ticker_symbol": "060310.KS"
+            },
+            "current_price_info": {
+                "current_price": 2315.0,
+                "previous_close": null,
+                "open_price": null,
+                "day_high": null,
+                "day_low": null,
+                "volume": null,
+                "market_cap": null,
+                "shares_outstanding": null
+            },
+            "financial_ratios": {
+                "pe_ratio": null,
+                "peg_ratio": null,
+                "pb_ratio": null,
+                "ps_ratio": null,
+                "dividend_yield": null,
+                "profit_margin": null,
+                "operating_margin": null,
+                "return_on_equity": null,
+                "return_on_assets": null,
+                "debt_to_equity": null,
+                "current_ratio": null,
+                "quick_ratio": null
+            },
+            "growth_metrics": {
+                "earnings_growth": null,
+                "revenue_growth": null,
+                "earnings_quarterly_growth": null,
+                "revenue_quarterly_growth": null
+            },
+            "price_history": {
+                "52_week_high": 2885.0,
+                "52_week_low": 1637.0,
+                "avg_volume_3m": 2118905.111111111,
+                "price_change_1y": -10.33210332103321
+            },
+            "data_quality": "낮음",
+            "data_sources": [
+                "yfinance",
+                "DART"
+            ],
+            "collection_info": {
+                "success": true,
+                "errors": [],
+                "stock_info": {
+                    "stock_code": "060310",
+                    "stock_name": "such as 3S",
+                    "collection_timestamp": "2025-06-19T11:12:45.385859"
+                }
+            }
+        },
+        "dart_basic_raw_data": {
+            "company_info": {
+                "corp_name": "(주)삼에스코리아",
+                "corp_code": "00378363",
+                "business_summary": "1298116215",
+                "established_date": "19910128",
+                "listing_date": "03",
+                "ceo_name": "김세완",
+                "address": "서울특별시 금천구 가산디지털1로 75-24 1310호"
+            },
+            "financial_statements": {
+                "current_assets": 21467913846,
+                "non_current_assets": 41791975188,
+                "total_assets": 63259889034,
+                "current_liabilities": 12280193390,
+                "non_current_liabilities": 2781405946,
+                "total_liabilities": 15061599336,
+                "total_equity": 48198289698,
+                "revenue": 40344304542,
+                "operating_profit": 1119176086,
+                "net_income": 3413121356,
+                "debt_ratio": 0.31,
+                "operating_margin": 0.0277,
+                "net_margin": 0.0846
+            },
+            "business_report": {
+                "main_business": "법인고유번호 00378363 기업의 주요사업",
+                "business_risks": "시장변동성, 경쟁심화 등",
+                "future_plans": "사업확장 및 기술개발 계획"
+            }
+        },
+        "enhanced_dart_raw_data": {
+            "collection_info": {
+                "success": true,
+                "stock_code": "060310",
+                "collected_at": "",
+                "error": ""
+            },
+            "financial_analysis": {
+                "success": true,
+                "corp_code": "00378363",
+                "bsns_year": "2024",
+                "collected_at": "2025-06-19T11:13:17.234157",
+                "individual_statements": {
+                    "asset_info": {
+                        "current_assets": 21467913846,
+                        "non_current_assets": 41791975188,
+                        "total_assets": 63259889034
+                    },
+                    "liability_info": {
+                        "current_liabilities": 12280193390,
+                        "non_current_liabilities": 2781405946,
+                        "total_liabilities": 15061599336
+                    },
+                    "equity_info": {
+                        "capital_stock": 24268321000,
+                        "total_equity": 48198289698
+                    },
+                    "income_info": {
+                        "revenue": 40344304542,
+                        "operating_income": 1119176086,
+                        "net_income": 3413121356
+                    }
+                },
+                "consolidated_statements": {
+                    "asset_info": {
+                        "current_assets": 21467913846,
+                        "non_current_assets": 41791975188,
+                        "total_assets": 63259889034
+                    },
+                    "liability_info": {
+                        "current_liabilities": 12280193390,
+                        "non_current_liabilities": 2781405946,
+                        "total_liabilities": 15061599336
+                    },
+                    "equity_info": {
+                        "capital_stock": 24268321000,
+                        "total_equity": 48198289698
+                    },
+                    "income_info": {
+                        "revenue": 40344304542,
+                        "operating_income": 1119176086,
+                        "net_income": 3413121356
+                    }
+                },
+                "quarterly_performance": [
+                    {
+                        "asset_info": {
+                            "current_assets": 17955678249,
+                            "non_current_assets": 45778218860,
+                            "total_assets": 63733897109
+                        },
+                        "liability_info": {
+                            "current_liabilities": 6659414286,
+                            "non_current_liabilities": 2434483434,
+                            "total_liabilities": 9093897720
+                        },
+                        "equity_info": {
+                            "capital_stock": 25542321000,
+                            "total_equity": 54639999389
+                        },
+                        "income_info": {
+                            "revenue": 4688741759,
+                            "operating_income": -400281832,
+                            "net_income": -310490309
+                        },
+                        "period": "1분기"
+                    },
+                    {
+                        "asset_info": {
+                            "current_assets": 18561977394,
+                            "non_current_assets": 49857550779,
+                            "total_assets": 68419528173
+                        },
+                        "liability_info": {
+                            "current_liabilities": 10750643181,
+                            "non_current_liabilities": 3455238144,
+                            "total_liabilities": 14205881325
+                        },
+                        "equity_info": {
+                            "capital_stock": 25542321000,
+                            "total_equity": 54213646848
+                        },
+                        "income_info": {
+                            "revenue": 6397759257,
+                            "operating_income": -311957955,
+                            "net_income": -414235461
+                        },
+                        "period": "반기"
+                    },
+                    {
+                        "asset_info": {
+                            "current_assets": 28931950944,
+                            "non_current_assets": 49774341873,
+                            "total_assets": 78706292817
+                        },
+                        "liability_info": {
+                            "current_liabilities": 12375656222,
+                            "non_current_liabilities": 7694335150,
+                            "total_liabilities": 20069991372
+                        },
+                        "equity_info": {
+                            "capital_stock": 26529520000,
+                            "total_equity": 58636301445
+                        },
+                        "income_info": {
+                            "revenue": 5709958118,
+                            "operating_income": -162783688,
+                            "net_income": 91477021
+                        },
+                        "period": "3분기"
+                    },
+                    {
+                        "asset_info": {
+                            "current_assets": 21467913846,
+                            "non_current_assets": 41791975188,
+                            "total_assets": 63259889034
+                        },
+                        "liability_info": {
+                            "current_liabilities": 12280193390,
+                            "non_current_liabilities": 2781405946,
+                            "total_liabilities": 15061599336
+                        },
+                        "equity_info": {
+                            "capital_stock": 24268321000,
+                            "total_equity": 48198289698
+                        },
+                        "income_info": {
+                            "revenue": 40344304542,
+                            "operating_income": 1119176086,
+                            "net_income": 3413121356
+                        },
+                        "period": "연간"
+                    }
+                ]
+            },
+            "governance_analysis": {
+                "success": true,
+                "corp_code": "00378363",
+                "bsns_year": "2024",
+                "collected_at": "2025-06-19T11:13:18.381761",
+                "major_shareholders": [
+                    {
+                        "shareholder_name": "NAMUGA(SUZHOU) \n TECHNOLOGIES CO., LTD",
+                        "relationship": "-",
+                        "shares_held": 36,
+                        "ownership_ratio": 0.0,
+                        "report_date": "2024-03-31"
+                    },
+                    {
+                        "shareholder_name": "박종락",
+                        "relationship": "특수관계인",
+                        "shares_held": 100,
+                        "ownership_ratio": 0.0,
+                        "report_date": "2024-03-31"
+                    },
+                    {
+                        "shareholder_name": "김세완",
+                        "relationship": "대표이사",
+                        "shares_held": 140000,
+                        "ownership_ratio": 0.29,
+                        "report_date": "2024-03-31"
+                    },
+                    {
+                        "shareholder_name": "김호성",
+                        "relationship": "등기임원",
+                        "shares_held": 15668,
+                        "ownership_ratio": 0.03,
+                        "report_date": "2024-03-31"
+                    },
+                    {
+                        "shareholder_name": "이재호",
+                        "relationship": "등기임원",
+                        "shares_held": 10000,
+                        "ownership_ratio": 0.02,
+                        "report_date": "2024-03-31"
+                    },
+                    {
+                        "shareholder_name": "박종익",
+                        "relationship": "특수관계인",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": "2024-03-31"
+                    },
+                    {
+                        "shareholder_name": "노경희",
+                        "relationship": "최대주주",
+                        "shares_held": 500000,
+                        "ownership_ratio": 1.03,
+                        "report_date": "2024-03-31"
+                    },
+                    {
+                        "shareholder_name": "박민성",
+                        "relationship": "특수관계인",
+                        "shares_held": 260000,
+                        "ownership_ratio": 0.54,
+                        "report_date": "2024-03-31"
+                    },
+                    {
+                        "shareholder_name": "노경죽",
+                        "relationship": "특수관계인",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": "2024-03-31"
+                    },
+                    {
+                        "shareholder_name": "박미혜",
+                        "relationship": "특수관계인",
+                        "shares_held": 20610,
+                        "ownership_ratio": 0.04,
+                        "report_date": "2024-03-31"
+                    },
+                    {
+                        "shareholder_name": "계",
+                        "relationship": "",
+                        "shares_held": 946414,
+                        "ownership_ratio": 1.95,
+                        "report_date": "2024-03-31"
+                    },
+                    {
+                        "shareholder_name": "계",
+                        "relationship": "",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": "2024-03-31"
+                    }
+                ],
+                "executives": [
+                    {
+                        "name": "김세완",
+                        "position": "",
+                        "career": "",
+                        "main_career": "전북대학교 법학과 (학사)\n(전) 교보증권 영업이사\n(현) 삼에스코리아 대표이사",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김호성",
+                        "position": "",
+                        "career": "",
+                        "main_career": "홍익대학교 전자공학과 (학사)\n(전) 삼성전자 반도체사업부 그룹장\n(현) 삼에스코리아 반도체사업부장",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이재호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "울산대학교 산업공학과 (학사)\n(현) 삼에스코리아 HVAC-SOLUTION 사업부장",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이홍재",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울대학교 계산통계학과 (학사)\n서울대학교 통계학과 (석사)\n숭실대학교 IT정책경영학과 (박사)\n(전) KT 전무 / 스마트로 대표이사\n(현) 한림대학교 빅데이터스쿨 겸임교수",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "정헌호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "서울대학교 경제학과 (학사)\n서울대학교 경제학 (석사)\n(전) 대우경제연구소 연구위원\n(전) 금융감독원 거시감독국 팀장\n(전) 금융감독원 국제협력국 부국장\n(전) 금융감독원 총무국 소속 (실장급)\n(전) 금융감독원 북경사무소 홍콩주재원 실장\n(전) 신한금융투자 감사위원 (상근)\n(현) 패스트포워드 사업자문위원",
+                        "tenure": ""
+                    }
+                ]
+            },
+            "investment_analysis": {
+                "success": true,
+                "corp_code": "00378363",
+                "bsns_year": "2024",
+                "collected_at": "2025-06-19T11:13:20.660609",
+                "dividend_info": [
+                    {
+                        "dividend_classification": "주당액면가액(원)",
+                        "current_year": 500.0,
+                        "previous_year": 500.0,
+                        "two_years_ago": 500.0,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "dividend_classification": "(연결)당기순이익(백만원)",
+                        "current_year": 2605.0,
+                        "previous_year": 1431.0,
+                        "two_years_ago": 1171.0,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "dividend_classification": "(별도)당기순이익(백만원)",
+                        "current_year": 3413.0,
+                        "previous_year": 2097.0,
+                        "two_years_ago": 482.0,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "dividend_classification": "(연결)주당순이익(원)",
+                        "current_year": 54.0,
+                        "previous_year": 30.0,
+                        "two_years_ago": 33.0,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "dividend_classification": "현금배당금총액(백만원)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "dividend_classification": "주식배당금총액(백만원)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "dividend_classification": "(연결)현금배당성향(%)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "dividend_classification": "현금배당수익률(%)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "dividend_classification": "현금배당수익률(%)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "dividend_classification": "주식배당수익률(%)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "dividend_classification": "주식배당수익률(%)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "dividend_classification": "주당 현금배당금(원)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "dividend_classification": "주당 현금배당금(원)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "dividend_classification": "주당 주식배당(주)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "dividend_classification": "주당 주식배당(주)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-03-31"
+                    }
+                ],
+                "capital_changes": [
+                    {
+                        "change_type": "2,874",
+                        "settlement_date": "2024-03-31",
+                        "note": ""
+                    }
+                ],
+                "other_investments": [
+                    {
+                        "company_name": "자본재공제조합",
+                        "first_acquisition_date": "2001.08.13",
+                        "investment_purpose": "단순투자",
+                        "first_acquisition_amount": 81034000,
+                        "ending_shares": 80,
+                        "ownership_ratio": 0.11,
+                        "book_value": 94251000,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "company_name": "대한설비공제조합",
+                        "first_acquisition_date": "2012.01.13",
+                        "investment_purpose": "단순투자",
+                        "first_acquisition_amount": 40044000,
+                        "ending_shares": 43,
+                        "ownership_ratio": 0.0,
+                        "book_value": 46956000,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "company_name": "유비머티리얼즈",
+                        "first_acquisition_date": "2020.07.09",
+                        "investment_purpose": "단순투자",
+                        "first_acquisition_amount": 498000000,
+                        "ending_shares": 83000,
+                        "ownership_ratio": 0.45,
+                        "book_value": 25979000,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "company_name": "아르게스-AFWP \n스마트모빌리티 \n신기술투자조합 제1호",
+                        "first_acquisition_date": "2022.12.26",
+                        "investment_purpose": "단순투자",
+                        "first_acquisition_amount": 1000000000,
+                        "ending_shares": 1000000,
+                        "ownership_ratio": 24.39,
+                        "book_value": 987473000,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "company_name": "㈜부산에쿼티파트너스",
+                        "first_acquisition_date": "2023.11.16",
+                        "investment_purpose": "단순투자",
+                        "first_acquisition_amount": 1000000000,
+                        "ending_shares": 1000000,
+                        "ownership_ratio": 0.0,
+                        "book_value": 1000000000,
+                        "settlement_date": "2024-03-31"
+                    },
+                    {
+                        "company_name": "합계",
+                        "first_acquisition_date": "-",
+                        "investment_purpose": "-",
+                        "first_acquisition_amount": 0,
+                        "ending_shares": 2083123,
+                        "ownership_ratio": 25.0,
+                        "book_value": 2154660000,
+                        "settlement_date": "2024-03-31"
+                    }
+                ]
+            },
+            "disclosure_monitoring": {
+                "success": true,
+                "monitoring_period": "최근 30일",
+                "collected_at": "2025-06-19T11:13:21.384877",
+                "recent_disclosures": [
+                    {
+                        "corp_name": "3S",
+                        "report_name": "사업보고서 (2025.03)",
+                        "receipt_number": "20250618000208",
+                        "receipt_date": "2025-06-18",
+                        "receipt_date_raw": "20250618",
+                        "submitter": "3S",
+                        "remarks": "연"
+                    },
+                    {
+                        "corp_name": "3S",
+                        "report_name": "감사보고서제출",
+                        "receipt_number": "20250618900324",
+                        "receipt_date": "2025-06-18",
+                        "receipt_date_raw": "20250618",
+                        "submitter": "3S",
+                        "remarks": "코"
+                    },
+                    {
+                        "corp_name": "3S",
+                        "report_name": "전환가액의조정",
+                        "receipt_number": "20250617900168",
+                        "receipt_date": "2025-06-17",
+                        "receipt_date_raw": "20250617",
+                        "submitter": "3S",
+                        "remarks": "코"
+                    },
+                    {
+                        "corp_name": "3S",
+                        "report_name": "[기재정정]주주총회소집공고",
+                        "receipt_number": "20250612000208",
+                        "receipt_date": "2025-06-12",
+                        "receipt_date_raw": "20250612",
+                        "submitter": "3S",
+                        "remarks": ""
+                    },
+                    {
+                        "corp_name": "3S",
+                        "report_name": "[기재정정]의결권대리행사권유참고서류",
+                        "receipt_number": "20250612000204",
+                        "receipt_date": "2025-06-12",
+                        "receipt_date_raw": "20250612",
+                        "submitter": "3S",
+                        "remarks": ""
+                    },
+                    {
+                        "corp_name": "3S",
+                        "report_name": "[기재정정]주주총회소집결의",
+                        "receipt_number": "20250610900531",
+                        "receipt_date": "2025-06-10",
+                        "receipt_date_raw": "20250610",
+                        "submitter": "3S",
+                        "remarks": "코"
+                    },
+                    {
+                        "corp_name": "3S",
+                        "report_name": "주주총회소집공고",
+                        "receipt_number": "20250610000439",
+                        "receipt_date": "2025-06-10",
+                        "receipt_date_raw": "20250610",
+                        "submitter": "3S",
+                        "remarks": "정"
+                    },
+                    {
+                        "corp_name": "3S",
+                        "report_name": "의결권대리행사권유참고서류",
+                        "receipt_number": "20250610000421",
+                        "receipt_date": "2025-06-10",
+                        "receipt_date_raw": "20250610",
+                        "submitter": "3S",
+                        "remarks": "정"
+                    },
+                    {
+                        "corp_name": "3S",
+                        "report_name": "[기재정정]매출액또는손익구조30%(대규모법인은15%)이상변동",
+                        "receipt_number": "20250610900320",
+                        "receipt_date": "2025-06-10",
+                        "receipt_date_raw": "20250610",
+                        "submitter": "3S",
+                        "remarks": "코"
+                    },
+                    {
+                        "corp_name": "3S",
+                        "report_name": "주주총회소집결의",
+                        "receipt_number": "20250528900402",
+                        "receipt_date": "2025-05-28",
+                        "receipt_date_raw": "20250528",
+                        "submitter": "3S",
+                        "remarks": "코정"
+                    },
+                    {
+                        "corp_name": "3S",
+                        "report_name": "매출액또는손익구조30%(대규모법인은15%)이상변동",
+                        "receipt_number": "20250528900397",
+                        "receipt_date": "2025-05-28",
+                        "receipt_date_raw": "20250528",
+                        "submitter": "3S",
+                        "remarks": "코정"
+                    }
+                ],
+                "important_notices": [
+                    {
+                        "corp_name": "3S",
+                        "report_name": "감사보고서제출",
+                        "receipt_number": "20250618900324",
+                        "receipt_date": "2025-06-18",
+                        "receipt_date_raw": "20250618",
+                        "submitter": "3S",
+                        "remarks": "코",
+                        "importance_level": "일반",
+                        "importance_reason": "'감사보고서' 관련 공시",
+                        "priority_score": 40,
+                        "content_summary": "감사보고서 제출[지배회사 또는 지주회사의 연결재무제표 기준 감사의견 및 재무요건]구분당해사업연도직전 사업연도1. 연결 감사의견 등- 감사의견적정적정- 계속기업 존속불확실성 사유 해당여부미해당미해당- 내부회계관리제도 감사(검토)의견 비적정 등 여부--2. 감사의견과 관련 없는 계속기업 존속 불확실성 기재여부미기재미기재3. 연결 재무내용(원)- 자산총계74,789,041,96963,790,941,612- 부채총계25,264,350,85715,350,773,617- 자본총계49,524,691,11248,440,167,995- 자본금26,529,520,00024,268,321,0004. 연결 손익내용(원)- 매출액29,022,184,96743,595,351,592- 영업이익-5,831,286,1691,164,030,344- 법인세비용차감전계속사업이익-10,005,420,7222,605,084,717- 당기순이익-10,007,067,7802,605,084,717- 지배기업 소유주지분 순이익-..."
+                    }
+                ],
+                "corrections": [
+                    {
+                        "corp_name": "3S",
+                        "report_name": "[기재정정]주주총회소집공고",
+                        "receipt_number": "20250612000208",
+                        "receipt_date": "2025-06-12",
+                        "receipt_date_raw": "20250612",
+                        "submitter": "3S",
+                        "remarks": "",
+                        "correction_type": "정정"
+                    },
+                    {
+                        "corp_name": "3S",
+                        "report_name": "[기재정정]의결권대리행사권유참고서류",
+                        "receipt_number": "20250612000204",
+                        "receipt_date": "2025-06-12",
+                        "receipt_date_raw": "20250612",
+                        "submitter": "3S",
+                        "remarks": "",
+                        "correction_type": "정정"
+                    },
+                    {
+                        "corp_name": "3S",
+                        "report_name": "[기재정정]주주총회소집결의",
+                        "receipt_number": "20250610900531",
+                        "receipt_date": "2025-06-10",
+                        "receipt_date_raw": "20250610",
+                        "submitter": "3S",
+                        "remarks": "코",
+                        "correction_type": "정정"
+                    },
+                    {
+                        "corp_name": "3S",
+                        "report_name": "[기재정정]매출액또는손익구조30%(대규모법인은15%)이상변동",
+                        "receipt_number": "20250610900320",
+                        "receipt_date": "2025-06-10",
+                        "receipt_date_raw": "20250610",
+                        "submitter": "3S",
+                        "remarks": "코",
+                        "correction_type": "정정"
+                    }
+                ],
+                "data": {
+                    "recent_disclosures": [
+                        {
+                            "corp_name": "3S",
+                            "report_name": "사업보고서 (2025.03)",
+                            "receipt_number": "20250618000208",
+                            "receipt_date": "2025-06-18",
+                            "receipt_date_raw": "20250618",
+                            "submitter": "3S",
+                            "remarks": "연"
+                        },
+                        {
+                            "corp_name": "3S",
+                            "report_name": "감사보고서제출",
+                            "receipt_number": "20250618900324",
+                            "receipt_date": "2025-06-18",
+                            "receipt_date_raw": "20250618",
+                            "submitter": "3S",
+                            "remarks": "코"
+                        },
+                        {
+                            "corp_name": "3S",
+                            "report_name": "전환가액의조정",
+                            "receipt_number": "20250617900168",
+                            "receipt_date": "2025-06-17",
+                            "receipt_date_raw": "20250617",
+                            "submitter": "3S",
+                            "remarks": "코"
+                        },
+                        {
+                            "corp_name": "3S",
+                            "report_name": "[기재정정]주주총회소집공고",
+                            "receipt_number": "20250612000208",
+                            "receipt_date": "2025-06-12",
+                            "receipt_date_raw": "20250612",
+                            "submitter": "3S",
+                            "remarks": ""
+                        },
+                        {
+                            "corp_name": "3S",
+                            "report_name": "[기재정정]의결권대리행사권유참고서류",
+                            "receipt_number": "20250612000204",
+                            "receipt_date": "2025-06-12",
+                            "receipt_date_raw": "20250612",
+                            "submitter": "3S",
+                            "remarks": ""
+                        },
+                        {
+                            "corp_name": "3S",
+                            "report_name": "[기재정정]주주총회소집결의",
+                            "receipt_number": "20250610900531",
+                            "receipt_date": "2025-06-10",
+                            "receipt_date_raw": "20250610",
+                            "submitter": "3S",
+                            "remarks": "코"
+                        },
+                        {
+                            "corp_name": "3S",
+                            "report_name": "주주총회소집공고",
+                            "receipt_number": "20250610000439",
+                            "receipt_date": "2025-06-10",
+                            "receipt_date_raw": "20250610",
+                            "submitter": "3S",
+                            "remarks": "정"
+                        },
+                        {
+                            "corp_name": "3S",
+                            "report_name": "의결권대리행사권유참고서류",
+                            "receipt_number": "20250610000421",
+                            "receipt_date": "2025-06-10",
+                            "receipt_date_raw": "20250610",
+                            "submitter": "3S",
+                            "remarks": "정"
+                        },
+                        {
+                            "corp_name": "3S",
+                            "report_name": "[기재정정]매출액또는손익구조30%(대규모법인은15%)이상변동",
+                            "receipt_number": "20250610900320",
+                            "receipt_date": "2025-06-10",
+                            "receipt_date_raw": "20250610",
+                            "submitter": "3S",
+                            "remarks": "코"
+                        },
+                        {
+                            "corp_name": "3S",
+                            "report_name": "주주총회소집결의",
+                            "receipt_number": "20250528900402",
+                            "receipt_date": "2025-05-28",
+                            "receipt_date_raw": "20250528",
+                            "submitter": "3S",
+                            "remarks": "코정"
+                        },
+                        {
+                            "corp_name": "3S",
+                            "report_name": "매출액또는손익구조30%(대규모법인은15%)이상변동",
+                            "receipt_number": "20250528900397",
+                            "receipt_date": "2025-05-28",
+                            "receipt_date_raw": "20250528",
+                            "submitter": "3S",
+                            "remarks": "코정"
+                        }
+                    ],
+                    "important_notices": [
+                        {
+                            "corp_name": "3S",
+                            "report_name": "감사보고서제출",
+                            "receipt_number": "20250618900324",
+                            "receipt_date": "2025-06-18",
+                            "receipt_date_raw": "20250618",
+                            "submitter": "3S",
+                            "remarks": "코",
+                            "importance_level": "일반",
+                            "importance_reason": "'감사보고서' 관련 공시",
+                            "priority_score": 40,
+                            "content_summary": "감사보고서 제출[지배회사 또는 지주회사의 연결재무제표 기준 감사의견 및 재무요건]구분당해사업연도직전 사업연도1. 연결 감사의견 등- 감사의견적정적정- 계속기업 존속불확실성 사유 해당여부미해당미해당- 내부회계관리제도 감사(검토)의견 비적정 등 여부--2. 감사의견과 관련 없는 계속기업 존속 불확실성 기재여부미기재미기재3. 연결 재무내용(원)- 자산총계74,789,041,96963,790,941,612- 부채총계25,264,350,85715,350,773,617- 자본총계49,524,691,11248,440,167,995- 자본금26,529,520,00024,268,321,0004. 연결 손익내용(원)- 매출액29,022,184,96743,595,351,592- 영업이익-5,831,286,1691,164,030,344- 법인세비용차감전계속사업이익-10,005,420,7222,605,084,717- 당기순이익-10,007,067,7802,605,084,717- 지배기업 소유주지분 순이익-..."
+                        }
+                    ],
+                    "corrections": [
+                        {
+                            "corp_name": "3S",
+                            "report_name": "[기재정정]주주총회소집공고",
+                            "receipt_number": "20250612000208",
+                            "receipt_date": "2025-06-12",
+                            "receipt_date_raw": "20250612",
+                            "submitter": "3S",
+                            "remarks": "",
+                            "correction_type": "정정"
+                        },
+                        {
+                            "corp_name": "3S",
+                            "report_name": "[기재정정]의결권대리행사권유참고서류",
+                            "receipt_number": "20250612000204",
+                            "receipt_date": "2025-06-12",
+                            "receipt_date_raw": "20250612",
+                            "submitter": "3S",
+                            "remarks": "",
+                            "correction_type": "정정"
+                        },
+                        {
+                            "corp_name": "3S",
+                            "report_name": "[기재정정]주주총회소집결의",
+                            "receipt_number": "20250610900531",
+                            "receipt_date": "2025-06-10",
+                            "receipt_date_raw": "20250610",
+                            "submitter": "3S",
+                            "remarks": "코",
+                            "correction_type": "정정"
+                        },
+                        {
+                            "corp_name": "3S",
+                            "report_name": "[기재정정]매출액또는손익구조30%(대규모법인은15%)이상변동",
+                            "receipt_number": "20250610900320",
+                            "receipt_date": "2025-06-10",
+                            "receipt_date_raw": "20250610",
+                            "submitter": "3S",
+                            "remarks": "코",
+                            "correction_type": "정정"
+                        }
+                    ]
+                }
+            }
+        },
+        "pdf_raw_data": {},
+        "manus_collection_raw_data": {},
+        "crewai_comprehensive_analysis_raw_data": {},
+        "data_statistics": {
+            "total_data_points": 131,
+            "yfinance_data_points": 15,
+            "enhanced_dart_data_points": 116,
+            "pdf_data_points": 0,
+            "manus_collection_data_points": 0,
+            "crewai_data_points": 0,
+            "data_completeness": "보통"
+        }
+    }
+}
+}

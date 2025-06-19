@@ -1,0 +1,762 @@
+{
+  "timestamp": "20250619_111203",
+  "prompt": "q",
+  "response": "📊 감지된 종목: 큐캐피탈 (016600)\n" +
+  "\n" +
+  "🏷️ ticker_bbg: 016600 KS Equity\n" +
+  "\n" +
+  "🏢 GICS 섹터: Financials\n" +
+  "\n" +
+  "📋 종합 요약:\n" +
+  "\n" +
+  "{'analyzed_stock': {'name': '큐캐피탈', 'code': '016600', 'ticker_bbg': '016600 KS" +
+  "Equity', 'gics_sector': 'Financials', 'market_index': 'KOSDAQ Index'," +
+  "'detection_method': 'ai_ai_web_search_priority'}, 'data_sources':" +
+  "{'financial_data_collected': True, 'data_sources': ['yfinance', 'DART']," +
+  "'data_quality': '낮음', 'manus_information_collected': False," +
+  "'data_richness_score': 0.0}, 'analysis_quality':" +
+  "{'information_collection_performed': False," +
+  "'crewai_comprehensive_analysis_performed': False, 'financial_data_enhanced':" +
+  "True, 'workflow_type': 'manus_first_crewai_synthesis'}, 'key_insights':" +
+  "{'information_collection_quality': '알 수 없음', 'crewai_analysis_quality': '실패'," +
+  "'overall_analysis_depth': '낮음', 'data_integration_success': False}}",
+  "steps": [
+    "",
+    "📊 감지된 종목: 큐캐피탈 (016600)",
+    "🏢 GICS 섹터: Financials",
+    "📈 재무데이터 수집 성공: yfinance, DART",
+    "🚀 Enhanced DART 데이터 수집 성공",
+    ""
+  ],
+  "meta": {
+    "analysis_flow": "enhanced_manus_first_crewai_synthesis",
+    "success": false,
+    "timestamp": "2025-06-19T11:09:02.330315",
+    "stock_info": {
+        "detected": true,
+        "stock_name": "큐캐피탈",
+        "stock_code": "016600 KS Equity",
+        "detection_method": "ai_ai_web_search_priority",
+        "ticker_bbg": "016600 KS Equity",
+        "gics_sector": "Financials",
+        "mapped_company_name": "Q CAPITAL PARTNERS CO LTD",
+        "market_index": "KOSDAQ Index",
+        "original_stock_code": "016600",
+        "original_stock_name": "큐캐피탈"
+    },
+    "data_quality": "낮음",
+    "enhanced_features": {
+        "financial_data_used": true,
+        "enhanced_dart_used": true,
+        "detailed_analysis_performed": false,
+        "ticker_bbg_mapping_used": true,
+        "gics_sector_detected": true,
+        "dataset_sector_mapping_used": true
+    },
+    "raw_data": {
+        "data_sources_summary": {
+            "yfinance_data_available": true,
+            "dart_basic_data_available": true,
+            "enhanced_dart_data_available": true,
+            "pdf_data_available": false,
+            "manus_collection_available": false,
+            "crewai_comprehensive_analysis_available": false
+        },
+        "yfinance_raw_data": {
+            "basic_info": {
+                "company_name": "016600.KS,0P0000B0FG,482702",
+                "sector": "정보없음",
+                "industry": "정보없음",
+                "country": "정보없음",
+                "currency": "KRW",
+                "exchange": "KOE",
+                "ticker_symbol": "016600.KS"
+            },
+            "current_price_info": {
+                "current_price": 319.0,
+                "previous_close": null,
+                "open_price": null,
+                "day_high": null,
+                "day_low": null,
+                "volume": null,
+                "market_cap": null,
+                "shares_outstanding": null
+            },
+            "financial_ratios": {
+                "pe_ratio": null,
+                "peg_ratio": null,
+                "pb_ratio": null,
+                "ps_ratio": null,
+                "dividend_yield": null,
+                "profit_margin": null,
+                "operating_margin": null,
+                "return_on_equity": null,
+                "return_on_assets": null,
+                "debt_to_equity": null,
+                "current_ratio": null,
+                "quick_ratio": null
+            },
+            "growth_metrics": {
+                "earnings_growth": null,
+                "revenue_growth": null,
+                "earnings_quarterly_growth": null,
+                "revenue_quarterly_growth": null
+            },
+            "price_history": {
+                "52_week_high": 337.0,
+                "52_week_low": 217.0,
+                "avg_volume_3m": 641715.0333333333,
+                "price_change_1y": -6.624605678233439
+            },
+            "data_quality": "낮음",
+            "data_sources": [
+                "yfinance",
+                "DART"
+            ],
+            "collection_info": {
+                "success": true,
+                "errors": [],
+                "stock_info": {
+                    "stock_code": "016600",
+                    "stock_name": "큐캐피탈",
+                    "collection_timestamp": "2025-06-19T11:11:37.155746"
+                }
+            }
+        },
+        "dart_basic_raw_data": {
+            "company_info": {
+                "corp_name": "큐캐피탈파트너스(주)",
+                "corp_code": "00267942",
+                "business_summary": "2208108089",
+                "established_date": "19821217",
+                "listing_date": "12",
+                "ceo_name": "황희연",
+                "address": "서울특별시 강남구 테헤란로 30611층(역삼동. 카이트타워)"
+            },
+            "financial_statements": {
+                "total_assets": 179420068678,
+                "total_liabilities": 41325954768,
+                "total_equity": 138094113910,
+                "net_income": 1780079162,
+                "operating_profit": 2823146335,
+                "debt_ratio": 0.3
+            },
+            "business_report": {
+                "main_business": "법인고유번호 00267942 기업의 주요사업",
+                "business_risks": "시장변동성, 경쟁심화 등",
+                "future_plans": "사업확장 및 기술개발 계획"
+            }
+        },
+        "enhanced_dart_raw_data": {
+            "collection_info": {
+                "success": true,
+                "stock_code": "016600",
+                "collected_at": "",
+                "error": ""
+            },
+            "financial_analysis": {
+                "success": true,
+                "corp_code": "00267942",
+                "bsns_year": "2024",
+                "collected_at": "2025-06-19T11:11:59.173232",
+                "individual_statements": {
+                    "asset_info": {
+                        "total_assets": 179420068678
+                    },
+                    "liability_info": {
+                        "total_liabilities": 41325954768
+                    },
+                    "equity_info": {
+                        "capital_stock": 89123556000,
+                        "total_equity": 138094113910
+                    },
+                    "income_info": {
+                        "net_income": 1780079162,
+                        "operating_expenses": 15846453711
+                    }
+                },
+                "consolidated_statements": {
+                    "asset_info": {
+                        "total_assets": 179420068678
+                    },
+                    "liability_info": {
+                        "total_liabilities": 41325954768
+                    },
+                    "equity_info": {
+                        "capital_stock": 89123556000,
+                        "total_equity": 138094113910
+                    },
+                    "income_info": {
+                        "net_income": 1780079162,
+                        "operating_expenses": 15846453711
+                    }
+                },
+                "quarterly_performance": [
+                    {
+                        "asset_info": {
+                            "total_assets": 168362119665
+                        },
+                        "liability_info": {
+                            "total_liabilities": 32786163772
+                        },
+                        "equity_info": {
+                            "capital_stock": 89123556000,
+                            "total_equity": 135575955893
+                        },
+                        "income_info": {
+                            "revenue": 5045867052,
+                            "net_income": 192428758,
+                            "operating_expenses": 4645374537
+                        },
+                        "period": "1분기"
+                    },
+                    {
+                        "asset_info": {
+                            "total_assets": 176924080135
+                        },
+                        "liability_info": {
+                            "total_liabilities": 35016395010
+                        },
+                        "equity_info": {
+                            "capital_stock": 89123556000,
+                            "total_equity": 141907685125
+                        },
+                        "income_info": {
+                            "revenue": 5342457895,
+                            "net_income": 4658304215,
+                            "operating_expenses": 4307026836
+                        },
+                        "period": "반기"
+                    },
+                    {
+                        "asset_info": {
+                            "total_assets": 177474094633
+                        },
+                        "liability_info": {
+                            "total_liabilities": 34718525000
+                        },
+                        "equity_info": {
+                            "capital_stock": 89123556000,
+                            "total_equity": 142755569633
+                        },
+                        "income_info": {
+                            "revenue": 3725726907,
+                            "net_income": 890268086,
+                            "operating_expenses": 3058642808
+                        },
+                        "period": "3분기"
+                    },
+                    {
+                        "asset_info": {
+                            "total_assets": 179420068678
+                        },
+                        "liability_info": {
+                            "total_liabilities": 41325954768
+                        },
+                        "equity_info": {
+                            "capital_stock": 89123556000,
+                            "total_equity": 138094113910
+                        },
+                        "income_info": {
+                            "net_income": 1780079162,
+                            "operating_expenses": 15846453711
+                        },
+                        "period": "연간"
+                    }
+                ]
+            },
+            "governance_analysis": {
+                "success": true,
+                "corp_code": "00267942",
+                "bsns_year": "2024",
+                "collected_at": "2025-06-19T11:12:00.420199",
+                "major_shareholders": [
+                    {
+                        "shareholder_name": "(주)지엔코",
+                        "relationship": "최대주주본인",
+                        "shares_held": 69805000,
+                        "ownership_ratio": 39.16,
+                        "report_date": "2024-12-31"
+                    },
+                    {
+                        "shareholder_name": "(주)원업플러스",
+                        "relationship": "특별관계자",
+                        "shares_held": 145000,
+                        "ownership_ratio": 0.08,
+                        "report_date": "2024-12-31"
+                    },
+                    {
+                        "shareholder_name": "계",
+                        "relationship": "",
+                        "shares_held": 70010000,
+                        "ownership_ratio": 39.24,
+                        "report_date": "2024-12-31"
+                    },
+                    {
+                        "shareholder_name": "계",
+                        "relationship": "",
+                        "shares_held": 0,
+                        "ownership_ratio": 0.0,
+                        "report_date": "2024-12-31"
+                    }
+                ],
+                "executives": [
+                    {
+                        "name": "권경훈",
+                        "position": "",
+                        "career": "",
+                        "main_career": "-연세대학교 경영학 학사.석사\n-(주)지엔코 회장",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이창민",
+                        "position": "",
+                        "career": "",
+                        "main_career": "-서울대학교 산업공학 학사\n-삼일회계법인\n-현대증권\n-우리프라이빗에쿼티",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김성훈",
+                        "position": "",
+                        "career": "",
+                        "main_career": "-서울대학교 경영학과 학사\n-삼일회계법인\n-트루벤인베스트먼트",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "손명기",
+                        "position": "",
+                        "career": "",
+                        "main_career": "-서울대학교 농경제사회학부 학사\n-한영회계법인\n-국민연금 ",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "신희석",
+                        "position": "",
+                        "career": "",
+                        "main_career": "-Columbia University Economics\n-KB증권",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "진윤정",
+                        "position": "",
+                        "career": "",
+                        "main_career": "-한남대학교 전자계산공학 학사\n-큐캐피탈파트너스 관리본부",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "황희연",
+                        "position": "",
+                        "career": "",
+                        "main_career": "-서울대학교 경제학 학사, 경영학 석사\n-삼일회계법인\n-안진회계법인 재무자문본부,\n-큐캐피탈파트너스\n-KB투자증권",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "이찬희",
+                        "position": "",
+                        "career": "",
+                        "main_career": "-연세대학교 법학과 학사. 석사\n-제94대 서울지방변호사회 회장",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김채영",
+                        "position": "",
+                        "career": "",
+                        "main_career": "-단국대학교 행정학과 학사\n-에코비트 고문",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김영배",
+                        "position": "",
+                        "career": "",
+                        "main_career": "- 서강대학교 경제학과 학사\n- 신한은행 준법감시부",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "최명록",
+                        "position": "",
+                        "career": "",
+                        "main_career": "-연세대학교 경제학 학사\n-KB증권\n-KTB투자증권\n-KTB프라이빗에쿼티",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "윤동현",
+                        "position": "",
+                        "career": "",
+                        "main_career": "-서강대학교 경제학 학사\n-한영회계법인\n-Ernst&Young Advisory Inc.",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "평기호",
+                        "position": "",
+                        "career": "",
+                        "main_career": "-연세대학교 경영학과 학사\n-KTB프라이빗에쿼티 경영기획본부장\n-서울제약",
+                        "tenure": ""
+                    },
+                    {
+                        "name": "김상희",
+                        "position": "",
+                        "career": "",
+                        "main_career": "-서울대학교 경제학 학사\n-미래에셋증권\n-NH투자증권\n-한양증권\n-SBI저축은행",
+                        "tenure": ""
+                    }
+                ]
+            },
+            "investment_analysis": {
+                "success": true,
+                "corp_code": "00267942",
+                "bsns_year": "2024",
+                "collected_at": "2025-06-19T11:12:02.150298",
+                "dividend_info": [
+                    {
+                        "dividend_classification": "주당액면가액(원)",
+                        "current_year": 500.0,
+                        "previous_year": 500.0,
+                        "two_years_ago": 500.0,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "dividend_classification": "(연결)당기순이익(백만원)",
+                        "current_year": 1780.0,
+                        "previous_year": 7066.0,
+                        "two_years_ago": -6738.0,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "dividend_classification": "(별도)당기순이익(백만원)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "dividend_classification": "(연결)주당순이익(원)",
+                        "current_year": 10.0,
+                        "previous_year": 41.0,
+                        "two_years_ago": -38.0,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "dividend_classification": "현금배당금총액(백만원)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "dividend_classification": "주식배당금총액(백만원)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "dividend_classification": "(연결)현금배당성향(%)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "dividend_classification": "현금배당수익률(%)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "dividend_classification": "현금배당수익률(%)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "dividend_classification": "주식배당수익률(%)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "dividend_classification": "주식배당수익률(%)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "dividend_classification": "주당 현금배당금(원)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "dividend_classification": "주당 현금배당금(원)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "dividend_classification": "주당 주식배당(주)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "dividend_classification": "주당 주식배당(주)",
+                        "current_year": 0.0,
+                        "previous_year": 0.0,
+                        "two_years_ago": 0.0,
+                        "settlement_date": "2024-12-31"
+                    }
+                ],
+                "capital_changes": [
+                    {
+                        "change_type": "500",
+                        "settlement_date": "2024-12-31",
+                        "note": ""
+                    },
+                    {
+                        "change_type": "540",
+                        "settlement_date": "2024-12-31",
+                        "note": ""
+                    },
+                    {
+                        "change_type": "515",
+                        "settlement_date": "2024-12-31",
+                        "note": ""
+                    },
+                    {
+                        "change_type": "515",
+                        "settlement_date": "2024-12-31",
+                        "note": ""
+                    },
+                    {
+                        "change_type": "603",
+                        "settlement_date": "2024-12-31",
+                        "note": ""
+                    },
+                    {
+                        "change_type": "500",
+                        "settlement_date": "2024-12-31",
+                        "note": ""
+                    },
+                    {
+                        "change_type": "1,030",
+                        "settlement_date": "2024-12-31",
+                        "note": ""
+                    },
+                    {
+                        "change_type": "929",
+                        "settlement_date": "2024-12-31",
+                        "note": ""
+                    },
+                    {
+                        "change_type": "933",
+                        "settlement_date": "2024-12-31",
+                        "note": ""
+                    },
+                    {
+                        "change_type": "784",
+                        "settlement_date": "2024-12-31",
+                        "note": ""
+                    },
+                    {
+                        "change_type": "784",
+                        "settlement_date": "2024-12-31",
+                        "note": ""
+                    },
+                    {
+                        "change_type": "526",
+                        "settlement_date": "2024-12-31",
+                        "note": ""
+                    }
+                ],
+                "other_investments": [
+                    {
+                        "company_name": "(주)나스테크",
+                        "first_acquisition_date": "2004.06.09",
+                        "investment_purpose": "일반투자",
+                        "first_acquisition_amount": 1471000000,
+                        "ending_shares": 0,
+                        "ownership_ratio": 6.0,
+                        "book_value": 0,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "company_name": "2018큐씨피13호\n사모투자합자회사",
+                        "first_acquisition_date": "2019.07.19",
+                        "investment_purpose": "경영참여",
+                        "first_acquisition_amount": 30000000000,
+                        "ending_shares": 21036000000,
+                        "ownership_ratio": 10.0,
+                        "book_value": 25574000000,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "company_name": "우리큐기업재무안정\n사모투자합자회사",
+                        "first_acquisition_date": "2019.12.30",
+                        "investment_purpose": "경영참여",
+                        "first_acquisition_amount": 15600000000,
+                        "ending_shares": 11240718312,
+                        "ownership_ratio": 10.1,
+                        "book_value": 13305000000,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "company_name": "2021큐씨피제15호 \n사모투자합자회사",
+                        "first_acquisition_date": "2022.07.19",
+                        "investment_purpose": "경영참여",
+                        "first_acquisition_amount": 9385000000,
+                        "ending_shares": 19422024000,
+                        "ownership_ratio": 10.0,
+                        "book_value": 35544000000,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "company_name": "QCP신기술투자조합22호",
+                        "first_acquisition_date": "2013.08.02",
+                        "investment_purpose": "경영참여",
+                        "first_acquisition_amount": 200000000,
+                        "ending_shares": 42,
+                        "ownership_ratio": 2.0,
+                        "book_value": 5000000,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "company_name": "QCP신기술투자조합28호(**)",
+                        "first_acquisition_date": "2024.02.23",
+                        "investment_purpose": "경영참여",
+                        "first_acquisition_amount": 638000000,
+                        "ending_shares": 637840000,
+                        "ownership_ratio": 20.0,
+                        "book_value": 1217000000,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "company_name": "(주)삼원테크",
+                        "first_acquisition_date": "2001.12.28",
+                        "investment_purpose": "일반투자",
+                        "first_acquisition_amount": 500000000,
+                        "ending_shares": 16667,
+                        "ownership_ratio": 6.0,
+                        "book_value": 558000000,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "company_name": "(주)에이피코리아네트",
+                        "first_acquisition_date": "1999.10.28",
+                        "investment_purpose": "일반투자",
+                        "first_acquisition_amount": 400000000,
+                        "ending_shares": 40000,
+                        "ownership_ratio": 12.5,
+                        "book_value": 179000000,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "company_name": "(주)크레오에스지",
+                        "first_acquisition_date": "2015.06.10",
+                        "investment_purpose": "일반투자",
+                        "first_acquisition_amount": 11400000000,
+                        "ending_shares": 7870744,
+                        "ownership_ratio": 4.3,
+                        "book_value": 4463000000,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "company_name": "(주)큐로홀딩스",
+                        "first_acquisition_date": "2015.06.10",
+                        "investment_purpose": "일반투자",
+                        "first_acquisition_amount": 6386000000,
+                        "ending_shares": 505071,
+                        "ownership_ratio": 3.7,
+                        "book_value": 539000000,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "company_name": "(주)지엔코",
+                        "first_acquisition_date": "2015.06.10",
+                        "investment_purpose": "일반투자",
+                        "first_acquisition_amount": 2523000000,
+                        "ending_shares": 2079892,
+                        "ownership_ratio": 2.1,
+                        "book_value": 551000000,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "company_name": "일본정밀(*)",
+                        "first_acquisition_date": "2021.12.31",
+                        "investment_purpose": "일반투자",
+                        "first_acquisition_amount": 752000000,
+                        "ending_shares": 1119000,
+                        "ownership_ratio": 5.0,
+                        "book_value": 742000000,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "company_name": "큐씨피제이비기술가지평가\n사모투자전문회사",
+                        "first_acquisition_date": "2015.12.07",
+                        "investment_purpose": "경영참여",
+                        "first_acquisition_amount": 9900000000,
+                        "ending_shares": 2042370,
+                        "ownership_ratio": 12.2,
+                        "book_value": 704000000,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "company_name": "큐씨피제일호기업재무안정\n사모투자합자회사",
+                        "first_acquisition_date": "2018.01.22",
+                        "investment_purpose": "경영참여",
+                        "first_acquisition_amount": 6500000000,
+                        "ending_shares": 113750000,
+                        "ownership_ratio": 7.1,
+                        "book_value": 829000000,
+                        "settlement_date": "2024-12-31"
+                    },
+                    {
+                        "company_name": "합계",
+                        "first_acquisition_date": "-",
+                        "investment_purpose": "-",
+                        "first_acquisition_amount": 0,
+                        "ending_shares": 0,
+                        "ownership_ratio": 0.0,
+                        "book_value": 84210000000,
+                        "settlement_date": "2024-12-31"
+                    }
+                ]
+            },
+            "disclosure_monitoring": {
+                "success": true,
+                "monitoring_period": "최근 30일",
+                "collected_at": "2025-06-19T11:12:03.283944",
+                "recent_disclosures": [],
+                "recent_disclosures_error": "API 오류: 조회된 데이타가 없습니다.",
+                "important_notices": [],
+                "important_notices_error": "API 오류: 조회된 데이타가 없습니다.",
+                "corrections": [],
+                "corrections_error": "API 오류: 조회된 데이타가 없습니다.",
+                "data": {
+                    "recent_disclosures": [],
+                    "important_notices": [],
+                    "corrections": []
+                }
+            }
+        },
+        "pdf_raw_data": {},
+        "manus_collection_raw_data": {},
+        "crewai_comprehensive_analysis_raw_data": {},
+        "data_statistics": {
+            "total_data_points": 113,
+            "yfinance_data_points": 15,
+            "enhanced_dart_data_points": 98,
+            "pdf_data_points": 0,
+            "manus_collection_data_points": 0,
+            "crewai_data_points": 0,
+            "data_completeness": "보통"
+        }
+    }
+}
+}
