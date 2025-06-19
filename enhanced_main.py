@@ -1720,7 +1720,7 @@ class EnhancedStockAnalysisSystem:
                 if raw_text and len(raw_text) > 1000:
                     try:
                         # 목차 기반 청킹 우선 시도 (PDF 경로 전달)
-                        contextual_chunks = self._create_pdf_chunks_for_crewai(
+                        contextual_chunks = await self._create_pdf_chunks_for_crewai(
                             raw_text, pdf_path
                         )
                         logger.info(
@@ -2894,140 +2894,345 @@ class EnhancedStockAnalysisSystem:
                 count += 1
         return count
 
-    def _create_pdf_chunks_for_crewai(
+    async def _create_pdf_chunks_for_crewai(
         self, pdf_text: str, pdf_path: str = None
     ) -> List[Dict[str, Any]]:
         """
-        📄 PDF를 CrewAI용 context별 청크로 분할 (목차 기반 우선)
+        🤖 AI 기반 지능적 PDF 청킹 시스템 (60만자 지원)
 
-        1. 목차 기반 청킹 우선 시도 (PDF 경로가 있는 경우)
-        2. 실패시 키워드 기반 청킹으로 폴백
+        하드코딩된 목차 추출 대신 Manus Agent가 PDF 내용을 분석해서
+        자동으로 최적의 청킹을 수행합니다. 청킹 단위도 60만자까지 확장했습니다.
 
         Args:
             pdf_text: 분할할 PDF 텍스트
-            pdf_path: PDF 파일 경로 (목차 기반 청킹용)
+            pdf_path: PDF 파일 경로 (참고용)
 
         Returns:
-            List[Dict]: context별 청크 목록
+            List[Dict]: AI 기반 context별 청크 목록
         """
         if not pdf_text or len(pdf_text) < 1000:
             return []
 
-        # 🔖 1. 목차 기반 청킹 우선 시도 (PDF 경로가 있는 경우)
-        if pdf_path and hasattr(self, "large_pdf_analyzer") and self.large_pdf_analyzer:
-            try:
-                logger.info("🔖 목차 기반 청킹 시도...")
-                toc_chunks = (
-                    self.large_pdf_analyzer.chunk_processor.chunk_by_table_of_contents(
-                        pdf_path=pdf_path,
-                        text=pdf_text,
-                        min_chunk_size=1000,
-                        max_chunk_size=50000,
-                    )
+        logger.info(f"🤖 AI 기반 지능적 PDF 청킹 시작 (총 {len(pdf_text):,}자)")
+
+        # 🚀 1. Manus Agent를 통한 AI 기반 구조 분석 (우선 방법)
+        try:
+            logger.info("🧠 Manus Agent로 PDF 구조 분석 시작...")
+            intelligent_chunks = await self._ai_based_pdf_chunking(pdf_text, pdf_path)
+
+            if intelligent_chunks and len(intelligent_chunks) > 0:
+                logger.info(f"✅ AI 기반 청킹 성공: {len(intelligent_chunks)}개 청크")
+                return intelligent_chunks
+            else:
+                logger.warning("⚠️ AI 기반 청킹에서 결과 없음 - 폴백 방법 시도")
+
+        except Exception as e:
+            logger.warning(f"⚠️ AI 기반 청킹 실패: {e} - 폴백 방법 시도")
+
+        # 📝 2. 고급 키워드 기반 청킹 (폴백, 60만자 지원)
+        logger.info("📝 고급 키워드 기반 청킹 수행 (60만자 지원)...")
+        return self._advanced_keyword_chunking(pdf_text)
+
+    async def _ai_based_pdf_chunking(
+        self, pdf_text: str, pdf_path: str = None
+    ) -> List[Dict[str, Any]]:
+        """
+        🧠 Manus Agent를 활용한 AI 기반 PDF 청킹
+
+        PDF 내용을 AI가 분석해서 논리적인 구조를 파악하고
+        의미있는 단위로 자동 분할합니다.
+        """
+        try:
+            # PDF 텍스트가 너무 길면 요약본으로 구조 분석
+            analysis_text = pdf_text
+            if len(pdf_text) > 100000:  # 10만자 이상이면 앞부분만 분석
+                analysis_text = pdf_text[:50000] + "\n...\n" + pdf_text[-10000:]
+                logger.info("📊 대용량 PDF - 요약본으로 구조 분석 수행")
+
+            # AI 기반 구조 분석 프롬프트
+            structure_analysis_prompt = f"""
+다음 PDF 문서의 구조를 분석해서 논리적인 섹션으로 나누어주세요.
+
+📄 **PDF 내용 (총 {len(pdf_text):,}자)**:
+{analysis_text}
+
+🎯 **분석 요청**:
+1. 이 문서의 주요 섹션들을 식별해주세요
+2. 각 섹션의 시작을 나타내는 제목이나 키워드를 찾아주세요
+3. 섹션별로 어떤 내용 유형인지 분류해주세요 (재무/사업/리스크/투자/기술/일반)
+
+🔍 **출력 형식** (정확히 이 형식으로):
+```
+SECTION_1: [섹션제목] | [내용유형] | [시작키워드]
+SECTION_2: [섹션제목] | [내용유형] | [시작키워드]
+SECTION_3: [섹션제목] | [내용유형] | [시작키워드]
+...
+```
+
+**예시**:
+```
+SECTION_1: 경영진단서 | business | 경영진단서
+SECTION_2: 재무제표 | financial | 재무제표
+SECTION_3: 위험요인 | risk | 위험요인
+```
+
+📋 **중요 지침**:
+- 각 섹션은 최소 10,000자, 최대 600,000자로 구성
+- 논리적으로 연관된 내용끼리 묶어주세요
+- 너무 세분화하지 말고 의미있는 큰 단위로 나누어주세요
+- 제목이 명확하지 않으면 내용의 핵심 키워드를 사용하세요
+"""
+
+            # Manus Agent로 구조 분석 실행
+            self.manus_agent.memory.clear()
+            self.manus_agent.update_memory("user", structure_analysis_prompt)
+
+            structure_response = ""
+            run_result = await self.manus_agent.run()
+
+            if hasattr(run_result, "__aiter__"):
+                async for response in run_result:
+                    structure_response += response + "\n"
+            else:
+                structure_response = str(run_result)
+
+            # AI 응답에서 섹션 정보 파싱
+            sections = self._parse_ai_section_analysis(structure_response)
+
+            if not sections:
+                logger.warning("⚠️ AI 구조 분석에서 섹션을 찾지 못함")
+                return []
+
+            # 섹션 정보를 바탕으로 실제 텍스트 분할
+            chunks = self._split_text_by_ai_sections(pdf_text, sections)
+
+            logger.info(f"🧠 AI 기반 청킹 완료: {len(chunks)}개 청크 생성")
+            return chunks
+
+        except Exception as e:
+            logger.error(f"❌ AI 기반 청킹 중 오류: {e}")
+            return []
+
+    def _parse_ai_section_analysis(self, ai_response: str) -> List[Dict[str, str]]:
+        """
+        AI의 섹션 분석 응답에서 구조화된 정보 추출
+        """
+        sections = []
+
+        try:
+            # SECTION_X 패턴으로 섹션 정보 추출
+            import re
+
+            # 패턴: SECTION_숫자: 제목 | 유형 | 키워드
+            section_pattern = r"SECTION_(\d+):\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*(.+)"
+
+            matches = re.findall(
+                section_pattern, ai_response, re.MULTILINE | re.IGNORECASE
+            )
+
+            for match in matches:
+                section_num, title, content_type, keyword = match
+                sections.append(
+                    {
+                        "section_number": int(section_num),
+                        "title": title.strip(),
+                        "content_type": content_type.strip(),
+                        "start_keyword": keyword.strip(),
+                    }
                 )
 
-                if toc_chunks:
-                    logger.info(f"✅ 목차 기반 청킹 성공: {len(toc_chunks)}개 청크")
-                    # 목차 청크를 CrewAI 형식으로 변환
-                    converted_chunks = []
-                    for i, chunk in enumerate(toc_chunks):
-                        converted_chunks.append(
-                            {
-                                "chunk_id": i + 1,
-                                "context_type": self._infer_context_from_toc_title(
-                                    chunk.get("toc_title", "")
-                                ),
-                                "content": chunk.get("content", ""),
-                                "content_length": chunk.get("content_length", 0),
-                                "toc_title": chunk.get("toc_title", ""),
-                                "toc_level": chunk.get("toc_level", 1),
-                                "chunk_type": chunk.get("chunk_type", "toc_based"),
-                                "section_hierarchy": chunk.get("section_hierarchy", []),
-                                "keywords_found": self._extract_pdf_chunk_keywords(
-                                    chunk.get("content", "")
-                                ),
-                                "source": "table_of_contents",
-                            }
+            # 패턴 매칭 실패시 간단한 파싱 시도
+            if not sections:
+                lines = ai_response.split("\n")
+                section_count = 1
+
+                for line in lines:
+                    line = line.strip()
+                    if line and ("섹션" in line or "section" in line.lower()):
+                        # 간단한 섹션 정보 추출
+                        if ":" in line:
+                            parts = line.split(":")
+                            if len(parts) >= 2:
+                                title = parts[1].strip()
+                                if title:
+                                    sections.append(
+                                        {
+                                            "section_number": section_count,
+                                            "title": title,
+                                            "content_type": "general",
+                                            "start_keyword": title[
+                                                :20
+                                            ],  # 앞 20자를 키워드로
+                                        }
+                                    )
+                                    section_count += 1
+
+            logger.info(f"🔍 AI 분석에서 {len(sections)}개 섹션 파싱됨")
+
+            # 최소 2개 이상의 섹션이 필요
+            if len(sections) >= 2:
+                return sections
+            else:
+                logger.warning("⚠️ 충분한 섹션이 파싱되지 않음")
+                return []
+
+        except Exception as e:
+            logger.error(f"❌ 섹션 분석 파싱 오류: {e}")
+            return []
+
+    def _split_text_by_ai_sections(
+        self, pdf_text: str, sections: List[Dict[str, str]]
+    ) -> List[Dict[str, Any]]:
+        """
+        AI가 분석한 섹션 정보를 바탕으로 실제 텍스트를 분할
+        """
+        chunks = []
+
+        try:
+            # 섹션별 시작 위치 찾기
+            section_positions = []
+
+            for section in sections:
+                start_keyword = section["start_keyword"]
+
+                # 키워드 변형들로 검색
+                keyword_variations = [
+                    start_keyword,
+                    start_keyword.replace(" ", ""),
+                    start_keyword.upper(),
+                    start_keyword.lower(),
+                    # 숫자나 특수문자 제거한 버전
+                    re.sub(r"[0-9\.\-\(\)]", "", start_keyword).strip(),
+                ]
+
+                best_position = -1
+                found_keyword = start_keyword
+
+                for variant in keyword_variations:
+                    if variant and len(variant) > 2:
+                        pos = pdf_text.find(variant)
+                        if pos != -1:
+                            best_position = pos
+                            found_keyword = variant
+                            break
+
+                section_positions.append(
+                    {
+                        "section": section,
+                        "start_pos": best_position,
+                        "found_keyword": found_keyword,
+                    }
+                )
+
+            # 위치 기준으로 정렬
+            section_positions.sort(
+                key=lambda x: x["start_pos"] if x["start_pos"] != -1 else float("inf")
+            )
+
+            # 실제로 찾은 섹션들만 사용
+            valid_sections = [sp for sp in section_positions if sp["start_pos"] != -1]
+
+            if not valid_sections:
+                logger.warning("⚠️ AI 분석 섹션의 키워드들을 텍스트에서 찾지 못함")
+                return []
+
+            # 섹션별로 텍스트 분할 (60만자 제한 적용)
+            for i, section_pos in enumerate(valid_sections):
+                section = section_pos["section"]
+                start_pos = section_pos["start_pos"]
+
+                # 다음 섹션의 시작까지 또는 텍스트 끝까지
+                if i + 1 < len(valid_sections):
+                    end_pos = valid_sections[i + 1]["start_pos"]
+                else:
+                    end_pos = len(pdf_text)
+
+                section_text = pdf_text[start_pos:end_pos].strip()
+
+                # 최소 크기 검증 (너무 작은 섹션 제외)
+                if len(section_text) > 3000:  # 최소 3000자
+                    # 60만자 제한 적용
+                    max_size_applied = False
+                    if len(section_text) > 600000:
+                        section_text = (
+                            section_text[:600000]
+                            + "\n...[AI 분석 60만자 제한으로 일부 생략]"
                         )
-                    return converted_chunks
+                        max_size_applied = True
+                        logger.info(f"📏 AI 섹션 '{section['title']}' 60만자로 제한")
 
-            except Exception as e:
-                logger.warning(f"⚠️ 목차 기반 청킹 실패: {e} - 키워드 기반으로 폴백")
+                    # 내용 유형을 표준 컨텍스트로 매핑
+                    context_type = self._map_content_type_to_context(
+                        section["content_type"]
+                    )
 
-        # 📝 2. 키워드 기반 청킹 (폴백)
-        logger.info("📝 키워드 기반 청킹 수행...")
-        return self._keyword_based_chunking(pdf_text)
+                    chunks.append(
+                        {
+                            "chunk_id": i + 1,
+                            "section_title": section["title"],
+                            "context_type": context_type,
+                            "content": section_text,
+                            "content_length": len(section_text),
+                            "start_position": start_pos,
+                            "start_keyword": section["start_keyword"],
+                            "found_keyword": section_pos["found_keyword"],
+                            "ai_section_info": section,
+                            "chunk_type": "ai_analyzed",
+                            "source": "manus_agent_analysis",
+                            "max_size_applied": max_size_applied,
+                            "analysis_method": "ai_structure_analysis",
+                            "keywords_found": self._extract_pdf_chunk_keywords(
+                                section_text
+                            ),
+                        }
+                    )
 
-    def _infer_context_from_toc_title(self, toc_title: str) -> str:
+            logger.info(f"✂️ AI 기반 텍스트 분할 완료: {len(chunks)}개 청크")
+            return chunks
+
+        except Exception as e:
+            logger.error(f"❌ AI 기반 텍스트 분할 중 오류: {e}")
+            return []
+
+    def _map_content_type_to_context(self, content_type: str) -> str:
         """
-        목차 제목에서 context 타입 추론
+        AI가 분석한 content_type을 표준 context로 매핑
         """
-        if not toc_title:
-            return "general"
+        content_type_lower = content_type.lower()
 
-        title_lower = toc_title.lower()
+        mapping = {
+            "financial": "financial",
+            "재무": "financial",
+            "business": "business",
+            "사업": "business",
+            "risk": "risk",
+            "리스크": "risk",
+            "위험": "risk",
+            "investment": "investment",
+            "투자": "investment",
+            "governance": "governance",
+            "지배구조": "governance",
+            "technical": "technical",
+            "기술": "technical",
+            "technology": "technical",
+        }
 
-        # 재무 관련
-        if any(
-            keyword in title_lower
-            for keyword in [
-                "재무",
-                "financial",
-                "손익",
-                "대차대조표",
-                "현금흐름",
-                "자산",
-                "부채",
-            ]
-        ):
-            return "financial"
+        for key, value in mapping.items():
+            if key in content_type_lower:
+                return value
 
-        # 사업 관련
-        elif any(
-            keyword in title_lower
-            for keyword in ["사업", "business", "영업", "시장", "제품", "서비스"]
-        ):
-            return "business"
+        return "general"
 
-        # 리스크 관련
-        elif any(
-            keyword in title_lower
-            for keyword in ["위험", "risk", "리스크", "우려", "문제"]
-        ):
-            return "risk"
-
-        # 투자 관련
-        elif any(
-            keyword in title_lower
-            for keyword in ["투자", "investment", "주가", "전망", "목표"]
-        ):
-            return "investment"
-
-        # 지배구조 관련
-        elif any(
-            keyword in title_lower
-            for keyword in ["지배구조", "governance", "주주", "이사회", "경영진"]
-        ):
-            return "governance"
-
-        # 기술 관련
-        elif any(
-            keyword in title_lower
-            for keyword in ["기술", "technology", "개발", "R&D", "연구", "특허"]
-        ):
-            return "technical"
-
-        else:
-            return "general"
-
-    def _keyword_based_chunking(self, pdf_text: str) -> List[Dict[str, Any]]:
+    def _advanced_keyword_chunking(self, pdf_text: str) -> List[Dict[str, Any]]:
         """
-        키워드 기반 청킹 (기존 로직)
+        고급 키워드 기반 청킹 (60만자 지원, AI 폴백용)
+
+        기존 키워드 기반 청킹을 개선하여 더 큰 청크와 더 정확한 분할을 지원합니다.
         """
         chunks = []
         lines = pdf_text.split("\n")
 
-        # Context 타입별 키워드 정의
+        # 개선된 Context 타입별 키워드 정의 (더 포괄적)
         context_keywords = {
             "financial": [
                 "재무",
@@ -3054,6 +3259,25 @@ class EnhancedStockAnalysisSystem:
                 "유동비율",
                 "재무제표",
                 "대차대조표",
+                "손익계산서",
+                "현금흐름표",
+                "자본금",
+                "영업이익",
+                "순이익",
+                "매출총이익",
+                "EBITDA",
+                "순자산",
+                "유동자산",
+                "고정자산",
+                "유동부채",
+                "장기부채",
+                "자기자본",
+                "자본총계",
+                "투자자산",
+                "재무비율",
+                "수익성",
+                "안정성",
+                "성장성",
             ],
             "business": [
                 "사업",
@@ -3076,6 +3300,23 @@ class EnhancedStockAnalysisSystem:
                 "growth",
                 "점유율",
                 "market share",
+                "업계",
+                "산업",
+                "industry",
+                "브랜드",
+                "brand",
+                "마케팅",
+                "marketing",
+                "판매",
+                "sales",
+                "유통",
+                "distribution",
+                "파트너십",
+                "partnership",
+                "경쟁사",
+                "competitor",
+                "차별화",
+                "differentiation",
             ],
             "risk": [
                 "리스크",
@@ -3098,6 +3339,17 @@ class EnhancedStockAnalysisSystem:
                 "volatility",
                 "손실",
                 "loss",
+                "취약",
+                "vulnerable",
+                "제약",
+                "constraint",
+                "규제",
+                "regulation",
+                "환경변화",
+                "변동성",
+                "신용위험",
+                "시장위험",
+                "운영위험",
             ],
             "investment": [
                 "투자",
@@ -3118,6 +3370,14 @@ class EnhancedStockAnalysisSystem:
                 "valuation",
                 "적정가",
                 "fair value",
+                "투자자",
+                "investor",
+                "포트폴리오",
+                "portfolio",
+                "수익률",
+                "return",
+                "배당수익률",
+                "dividend yield",
             ],
             "governance": [
                 "지배구조",
@@ -3136,6 +3396,13 @@ class EnhancedStockAnalysisSystem:
                 "voting",
                 "투명성",
                 "transparency",
+                "기업지배구조",
+                "ESG",
+                "사외이사",
+                "independent director",
+                "감사",
+                "audit",
+                "내부통제",
             ],
             "technical": [
                 "기술",
@@ -3154,10 +3421,27 @@ class EnhancedStockAnalysisSystem:
                 "system",
                 "솔루션",
                 "solution",
+                "디지털",
+                "digital",
+                "AI",
+                "인공지능",
+                "자동화",
+                "데이터",
+                "data",
+                "클라우드",
+                "cloud",
+                "소프트웨어",
+                "software",
             ],
         }
 
-        current_chunk = {"lines": [], "context_type": "general", "score": 0}
+        # 대용량 청킹을 위한 개선된 알고리즘
+        current_chunk = {
+            "lines": [],
+            "context_type": "general",
+            "score": 0,
+            "context_scores": {},
+        }
         chunks_buffer = []
 
         for i, line in enumerate(lines):
@@ -3165,39 +3449,75 @@ class EnhancedStockAnalysisSystem:
             if not line:
                 continue
 
-            # 각 라인의 context 점수 계산
+            # 각 라인의 context 점수 계산 (개선된 알고리즘)
             line_scores = {}
             line_lower = line.lower()
 
             for context_type, keywords in context_keywords.items():
-                score = sum(1 for keyword in keywords if keyword in line_lower)
+                score = 0
+                for keyword in keywords:
+                    if keyword in line_lower:
+                        # 키워드 길이에 따른 가중치 적용
+                        score += len(keyword) * 0.5 + 1
+
                 if score > 0:
                     line_scores[context_type] = score
 
             # 현재 청크에 라인 추가
             current_chunk["lines"].append(line)
 
-            # 청크 크기가 적당하면 (10-30줄) context 결정
-            if len(current_chunk["lines"]) >= 10:
+            # 청크의 누적 점수 업데이트
+            for context_type, score in line_scores.items():
+                if context_type not in current_chunk["context_scores"]:
+                    current_chunk["context_scores"][context_type] = 0
+                current_chunk["context_scores"][context_type] += score
+
+            # 청크 크기가 적당하면 (50-300줄) context 결정
+            chunk_size = len(current_chunk["lines"])
+
+            if chunk_size >= 50:  # 최소 50줄
                 # 청크의 주요 context 결정
-                if line_scores:
-                    best_context = max(line_scores.items(), key=lambda x: x[1])
+                if current_chunk["context_scores"]:
+                    best_context = max(
+                        current_chunk["context_scores"].items(), key=lambda x: x[1]
+                    )
                     current_chunk["context_type"] = best_context[0]
                     current_chunk["score"] = best_context[1]
 
-                # 청크가 너무 크면 (30줄 이상) 분할
-                if len(current_chunk["lines"]) >= 30:
+                # 청크가 충분히 크면 (300줄 이상 또는 50만자 이상) 분할
+                chunk_text = "\n".join(current_chunk["lines"])
+                if chunk_size >= 300 or len(chunk_text) >= 500000:  # 50만자 기준
                     chunks_buffer.append(current_chunk)
-                    current_chunk = {"lines": [], "context_type": "general", "score": 0}
+                    current_chunk = {
+                        "lines": [],
+                        "context_type": "general",
+                        "score": 0,
+                        "context_scores": {},
+                    }
 
         # 마지막 청크 처리
         if current_chunk["lines"]:
+            chunk_text = "\n".join(current_chunk["lines"])
+            if current_chunk["context_scores"]:
+                best_context = max(
+                    current_chunk["context_scores"].items(), key=lambda x: x[1]
+                )
+                current_chunk["context_type"] = best_context[0]
+                current_chunk["score"] = best_context[1]
             chunks_buffer.append(current_chunk)
 
-        # 청크를 최종 형태로 변환
+        # 청크를 최종 형태로 변환 (60만자 제한 적용)
         for i, chunk_data in enumerate(chunks_buffer):
             chunk_text = "\n".join(chunk_data["lines"])
-            if len(chunk_text) > 500:  # 최소 크기 필터
+
+            if len(chunk_text) > 2000:  # 최소 크기 필터 (2000자)
+                # 60만자 제한 적용
+                if len(chunk_text) > 600000:
+                    chunk_text = (
+                        chunk_text[:600000] + "\n...[텍스트 길이 제한으로 일부 생략]"
+                    )
+                    logger.info(f"📏 청크 {i+1} 60만자로 제한됨")
+
                 chunks.append(
                     {
                         "chunk_id": i + 1,
@@ -3206,11 +3526,17 @@ class EnhancedStockAnalysisSystem:
                         "content_length": len(chunk_text),
                         "line_count": len(chunk_data["lines"]),
                         "relevance_score": chunk_data["score"],
+                        "context_distribution": chunk_data["context_scores"],
                         "keywords_found": self._extract_pdf_chunk_keywords(chunk_text),
-                        "source": "keyword_based",
+                        "source": "advanced_keyword_based",
+                        "chunk_type": "advanced_keyword",
+                        "max_size_applied": len(chunk_text) >= 600000,
                     }
                 )
 
+        logger.info(
+            f"📝 고급 키워드 기반 청킹 완료: {len(chunks)}개 청크 (최대 60만자 지원)"
+        )
         return chunks
 
     def _extract_pdf_chunk_keywords(self, text: str) -> List[str]:

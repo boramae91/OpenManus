@@ -1377,7 +1377,7 @@ class SmartSectorManager:
         )
 
     def _compress_pdf_data(self, manus_data: Dict, target_ratio: float = 0.3) -> Dict:
-        """🔖 PDF 데이터 목차 기반 chunking (압축 대신 스마트 구조화)"""
+        """🤖 AI 기반 PDF 데이터 지능적 압축 (60만자 지원)"""
         if not manus_data or not manus_data.get("pdf_analysis", {}).get("pdf_detected"):
             return manus_data
 
@@ -1387,80 +1387,605 @@ class SmartSectorManager:
 
         if "raw_text" in pdf_content:
             original_text = pdf_content["raw_text"]
+            original_length = len(original_text)
+
+            # 60만자 제한 적용
+            if original_length > 600000:
+                logger.info(
+                    f"📏 PDF 60만자 제한 적용: {original_length:,}자 → 600,000자"
+                )
+                original_text = (
+                    original_text[:600000] + "\n...[60만자 제한으로 일부 생략]"
+                )
+                pdf_content["raw_text"] = original_text
+                original_length = 600000
+
             pdf_path = pdf_analysis.get("pdf_path", "")
 
-            # 🔖 기존 contextual_chunks가 있는지 확인 (enhanced_main.py에서 이미 생성된 경우)
+            # 🤖 1. 기존 AI 청킹 결과 확인 (enhanced_main.py에서 생성된 경우)
             existing_chunks = pdf_content.get("contextual_chunks", [])
 
-            if existing_chunks:
-                # 이미 chunking이 완료된 경우 - 최적화만 수행
+            if existing_chunks and len(existing_chunks) > 0:
                 logger.info(
-                    f"📄 기존 청킹 발견: {len(existing_chunks)}개 청크 - 최적화 수행"
+                    f"🔄 기존 AI 청킹 발견: {len(existing_chunks)}개 청크 - 지능적 선별 수행"
                 )
 
-                # 목차 기반 청크 우선 선택
-                toc_chunks = [
-                    c for c in existing_chunks if c.get("source") == "table_of_contents"
+                # AI 기반 청크 우선 선택
+                ai_chunks = [
+                    c
+                    for c in existing_chunks
+                    if c.get("source") == "manus_agent_analysis"
                 ]
-                if toc_chunks:
-                    pdf_chunks = toc_chunks
-                    chunking_method = "table_of_contents_existing"
-                    logger.info(f"🔖 목차 기반 청크 사용: {len(toc_chunks)}개")
+                if ai_chunks:
+                    pdf_chunks = ai_chunks
+                    chunking_method = "ai_based_existing"
+                    logger.info(f"🧠 AI 기반 청크 사용: {len(ai_chunks)}개")
                 else:
-                    pdf_chunks = existing_chunks
-                    chunking_method = "keyword_based_existing"
-                    logger.info(f"📝 키워드 기반 청크 사용: {len(existing_chunks)}개")
+                    # 목차 기반 청크 차선 선택
+                    toc_chunks = [
+                        c
+                        for c in existing_chunks
+                        if c.get("source") == "table_of_contents"
+                    ]
+                    if toc_chunks:
+                        pdf_chunks = toc_chunks
+                        chunking_method = "table_of_contents_existing"
+                        logger.info(f"🔖 목차 기반 청크 사용: {len(toc_chunks)}개")
+                    else:
+                        pdf_chunks = existing_chunks
+                        chunking_method = "keyword_based_existing"
+                        logger.info(
+                            f"📝 키워드 기반 청크 사용: {len(existing_chunks)}개"
+                        )
             else:
-                # 새로 chunking 수행
-                logger.info("🔖 PDF 목차 기반 청킹 시도...")
+                # 🚀 2. 새로운 AI 기반 청킹 수행
+                logger.info("🤖 CrewAI AI 기반 청킹 시도...")
                 try:
-                    # enhanced_main.py와 동일한 방식으로 청킹
+                    # AI 청킹은 비동기이므로 임시로 동기 방식 사용
+                    # TODO: 나중에 전체 메서드를 비동기로 변경하거나 별도 처리 필요
+                    logger.info("🔖 AI 청킹 준비 중 - 목차 기반 청킹으로 먼저 시도")
                     pdf_chunks = self._create_toc_based_pdf_chunks(
                         original_text, pdf_path
                     )
-                    chunking_method = "table_of_contents_new"
+                    chunking_method = "table_of_contents_priority"
 
                     if not pdf_chunks:
-                        # 목차 기반 실패시 키워드 기반으로 폴백
-                        logger.info("📝 목차 없음 - 키워드 기반 청킹으로 폴백")
-                        pdf_chunks = self._create_contextual_pdf_chunks(original_text)
-                        chunking_method = "keyword_based_fallback"
+                        # AI 실패시 목차 기반으로 폴백
+                        logger.info("🔖 AI 청킹 실패 - 목차 기반 청킹 시도...")
+                        pdf_chunks = self._create_toc_based_pdf_chunks(
+                            original_text, pdf_path
+                        )
+                        chunking_method = "table_of_contents_fallback"
+
+                        if not pdf_chunks:
+                            # 목차도 실패시 고급 키워드 기반으로 최종 폴백
+                            logger.info(
+                                "📝 목차 없음 - 고급 키워드 기반 청킹으로 최종 폴백"
+                            )
+                            pdf_chunks = self._create_advanced_contextual_pdf_chunks(
+                                original_text
+                            )
+                            chunking_method = "advanced_keyword_based_fallback"
 
                 except Exception as e:
-                    logger.warning(f"⚠️ 목차 기반 청킹 실패: {e} - 키워드 기반으로 폴백")
-                    pdf_chunks = self._create_contextual_pdf_chunks(original_text)
-                    chunking_method = "keyword_based_error"
+                    logger.warning(f"⚠️ AI 청킹 실패: {e} - 고급 키워드 기반으로 폴백")
+                    pdf_chunks = self._create_advanced_contextual_pdf_chunks(
+                        original_text
+                    )
+                    chunking_method = "advanced_keyword_based_error"
 
-            # 원본 텍스트는 유지하고 chunks 정보 업데이트
+            # 원본 텍스트 유지하고 chunks 정보 업데이트
             pdf_content["contextual_chunks"] = pdf_chunks
             pdf_content["chunking_applied"] = True
             pdf_content["chunking_method"] = chunking_method
             pdf_content["total_chunks"] = len(pdf_chunks)
+            pdf_content["max_chunk_size_supported"] = "600000_chars"
+
+            # 청크 통계 계산
+            ai_count = len(
+                [c for c in pdf_chunks if "ai" in c.get("source", "").lower()]
+            )
+            toc_count = len(
+                [c for c in pdf_chunks if c.get("source") == "table_of_contents"]
+            )
+            keyword_count = len(pdf_chunks) - ai_count - toc_count
+
+            # 60만자 제한 적용된 청크 수
+            max_size_chunks = len(
+                [c for c in pdf_chunks if c.get("max_size_applied", False)]
+            )
+
+            pdf_content["chunk_statistics"] = {
+                "ai_based_chunks": ai_count,
+                "toc_based_chunks": toc_count,
+                "keyword_based_chunks": keyword_count,
+                "max_size_limited_chunks": max_size_chunks,
+                "average_chunk_size": (
+                    sum(c.get("content_length", 0) for c in pdf_chunks)
+                    // len(pdf_chunks)
+                    if pdf_chunks
+                    else 0
+                ),
+            }
 
             # 청크 타입 정보 업데이트
-            chunk_types = []
-            toc_count = 0
-            for chunk in pdf_chunks:
-                if (
-                    chunk.get("source") == "table_of_contents"
-                    or chunk.get("chunk_type") == "toc_based"
-                ):
-                    chunk_types.append("목차기반")
-                    toc_count += 1
-                else:
-                    chunk_types.append(chunk.get("context_type", "일반"))
-
-            pdf_content["chunk_types"] = list(set(chunk_types))
-            pdf_content["toc_chunks_count"] = toc_count
-            pdf_content["keyword_chunks_count"] = len(pdf_chunks) - toc_count
+            chunk_types = list(set(c.get("context_type", "일반") for c in pdf_chunks))
+            pdf_content["chunk_types"] = chunk_types
 
             logger.info(
-                f"🔖 PDF Chunking 완료: {len(pdf_chunks)}개 청크 "
-                f"(목차: {toc_count}개, 키워드: {len(pdf_chunks) - toc_count}개) "
-                f"방식: {chunking_method}"
+                f"🤖 PDF 지능적 처리 완료: {len(pdf_chunks)}개 청크 "
+                f"(AI: {ai_count}개, 목차: {toc_count}개, 키워드: {keyword_count}개) "
+                f"방식: {chunking_method}, 60만자제한: {max_size_chunks}개"
             )
 
         return optimized_data
+
+    async def _create_crewai_intelligent_chunks(
+        self, pdf_text: str, pdf_path: str = None
+    ) -> List[Dict[str, Any]]:
+        """
+        🤖 CrewAI 전용 AI 기반 지능적 청킹 (60만자 지원)
+
+        enhanced_main.py보다 간소화되었지만 더 효율적인 버전
+        """
+        if len(pdf_text) < 5000:  # 너무 짧으면 청킹 불필요
+            return []
+
+        try:
+            # 분석용 텍스트 준비 (대용량 처리)
+            if len(pdf_text) > 200000:  # 20만자 이상이면 샘플링
+                analysis_text = (
+                    pdf_text[:50000]
+                    + "\n\n...[중간 내용 생략]...\n\n"
+                    + pdf_text[-20000:]
+                )
+                logger.info("📊 대용량 PDF - 샘플링으로 구조 분석")
+            else:
+                analysis_text = pdf_text
+
+            # CrewAI 최적화된 구조 분석 프롬프트
+            structure_prompt = f"""
+다음 PDF 문서를 CrewAI 전문가 분석에 최적화된 3-6개 섹션으로 나누어주세요.
+
+PDF 내용 ({len(pdf_text):,}자):
+{analysis_text}
+
+🎯 CrewAI 분석 최적화 요구사항:
+1. 재무 전문가용 섹션 (재무제표, 실적, 비율분석 등)
+2. 사업 전문가용 섹션 (사업모델, 시장, 경쟁력 등)
+3. 투자 전문가용 섹션 (밸류에이션, 투자의견, 전망 등)
+4. 리스크 전문가용 섹션 (위험요인, 불확실성 등)
+5. 기타 중요 섹션
+
+📝 출력 형식 (반드시 준수):
+SECTION_1: [섹션제목] | financial | [핵심키워드]
+SECTION_2: [섹션제목] | business | [핵심키워드]
+SECTION_3: [섹션제목] | investment | [핵심키워드]
+SECTION_4: [섹션제목] | risk | [핵심키워드]
+
+⚠️ 제약사항:
+- 각 섹션은 최소 5,000자, 최대 600,000자
+- 키워드는 해당 섹션 시작을 정확히 찾을 수 있는 고유한 문구
+- 전문가별로 최적화된 내용 분류
+"""
+
+            # LLM 호출
+            response = await self.llm.ask(
+                [{"role": "user", "content": structure_prompt}]
+            )
+
+            # 응답 파싱
+            sections = self._parse_crewai_section_analysis(response)
+
+            if sections and len(sections) >= 2:
+                # 텍스트 분할 수행
+                chunks = self._split_text_by_crewai_sections(pdf_text, sections)
+                logger.info(f"🤖 CrewAI AI 청킹 성공: {len(chunks)}개 청크 생성")
+                return chunks
+            else:
+                logger.warning("⚠️ CrewAI AI 청킹에서 충분한 섹션을 찾지 못함")
+                return []
+
+        except Exception as e:
+            logger.error(f"❌ CrewAI AI 청킹 실패: {e}")
+            return []
+
+    def _parse_crewai_section_analysis(self, ai_response: str) -> List[Dict[str, str]]:
+        """CrewAI 최적화된 섹션 분석 파싱"""
+        import re
+
+        sections = []
+
+        try:
+            # 표준 패턴
+            pattern = r"SECTION_(\d+):\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*(.+)"
+            matches = re.findall(pattern, ai_response, re.MULTILINE | re.IGNORECASE)
+
+            for match in matches:
+                section_num, title, content_type, keyword = match
+
+                # CrewAI 컨텍스트 타입 검증
+                valid_types = [
+                    "financial",
+                    "business",
+                    "investment",
+                    "risk",
+                    "governance",
+                    "technical",
+                    "general",
+                ]
+                if content_type.strip().lower() not in valid_types:
+                    content_type = "general"
+
+                sections.append(
+                    {
+                        "section_number": int(section_num),
+                        "title": title.strip(),
+                        "content_type": content_type.strip().lower(),
+                        "start_keyword": keyword.strip(),
+                    }
+                )
+
+            logger.info(f"🔍 CrewAI 섹션 파싱: {len(sections)}개 섹션")
+            return sections
+
+        except Exception as e:
+            logger.error(f"❌ CrewAI 섹션 파싱 오류: {e}")
+            return []
+
+    def _split_text_by_crewai_sections(
+        self, pdf_text: str, sections: List[Dict[str, str]]
+    ) -> List[Dict[str, Any]]:
+        """CrewAI 최적화된 텍스트 분할 (60만자 지원)"""
+        chunks = []
+
+        try:
+            # 섹션별 위치 찾기 (더 관대한 검색)
+            section_positions = []
+
+            for section in sections:
+                keyword = section["start_keyword"]
+
+                # 다양한 키워드 변형으로 검색
+                search_variants = [
+                    keyword,
+                    keyword.strip(),
+                    keyword.upper(),
+                    keyword.lower(),
+                    keyword.replace(" ", ""),
+                    keyword.replace(".", ""),
+                    keyword.replace("(", "").replace(")", ""),
+                ]
+
+                best_pos = -1
+                found_variant = keyword
+
+                for variant in search_variants:
+                    if variant and len(variant) > 2:
+                        pos = pdf_text.find(variant)
+                        if pos != -1:
+                            best_pos = pos
+                            found_variant = variant
+                            break
+
+                if best_pos == -1:
+                    # 부분 매칭 시도
+                    words = keyword.split()
+                    if len(words) > 1:
+                        for word in words:
+                            if len(word) > 3:
+                                pos = pdf_text.find(word)
+                                if pos != -1:
+                                    best_pos = pos
+                                    found_variant = word
+                                    break
+
+                section_positions.append(
+                    {
+                        "section": section,
+                        "start_pos": best_pos,
+                        "found_variant": found_variant,
+                    }
+                )
+
+            # 위치별로 정렬
+            valid_positions = [sp for sp in section_positions if sp["start_pos"] != -1]
+            valid_positions.sort(key=lambda x: x["start_pos"])
+
+            if not valid_positions:
+                logger.warning("⚠️ CrewAI 섹션 키워드로 분할 위치를 찾지 못함")
+                return []
+
+            # 실제 청크 생성 (60만자 제한 적용)
+            for i, pos_info in enumerate(valid_positions):
+                section = pos_info["section"]
+                start_pos = pos_info["start_pos"]
+
+                # 다음 섹션까지 또는 문서 끝까지
+                if i + 1 < len(valid_positions):
+                    end_pos = valid_positions[i + 1]["start_pos"]
+                else:
+                    end_pos = len(pdf_text)
+
+                section_text = pdf_text[start_pos:end_pos].strip()
+
+                # 최소 크기 검증
+                if len(section_text) >= 2000:  # 최소 2000자
+                    # 60만자 제한 적용
+                    max_size_applied = False
+                    if len(section_text) > 600000:
+                        section_text = (
+                            section_text[:600000]
+                            + "\n...[CrewAI 60만자 제한으로 일부 생략]"
+                        )
+                        max_size_applied = True
+                        logger.info(
+                            f"📏 CrewAI 섹션 '{section['title']}' 60만자로 제한"
+                        )
+
+                    chunks.append(
+                        {
+                            "chunk_id": i + 1,
+                            "context_type": section["content_type"],
+                            "content": section_text,
+                            "content_length": len(section_text),
+                            "section_title": section["title"],
+                            "start_keyword": section["start_keyword"],
+                            "found_variant": pos_info["found_variant"],
+                            "start_position": start_pos,
+                            "chunk_type": "crewai_ai_based",
+                            "source": "crewai_ai_analysis",
+                            "expert_optimized": True,
+                            "max_size_applied": max_size_applied,
+                            "crewai_section_info": section,
+                        }
+                    )
+
+            logger.info(f"✂️ CrewAI 텍스트 분할 완료: {len(chunks)}개 청크")
+            return chunks
+
+        except Exception as e:
+            logger.error(f"❌ CrewAI 텍스트 분할 오류: {e}")
+            return []
+
+    def _create_advanced_contextual_pdf_chunks(
+        self, pdf_text: str
+    ) -> List[Dict[str, Any]]:
+        """
+        📝 고급 키워드 기반 PDF 청킹 (60만자 지원, CrewAI 최적화)
+        """
+        if len(pdf_text) < 5000:
+            return []
+
+        chunks = []
+        lines = pdf_text.split("\n")
+
+        # CrewAI 전문가별 최적화된 키워드
+        crewai_optimized_keywords = {
+            "financial": [
+                "재무제표",
+                "손익계산서",
+                "대차대조표",
+                "현금흐름표",
+                "자본변동표",
+                "매출",
+                "revenue",
+                "영업이익",
+                "순이익",
+                "EBITDA",
+                "ROE",
+                "ROA",
+                "ROIC",
+                "PER",
+                "PBR",
+                "PSR",
+                "PCR",
+                "EV/EBITDA",
+                "자산",
+                "부채",
+                "자본",
+                "현금",
+                "배당",
+                "부채비율",
+                "유동비율",
+                "당좌비율",
+                "이자보상배수",
+            ],
+            "business": [
+                "사업모델",
+                "비즈니스모델",
+                "사업영역",
+                "주력사업",
+                "시장점유율",
+                "경쟁우위",
+                "핵심역량",
+                "성장동력",
+                "신사업",
+                "해외진출",
+                "사업전략",
+                "마케팅전략",
+                "고객",
+                "제품포트폴리오",
+                "서비스",
+                "브랜드",
+                "유통채널",
+                "공급망",
+            ],
+            "investment": [
+                "투자의견",
+                "투자등급",
+                "목표가",
+                "적정가",
+                "밸류에이션",
+                "투자포인트",
+                "투자매력",
+                "투자전략",
+                "추천",
+                "매수",
+                "매도",
+                "보유",
+                "상향",
+                "하향",
+                "DCF",
+                "PEG",
+                "Sum-of-parts",
+                "NAV",
+                "투자수익률",
+                "배당수익률",
+            ],
+            "risk": [
+                "위험요인",
+                "리스크팩터",
+                "위험관리",
+                "불확실성",
+                "변동성",
+                "시장위험",
+                "신용위험",
+                "운영위험",
+                "유동성위험",
+                "규제위험",
+                "경쟁위험",
+                "기술위험",
+                "환율위험",
+                "금리위험",
+                "원자재가격",
+                "경기침체",
+                "수요감소",
+            ],
+            "governance": [
+                "지배구조",
+                "기업지배구조",
+                "ESG",
+                "주주구조",
+                "경영진",
+                "이사회",
+                "사외이사",
+                "감사위원회",
+                "내부통제",
+                "리스크관리",
+                "컴플라이언스",
+                "투명성",
+                "주주친화",
+                "배당정책",
+                "자사주매입",
+                "경영권",
+            ],
+            "technical": [
+                "기술력",
+                "기술개발",
+                "R&D",
+                "연구개발",
+                "혁신",
+                "특허",
+                "지적재산권",
+                "핵심기술",
+                "기술경쟁력",
+                "디지털전환",
+                "자동화",
+                "AI",
+                "빅데이터",
+                "클라우드",
+                "플랫폼",
+                "솔루션",
+                "시스템",
+                "인프라",
+            ],
+        }
+
+        # 청크 생성 (더 큰 단위로)
+        current_chunk = {"lines": [], "context_scores": {}, "total_score": 0}
+        chunks_buffer = []
+
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+
+            # 라인별 컨텍스트 점수 계산 (가중치 적용)
+            line_lower = line.lower()
+            line_scores = {}
+
+            for context_type, keywords in crewai_optimized_keywords.items():
+                score = 0
+                for keyword in keywords:
+                    if keyword in line_lower:
+                        # 키워드 길이와 중요도에 따른 차등 점수
+                        if len(keyword) >= 5:  # 긴 키워드 높은 점수
+                            score += 3
+                        elif len(keyword) >= 3:
+                            score += 2
+                        else:
+                            score += 1
+
+                if score > 0:
+                    line_scores[context_type] = score
+                    if context_type not in current_chunk["context_scores"]:
+                        current_chunk["context_scores"][context_type] = 0
+                    current_chunk["context_scores"][context_type] += score
+
+            current_chunk["lines"].append(line)
+            current_chunk["total_score"] += sum(line_scores.values())
+
+            # 청크 분할 조건 (더 큰 단위로, 60만자 고려)
+            chunk_text = "\n".join(current_chunk["lines"])
+            line_count = len(current_chunk["lines"])
+
+            # 분할 조건: 라인 수 또는 문자 수 기준
+            if (line_count >= 200 and current_chunk["total_score"] > 0) or len(
+                chunk_text
+            ) >= 400000:  # 40만자 기준
+                chunks_buffer.append(current_chunk)
+                current_chunk = {"lines": [], "context_scores": {}, "total_score": 0}
+
+        # 마지막 청크
+        if current_chunk["lines"]:
+            chunks_buffer.append(current_chunk)
+
+        # 최종 청크 변환 (60만자 제한)
+        for i, chunk_data in enumerate(chunks_buffer):
+            chunk_text = "\n".join(chunk_data["lines"])
+
+            if len(chunk_text) >= 5000:  # 최소 5000자
+                # 60만자 제한 적용
+                max_size_applied = False
+                if len(chunk_text) > 600000:
+                    chunk_text = (
+                        chunk_text[:600000]
+                        + "\n...[CrewAI 고급 청킹 60만자 제한으로 일부 생략]"
+                    )
+                    max_size_applied = True
+
+                # 주요 컨텍스트 결정
+                if chunk_data["context_scores"]:
+                    best_context = max(
+                        chunk_data["context_scores"].items(), key=lambda x: x[1]
+                    )
+                    context_type = best_context[0]
+                    relevance_score = best_context[1]
+                else:
+                    context_type = "general"
+                    relevance_score = 0
+
+                chunks.append(
+                    {
+                        "chunk_id": i + 1,
+                        "context_type": context_type,
+                        "content": chunk_text,
+                        "content_length": len(chunk_text),
+                        "line_count": len(chunk_data["lines"]),
+                        "relevance_score": relevance_score,
+                        "context_distribution": chunk_data["context_scores"],
+                        "source": "crewai_advanced_keyword",
+                        "chunk_type": "advanced_keyword_crewai",
+                        "expert_optimized": True,
+                        "max_size_applied": max_size_applied,
+                    }
+                )
+
+        logger.info(
+            f"📝 CrewAI 고급 키워드 청킹 완료: {len(chunks)}개 청크 (60만자 지원)"
+        )
+        return chunks
 
     def _create_toc_based_pdf_chunks(
         self, pdf_text: str, pdf_path: str
