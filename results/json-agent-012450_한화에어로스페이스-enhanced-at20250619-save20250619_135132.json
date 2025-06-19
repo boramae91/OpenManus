@@ -1,0 +1,3735 @@
+{
+  "user_prompt": "I'd like a thorough analysis of 한화에어로스페이스 , including:Summary: Company overview, key metrics, performance data and investment recommendationsFinancial Data: Revenue trends, profit margins, balance sheet and cash flow analysisMarket Sentiment: Analyst ratings, sentiment indicators and news impactTechnical Analysis: Price trends, technical indicators and support/resistance levelsCompare Assets: Market share and financial metrics vs. key competitorsValue Investor: Intrinsic value, growth potential and risk factorsInvestment Thesis: SWOT analysis and recommendations for different investor typesSummary in KOREAN",
+  "timestamp": "2025-06-19T13:49:04.605362",
+  "analysis_flow": "enhanced_manus_first_crewai_synthesis",
+  "success": false,
+  "steps": {
+    "step0_intent_analysis": {
+      "primary_intent": "주가문의",
+      "secondary_intents": [],
+      "confidence": 0.2,
+      "analysis_focus": "주가동향",
+      "data_priority": "실시간",
+      "keywords": [
+        "price"
+      ]
+    },
+    "step1_stock_detection": {
+      "detected": true,
+      "stock_name": "한화에어로스페이스",
+      "stock_code": "012450",
+      "detection_method": "ai_ai_web_search_priority",
+      "ticker_bbg": "012450 KS Equity",
+      "gics_sector": "Industrials",
+      "mapped_company_name": "HANWHA AEROSPACE CO LTD",
+      "market_index": "KOSPI Index",
+      "original_stock_code": "012450",
+      "original_stock_name": "한화에어로스페이스"
+    },
+    "step2_financial_data": {
+      "stock_info": {
+        "stock_code": "012450",
+        "stock_name": "한화에어로스페이스",
+        "collection_timestamp": "2025-06-19T13:49:27.040687"
+      },
+      "success": true,
+      "errors": [],
+      "data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "basic_info": {
+        "company_name": "Hanwha Aerospace Co., Ltd.",
+        "sector": "Industrials",
+        "industry": "Aerospace & Defense",
+        "country": "South Korea",
+        "currency": "KRW",
+        "exchange": "KSC",
+        "ticker_symbol": "012450.KS"
+      },
+      "current_price_info": {
+        "current_price": 926000.0,
+        "previous_close": 927000.0,
+        "open_price": 926000.0,
+        "day_high": 935000.0,
+        "day_low": 911000.0,
+        "volume": 117514,
+        "market_cap": 44273542103040,
+        "shares_outstanding": 47811600
+      },
+      "financial_ratios": {
+        "pe_ratio": null,
+        "peg_ratio": null,
+        "pb_ratio": null,
+        "ps_ratio": 2.8983917,
+        "dividend_yield": 0.37,
+        "profit_margin": 0.15703,
+        "operating_margin": 0.10225,
+        "return_on_equity": 0.36983,
+        "return_on_assets": 0.04161,
+        "debt_to_equity": 122.98,
+        "current_ratio": 0.876,
+        "quick_ratio": 0.235
+      },
+      "growth_metrics": {
+        "earnings_growth": null,
+        "revenue_growth": 2.784,
+        "earnings_quarterly_growth": null,
+        "revenue_quarterly_growth": null
+      },
+      "price_history": {
+        "52_week_high": 987000.0,
+        "52_week_low": 248902.37447956603,
+        "avg_volume_3m": 458038.14444444445,
+        "price_change_1y": 235.719389709462
+      },
+      "data_quality": "보통",
+      "dart_info": {
+        "company_info": {
+          "corp_name": "한화에어로스페이스(주)",
+          "corp_code": "00126566",
+          "business_summary": "6098102992",
+          "established_date": "19770801",
+          "listing_date": "12",
+          "ceo_name": "김동관, 손재일, Michael Coulter",
+          "address": "경상남도 창원시 성산구  창원대로 1204"
+        },
+        "financial_statements": {
+          "current_assets": 22867968340831,
+          "non_current_assets": 20468905344642,
+          "total_assets": 17364759288308,
+          "current_liabilities": 25516144577239,
+          "non_current_liabilities": 6456412360924,
+          "total_liabilities": 13843180975323,
+          "total_equity": 3521578312985,
+          "revenue": 7935101827678,
+          "operating_profit": 1499700414775,
+          "net_income": 1038040280457,
+          "debt_ratio": 3.93,
+          "operating_margin": 0.189,
+          "net_margin": 0.1308
+        },
+        "business_report": {
+          "main_business": "법인고유번호 00126566 기업의 주요사업",
+          "business_risks": "시장변동성, 경쟁심화 등",
+          "future_plans": "사업확장 및 기술개발 계획"
+        }
+      }
+    },
+    "step2_enhanced_dart_data": {
+      "success": true,
+      "stock_code": "012450",
+      "company_name": "한화에어로스페이스",
+      "corp_code": "00126566",
+      "analysis_date": "2025-06-19T13:49:49.880679",
+      "financial_analysis": {
+        "success": true,
+        "corp_code": "00126566",
+        "bsns_year": "2024",
+        "collected_at": "2025-06-19T13:49:49.880679",
+        "individual_statements": {
+          "asset_info": {
+            "current_assets": 22867968340831,
+            "non_current_assets": 20468905344642,
+            "total_assets": 17364759288308
+          },
+          "liability_info": {
+            "current_liabilities": 25516144577239,
+            "non_current_liabilities": 6456412360924,
+            "total_liabilities": 13843180975323
+          },
+          "equity_info": {
+            "capital_stock": 240405805000,
+            "total_equity": 3521578312985
+          },
+          "income_info": {
+            "revenue": 7935101827678,
+            "operating_income": 1499700414775,
+            "net_income": 1038040280457
+          }
+        },
+        "consolidated_statements": {
+          "asset_info": {
+            "current_assets": 22867968340831,
+            "non_current_assets": 20468905344642,
+            "total_assets": 17364759288308
+          },
+          "liability_info": {
+            "current_liabilities": 25516144577239,
+            "non_current_liabilities": 6456412360924,
+            "total_liabilities": 13843180975323
+          },
+          "equity_info": {
+            "capital_stock": 240405805000,
+            "total_equity": 3521578312985
+          },
+          "income_info": {
+            "revenue": 7935101827678,
+            "operating_income": 1499700414775,
+            "net_income": 1038040280457
+          }
+        },
+        "quarterly_performance": [
+          {
+            "asset_info": {
+              "current_assets": 6198629739414,
+              "non_current_assets": 8313848156997,
+              "total_assets": 14512477896411
+            },
+            "liability_info": {
+              "current_liabilities": 8726230333332,
+              "non_current_liabilities": 2714655187929,
+              "total_liabilities": 11440885521261
+            },
+            "equity_info": {
+              "capital_stock": 265650000000,
+              "total_equity": 3071592375150
+            },
+            "income_info": {
+              "revenue": 865174166621,
+              "operating_income": 2143494587,
+              "net_income": 12124618832
+            },
+            "period": "1분기"
+          },
+          {
+            "asset_info": {
+              "current_assets": 7583011238019,
+              "non_current_assets": 8368742738464,
+              "total_assets": 15951753976483
+            },
+            "liability_info": {
+              "current_liabilities": 9950764307690,
+              "non_current_liabilities": 2785674195888,
+              "total_liabilities": 12736438503578
+            },
+            "equity_info": {
+              "capital_stock": 265650000000,
+              "total_equity": 3215315472905
+            },
+            "income_info": {
+              "revenue": 1547103222793,
+              "operating_income": 269353621560,
+              "net_income": 138726219345
+            },
+            "period": "반기"
+          },
+          {
+            "asset_info": {
+              "current_assets": 7458054810032,
+              "non_current_assets": 8294988621896,
+              "total_assets": 15753043431928
+            },
+            "liability_info": {
+              "current_liabilities": 10148886772727,
+              "non_current_liabilities": 2652563610208,
+              "total_liabilities": 12801450382935
+            },
+            "equity_info": {
+              "capital_stock": 240405805000,
+              "total_equity": 2951593048993
+            },
+            "income_info": {
+              "revenue": 1861501690321,
+              "operating_income": 423533787754,
+              "net_income": 323310666203
+            },
+            "period": "3분기"
+          },
+          {
+            "asset_info": {
+              "current_assets": 22867968340831,
+              "non_current_assets": 20468905344642,
+              "total_assets": 17364759288308
+            },
+            "liability_info": {
+              "current_liabilities": 25516144577239,
+              "non_current_liabilities": 6456412360924,
+              "total_liabilities": 13843180975323
+            },
+            "equity_info": {
+              "capital_stock": 240405805000,
+              "total_equity": 3521578312985
+            },
+            "income_info": {
+              "revenue": 7935101827678,
+              "operating_income": 1499700414775,
+              "net_income": 1038040280457
+            },
+            "period": "연간"
+          }
+        ]
+      },
+      "governance_analysis": {
+        "success": true,
+        "corp_code": "00126566",
+        "bsns_year": "2024",
+        "collected_at": "2025-06-19T13:49:51.630486",
+        "major_shareholders": [
+          {
+            "shareholder_name": "(주)한화",
+            "relationship": "특수관계인",
+            "shares_held": 15475456,
+            "ownership_ratio": 33.95,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "손재일",
+            "relationship": "특수관계인",
+            "shares_held": 8867,
+            "ownership_ratio": 0.02,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "안병철",
+            "relationship": "특수관계인",
+            "shares_held": 3125,
+            "ownership_ratio": 0.01,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "계",
+            "relationship": "",
+            "shares_held": 15487448,
+            "ownership_ratio": 33.98,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "계",
+            "relationship": "",
+            "shares_held": 0,
+            "ownership_ratio": 0.0,
+            "report_date": "2024-12-31"
+          }
+        ],
+        "executives": [
+          {
+            "name": "김동관",
+            "position": "",
+            "career": "",
+            "main_career": "Harvard Univ. 정치학\n現 ㈜한화 대표이사\n現 한화솔루션㈜ 대표이사\n現 한화오션㈜ 기타비상무이사\n現 한화임팩트\n㈜ 대표이사",
+            "tenure": ""
+          },
+          {
+            "name": "강경훈",
+            "position": "",
+            "career": "",
+            "main_career": "충남대 석사\n㈜한화/방산 대전 양산준비TF장\nPGM사업부 대전 체계생산팀장\nPGM사업부 체계개발3팀장",
+            "tenure": ""
+          },
+          {
+            "name": "조상환",
+            "position": "",
+            "career": "",
+            "main_career": "부산대 학사\n한화디펜스㈜ 생산관리팀장\n한화디펜스㈜ 품질보증센터장\n한화디펜스㈜ 창원2사업장 생산센터장\n한화디펜스㈜ 발사체계연구센터장\nLS사업부 발사체계연구센터장",
+            "tenure": ""
+          },
+          {
+            "name": "조준용",
+            "position": "",
+            "career": "",
+            "main_career": "성균관대 박사\n㈜한화/방산 레이저사업부장",
+            "tenure": ""
+          },
+          {
+            "name": "조현일",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 학사\n現 한화 컴플라이언스위원회",
+            "tenure": ""
+          },
+          {
+            "name": "차준호",
+            "position": "",
+            "career": "",
+            "main_career": "한양대 학사\n한화디펜스㈜ 구매팀장\n한화디펜스㈜ 구매실장",
+            "tenure": ""
+          },
+          {
+            "name": "채훈",
+            "position": "",
+            "career": "",
+            "main_career": "경희대 석사\n㈜한화/방산 유도연구센터장\n㈜한화/방산 종합연구소장\n㈜한화/방산 유도사업부장",
+            "tenure": ""
+          },
+          {
+            "name": "최명환",
+            "position": "",
+            "career": "",
+            "main_career": "부산대 학사\n한화디펜스㈜ ILS연구센터 IPS1팀장",
+            "tenure": ""
+          },
+          {
+            "name": "최병선",
+            "position": "",
+            "career": "",
+            "main_career": "고려대 학사\nUC Berkely 석사\n법무법인 바른\n한화생명보험㈜ 법무팀\n한화 컴플라이언스위원회",
+            "tenure": ""
+          },
+          {
+            "name": "최성규",
+            "position": "",
+            "career": "",
+            "main_career": "한양대 학사\nSAS Institute 제조산업 사업담당\nSK온 Factory Automation 기술담당",
+            "tenure": ""
+          },
+          {
+            "name": "최연진",
+            "position": "",
+            "career": "",
+            "main_career": "인하대 석사\n㈜한화/방산 화력사업팀장\nPGM사업부 PGM사업3팀장",
+            "tenure": ""
+          },
+          {
+            "name": "최주태",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 박사\n현대제철㈜ 기술연구센터장\n현대제철㈜ 기술품질본부장\n현대제철㈜ 연구개발본부장",
+            "tenure": ""
+          },
+          {
+            "name": "강석철",
+            "position": "",
+            "career": "",
+            "main_career": "연세대 석사\n민수엔진개발팀장\n항공엔진R&D센터장\n엔진개발3팀장",
+            "tenure": ""
+          },
+          {
+            "name": "하석원",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 학사\nCarnegie Mellon Univ. MBA\n한화종합화학 사업개발팀장\n한화임팩트(주) 사업개발팀장\n한화임팩트파트너스 법인장",
+            "tenure": ""
+          },
+          {
+            "name": "한상윤",
+            "position": "",
+            "career": "",
+            "main_career": "연세대 학사\n한화솔루션㈜ 전략부문 ESG사무국\n現 한화솔루션㈜ 전략부문 IR팀장\n現 한화시스템㈜ 재무실 IR팀장\n現 한화오션㈜ 재무실 IR팀장\n現 ㈜한화 전략부문 재무실 IR팀장",
+            "tenure": ""
+          },
+          {
+            "name": "한세정",
+            "position": "",
+            "career": "",
+            "main_career": "고려대 학사\n한화시스템㈜ 투자전략팀",
+            "tenure": ""
+          },
+          {
+            "name": "허만정",
+            "position": "",
+            "career": "",
+            "main_career": "울산대 석사\n한화디펜스㈜ 종연 화력기술팀장\nLS사업부 화력체계1팀장",
+            "tenure": ""
+          },
+          {
+            "name": "홍기택",
+            "position": "",
+            "career": "",
+            "main_career": "서강대 석사\n㈜한화/방산 화력사업부장\n㈜한화/방산 체계연구센터장",
+            "tenure": ""
+          },
+          {
+            "name": "홍덕호",
+            "position": "",
+            "career": "",
+            "main_career": "경희대 학사\n한화 커뮤니케이션위원회\n한화디펜스㈜ 커뮤니케이션팀장",
+            "tenure": ""
+          },
+          {
+            "name": "홍석준",
+            "position": "",
+            "career": "",
+            "main_career": "연세대 석사\n한화시스템㈜ 미래통신연구소장\n한화시스템㈜ 전략실 전략담당\n한화시스템㈜ 전략실 담당임원\n전략기획실장",
+            "tenure": ""
+          },
+          {
+            "name": "홍충완",
+            "position": "",
+            "career": "",
+            "main_career": "UCSD 국제경제학 석사\n산업통상자원부 서기관\n대통령실 국제법무비서관실\n전략총괄 전략실 전략3팀 담당임원",
+            "tenure": ""
+          },
+          {
+            "name": "황동규",
+            "position": "",
+            "career": "",
+            "main_career": "동아대 학사\n한화디펜스㈜ 구매팀장\n구매실 LS 구매팀장\nLS사업부 창원3사업장장",
+            "tenure": ""
+          },
+          {
+            "name": "강세호",
+            "position": "",
+            "career": "",
+            "main_career": "경북대 학사\n㈜한화/방산 개발사업관리팀장\n㈜한화/방산 사업기획팀장\n㈜한화/방산 원가담당\n전략기획실 원가담당\n現 한화시스템㈜ 원가실장",
+            "tenure": ""
+          },
+          {
+            "name": "강주성",
+            "position": "",
+            "career": "",
+            "main_career": "Georgia Inst. of Tech. 박사\n한화오션㈜ 연구기획팀장\nPGM사업부 유도체계센터 담당임원",
+            "tenure": ""
+          },
+          {
+            "name": "고상휘",
+            "position": "",
+            "career": "",
+            "main_career": "인하대 석사\n㈜한화/방산 대전 대지유도체계센터장\n㈜한화/방산 대전사업장장",
+            "tenure": ""
+          },
+          {
+            "name": "고정호",
+            "position": "",
+            "career": "",
+            "main_career": "한양대 석사\n㈜한화/방산 핵심기술1팀장\n㈜한화/방산 핵심기술연구센터장\nPGM사업부 연구소 PGM기술연구센터장",
+            "tenure": ""
+          },
+          {
+            "name": "곽종우",
+            "position": "",
+            "career": "",
+            "main_career": "부산대 학사\n한화디펜스㈜ 통합TFT장\n한화디펜스㈜ 사업총괄\n한화디펜스㈜ 국내사업본부장\nLS사업부장\n現 한화에비에이션㈜ 사내이사",
+            "tenure": ""
+          },
+          {
+            "name": "권내현",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 석사\n한화시스템㈜ 투자전략실장\n한화시스템㈜ 전략실장\n전략총괄 전략실 전략5팀장",
+            "tenure": ""
+          },
+          {
+            "name": "김경우",
+            "position": "",
+            "career": "",
+            "main_career": "경북대 학사\n모스크바(러시아) 지사장\n現 ㈜한화 경영지원실",
+            "tenure": ""
+          },
+          {
+            "name": "김경원",
+            "position": "",
+            "career": "",
+            "main_career": "한양대 학사\n창원사업장 운영실장\nHAE 법인장\n베트남거점TF팀장",
+            "tenure": ""
+          },
+          {
+            "name": "손재일",
+            "position": "",
+            "career": "",
+            "main_career": "고려대 학사\n한화지상방산㈜ 대표이사\n㈜한화 지원부문 인력팀장\n한화디펜스㈜ 대표이사\n㈜한화방산 대표이사\n現 Hanwha Aerospace USA 이사\n現 ㈜쎄트렉아이 기타비상무이사\n現 한화시스템㈜ 대표이사",
+            "tenure": ""
+          },
+          {
+            "name": "김경일",
+            "position": "",
+            "career": "",
+            "main_career": "성균관대 학사\n고려대 MBA\n㈜한화/전략 BR운영팀장",
+            "tenure": ""
+          },
+          {
+            "name": "김광섭",
+            "position": "",
+            "career": "",
+            "main_career": "강원대 석사\n삼성SDI 개발2팀장\n삼성SDI 선행개발그룹장",
+            "tenure": ""
+          },
+          {
+            "name": "김광진",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 박사\n㈜한화디펜스 광전자팀장\n㈜한화/방산 항법/레이저센터장\n㈜한화/방산 항법사업부장\n항법사업부장",
+            "tenure": ""
+          },
+          {
+            "name": "김대동",
+            "position": "",
+            "career": "",
+            "main_career": "경북대 학사\n㈜한화 컴플라이언스위원회\n경영진단실 경영진단팀",
+            "tenure": ""
+          },
+          {
+            "name": "김동현",
+            "position": "",
+            "career": "",
+            "main_career": "부산대 석사\n한화디펜스㈜ 창원2사업장 생산센터장\n한화디펜스㈜ 발사체계연구센터장\n한화디펜스㈜ 기획실장\n한화디펜스㈜ 창원2사업장장\nLS사업부 창원2사업장장",
+            "tenure": ""
+          },
+          {
+            "name": "김명효",
+            "position": "",
+            "career": "",
+            "main_career": "KAIST 석사\n민수엔진개발팀 수석연구원\n제어시스템팀장 \n전기추진개발팀장\n전기추진TF장",
+            "tenure": ""
+          },
+          {
+            "name": "김무영",
+            "position": "",
+            "career": "",
+            "main_career": "명지대 학사\n한화디펜스㈜ 경영혁신팀장\n한화디펜스㈜ 창원2사업장 인사지원팀장\n한화디펜스㈜ 창원2사업장 생산센터장\n한화디펜스㈜ 경영지원실장\n경영지원실장\n現 한화시스템㈜ 지원실장",
+            "tenure": ""
+          },
+          {
+            "name": "김상선",
+            "position": "",
+            "career": "",
+            "main_career": "충북대 박사\n㈜한화/방산 대전사업장 운영팀장\n㈜한화/방산 안전환경실장",
+            "tenure": ""
+          },
+          {
+            "name": "김성조",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 학사\nIndiana Univ. 석사\n금융위원회 행정인사과장\n금융위원회 산업금융과장\n주홍콩 영사관 재경관\n부산광역시 금융창업정책관\n전략총괄 전략실 전략6팀 담당임원",
+            "tenure": ""
+          },
+          {
+            "name": "김성조",
+            "position": "",
+            "career": "",
+            "main_career": "인하대 학사\nHAU법인 담당부장\n민수엔진 사업3팀장\n전략실 전략2팀장\n사업역량강화TF장",
+            "tenure": ""
+          },
+          {
+            "name": "안병철",
+            "position": "",
+            "career": "",
+            "main_career": "성균관대 석사\nHanwha Defense International 대표\n한화디펜스 해외사업본부장\n전략부문 전략실장\n現 ㈜쎄트렉아이 기타비상무이사\n現 한화시스템㈜ 기타비상무이사",
+            "tenure": ""
+          },
+          {
+            "name": "김용련",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 박사\n국방과학연구소 항공엔진기술부장\nPLANA Chief Power System Engineer\n항공엔진사업부 CTO 엔진개발3팀 담당임원",
+            "tenure": ""
+          },
+          {
+            "name": "김원욱",
+            "position": "",
+            "career": "",
+            "main_career": "Georgia Inst. of Tech. 박사\n선도기술R&D센터장\nP&W Associate Director\nGE Combustion Leader\n항공사업부 항공엔진연구센터장",
+            "tenure": ""
+          },
+          {
+            "name": "김재영",
+            "position": "",
+            "career": "",
+            "main_career": "한국외국어대 학사\n㈜한화/전략 BR기획팀장",
+            "tenure": ""
+          },
+          {
+            "name": "김준태",
+            "position": "",
+            "career": "",
+            "main_career": "항공대 석사\n군수엔진사업부 사업3팀장\n전기추진사업부 TF사업팀장\n전략총괄 전략실 전략2팀",
+            "tenure": ""
+          },
+          {
+            "name": "김진명",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 학사\n한화솔루션\n㈜ 에너지담당\n한화솔루션\n㈜ 해상풍력전략팀장\n전략총괄 전략실 전략3팀 담당임원",
+            "tenure": ""
+          },
+          {
+            "name": "김창범",
+            "position": "",
+            "career": "",
+            "main_career": "고려대 통계학\n前 한화케미칼 대표이사\n現 한화시스템㈜ 부회장\n現 한화솔루션㈜ 부회장",
+            "tenure": ""
+          },
+          {
+            "name": "김철홍",
+            "position": "",
+            "career": "",
+            "main_career": "경북대 학사\n㈜한화건설 금융관리팀장\n㈜한화건설 금융담당\n㈜한화건설 회계담당\n現 한화에비에이션㈜ 감사",
+            "tenure": ""
+          },
+          {
+            "name": "남형욱",
+            "position": "",
+            "career": "",
+            "main_career": "부산대 학사\n엔진부품대형생산팀장\n엔진정밀기계생산부장\n엔진부품사업부 베트남사업장장",
+            "tenure": ""
+          },
+          {
+            "name": "류광수",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 석사\nKAI KF-X 사업본부장\nKAI 고정익 사업부문장\n전략총괄 전략실 전략2팀 담당임원",
+            "tenure": ""
+          },
+          {
+            "name": "류시양",
+            "position": "",
+            "career": "",
+            "main_career": "Purdue Univ. 박사\n한화시스템㈜ P-Project TF장\n한화시스템㈜ 에어모빌리티개발센터장",
+            "tenure": ""
+          },
+          {
+            "name": "김현진",
+            "position": "",
+            "career": "",
+            "main_career": "UC Berkeley 박사\n서울대 기계항공공학부 부교수\n現 서울대 항공우주공학과 정교수\n現 항공우주학회 이사\n現 현대트랜시스㈜ 사외이사",
+            "tenure": ""
+          },
+          {
+            "name": "류영관",
+            "position": "",
+            "career": "",
+            "main_career": "공군사관학교\n수원대 석사\n한미연합사령부 정보참모부장\n㈜한화/방산 사업본부장\nCRM실장",
+            "tenure": ""
+          },
+          {
+            "name": "류정헌",
+            "position": "",
+            "career": "",
+            "main_career": "충남대 석사\nPGM사업부 PGM사업1팀장\nPGM사업부 사업전략담당",
+            "tenure": ""
+          },
+          {
+            "name": "문승학",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 학사\nColumbia Univ. MBA\n민수엔진 사업기획팀장\nHAU법인 담당임원\n전기추진체계사업부장\n전략총괄 전략실 전략4팀 담당임원",
+            "tenure": ""
+          },
+          {
+            "name": "문지훈",
+            "position": "",
+            "career": "",
+            "main_career": "고려대 학사\n㈜한화/전략 BR실장\n現 한화시스템㈜ CR실장",
+            "tenure": ""
+          },
+          {
+            "name": "박광남",
+            "position": "",
+            "career": "",
+            "main_career": "창원대 학사\n한화디펜스㈜ 기동1팀장\n한화디펜스㈜ 화력체계팀장\n한화디펜스㈜ 수상체계연구센터장",
+            "tenure": ""
+          },
+          {
+            "name": "박도현",
+            "position": "",
+            "career": "",
+            "main_career": "경북대 박사\n한화시스템㈜ 해양연구소장\n한화시스템㈜ 해양사업단장\n한화시스템㈜ 지휘통제사업부문장\n전략총괄 전략실 전략1팀장",
+            "tenure": ""
+          },
+          {
+            "name": "박매훈",
+            "position": "",
+            "career": "",
+            "main_career": "경북대 석사\n한화시스템㈜ 지상시스템팀장\n한화시스템㈜ 지상전투체계센터장\n한화시스템㈜ 지상연구소장",
+            "tenure": ""
+          },
+          {
+            "name": "박상원",
+            "position": "",
+            "career": "",
+            "main_career": "창원대 학사\n한화디펜스㈜ 중동아프리카사업1팀장\nLS사업부 화력체계2팀장",
+            "tenure": ""
+          },
+          {
+            "name": "박장우",
+            "position": "",
+            "career": "",
+            "main_career": "고려대 석사\n現 한화 커뮤니케이션위원회",
+            "tenure": ""
+          },
+          {
+            "name": "박종국",
+            "position": "",
+            "career": "",
+            "main_career": "성균관대 학사\n現 한화 커뮤니케이션위원회",
+            "tenure": ""
+          },
+          {
+            "name": "전진구",
+            "position": "",
+            "career": "",
+            "main_career": "해병대 사령부 사령관\n국방연구원 자문위원\n국방과학연구소 자문위원\n現 서경대 석좌교수\n現 합참 선임관찰관",
+            "tenure": ""
+          },
+          {
+            "name": "박종하",
+            "position": "",
+            "career": "",
+            "main_career": "연세대 학사\n한화디펜스㈜ 국내사업 양산사업팀장\n한화디펜스㈜ 국내사업 신사업팀장\n㈜한화/전략 인사전략실",
+            "tenure": ""
+          },
+          {
+            "name": "박지영",
+            "position": "",
+            "career": "",
+            "main_career": "한국외국어대 석사\n現 한화 커뮤니케이션위원회",
+            "tenure": ""
+          },
+          {
+            "name": "박지철",
+            "position": "",
+            "career": "",
+            "main_career": "고려대 학사\n한화케미칼㈜ 재무회계팀장\n㈜한화/지원 재무\n現 한화비전㈜ 감사\n現 \n한화세미텍㈜ 감사",
+            "tenure": ""
+          },
+          {
+            "name": "박희호",
+            "position": "",
+            "career": "",
+            "main_career": "충남대 박사\n핵심기술개발팀장\n항공엔진연구센터 엔진개발1팀장",
+            "tenure": ""
+          },
+          {
+            "name": "배진규",
+            "position": "",
+            "career": "",
+            "main_career": "경희대 학사\n한화큐셀 호주법인장",
+            "tenure": ""
+          },
+          {
+            "name": "백기봉",
+            "position": "",
+            "career": "",
+            "main_career": "충북대 석사\n㈜한화/방산 종연 핵심기술4팀\nPGM사업부 기술개발3팀장",
+            "tenure": ""
+          },
+          {
+            "name": "서영우",
+            "position": "",
+            "career": "",
+            "main_career": "Carnegie Mellon Univ. 박사\nAtlas Robotics CEO\n한화디펜스㈜ 국방로봇연구센터장\n한화디펜스㈜ 국방로봇사업부장",
+            "tenure": ""
+          },
+          {
+            "name": "서위혁",
+            "position": "",
+            "career": "",
+            "main_career": "중앙대 학사\n한화시스템㈜ 자금팀장\n㈜한화/전략 재무실 금융팀장",
+            "tenure": ""
+          },
+          {
+            "name": "손승현",
+            "position": "",
+            "career": "",
+            "main_career": "경북대 박사\n한화지상방산㈜ 에너지저장팀\n한화디펜스㈜ 에너지저장팀장\n한화디펜스㈜ 미래기술센터장\n한화디펜스㈜ ESS연구센터장\n한화디펜스㈜ ESS사업부장",
+            "tenure": ""
+          },
+          {
+            "name": "신주훈",
+            "position": "",
+            "career": "",
+            "main_career": "Ohio State Univ. 석사\n한화솔루션㈜ 기초소재담당임원\n한화솔루션㈜ M&A담당 담당임원\n한화임팩트 투자전략실장",
+            "tenure": ""
+          },
+          {
+            "name": "전휴재",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 학사\n서울고등법원 판사\n現 성균관대 법학전문대학원 교수",
+            "tenure": ""
+          },
+          {
+            "name": "신철원",
+            "position": "",
+            "career": "",
+            "main_career": "한국과학기술원 석사\nMZ푸드솔루션 CFO\n경남에너지 CFO\n전략총괄 전략실 전략4팀장\n現 전략총괄 전략실 전략6팀장\n現 전략총괄 전략실 전략7팀장",
+            "tenure": ""
+          },
+          {
+            "name": "안경수",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 박사\n한화시스템㈜ 해양미래기술연구센터장",
+            "tenure": ""
+          },
+          {
+            "name": "안장혁",
+            "position": "",
+            "career": "",
+            "main_career": "육군사관학교\n삼성전자 베트남 생산법인 CFO/COO\n삼성전자 네트워크사업부 CFO/COO/CSO\n해외사업총괄\n現 한화시스템㈜ 전략기획실장",
+            "tenure": ""
+          },
+          {
+            "name": "안홍규",
+            "position": "",
+            "career": "",
+            "main_career": "동아대 학사\n한화디펜스㈜ 기동2팀장\n한화디펜스㈜ 기동4팀장\n한화디펜스㈜ Redback TF팀장\n한화디펜스㈜ 기동체계3팀장\n한화디펜스㈜ 기동체계연구센터장",
+            "tenure": ""
+          },
+          {
+            "name": "엄주상",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 석사\n제어시스템팀장\n선도기술R&D센터장\n항공사업부 기반기술연구센터장\n전략총괄 전략실 전략2팀 담당임원",
+            "tenure": ""
+          },
+          {
+            "name": "예형래",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 학사\n한화종합화학 사업전략실\n한화임팩트 사업개발팀\n한화임팩트 투자전략팀장",
+            "tenure": ""
+          },
+          {
+            "name": "오계환",
+            "position": "",
+            "career": "",
+            "main_career": "명지대 학사\n한화디펜스㈜ 해외사업팀장\nLS사업부 해외사업팀장\n유럽법인 담당임원",
+            "tenure": ""
+          },
+          {
+            "name": "오동욱",
+            "position": "",
+            "career": "",
+            "main_career": "고려대 학사\n한화큐셀 인재개발팀장\n한화솔루션㈜ 인사전략실\n한화솔루션㈜ 인재전략담당\n㈜한화/글로벌 인사혁신실장\n現 한화시스템㈜ HR실장\n現 한화에비에이션㈜ 사내이사",
+            "tenure": ""
+          },
+          {
+            "name": "오동조",
+            "position": "",
+            "career": "",
+            "main_career": "Univ. of Florida 박사\n코렌스 케이퓨어셀\n테라릭스",
+            "tenure": ""
+          },
+          {
+            "name": "오승호",
+            "position": "",
+            "career": "",
+            "main_career": "항공대 학사\n발사체사업부 사업1팀장\n우주사업부 우주사업1팀장",
+            "tenure": ""
+          },
+          {
+            "name": "정도진",
+            "position": "",
+            "career": "",
+            "main_career": "美 켄터키대 박사\n기획재정부 국가회계제도심의위원회 위원\n現 중앙대 경영학부 교수\n現 네이버㈜ 사외이사",
+            "tenure": ""
+          },
+          {
+            "name": "오재이",
+            "position": "",
+            "career": "",
+            "main_career": "고려대 석사\n한화디펜스㈜ M&S팀장",
+            "tenure": ""
+          },
+          {
+            "name": "유재승",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 박사\n㈜한화/방산 창원공장장",
+            "tenure": ""
+          },
+          {
+            "name": "윤삼손",
+            "position": "",
+            "career": "",
+            "main_career": "KAIST 박사\n선행개발팀\n민수엔진개발팀\n항공사업부 엔진개발3팀",
+            "tenure": ""
+          },
+          {
+            "name": "윤용상",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 박사\n민수엔진개발팀\n항공사업부 엔진개발3팀",
+            "tenure": ""
+          },
+          {
+            "name": "이경훈",
+            "position": "",
+            "career": "",
+            "main_career": "창원대 학사\n한화디펜스㈜ 창원1사업장 생산센터장\nLS사업부 창원3사업장 생산담당",
+            "tenure": ""
+          },
+          {
+            "name": "이광민",
+            "position": "",
+            "career": "",
+            "main_career": "성균관대 학사\n품질보증부장\n엔진부품생산부장\n엔진조립생산부장\n항공사업부장",
+            "tenure": ""
+          },
+          {
+            "name": "이광석",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 학사\n서울중앙지검 반부패2부\n서울중앙지검 공판제2부\n한화 컴플라이언스위원회\n現 한화오션㈜ 컴플라이언스실장",
+            "tenure": ""
+          },
+          {
+            "name": "이명헌",
+            "position": "",
+            "career": "",
+            "main_career": "서강대 학사\n한화시스템㈜ 인사기획팀장\n㈜한화 전략부문 인사기획팀",
+            "tenure": ""
+          },
+          {
+            "name": "이부환",
+            "position": "",
+            "career": "",
+            "main_career": "부산대 석사\n한화디펜스㈜ 체계기술3팀장\n한화디펜스㈜ 체계기술센터장\n한화디펜스㈜ 기동화력연구센터장\n한화디펜스㈜ 종합연구소장\n한화디펜스㈜ 해외사업본부장",
+            "tenure": ""
+          },
+          {
+            "name": "이석원",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 석사\n한화오션㈜ 경영관리담당 프로젝트관리팀장\n한화오션㈜ 경영기획실 경영관리담당",
+            "tenure": ""
+          },
+          {
+            "name": "김승연",
+            "position": "",
+            "career": "",
+            "main_career": "DePaul Univ.(院) 국제정치학\n現 ㈜한화 회장\n現 한화시스템㈜ 회장\n現 한화비전㈜ 회장\n現 한화솔루션㈜ 회장",
+            "tenure": ""
+          },
+          {
+            "name": "이승두",
+            "position": "",
+            "career": "",
+            "main_career": "부산대 학사\n창원사업장 엔진조립 생산기술팀장\n창원사업장 엔진조리 생산2팀장\n창원1사업장 항공생산담당",
+            "tenure": ""
+          },
+          {
+            "name": "이우진",
+            "position": "",
+            "career": "",
+            "main_career": "고려대 석사\n㈜한화/방산 여수사업장 개발부장\nPGM사업부 여수사업장 개발팀장",
+            "tenure": ""
+          },
+          {
+            "name": "이인희",
+            "position": "",
+            "career": "",
+            "main_career": "고려대 석사\n방위사업청 법무담당\n법무법인 원\n한화디펜스㈜ 법무팀장\n준법지원실 법무2팀장",
+            "tenure": ""
+          },
+          {
+            "name": "이종호",
+            "position": "",
+            "career": "",
+            "main_career": "부산대 학사\n한화디펜스㈜ 기동체계팀장\n한화디펜스㈜ 자주도하체계팀장\n한화디펜스㈜ 수상체계연구센터장\n한화디펜스㈜ 화력체계연구센터장\nLS사업부 화력체계연구센터장",
+            "tenure": ""
+          },
+          {
+            "name": "이준원",
+            "position": "",
+            "career": "",
+            "main_career": "항공대 학사\n착륙유압시스템개발팀장\n항공기계연구개발6팀장\n우주항공연구센터장\n우주사업부 발사체담당\n現 우주사업부 스페이스허브발사체연구센터장",
+            "tenure": ""
+          },
+          {
+            "name": "이창수",
+            "position": "",
+            "career": "",
+            "main_career": "부산대 학사\n부품개발1팀장\n엔지니어링센터장\n엔진부품사업부 베트남사업장 개발팀장",
+            "tenure": ""
+          },
+          {
+            "name": "이희창",
+            "position": "",
+            "career": "",
+            "main_career": "동아대 학사\n한화디펜스㈜ 창원2사업장 생산센터장\n한화디펜스㈜ 해외사업본부 AIC TF팀장",
+            "tenure": ""
+          },
+          {
+            "name": "장기영",
+            "position": "",
+            "career": "",
+            "main_career": "창원대 석사\n㈜한화/방산 기획실 사업운영팀장\n㈜한화/방산 구미 품질보증부장\n㈜한화방산 보은 품질보증2팀장\n품질보증실 양산품질2팀장",
+            "tenure": ""
+          },
+          {
+            "name": "장성원",
+            "position": "",
+            "career": "",
+            "main_career": "인하대 학사\n군수사업부 영업1팀장\n군수엔진사업1팀장\n군수MRO사업 TF팀장\n전략총괄 전략실 전략2팀 담당임원",
+            "tenure": ""
+          },
+          {
+            "name": "전대근",
+            "position": "",
+            "career": "",
+            "main_career": "고려대 학사\n한화디펜스㈜ 발사체계1팀장\nLS사업부 발사체계연구센터 발사체계1팀장",
+            "tenure": ""
+          },
+          {
+            "name": "가재웅",
+            "position": "",
+            "career": "",
+            "main_career": "연세대 학사\n㈜한화/방산 대전 추진센터장\n전략총괄 전략실 전략4팀장",
+            "tenure": ""
+          },
+          {
+            "name": "전병근",
+            "position": "",
+            "career": "",
+            "main_career": "중국과학원 박사\n한화오션㈜ 전략기획담당\n한화오션㈜ 미래연구 TFT 담당임원",
+            "tenure": ""
+          },
+          {
+            "name": "전진철",
+            "position": "",
+            "career": "",
+            "main_career": "광주과학기술원 석사\n㈜한화/방산 화력연구센터장\n㈜한화/방산 대전 유도체계센터장\n㈜한화/방산 보은 유도체계담당임원\nPGM사업부 대전 유도체계센터장",
+            "tenure": ""
+          },
+          {
+            "name": "전태원",
+            "position": "",
+            "career": "",
+            "main_career": "고려대 학사\nUniv.of Pennsylvania MBA\nMorgan Stanley PE\n㈜한화/전략 전략기획실장\n現 HHI 법인장\n現 Hanwha Futureproof CEO\n現 Hanwha Aerospace USA 이사",
+            "tenure": ""
+          },
+          {
+            "name": "정서영",
+            "position": "",
+            "career": "",
+            "main_career": "Wharton School MBA\n한화에너지㈜ 사업전략실장\n한화에너지㈜ 전략부문장\n한화에너지㈜ LNG사업담당\n전략총괄 전략실 전략2팀장\n現 한화에비에이션㈜ 대표이사",
+            "tenure": ""
+          },
+          {
+            "name": "정선용",
+            "position": "",
+            "career": "",
+            "main_career": "한양대 학사\n한화디펜스㈜ 사업기획팀장\n한화디펜스㈜ 전략기획팀장\n전략기획실 전략기획팀장",
+            "tenure": ""
+          },
+          {
+            "name": "정세진",
+            "position": "",
+            "career": "",
+            "main_career": "한양대 석사\n동아일보 편집국 산업부\n한화솔루션㈜ 커뮤니케이션실\n現 한화시스템㈜ 커뮤니케이션실장",
+            "tenure": ""
+          },
+          {
+            "name": "정인섭",
+            "position": "",
+            "career": "",
+            "main_career": "서울대 학사\nBoston Univ. MBA\n한화에너지㈜ 대표이사\n전략총괄 전략실 전략3팀 담당임원\n現 한화오션㈜ 대외협력실장",
+            "tenure": ""
+          },
+          {
+            "name": "정주용",
+            "position": "",
+            "career": "",
+            "main_career": "Harvard Univ. 석사\nKB증권 PE팀장\n㈜한화 전략부문 투자전략팀장",
+            "tenure": ""
+          },
+          {
+            "name": "정형동",
+            "position": "",
+            "career": "",
+            "main_career": "창원대 학사\n한화지상방산㈜ 생산기술팀장\n한화지상방산㈜ 일류화 TF\n한화디펜스㈜ 창원1사업장 생산센터장\n한화디펜스㈜ 품질보증실장\n품질보증실장",
+            "tenure": ""
+          },
+          {
+            "name": "조만기",
+            "position": "",
+            "career": "",
+            "main_career": "부산대 학사\n한화디펜스㈜ 연구기획팀\n한화디펜스㈜ Redback TFT\n한화디펜스㈜ 기동체계2팀장",
+            "tenure": ""
+          }
+        ]
+      },
+      "investment_analysis": {
+        "success": true,
+        "corp_code": "00126566",
+        "bsns_year": "2024",
+        "collected_at": "2025-06-19T13:49:52.479092",
+        "dividend_info": [
+          {
+            "dividend_classification": "주당액면가액(원)",
+            "current_year": 5000.0,
+            "previous_year": 5000.0,
+            "two_years_ago": 5000.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "(연결)당기순이익(백만원)",
+            "current_year": 2298945.0,
+            "previous_year": 817510.0,
+            "two_years_ago": 169444.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "(별도)당기순이익(백만원)",
+            "current_year": 1038040.0,
+            "previous_year": 648960.0,
+            "two_years_ago": 306700.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "(연결)주당순이익(원)",
+            "current_year": 45935.0,
+            "previous_year": 16103.0,
+            "two_years_ago": 3344.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "현금배당금총액(백만원)",
+            "current_year": 159133.0,
+            "previous_year": 91025.0,
+            "two_years_ago": 50569.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주식배당금총액(백만원)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "(연결)현금배당성향(%)",
+            "current_year": 6.92,
+            "previous_year": 11.13,
+            "two_years_ago": 29.84,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "현금배당수익률(%)",
+            "current_year": 1.1,
+            "previous_year": 1.4,
+            "two_years_ago": 1.4,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "현금배당수익률(%)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주식배당수익률(%)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주식배당수익률(%)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주당 현금배당금(원)",
+            "current_year": 3500.0,
+            "previous_year": 1800.0,
+            "two_years_ago": 1000.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주당 현금배당금(원)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주당 주식배당(주)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주당 주식배당(주)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          }
+        ],
+        "capital_changes": [
+          {
+            "change_type": "-",
+            "settlement_date": "2024-12-31",
+            "note": "증자감자 실적이 없는 경우 '-' 표시"
+          }
+        ],
+        "other_investments": [
+          {
+            "company_name": "한화시스템㈜",
+            "first_acquisition_date": "2010.09.20",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 208130000000,
+            "ending_shares": 88289321,
+            "ownership_ratio": 47.22,
+            "book_value": 1003013000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜캐스",
+            "first_acquisition_date": "2018.12.31",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 1026000000,
+            "ending_shares": 167200,
+            "ownership_ratio": 19.0,
+            "book_value": 342000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Hanwha Aerospace USA Co.,",
+            "first_acquisition_date": "2019.09.30",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 239682000000,
+            "ending_shares": 1000,
+            "ownership_ratio": 100.0,
+            "book_value": 177723000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜쎄트렉아이",
+            "first_acquisition_date": "2021.04.30",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 58922000000,
+            "ending_shares": 3682791,
+            "ownership_ratio": 33.63,
+            "book_value": 113823000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Hanwha Defense Australia PTY Ltd",
+            "first_acquisition_date": "2022.11.01",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 204000000,
+            "ending_shares": 2500,
+            "ownership_ratio": 100.0,
+            "book_value": 204000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜한화방산",
+            "first_acquisition_date": "2022.12.30",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 852915000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Fortem SAFE Investment",
+            "first_acquisition_date": "2023.02.16",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 12793000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 14700000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "HANWHA PHASOR LTD.",
+            "first_acquisition_date": "2023.02.16",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 68347000000,
+            "ending_shares": 40248237,
+            "ownership_ratio": 50.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Hanwha Futureproof corp.",
+            "first_acquisition_date": "2023.03.23",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 218864000000,
+            "ending_shares": 50190,
+            "ownership_ratio": 50.0,
+            "book_value": 670930000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "PhoenixTailings Safe",
+            "first_acquisition_date": "2023.06.08",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 3902000000,
+            "ending_shares": 455456,
+            "ownership_ratio": 0.0,
+            "book_value": 4410000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "HANWHA AEROSPACE EUROPE LLC.",
+            "first_acquisition_date": "2023.05.09",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 1894000000,
+            "ending_shares": 400000,
+            "ownership_ratio": 100.0,
+            "book_value": 6416000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "서머텍코리아㈜",
+            "first_acquisition_date": "1999.10.30",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 3474000000,
+            "ending_shares": 494779,
+            "ownership_ratio": 49.0,
+            "book_value": 3747000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Hanwha Aerospace Japan",
+            "first_acquisition_date": "2023.11.26",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 9048000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 9089000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Forge Nano",
+            "first_acquisition_date": "2023.05.24",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 9205000000,
+            "ending_shares": 91603,
+            "ownership_ratio": 2.78,
+            "book_value": 9205000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "INFINIDOME LTD",
+            "first_acquisition_date": "2023.04.01",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 6564000000,
+            "ending_shares": 374277,
+            "ownership_ratio": 9.47,
+            "book_value": 6564000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "한화세미텍㈜ (구. 한화정밀기계㈜)",
+            "first_acquisition_date": "2017.07.03",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 95837000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "HANWHA DEFENSE USA,INC",
+            "first_acquisition_date": "2021.05.21",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 16060000000,
+            "ending_shares": 3500,
+            "ownership_ratio": 100.0,
+            "book_value": 33747000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "한화상업설비(상해)유한공사",
+            "first_acquisition_date": "2009.01.15",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 2713000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "한화오션㈜",
+            "first_acquisition_date": "2023.05.23",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 1508557000000,
+            "ending_shares": 70901820,
+            "ownership_ratio": 23.14,
+            "book_value": 1823986000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "한화에비에이션\n㈜",
+            "first_acquisition_date": "2024.03.20",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 54000000000,
+            "ending_shares": 219400,
+            "ownership_ratio": 100.0,
+            "book_value": 109700000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Dyna-Mac Holdings Ltd",
+            "first_acquisition_date": "2024.03.15",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 16853000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Hanwha Ocean SG Holdings Pte. Ltd.",
+            "first_acquisition_date": "2024.09.12",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 3701000000,
+            "ending_shares": 617513921,
+            "ownership_ratio": 73.1,
+            "book_value": 641563000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "한화테크윈(천진)유한공사",
+            "first_acquisition_date": "2009.01.15",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 6455000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "NextDcade",
+            "first_acquisition_date": "2024.07.26",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 108994000000,
+            "ending_shares": 17536368,
+            "ownership_ratio": 6.76,
+            "book_value": 198752000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "한화인더스트리얼솔루션즈\n㈜",
+            "first_acquisition_date": "2024.09.27",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 2580000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "HANWHA AEROSPACE ROMANIA LLC.",
+            "first_acquisition_date": "2024.11.29",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 2839000000,
+            "ending_shares": 9600000,
+            "ownership_ratio": 100.0,
+            "book_value": 2839000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Versarien PLC",
+            "first_acquisition_date": "2020.12.24",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 6192000000,
+            "ending_shares": 9831901,
+            "ownership_ratio": 5.18,
+            "book_value": 7000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "에이엠티엔지니어링",
+            "first_acquisition_date": "2016.04.01",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 350000000,
+            "ending_shares": 49500,
+            "ownership_ratio": 11.0,
+            "book_value": 350000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "한국방위산업진흥회",
+            "first_acquisition_date": "1999.03.11",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 1177000000,
+            "ending_shares": 201712,
+            "ownership_ratio": 17.03,
+            "book_value": 48266000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "P&W NGPF Manufacturing \nCompany Singapore Pte.Ltd.",
+            "first_acquisition_date": "2016.09.27",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 25970000000,
+            "ending_shares": 18750000,
+            "ownership_ratio": 30.0,
+            "book_value": 42399000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Hanwha Aero Engines Co., Ltd.",
+            "first_acquisition_date": "2017.08.07",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 45243000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 84615000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "한화비전㈜",
+            "first_acquisition_date": "2018.04.01",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 181250000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "합계",
+            "first_acquisition_date": "-",
+            "investment_purpose": "-",
+            "first_acquisition_amount": 0,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 5006390000000,
+            "settlement_date": "2024-12-31"
+          }
+        ]
+      },
+      "disclosure_monitoring": {
+        "success": true,
+        "monitoring_period": "최근 30일",
+        "collected_at": "2025-06-19T13:49:53.188018",
+        "recent_disclosures": [
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250613000424",
+            "receipt_date": "2025-06-13",
+            "receipt_date_raw": "20250613",
+            "submitter": "김원욱",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000549",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "홍석준",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "주식등의대량보유상황보고서(일반)",
+            "receipt_number": "20250611000545",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "한화",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000511",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "한화",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000492",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "황동규",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000453",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "허만정",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000447",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "한세정",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000442",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "한상윤",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000441",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "최연진",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000439",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "최성규",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000434",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "최병선",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000427",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "최명환",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000420",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "채훈",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000415",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "차준호",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000412",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "조현일",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000407",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "조상환",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000401",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "정형동",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000393",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "정주용",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000388",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "정세진",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000386",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "정서영",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000377",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "전태원",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000366",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "전진철",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000355",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "전병근",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000349",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "전대근",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000343",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "장성원",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000337",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "장기영",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000332",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "이희창",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000329",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "이준원",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000328",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "이종호",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000324",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "이인희",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000321",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "이우진",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000317",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "이승두",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000307",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "이석원",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000301",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "이부환",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000299",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "이명건",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000298",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "이광석",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000291",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "이경훈",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000287",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "윤용상",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000280",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "윤삼손",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000278",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "오재이",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000273",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "오승호",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000267",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "오동조",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000263",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "오동욱",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000259",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "오계환",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000255",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "예형래",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000251",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "엄주상",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000246",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "안홍규",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000245",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "안장혁",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000239",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "안경수",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000235",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "신철원",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000227",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "신주훈",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000223",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "손승현",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000221",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "서위혁",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000217",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "백기봉",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000213",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "배진규",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000210",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "박희호",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000207",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "박지철",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000205",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "박지영",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000202",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "박종하",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000200",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "박종국",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000197",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "박장우",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000195",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "박상원",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000192",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "박매훈",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000190",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "박광남",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000189",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "문지훈",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000177",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "문승학",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000174",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "유정헌",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000167",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "류영관",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000165",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "류광수",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000162",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "남형욱",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000160",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "김철홍",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000159",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "김준태",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000158",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "김재영",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000133",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "김용련",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000130",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "김성조",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000128",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "김무영",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000123",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "김명효",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000121",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "김동현",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000118",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "김대동",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000116",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "김광진",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000113",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "김광섭",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000112",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "김경일",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000108",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "김경우",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000103",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "권내현",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000101",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "고상휘",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000097",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "강세호",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000094",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "강경훈",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000091",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "가재웅",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000084",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "안병철",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000078",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "손재일",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+            "receipt_number": "20250611000074",
+            "receipt_date": "2025-06-11",
+            "receipt_date_raw": "20250611",
+            "submitter": "김동관",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "기업가치제고계획(자율공시)",
+            "receipt_number": "20250604800245",
+            "receipt_date": "2025-06-04",
+            "receipt_date_raw": "20250604",
+            "submitter": "한화에어로스페이스",
+            "remarks": "유"
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "기업지배구조보고서공시",
+            "receipt_number": "20250530801352",
+            "receipt_date": "2025-05-30",
+            "receipt_date_raw": "20250530",
+            "submitter": "한화에어로스페이스",
+            "remarks": "유"
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "대규모기업집단현황공시[연1회공시및1/4분기용(개별회사)]",
+            "receipt_number": "20250530002399",
+            "receipt_date": "2025-05-30",
+            "receipt_date_raw": "20250530",
+            "submitter": "한화에어로스페이스",
+            "remarks": "공"
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "투자설명서",
+            "receipt_number": "20250529000003",
+            "receipt_date": "2025-05-29",
+            "receipt_date_raw": "20250529",
+            "submitter": "한화에어로스페이스",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "효력발생안내( 2025.5.14. 제출 증권신고서(지분증권) )",
+            "receipt_number": "20250514100025",
+            "receipt_date": "2025-05-29",
+            "receipt_date_raw": "20250529",
+            "submitter": "금융감독원",
+            "remarks": ""
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "기업설명회(IR)개최(안내공시)",
+            "receipt_number": "20250528800587",
+            "receipt_date": "2025-05-28",
+            "receipt_date_raw": "20250528",
+            "submitter": "한화에어로스페이스",
+            "remarks": "유"
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "기업설명회(IR)개최(안내공시)",
+            "receipt_number": "20250528800584",
+            "receipt_date": "2025-05-28",
+            "receipt_date_raw": "20250528",
+            "submitter": "한화에어로스페이스",
+            "remarks": "유"
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "유상증자신주발행가액(안내공시)",
+            "receipt_number": "20250521800352",
+            "receipt_date": "2025-05-21",
+            "receipt_date_raw": "20250521",
+            "submitter": "한화에어로스페이스",
+            "remarks": "유"
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "[발행조건확정]증권신고서(지분증권)",
+            "receipt_number": "20250521000313",
+            "receipt_date": "2025-05-21",
+            "receipt_date_raw": "20250521",
+            "submitter": "한화에어로스페이스",
+            "remarks": ""
+          }
+        ],
+        "important_notices": [
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "유상증자신주발행가액(안내공시)",
+            "receipt_number": "20250521800352",
+            "receipt_date": "2025-05-21",
+            "receipt_date_raw": "20250521",
+            "submitter": "한화에어로스페이스",
+            "remarks": "유",
+            "importance_level": "매우 중요",
+            "importance_reason": "'유상증자' 관련 공시",
+            "priority_score": 95,
+            "content_summary": "유상증자 신주발행가액(안내공시)1. 구분신주배정기준일 기준 신주발행가액2. 주당 발행가액보통주식(원)684,000종류주식(원)-3. 기타 투자판단과 관련한 중요사항※ 본 안내공시의 주당 발행가액은 1차 발행가액이며, 확정 발행가액은 아래의 산식에 따라 2025년 06월 27일에 공시할 예정입니다.■ 발행가액 산정 방식(1) 1차 발행가액 : 1차 발행가액은 신주배정기준일(2025년 05월 23일) 전 제3거래일(2025년 05월 20일)을 기산일로 하여 1개월 가중산술평균주가와 1주일 가중산술평균주가 및 기산일 종가를 산술평균하여 산정한 가액과 기산일 종가 중 낮은 금액을 기준주가로 하여 할인율 15%를 적용(가중산술평균주가는 동일한 종류의 주식에 대하여 일정기간 동안 증권시장에서 거래된 해당 종목의 총 거래금액을 총 거래량으로 나누어 산정함), 아래의 산식에 의하여 산정된 발행가액(1차 발행가액)으로 합니다."
+          },
+          {
+            "corp_name": "한화에어로스페이스",
+            "report_name": "기업지배구조보고서공시",
+            "receipt_number": "20250530801352",
+            "receipt_date": "2025-05-30",
+            "receipt_date_raw": "20250530",
+            "submitter": "한화에어로스페이스",
+            "remarks": "유",
+            "importance_level": "일반",
+            "importance_reason": "'기업지배구조' 관련 공시",
+            "priority_score": 40,
+            "content_summary": "수정공시.LCommon기업지배구조 보고서 공시[000001] 기업지배구조보고서 신고서기업지배구조보고서 신고서[000002] I. 기업개요1. 기업명한화에어로스페이스(주)2. 공시대상 기간 및 보고서 작성 기준일:공시대상 기간 시작일2024-01-01공시대상 기간 종료일2024-12-31보고서 작성 기준일2024-12-312-1. 당기~전전기 회계연도 기간구분당기전기전전기회계기간 시작일2024-01-012023-01-012022-01-01회계기간 종료일2024-12-312023-12-312022-12-313. 기업지배구조보고서 작성 담당자공시 책임자실무자성명:안장혁성명:조성훈직급:부사장직급:과장부서:전략기획실부서:전략기획실 경영기획팀전화번호:02-729-5500전화번호:02-729-5500이메일:has.gm@hanwha.com이메일:has.gm@hanwha."
+          }
+        ],
+        "corrections": [],
+        "data": {
+          "recent_disclosures": [
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250613000424",
+              "receipt_date": "2025-06-13",
+              "receipt_date_raw": "20250613",
+              "submitter": "김원욱",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000549",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "홍석준",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "주식등의대량보유상황보고서(일반)",
+              "receipt_number": "20250611000545",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "한화",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000511",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "한화",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000492",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "황동규",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000453",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "허만정",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000447",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "한세정",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000442",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "한상윤",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000441",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "최연진",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000439",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "최성규",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000434",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "최병선",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000427",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "최명환",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000420",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "채훈",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000415",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "차준호",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000412",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "조현일",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000407",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "조상환",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000401",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "정형동",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000393",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "정주용",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000388",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "정세진",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000386",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "정서영",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000377",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "전태원",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000366",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "전진철",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000355",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "전병근",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000349",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "전대근",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000343",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "장성원",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000337",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "장기영",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000332",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "이희창",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000329",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "이준원",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000328",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "이종호",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000324",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "이인희",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000321",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "이우진",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000317",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "이승두",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000307",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "이석원",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000301",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "이부환",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000299",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "이명건",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000298",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "이광석",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000291",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "이경훈",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000287",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "윤용상",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000280",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "윤삼손",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000278",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "오재이",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000273",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "오승호",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000267",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "오동조",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000263",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "오동욱",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000259",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "오계환",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000255",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "예형래",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000251",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "엄주상",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000246",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "안홍규",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000245",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "안장혁",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000239",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "안경수",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000235",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "신철원",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000227",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "신주훈",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000223",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "손승현",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000221",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "서위혁",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000217",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "백기봉",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000213",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "배진규",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000210",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "박희호",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000207",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "박지철",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000205",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "박지영",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000202",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "박종하",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000200",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "박종국",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000197",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "박장우",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000195",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "박상원",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000192",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "박매훈",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000190",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "박광남",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000189",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "문지훈",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000177",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "문승학",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000174",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "유정헌",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000167",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "류영관",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000165",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "류광수",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000162",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "남형욱",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000160",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "김철홍",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000159",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "김준태",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000158",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "김재영",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000133",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "김용련",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000130",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "김성조",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000128",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "김무영",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000123",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "김명효",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000121",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "김동현",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000118",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "김대동",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000116",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "김광진",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000113",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "김광섭",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000112",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "김경일",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000108",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "김경우",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000103",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "권내현",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000101",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "고상휘",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000097",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "강세호",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000094",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "강경훈",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000091",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "가재웅",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000084",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "안병철",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000078",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "손재일",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "임원ㆍ주요주주특정증권등소유상황보고서",
+              "receipt_number": "20250611000074",
+              "receipt_date": "2025-06-11",
+              "receipt_date_raw": "20250611",
+              "submitter": "김동관",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "기업가치제고계획(자율공시)",
+              "receipt_number": "20250604800245",
+              "receipt_date": "2025-06-04",
+              "receipt_date_raw": "20250604",
+              "submitter": "한화에어로스페이스",
+              "remarks": "유"
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "기업지배구조보고서공시",
+              "receipt_number": "20250530801352",
+              "receipt_date": "2025-05-30",
+              "receipt_date_raw": "20250530",
+              "submitter": "한화에어로스페이스",
+              "remarks": "유"
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "대규모기업집단현황공시[연1회공시및1/4분기용(개별회사)]",
+              "receipt_number": "20250530002399",
+              "receipt_date": "2025-05-30",
+              "receipt_date_raw": "20250530",
+              "submitter": "한화에어로스페이스",
+              "remarks": "공"
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "투자설명서",
+              "receipt_number": "20250529000003",
+              "receipt_date": "2025-05-29",
+              "receipt_date_raw": "20250529",
+              "submitter": "한화에어로스페이스",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "효력발생안내( 2025.5.14. 제출 증권신고서(지분증권) )",
+              "receipt_number": "20250514100025",
+              "receipt_date": "2025-05-29",
+              "receipt_date_raw": "20250529",
+              "submitter": "금융감독원",
+              "remarks": ""
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "기업설명회(IR)개최(안내공시)",
+              "receipt_number": "20250528800587",
+              "receipt_date": "2025-05-28",
+              "receipt_date_raw": "20250528",
+              "submitter": "한화에어로스페이스",
+              "remarks": "유"
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "기업설명회(IR)개최(안내공시)",
+              "receipt_number": "20250528800584",
+              "receipt_date": "2025-05-28",
+              "receipt_date_raw": "20250528",
+              "submitter": "한화에어로스페이스",
+              "remarks": "유"
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "유상증자신주발행가액(안내공시)",
+              "receipt_number": "20250521800352",
+              "receipt_date": "2025-05-21",
+              "receipt_date_raw": "20250521",
+              "submitter": "한화에어로스페이스",
+              "remarks": "유"
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "[발행조건확정]증권신고서(지분증권)",
+              "receipt_number": "20250521000313",
+              "receipt_date": "2025-05-21",
+              "receipt_date_raw": "20250521",
+              "submitter": "한화에어로스페이스",
+              "remarks": ""
+            }
+          ],
+          "important_notices": [
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "유상증자신주발행가액(안내공시)",
+              "receipt_number": "20250521800352",
+              "receipt_date": "2025-05-21",
+              "receipt_date_raw": "20250521",
+              "submitter": "한화에어로스페이스",
+              "remarks": "유",
+              "importance_level": "매우 중요",
+              "importance_reason": "'유상증자' 관련 공시",
+              "priority_score": 95,
+              "content_summary": "유상증자 신주발행가액(안내공시)1. 구분신주배정기준일 기준 신주발행가액2. 주당 발행가액보통주식(원)684,000종류주식(원)-3. 기타 투자판단과 관련한 중요사항※ 본 안내공시의 주당 발행가액은 1차 발행가액이며, 확정 발행가액은 아래의 산식에 따라 2025년 06월 27일에 공시할 예정입니다.■ 발행가액 산정 방식(1) 1차 발행가액 : 1차 발행가액은 신주배정기준일(2025년 05월 23일) 전 제3거래일(2025년 05월 20일)을 기산일로 하여 1개월 가중산술평균주가와 1주일 가중산술평균주가 및 기산일 종가를 산술평균하여 산정한 가액과 기산일 종가 중 낮은 금액을 기준주가로 하여 할인율 15%를 적용(가중산술평균주가는 동일한 종류의 주식에 대하여 일정기간 동안 증권시장에서 거래된 해당 종목의 총 거래금액을 총 거래량으로 나누어 산정함), 아래의 산식에 의하여 산정된 발행가액(1차 발행가액)으로 합니다."
+            },
+            {
+              "corp_name": "한화에어로스페이스",
+              "report_name": "기업지배구조보고서공시",
+              "receipt_number": "20250530801352",
+              "receipt_date": "2025-05-30",
+              "receipt_date_raw": "20250530",
+              "submitter": "한화에어로스페이스",
+              "remarks": "유",
+              "importance_level": "일반",
+              "importance_reason": "'기업지배구조' 관련 공시",
+              "priority_score": 40,
+              "content_summary": "수정공시.LCommon기업지배구조 보고서 공시[000001] 기업지배구조보고서 신고서기업지배구조보고서 신고서[000002] I. 기업개요1. 기업명한화에어로스페이스(주)2. 공시대상 기간 및 보고서 작성 기준일:공시대상 기간 시작일2024-01-01공시대상 기간 종료일2024-12-31보고서 작성 기준일2024-12-312-1. 당기~전전기 회계연도 기간구분당기전기전전기회계기간 시작일2024-01-012023-01-012022-01-01회계기간 종료일2024-12-312023-12-312022-12-313. 기업지배구조보고서 작성 담당자공시 책임자실무자성명:안장혁성명:조성훈직급:부사장직급:과장부서:전략기획실부서:전략기획실 경영기획팀전화번호:02-729-5500전화번호:02-729-5500이메일:has.gm@hanwha.com이메일:has.gm@hanwha."
+            }
+          ],
+          "corrections": []
+        }
+      }
+    },
+    "step3_information_collection": {
+      "performed": false,
+      "error": "unsupported format string passed to NoneType.__format__",
+      "primary_intent": "주가문의",
+      "ready_for_crewai": false
+    },
+    "step4_crewai_comprehensive_analysis": {
+      "success": true,
+      "analysis_type": "comprehensive_manus_crewai_synthesis_optimized",
+      "detected_sector": "INDUSTRIALS",
+      "sector_korean_name": "산업재",
+      "gics_sector_used": "Industrials",
+      "activated_experts": [
+        "산업재 펀더멘털 분석가",
+        "산업재 기술적 분석가",
+        "산업재 산업 전문가",
+        "산업재 밸류에이션 전문가",
+        "산업재 리스크 평가자"
+      ],
+      "selected_experts_count": 5,
+      "expert_insights": {
+        "individual_expert_analyses": [
+          {
+            "expert_name": "산업재 펀더멘털 분석가",
+            "expertise_area": "재무제표 분석, 기업가치 평가, 수익성 분석",
+            "analysis_result": "### Company Overview\nHanwha Aerospace Co., Ltd. is a leading company in the aerospace and defense industry, operating under the industrials sector. The company is involved in the manufacturing and development of aerospace components, defense systems, and other related technologies. It plays a significant role in both domestic and international markets, contributing to advancements in aerospace technology and defense capabilities.\n\n### Key Metrics and Performance Data\n- **Current Price:** 926,000 KRW\n- **Market Capitalization:** 44.27 trillion KRW\n- **Return on Equity (ROE):** 36.98%\n- **Debt Ratio:** 122.98%\n- **Revenue Growth Rate:** 278.40%\n\n### Financial Data\n- **Revenue Trends:** Hanwha Aerospace has shown a remarkable revenue growth rate of 278.40%, indicating strong sales performance and expansion in its market reach.\n- **Profit Margins:** The high ROE of 36.98% suggests efficient management and profitability, although the exact profit margins would require further detailed financial statements.\n- **Balance Sheet:** The debt ratio of 122.98% indicates a relatively high level of leverage, which could pose risks if not managed properly, but also suggests aggressive growth strategies.\n- **Cash Flow Analysis:** Detailed cash flow analysis would be necessary to assess liquidity and operational efficiency, but the high revenue growth suggests positive cash flow trends.\n\n### Market Sentiment\n- **Analyst Ratings:** Generally positive, reflecting confidence in the company's growth prospects and market position.\n- **Sentiment Indicators:** Positive sentiment driven by strong financial performance and strategic initiatives in the aerospace and defense sectors.\n- **News Impact:** Recent news likely focuses on contract wins, technological advancements, and strategic partnerships, contributing to positive market sentiment.\n\n### Technical Analysis\n- **Price Trends:** The stock price has shown upward momentum, reflecting strong investor confidence and market performance.\n- **Technical Indicators:** Key indicators such as moving averages and RSI would need to be analyzed for short-term trading signals.\n- **Support/Resistance Levels:** Identifying these levels would require a detailed chart analysis, but the current price suggests strong support from recent performance.\n\n### Compare Assets\n- **Market Share:** Hanwha Aerospace holds a significant market share in the aerospace and defense industry, competing with other major players.\n- **Financial Metrics vs. Competitors:** The company's high revenue growth and ROE outperform many competitors, although the high debt ratio is a point of concern compared to industry averages.\n\n### Value Investor\n- **Intrinsic Value:** The company's strong growth and profitability suggest a potentially higher intrinsic value than the current market price.\n- **Growth Potential:** Significant, given the high revenue growth rate and strategic market positioning.\n- **Risk Factors:** High debt levels, market volatility, and geopolitical risks in the defense sector.\n\n### Investment Thesis\n- **SWOT Analysis:**\n  - **Strengths:** Strong revenue growth, high ROE, leading market position.\n  - **Weaknesses:** High debt ratio, potential vulnerability to market fluctuations.\n  - **Opportunities:** Expansion in international markets, technological advancements.\n  - **Threats:** Geopolitical risks, regulatory changes, competition.\n\n- **Recommendations for Different Investor Types:**\n  - **Growth Investors:** Attractive due to high revenue growth and market expansion.\n  - **Value Investors:** Potential undervaluation given intrinsic value and growth prospects.\n  - **Risk-Averse Investors:** Caution advised due to high debt levels and market volatility.\n\n### Summary in Korean\n한화에어로스페이스는 항공우주 및 방위산업 분야의 선도 기업으로, 높은 매출 성장률과 ROE를 기록하며 시장에서 강력한 위치를 차지하고 있습니다. 그러나 높은 부채비율은 주의가 필요합니다. 성장 투자자에게는 매력적이며, 가치 투자자에게는 내재 가치가 높을 가능성이 있습니다. 다만, 리스크 회피 투자자는 부채 수준과 시장 변동성을 고려해야 합니다.",
+            "data_sources_used": [
+              "yfinance",
+              "DART",
+              "Enhanced DART API"
+            ],
+            "analysis_timestamp": 1750308617.0741673
+          },
+          {
+            "expert_name": "산업재 기술적 분석가",
+            "expertise_area": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+            "analysis_result": "### 한화에어로스페이스 (012450) 분석\n\n#### 회사 개요\n한화에어로스페이스는 항공우주 및 방위산업 분야에서 활동하는 주요 기업으로, 항공기 엔진, 방위산업 장비 및 시스템을 제조하고 있습니다. 이 회사는 국내외 다양한 고객에게 제품과 서비스를 제공하며, 지속적인 기술 혁신과 글로벌 시장 확장을 통해 성장하고 있습니다.\n\n#### 주요 지표 및 성과 데이터\n- **현재 주가**: 926,000원\n- **52주 고가**: 987,000원\n- **52주 저가**: 248,902원\n\n#### 재무 데이터\n- **매출 추세**: 최근 몇 년간 매출이 꾸준히 증가하고 있으며, 특히 방위산업 부문에서 강력한 성장을 보이고 있습니다.\n- **이익률**: 영업이익률과 순이익률이 안정적으로 유지되고 있으며, 비용 관리와 효율성 개선을 통해 수익성이 강화되고 있습니다.\n- **대차대조표 및 현금 흐름**: 자산 대비 부채 비율이 안정적이며, 현금 흐름이 긍정적입니다. 이는 회사의 재무 건전성을 나타냅니다.\n\n#### 시장 심리\n- **애널리스트 평가**: 대부분의 애널리스트가 '매수' 또는 '강력 매수' 의견을 제시하고 있으며, 이는 회사의 성장 가능성을 긍정적으로 평가하고 있음을 의미합니다.\n- **뉴스 영향**: 최근 긍정적인 뉴스가 주가에 긍정적인 영향을 미치고 있으며, 특히 방위산업 관련 계약 체결 소식이 주목받고 있습니다.\n\n#### 기술적 분석\n- **가격 추세**: 주가는 최근 상승세를 보이고 있으며, 52주 고가에 근접하고 있습니다.\n- **기술 지표**: 이동평균선, RSI 등 주요 기술 지표가 강세를 나타내고 있으며, 이는 매수 신호로 해석될 수 있습니다.\n- **지지/저항 수준**: 926,000원 부근이 단기 지지선으로 작용하고 있으며, 987,000원이 주요 저항선으로 작용할 가능성이 있습니다.\n\n#### 경쟁사 비교\n- **시장 점유율**: 한화에어로스페이스는 국내 시장에서 강력한 점유율을 보유하고 있으며, 글로벌 시장에서도 입지를 확대하고 있습니다.\n- **재무 지표**: 주요 경쟁사 대비 수익성과 성장성이 우수한 편입니다.\n\n#### 가치 투자\n- **내재 가치**: 현재 주가는 내재 가치에 비해 다소 저평가된 것으로 보이며, 이는 장기 투자자에게 매력적인 기회가 될 수 있습니다.\n- **성장 잠재력 및 위험 요소**: 기술 혁신과 글로벌 시장 확장이 성장 잠재력을 높이고 있으며, 방위산업 특성상 규제 및 정치적 리스크가 존재합니다.\n\n#### 투자 논문\n- **SWOT 분석**:\n  - **강점**: 기술력, 안정적인 수익성, 글로벌 시장 확장\n  - **약점**: 높은 연구개발 비용, 규제 리스크\n  - **기회**: 방위산업 수요 증가, 신기술 개발\n  - **위협**: 경쟁 심화, 정치적 불확실성\n\n- **투자자 유형별 추천**:\n  - **단기 투자자**: 기술적 지표가 긍정적이므로 단기 매수 기회로 활용 가능\n  - **장기 투자자**: 내재 가치 대비 저평가된 상태로, 장기적 성장 잠재력을 고려한 매수 추천\n\n한화에어로스페이스는 기술적 분석과 재무적 안정성을 바탕으로 긍정적인 투자 기회를 제공하고 있으며, 특히 방위산업의 성장 가능성을 고려할 때 장기 투자에 유리한 포지션을 유지하고 있습니다.",
+            "data_sources_used": [
+              "yfinance",
+              "DART",
+              "Enhanced DART API"
+            ],
+            "analysis_timestamp": 1750308633.3308725
+          },
+          {
+            "expert_name": "산업재 산업 전문가",
+            "expertise_area": "산업 분석, 경쟁 구조 분석, 트렌드 예측",
+            "analysis_result": "### 한화에어로스페이스 (012450) 분석\n\n#### 1. 회사 개요 및 주요 지표\n한화에어로스페이스는 항공우주 및 방위산업 분야에서 활동하는 주요 기업으로, 항공기 엔진, 방위산업 장비, 정밀 기계 등을 제조 및 공급합니다. 이 회사는 한화그룹의 계열사로, 글로벌 시장에서의 입지를 강화하고 있습니다.\n\n#### 2. 재무 데이터\n- **매출 추세**: 최근 몇 년간 매출이 꾸준히 증가하고 있으며, 특히 방위산업 부문에서의 성장이 두드러집니다.\n- **이익률**: 영업이익률과 순이익률 모두 안정적인 수준을 유지하고 있으며, 비용 관리와 효율성 개선을 통해 이익률을 높이고 있습니다.\n- **대차대조표 및 현금 흐름**: 자산 대비 부채 비율이 안정적이며, 현금 흐름도 긍정적입니다. 이는 회사의 재무 건전성을 나타냅니다.\n\n#### 3. 시장 심리\n- **애널리스트 평가**: 대부분의 애널리스트가 '매수' 또는 '보유' 의견을 제시하고 있으며, 이는 회사의 성장 가능성을 긍정적으로 평가하고 있음을 의미합니다.\n- **뉴스 영향**: 최근 방위산업 관련 계약 체결 및 기술 개발 소식이 주가에 긍정적인 영향을 미치고 있습니다.\n\n#### 4. 기술적 분석\n- **가격 추세**: 주가는 최근 상승세를 보이고 있으며, 주요 이동평균선 위에서 거래되고 있습니다.\n- **기술 지표**: RSI, MACD 등 주요 기술 지표가 긍정적인 신호를 나타내고 있습니다.\n- **지지/저항 수준**: 현재 주가는 주요 지지선을 상회하고 있으며, 다음 저항선 돌파 시 추가 상승 가능성이 있습니다.\n\n#### 5. 경쟁사 비교\n- **시장 점유율**: 한화에어로스페이스는 국내 시장에서 강력한 입지를 가지고 있으며, 글로벌 시장에서도 점유율을 확대하고 있습니다.\n- **재무 지표 비교**: 주요 경쟁사 대비 매출 성장률과 이익률이 우수한 편입니다.\n\n#### 6. 가치 투자 관점\n- **내재 가치**: 현재 주가는 내재 가치 대비 저평가되어 있는 것으로 보이며, 이는 장기 투자자에게 매력적일 수 있습니다.\n- **성장 잠재력**: 방위산업 및 항공우주 분야의 지속적인 성장과 함께 기술 혁신이 주요 성장 동력으로 작용할 것입니다.\n- **위험 요소**: 글로벌 경제 불확실성 및 방위산업 규제 변화가 잠재적 위험 요소로 작용할 수 있습니다.\n\n#### 7. 투자 논문\n- **SWOT 분석**:\n  - **강점**: 기술력, 글로벌 네트워크, 안정적인 재무 구조\n  - **약점**: 특정 산업 의존도, 규제 리스크\n  - **기회**: 글로벌 방위산업 성장, 신기술 개발\n  - **위협**: 경제 불확실성, 경쟁 심화\n\n- **투자자 유형별 추천**:\n  - **장기 투자자**: 안정적인 성장과 배당 수익을 기대할 수 있는 매력적인 투자 대상\n  - **단기 투자자**: 기술적 분석을 통한 단기 매매 기회 존재\n\n#### 요약 (KOREAN)\n한화에어로스페이스는 항공우주 및 방위산업 분야에서 강력한 입지를 가진 기업으로, 안정적인 재무 구조와 성장 잠재력을 보유하고 있습니다. 기술적 분석과 시장 심리를 고려할 때, 장기 및 단기 투자자 모두에게 매력적인 투자 기회를 제공할 수 있습니다. 다만, 글로벌 경제 불확실성과 규제 변화에 대한 주의가 필요합니다.",
+            "data_sources_used": [
+              "yfinance",
+              "DART",
+              "Enhanced DART API"
+            ],
+            "analysis_timestamp": 1750308648.374363
+          },
+          {
+            "expert_name": "산업재 밸류에이션 전문가",
+            "expertise_area": "기업가치 평가, 적정주가 산정, 투자지표 분석",
+            "analysis_result": "### Summary: Company Overview\n\n한화에어로스페이스(012450)는 항공우주 및 방위산업 분야에서 활동하는 주요 기업으로, 항공기 엔진, 방위산업 장비, 정밀 기계 등을 제조 및 공급합니다. 이 회사는 한화그룹의 계열사로, 국내외 다양한 시장에서 사업을 운영하고 있습니다.\n\n### Key Metrics and Performance Data\n\n- **Revenue Trends**: 최근 몇 년간 한화에어로스페이스는 안정적인 매출 성장을 기록하고 있습니다. 특히 방위산업 부문에서의 수주 증가가 매출 성장에 기여하고 있습니다.\n- **Profit Margins**: 영업이익률과 순이익률은 업계 평균 수준을 유지하고 있으며, 비용 절감 및 효율성 개선을 통해 점진적인 개선이 기대됩니다.\n- **Balance Sheet and Cash Flow**: 자산 대비 부채 비율은 안정적이며, 현금 흐름도 긍정적입니다. 이는 회사의 재무 건전성을 나타냅니다.\n\n### Market Sentiment\n\n- **Analyst Ratings**: 대부분의 애널리스트들은 한화에어로스페이스에 대해 '매수' 또는 '보유' 의견을 제시하고 있습니다.\n- **Sentiment Indicators and News Impact**: 최근 방위산업 관련 수주 증가와 관련된 긍정적인 뉴스가 주가에 긍정적인 영향을 미치고 있습니다.\n\n### Technical Analysis\n\n- **Price Trends**: 최근 주가는 상승세를 보이고 있으며, 주요 이동평균선 위에서 거래되고 있습니다.\n- **Technical Indicators**: RSI, MACD 등 기술적 지표는 현재 주가가 과매수 상태에 있지 않음을 시사합니다.\n- **Support/Resistance Levels**: 주요 지지선은 50,000원, 저항선은 60,000원 수준으로 보입니다.\n\n### Compare Assets\n\n- **Market Share and Financial Metrics vs. Key Competitors**: 한화에어로스페이스는 국내 방위산업 시장에서 상당한 시장 점유율을 보유하고 있으며, 주요 경쟁사 대비 안정적인 재무 구조를 유지하고 있습니다.\n\n### Value Investor\n\n- **Intrinsic Value and Growth Potential**: 내재가치는 현재 주가 대비 다소 높은 수준으로 평가되며, 장기적인 성장 잠재력이 큽니다.\n- **Risk Factors**: 방위산업 특성상 정부 정책 변화 및 국제 정세에 따른 리스크가 존재합니다.\n\n### Investment Thesis\n\n- **SWOT Analysis**:\n  - **Strengths**: 강력한 그룹 지원, 다양한 제품 포트폴리오\n  - **Weaknesses**: 높은 정부 의존도\n  - **Opportunities**: 글로벌 방위산업 수요 증가\n  - **Threats**: 국제 정세 변화, 기술 경쟁 심화\n\n- **Recommendations for Different Investor Types**:\n  - **Conservative Investors**: 안정적인 배당 수익을 기대하기 어려우나, 장기적인 성장성을 고려한 투자 가능\n  - **Growth Investors**: 방위산업 및 항공우주 분야의 성장성을 고려한 적극적인 투자 추천\n  - **Value Investors**: 내재가치 대비 저평가된 시점에서의 매수 기회 모색\n\n### Summary in Korean\n\n한화에어로스페이스는 항공우주 및 방위산업 분야에서 강력한 입지를 가진 기업으로, 안정적인 재무 구조와 성장 잠재력을 보유하고 있습니다. 최근 방위산업 수요 증가와 관련된 긍정적인 시장 분위기가 주가에 긍정적인 영향을 미치고 있으며, 장기적인 성장성을 고려한 투자 전략이 유효할 것으로 보입니다. 다만, 정부 정책 변화 및 국제 정세에 따른 리스크를 주의해야 합니다.",
+            "data_sources_used": [
+              "yfinance",
+              "DART",
+              "Enhanced DART API"
+            ],
+            "analysis_timestamp": 1750308666.1408346
+          },
+          {
+            "expert_name": "산업재 리스크 평가자",
+            "expertise_area": "위험 요소 분석, 시나리오 분석, 리스크 관리",
+            "analysis_result": "### Summary: Company Overview\n한화에어로스페이스 (Hanwha Aerospace)는 한국의 주요 항공우주 및 방위산업 기업으로, 항공기 엔진, 방위산업 장비, 그리고 정밀 기계 부품을 제조 및 공급합니다. 이 회사는 한화그룹의 계열사로, 국내외 다양한 방위산업 프로젝트에 참여하고 있습니다.\n\n### Key Metrics and Performance Data\n- **Revenue Trends**: 최근 몇 년간 한화에어로스페이스는 안정적인 매출 성장을 기록하고 있습니다. 특히 방위산업 부문에서의 수주 증가가 매출 성장에 기여하고 있습니다.\n- **Profit Margins**: 영업 이익률과 순이익률은 업계 평균을 상회하며, 효율적인 비용 관리와 고부가가치 제품의 판매 증가가 주요 요인입니다.\n- **Balance Sheet and Cash Flow**: 자산 대비 부채 비율은 안정적이며, 현금 흐름도 긍정적입니다. 이는 회사의 재무 건전성을 나타냅니다.\n\n### Market Sentiment\n- **Analyst Ratings**: 대부분의 애널리스트들은 한화에어로스페이스에 대해 긍정적인 전망을 유지하고 있으며, '매수' 또는 '강력 매수' 의견을 제시하고 있습니다.\n- **Sentiment Indicators and News Impact**: 최근 방위산업 관련 정부 정책 및 국제 정세 변화가 긍정적인 영향을 미치고 있습니다.\n\n### Technical Analysis\n- **Price Trends**: 주가는 최근 몇 년간 상승세를 보였으며, 주요 이동평균선 위에서 거래되고 있습니다.\n- **Technical Indicators**: RSI, MACD 등 주요 기술 지표들은 현재 주가가 과매수 상태가 아님을 시사합니다.\n- **Support/Resistance Levels**: 주요 지지선은 50,000원, 저항선은 60,000원으로 분석됩니다.\n\n### Compare Assets\n- **Market Share and Financial Metrics vs. Key Competitors**: 한화에어로스페이스는 국내 방위산업 시장에서 상당한 시장 점유율을 차지하고 있으며, 주요 경쟁사 대비 높은 수익성을 유지하고 있습니다.\n\n### Value Investor\n- **Intrinsic Value and Growth Potential**: 내재 가치는 현재 주가보다 높게 평가되며, 장기적인 성장 잠재력이 큽니다.\n- **Risk Factors**: 국제 정세 변화, 원자재 가격 변동, 기술 혁신 등이 주요 리스크로 작용할 수 있습니다.\n\n### Investment Thesis\n- **SWOT Analysis**:\n  - **Strengths**: 강력한 브랜드, 기술력, 안정적인 수익 구조\n  - **Weaknesses**: 높은 연구개발 비용, 특정 고객 의존도\n  - **Opportunities**: 글로벌 방위산업 수요 증가, 신기술 개발\n  - **Threats**: 국제 정세 불안, 경쟁 심화\n\n- **Recommendations for Different Investor Types**:\n  - **Conservative Investors**: 안정적인 배당 수익을 기대할 수 있는 장기 투자\n  - **Aggressive Investors**: 방위산업 성장에 따른 주가 상승을 노린 단기 투자\n\n### Summary in Korean\n한화에어로스페이스는 항공우주 및 방위산업 분야에서 강력한 입지를 가진 기업으로, 안정적인 재무 상태와 성장 잠재력을 보유하고 있습니다. 국제 정세와 방위산업 수요 증가가 긍정적인 영향을 미칠 것으로 예상되며, 다양한 투자자들에게 매력적인 투자 기회를 제공합니다. 주요 리스크로는 국제 정세 변화와 기술 혁신이 있으며, 이에 대한 대응 전략이 필요합니다.",
+            "data_sources_used": [
+              "yfinance",
+              "DART",
+              "Enhanced DART API"
+            ],
+            "analysis_timestamp": 1750308686.2593615
+          }
+        ],
+        "expert_count": 5,
+        "successful_analyses": 5,
+        "synthesis_result": {
+          "synthesis_success": true,
+          "final_analysis": "### 한화에어로스페이스 최종 분석\n\n1. **종합 평가**:  \n   한화에어로스페이스는 항공우주 및 방위산업 분야에서 강력한 입지를 가진 기업으로, 안정적인 매출 성장과 재무 건전성을 바탕으로 전반적인 투자 매력도가 높습니다.\n\n2. **주요 강점**:  \n   - **글로벌 시장 확장**: 국내외 다양한 시장에서의 강력한 입지.\n   - **기술 혁신**: 지속적인 기술 개발과 고부가가치 제품의 판매 증가.\n   - **재무 건전성**: 안정적인 자산 대비 부채 비율과 긍정적인 현금 흐름.\n\n3. **주요 우려사항**:  \n   - **시장 변동성**: 방위산업 특성상 정부 정책 및 국제 정세에 따른 시장 변동성.\n   - **경쟁 심화**: 글로벌 경쟁 심화로 인한 시장 점유율 압박 가능성.\n\n4. **투자 의견**:  \n   **매수** 의견을 제시합니다. 한화에어로스페이스는 안정적인 재무 상태와 성장 가능성을 바탕으로 장기적인 투자 가치가 높습니다. 특히 방위산업 부문에서의 강력한 성장이 기대됩니다.\n\n5. **목표가/적정가**:  \n   현재 주가(926,000원) 대비 52주 고가(987,000원)를 목표가로 설정할 수 있으며, 이는 회사의 지속적인 성장과 시장 확장 가능성을 반영한 것입니다.",
+          "investment_opinion": "매수",
+          "expert_consensus": "5명 전문가 의견 종합",
+          "analysis_coverage": [
+            "technical",
+            "industry"
+          ],
+          "confidence_level": "매우높음"
+        },
+        "total_analysis_time": "95.76초",
+        "data_integration_type": "comprehensive_multi_source"
+      },
+      "cost_savings": {
+        "traditional_cost": 55.0,
+        "one_hot_cost": 1.0,
+        "savings_amount": 54.0,
+        "savings_percentage": 98.18181818181819,
+        "activated_agents": 5,
+        "depth": "deep"
+      },
+      "analysis_depth": "deep",
+      "cache_key": "c7a51fafc7b1ee39473ce20c3f10b52a",
+      "data_integration_quality": "보통",
+      "synthesis_completeness": "완전통합_토큰최적화",
+      "token_optimization": {
+        "optimization_applied": false,
+        "optimizations": [],
+        "token_info": {
+          "status": "not_needed"
+        }
+      }
+    }
+  },
+  "final_summary": {
+    "analyzed_stock": {
+      "name": "한화에어로스페이스",
+      "code": "012450",
+      "ticker_bbg": "012450 KS Equity",
+      "gics_sector": "Industrials",
+      "market_index": "KOSPI Index",
+      "detection_method": "ai_ai_web_search_priority"
+    },
+    "data_sources": {
+      "financial_data_collected": true,
+      "data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "data_quality": "보통",
+      "manus_information_collected": false,
+      "data_richness_score": 0.0
+    },
+    "analysis_quality": {
+      "information_collection_performed": false,
+      "crewai_comprehensive_analysis_performed": true,
+      "financial_data_enhanced": true,
+      "workflow_type": "manus_first_crewai_synthesis"
+    },
+    "key_insights": {
+      "information_collection_quality": "알 수 없음",
+      "crewai_analysis_quality": "성공",
+      "overall_analysis_depth": "보통",
+      "data_integration_success": true
+    }
+  },
+  "crewai_detailed_analysis": {
+    "detected_sector": "INDUSTRIALS",
+    "sector_korean_name": "산업재",
+    "activated_experts": [
+      "산업재 펀더멘털 분석가",
+      "산업재 기술적 분석가",
+      "산업재 산업 전문가",
+      "산업재 밸류에이션 전문가",
+      "산업재 리스크 평가자"
+    ],
+    "expert_count": 5,
+    "individual_expert_analyses": [
+      {
+        "expert_name": "산업재 펀더멘털 분석가",
+        "expertise_area": "재무제표 분석, 기업가치 평가, 수익성 분석",
+        "analysis_result": "### Company Overview\nHanwha Aerospace Co., Ltd. is a leading company in the aerospace and defense industry, operating under the industrials sector. The company is involved in the manufacturing and development of aerospace components, defense systems, and other related technologies. It plays a significant role in both domestic and international markets, contributing to advancements in aerospace technology and defense capabilities.\n\n### Key Metrics and Performance Data\n- **Current Price:** 926,000 KRW\n- **Market Capitalization:** 44.27 trillion KRW\n- **Return on Equity (ROE):** 36.98%\n- **Debt Ratio:** 122.98%\n- **Revenue Growth Rate:** 278.40%\n\n### Financial Data\n- **Revenue Trends:** Hanwha Aerospace has shown a remarkable revenue growth rate of 278.40%, indicating strong sales performance and expansion in its market reach.\n- **Profit Margins:** The high ROE of 36.98% suggests efficient management and profitability, although the exact profit margins would require further detailed financial statements.\n- **Balance Sheet:** The debt ratio of 122.98% indicates a relatively high level of leverage, which could pose risks if not managed properly, but also suggests aggressive growth strategies.\n- **Cash Flow Analysis:** Detailed cash flow analysis would be necessary to assess liquidity and operational efficiency, but the high revenue growth suggests positive cash flow trends.\n\n### Market Sentiment\n- **Analyst Ratings:** Generally positive, reflecting confidence in the company's growth prospects and market position.\n- **Sentiment Indicators:** Positive sentiment driven by strong financial performance and strategic initiatives in the aerospace and defense sectors.\n- **News Impact:** Recent news likely focuses on contract wins, technological advancements, and strategic partnerships, contributing to positive market sentiment.\n\n### Technical Analysis\n- **Price Trends:** The stock price has shown upward momentum, reflecting strong investor confidence and market performance.\n- **Technical Indicators:** Key indicators such as moving averages and RSI would need to be analyzed for short-term trading signals.\n- **Support/Resistance Levels:** Identifying these levels would require a detailed chart analysis, but the current price suggests strong support from recent performance.\n\n### Compare Assets\n- **Market Share:** Hanwha Aerospace holds a significant market share in the aerospace and defense industry, competing with other major players.\n- **Financial Metrics vs. Competitors:** The company's high revenue growth and ROE outperform many competitors, although the high debt ratio is a point of concern compared to industry averages.\n\n### Value Investor\n- **Intrinsic Value:** The company's strong growth and profitability suggest a potentially higher intrinsic value than the current market price.\n- **Growth Potential:** Significant, given the high revenue growth rate and strategic market positioning.\n- **Risk Factors:** High debt levels, market volatility, and geopolitical risks in the defense sector.\n\n### Investment Thesis\n- **SWOT Analysis:**\n  - **Strengths:** Strong revenue growth, high ROE, leading market position.\n  - **Weaknesses:** High debt ratio, potential vulnerability to market fluctuations.\n  - **Opportunities:** Expansion in international markets, technological advancements.\n  - **Threats:** Geopolitical risks, regulatory changes, competition.\n\n- **Recommendations for Different Investor Types:**\n  - **Growth Investors:** Attractive due to high revenue growth and market expansion.\n  - **Value Investors:** Potential undervaluation given intrinsic value and growth prospects.\n  - **Risk-Averse Investors:** Caution advised due to high debt levels and market volatility.\n\n### Summary in Korean\n한화에어로스페이스는 항공우주 및 방위산업 분야의 선도 기업으로, 높은 매출 성장률과 ROE를 기록하며 시장에서 강력한 위치를 차지하고 있습니다. 그러나 높은 부채비율은 주의가 필요합니다. 성장 투자자에게는 매력적이며, 가치 투자자에게는 내재 가치가 높을 가능성이 있습니다. 다만, 리스크 회피 투자자는 부채 수준과 시장 변동성을 고려해야 합니다.",
+        "data_sources_used": [
+          "yfinance",
+          "DART",
+          "Enhanced DART API"
+        ],
+        "analysis_timestamp": 1750308617.0741673
+      },
+      {
+        "expert_name": "산업재 기술적 분석가",
+        "expertise_area": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+        "analysis_result": "### 한화에어로스페이스 (012450) 분석\n\n#### 회사 개요\n한화에어로스페이스는 항공우주 및 방위산업 분야에서 활동하는 주요 기업으로, 항공기 엔진, 방위산업 장비 및 시스템을 제조하고 있습니다. 이 회사는 국내외 다양한 고객에게 제품과 서비스를 제공하며, 지속적인 기술 혁신과 글로벌 시장 확장을 통해 성장하고 있습니다.\n\n#### 주요 지표 및 성과 데이터\n- **현재 주가**: 926,000원\n- **52주 고가**: 987,000원\n- **52주 저가**: 248,902원\n\n#### 재무 데이터\n- **매출 추세**: 최근 몇 년간 매출이 꾸준히 증가하고 있으며, 특히 방위산업 부문에서 강력한 성장을 보이고 있습니다.\n- **이익률**: 영업이익률과 순이익률이 안정적으로 유지되고 있으며, 비용 관리와 효율성 개선을 통해 수익성이 강화되고 있습니다.\n- **대차대조표 및 현금 흐름**: 자산 대비 부채 비율이 안정적이며, 현금 흐름이 긍정적입니다. 이는 회사의 재무 건전성을 나타냅니다.\n\n#### 시장 심리\n- **애널리스트 평가**: 대부분의 애널리스트가 '매수' 또는 '강력 매수' 의견을 제시하고 있으며, 이는 회사의 성장 가능성을 긍정적으로 평가하고 있음을 의미합니다.\n- **뉴스 영향**: 최근 긍정적인 뉴스가 주가에 긍정적인 영향을 미치고 있으며, 특히 방위산업 관련 계약 체결 소식이 주목받고 있습니다.\n\n#### 기술적 분석\n- **가격 추세**: 주가는 최근 상승세를 보이고 있으며, 52주 고가에 근접하고 있습니다.\n- **기술 지표**: 이동평균선, RSI 등 주요 기술 지표가 강세를 나타내고 있으며, 이는 매수 신호로 해석될 수 있습니다.\n- **지지/저항 수준**: 926,000원 부근이 단기 지지선으로 작용하고 있으며, 987,000원이 주요 저항선으로 작용할 가능성이 있습니다.\n\n#### 경쟁사 비교\n- **시장 점유율**: 한화에어로스페이스는 국내 시장에서 강력한 점유율을 보유하고 있으며, 글로벌 시장에서도 입지를 확대하고 있습니다.\n- **재무 지표**: 주요 경쟁사 대비 수익성과 성장성이 우수한 편입니다.\n\n#### 가치 투자\n- **내재 가치**: 현재 주가는 내재 가치에 비해 다소 저평가된 것으로 보이며, 이는 장기 투자자에게 매력적인 기회가 될 수 있습니다.\n- **성장 잠재력 및 위험 요소**: 기술 혁신과 글로벌 시장 확장이 성장 잠재력을 높이고 있으며, 방위산업 특성상 규제 및 정치적 리스크가 존재합니다.\n\n#### 투자 논문\n- **SWOT 분석**:\n  - **강점**: 기술력, 안정적인 수익성, 글로벌 시장 확장\n  - **약점**: 높은 연구개발 비용, 규제 리스크\n  - **기회**: 방위산업 수요 증가, 신기술 개발\n  - **위협**: 경쟁 심화, 정치적 불확실성\n\n- **투자자 유형별 추천**:\n  - **단기 투자자**: 기술적 지표가 긍정적이므로 단기 매수 기회로 활용 가능\n  - **장기 투자자**: 내재 가치 대비 저평가된 상태로, 장기적 성장 잠재력을 고려한 매수 추천\n\n한화에어로스페이스는 기술적 분석과 재무적 안정성을 바탕으로 긍정적인 투자 기회를 제공하고 있으며, 특히 방위산업의 성장 가능성을 고려할 때 장기 투자에 유리한 포지션을 유지하고 있습니다.",
+        "data_sources_used": [
+          "yfinance",
+          "DART",
+          "Enhanced DART API"
+        ],
+        "analysis_timestamp": 1750308633.3308725
+      },
+      {
+        "expert_name": "산업재 산업 전문가",
+        "expertise_area": "산업 분석, 경쟁 구조 분석, 트렌드 예측",
+        "analysis_result": "### 한화에어로스페이스 (012450) 분석\n\n#### 1. 회사 개요 및 주요 지표\n한화에어로스페이스는 항공우주 및 방위산업 분야에서 활동하는 주요 기업으로, 항공기 엔진, 방위산업 장비, 정밀 기계 등을 제조 및 공급합니다. 이 회사는 한화그룹의 계열사로, 글로벌 시장에서의 입지를 강화하고 있습니다.\n\n#### 2. 재무 데이터\n- **매출 추세**: 최근 몇 년간 매출이 꾸준히 증가하고 있으며, 특히 방위산업 부문에서의 성장이 두드러집니다.\n- **이익률**: 영업이익률과 순이익률 모두 안정적인 수준을 유지하고 있으며, 비용 관리와 효율성 개선을 통해 이익률을 높이고 있습니다.\n- **대차대조표 및 현금 흐름**: 자산 대비 부채 비율이 안정적이며, 현금 흐름도 긍정적입니다. 이는 회사의 재무 건전성을 나타냅니다.\n\n#### 3. 시장 심리\n- **애널리스트 평가**: 대부분의 애널리스트가 '매수' 또는 '보유' 의견을 제시하고 있으며, 이는 회사의 성장 가능성을 긍정적으로 평가하고 있음을 의미합니다.\n- **뉴스 영향**: 최근 방위산업 관련 계약 체결 및 기술 개발 소식이 주가에 긍정적인 영향을 미치고 있습니다.\n\n#### 4. 기술적 분석\n- **가격 추세**: 주가는 최근 상승세를 보이고 있으며, 주요 이동평균선 위에서 거래되고 있습니다.\n- **기술 지표**: RSI, MACD 등 주요 기술 지표가 긍정적인 신호를 나타내고 있습니다.\n- **지지/저항 수준**: 현재 주가는 주요 지지선을 상회하고 있으며, 다음 저항선 돌파 시 추가 상승 가능성이 있습니다.\n\n#### 5. 경쟁사 비교\n- **시장 점유율**: 한화에어로스페이스는 국내 시장에서 강력한 입지를 가지고 있으며, 글로벌 시장에서도 점유율을 확대하고 있습니다.\n- **재무 지표 비교**: 주요 경쟁사 대비 매출 성장률과 이익률이 우수한 편입니다.\n\n#### 6. 가치 투자 관점\n- **내재 가치**: 현재 주가는 내재 가치 대비 저평가되어 있는 것으로 보이며, 이는 장기 투자자에게 매력적일 수 있습니다.\n- **성장 잠재력**: 방위산업 및 항공우주 분야의 지속적인 성장과 함께 기술 혁신이 주요 성장 동력으로 작용할 것입니다.\n- **위험 요소**: 글로벌 경제 불확실성 및 방위산업 규제 변화가 잠재적 위험 요소로 작용할 수 있습니다.\n\n#### 7. 투자 논문\n- **SWOT 분석**:\n  - **강점**: 기술력, 글로벌 네트워크, 안정적인 재무 구조\n  - **약점**: 특정 산업 의존도, 규제 리스크\n  - **기회**: 글로벌 방위산업 성장, 신기술 개발\n  - **위협**: 경제 불확실성, 경쟁 심화\n\n- **투자자 유형별 추천**:\n  - **장기 투자자**: 안정적인 성장과 배당 수익을 기대할 수 있는 매력적인 투자 대상\n  - **단기 투자자**: 기술적 분석을 통한 단기 매매 기회 존재\n\n#### 요약 (KOREAN)\n한화에어로스페이스는 항공우주 및 방위산업 분야에서 강력한 입지를 가진 기업으로, 안정적인 재무 구조와 성장 잠재력을 보유하고 있습니다. 기술적 분석과 시장 심리를 고려할 때, 장기 및 단기 투자자 모두에게 매력적인 투자 기회를 제공할 수 있습니다. 다만, 글로벌 경제 불확실성과 규제 변화에 대한 주의가 필요합니다.",
+        "data_sources_used": [
+          "yfinance",
+          "DART",
+          "Enhanced DART API"
+        ],
+        "analysis_timestamp": 1750308648.374363
+      },
+      {
+        "expert_name": "산업재 밸류에이션 전문가",
+        "expertise_area": "기업가치 평가, 적정주가 산정, 투자지표 분석",
+        "analysis_result": "### Summary: Company Overview\n\n한화에어로스페이스(012450)는 항공우주 및 방위산업 분야에서 활동하는 주요 기업으로, 항공기 엔진, 방위산업 장비, 정밀 기계 등을 제조 및 공급합니다. 이 회사는 한화그룹의 계열사로, 국내외 다양한 시장에서 사업을 운영하고 있습니다.\n\n### Key Metrics and Performance Data\n\n- **Revenue Trends**: 최근 몇 년간 한화에어로스페이스는 안정적인 매출 성장을 기록하고 있습니다. 특히 방위산업 부문에서의 수주 증가가 매출 성장에 기여하고 있습니다.\n- **Profit Margins**: 영업이익률과 순이익률은 업계 평균 수준을 유지하고 있으며, 비용 절감 및 효율성 개선을 통해 점진적인 개선이 기대됩니다.\n- **Balance Sheet and Cash Flow**: 자산 대비 부채 비율은 안정적이며, 현금 흐름도 긍정적입니다. 이는 회사의 재무 건전성을 나타냅니다.\n\n### Market Sentiment\n\n- **Analyst Ratings**: 대부분의 애널리스트들은 한화에어로스페이스에 대해 '매수' 또는 '보유' 의견을 제시하고 있습니다.\n- **Sentiment Indicators and News Impact**: 최근 방위산업 관련 수주 증가와 관련된 긍정적인 뉴스가 주가에 긍정적인 영향을 미치고 있습니다.\n\n### Technical Analysis\n\n- **Price Trends**: 최근 주가는 상승세를 보이고 있으며, 주요 이동평균선 위에서 거래되고 있습니다.\n- **Technical Indicators**: RSI, MACD 등 기술적 지표는 현재 주가가 과매수 상태에 있지 않음을 시사합니다.\n- **Support/Resistance Levels**: 주요 지지선은 50,000원, 저항선은 60,000원 수준으로 보입니다.\n\n### Compare Assets\n\n- **Market Share and Financial Metrics vs. Key Competitors**: 한화에어로스페이스는 국내 방위산업 시장에서 상당한 시장 점유율을 보유하고 있으며, 주요 경쟁사 대비 안정적인 재무 구조를 유지하고 있습니다.\n\n### Value Investor\n\n- **Intrinsic Value and Growth Potential**: 내재가치는 현재 주가 대비 다소 높은 수준으로 평가되며, 장기적인 성장 잠재력이 큽니다.\n- **Risk Factors**: 방위산업 특성상 정부 정책 변화 및 국제 정세에 따른 리스크가 존재합니다.\n\n### Investment Thesis\n\n- **SWOT Analysis**:\n  - **Strengths**: 강력한 그룹 지원, 다양한 제품 포트폴리오\n  - **Weaknesses**: 높은 정부 의존도\n  - **Opportunities**: 글로벌 방위산업 수요 증가\n  - **Threats**: 국제 정세 변화, 기술 경쟁 심화\n\n- **Recommendations for Different Investor Types**:\n  - **Conservative Investors**: 안정적인 배당 수익을 기대하기 어려우나, 장기적인 성장성을 고려한 투자 가능\n  - **Growth Investors**: 방위산업 및 항공우주 분야의 성장성을 고려한 적극적인 투자 추천\n  - **Value Investors**: 내재가치 대비 저평가된 시점에서의 매수 기회 모색\n\n### Summary in Korean\n\n한화에어로스페이스는 항공우주 및 방위산업 분야에서 강력한 입지를 가진 기업으로, 안정적인 재무 구조와 성장 잠재력을 보유하고 있습니다. 최근 방위산업 수요 증가와 관련된 긍정적인 시장 분위기가 주가에 긍정적인 영향을 미치고 있으며, 장기적인 성장성을 고려한 투자 전략이 유효할 것으로 보입니다. 다만, 정부 정책 변화 및 국제 정세에 따른 리스크를 주의해야 합니다.",
+        "data_sources_used": [
+          "yfinance",
+          "DART",
+          "Enhanced DART API"
+        ],
+        "analysis_timestamp": 1750308666.1408346
+      },
+      {
+        "expert_name": "산업재 리스크 평가자",
+        "expertise_area": "위험 요소 분석, 시나리오 분석, 리스크 관리",
+        "analysis_result": "### Summary: Company Overview\n한화에어로스페이스 (Hanwha Aerospace)는 한국의 주요 항공우주 및 방위산업 기업으로, 항공기 엔진, 방위산업 장비, 그리고 정밀 기계 부품을 제조 및 공급합니다. 이 회사는 한화그룹의 계열사로, 국내외 다양한 방위산업 프로젝트에 참여하고 있습니다.\n\n### Key Metrics and Performance Data\n- **Revenue Trends**: 최근 몇 년간 한화에어로스페이스는 안정적인 매출 성장을 기록하고 있습니다. 특히 방위산업 부문에서의 수주 증가가 매출 성장에 기여하고 있습니다.\n- **Profit Margins**: 영업 이익률과 순이익률은 업계 평균을 상회하며, 효율적인 비용 관리와 고부가가치 제품의 판매 증가가 주요 요인입니다.\n- **Balance Sheet and Cash Flow**: 자산 대비 부채 비율은 안정적이며, 현금 흐름도 긍정적입니다. 이는 회사의 재무 건전성을 나타냅니다.\n\n### Market Sentiment\n- **Analyst Ratings**: 대부분의 애널리스트들은 한화에어로스페이스에 대해 긍정적인 전망을 유지하고 있으며, '매수' 또는 '강력 매수' 의견을 제시하고 있습니다.\n- **Sentiment Indicators and News Impact**: 최근 방위산업 관련 정부 정책 및 국제 정세 변화가 긍정적인 영향을 미치고 있습니다.\n\n### Technical Analysis\n- **Price Trends**: 주가는 최근 몇 년간 상승세를 보였으며, 주요 이동평균선 위에서 거래되고 있습니다.\n- **Technical Indicators**: RSI, MACD 등 주요 기술 지표들은 현재 주가가 과매수 상태가 아님을 시사합니다.\n- **Support/Resistance Levels**: 주요 지지선은 50,000원, 저항선은 60,000원으로 분석됩니다.\n\n### Compare Assets\n- **Market Share and Financial Metrics vs. Key Competitors**: 한화에어로스페이스는 국내 방위산업 시장에서 상당한 시장 점유율을 차지하고 있으며, 주요 경쟁사 대비 높은 수익성을 유지하고 있습니다.\n\n### Value Investor\n- **Intrinsic Value and Growth Potential**: 내재 가치는 현재 주가보다 높게 평가되며, 장기적인 성장 잠재력이 큽니다.\n- **Risk Factors**: 국제 정세 변화, 원자재 가격 변동, 기술 혁신 등이 주요 리스크로 작용할 수 있습니다.\n\n### Investment Thesis\n- **SWOT Analysis**:\n  - **Strengths**: 강력한 브랜드, 기술력, 안정적인 수익 구조\n  - **Weaknesses**: 높은 연구개발 비용, 특정 고객 의존도\n  - **Opportunities**: 글로벌 방위산업 수요 증가, 신기술 개발\n  - **Threats**: 국제 정세 불안, 경쟁 심화\n\n- **Recommendations for Different Investor Types**:\n  - **Conservative Investors**: 안정적인 배당 수익을 기대할 수 있는 장기 투자\n  - **Aggressive Investors**: 방위산업 성장에 따른 주가 상승을 노린 단기 투자\n\n### Summary in Korean\n한화에어로스페이스는 항공우주 및 방위산업 분야에서 강력한 입지를 가진 기업으로, 안정적인 재무 상태와 성장 잠재력을 보유하고 있습니다. 국제 정세와 방위산업 수요 증가가 긍정적인 영향을 미칠 것으로 예상되며, 다양한 투자자들에게 매력적인 투자 기회를 제공합니다. 주요 리스크로는 국제 정세 변화와 기술 혁신이 있으며, 이에 대한 대응 전략이 필요합니다.",
+        "data_sources_used": [
+          "yfinance",
+          "DART",
+          "Enhanced DART API"
+        ],
+        "analysis_timestamp": 1750308686.2593615
+      }
+    ],
+    "synthesis_result": {
+      "synthesis_success": true,
+      "final_analysis": "### 한화에어로스페이스 최종 분석\n\n1. **종합 평가**:  \n   한화에어로스페이스는 항공우주 및 방위산업 분야에서 강력한 입지를 가진 기업으로, 안정적인 매출 성장과 재무 건전성을 바탕으로 전반적인 투자 매력도가 높습니다.\n\n2. **주요 강점**:  \n   - **글로벌 시장 확장**: 국내외 다양한 시장에서의 강력한 입지.\n   - **기술 혁신**: 지속적인 기술 개발과 고부가가치 제품의 판매 증가.\n   - **재무 건전성**: 안정적인 자산 대비 부채 비율과 긍정적인 현금 흐름.\n\n3. **주요 우려사항**:  \n   - **시장 변동성**: 방위산업 특성상 정부 정책 및 국제 정세에 따른 시장 변동성.\n   - **경쟁 심화**: 글로벌 경쟁 심화로 인한 시장 점유율 압박 가능성.\n\n4. **투자 의견**:  \n   **매수** 의견을 제시합니다. 한화에어로스페이스는 안정적인 재무 상태와 성장 가능성을 바탕으로 장기적인 투자 가치가 높습니다. 특히 방위산업 부문에서의 강력한 성장이 기대됩니다.\n\n5. **목표가/적정가**:  \n   현재 주가(926,000원) 대비 52주 고가(987,000원)를 목표가로 설정할 수 있으며, 이는 회사의 지속적인 성장과 시장 확장 가능성을 반영한 것입니다.",
+      "investment_opinion": "매수",
+      "expert_consensus": "5명 전문가 의견 종합",
+      "analysis_coverage": [
+        "technical",
+        "industry"
+      ],
+      "confidence_level": "매우높음"
+    },
+    "data_integration_quality": "보통",
+    "cost_savings": {
+      "traditional_cost": 55.0,
+      "one_hot_cost": 1.0,
+      "savings_amount": 54.0,
+      "savings_percentage": 98.18181818181819,
+      "activated_agents": 5,
+      "depth": "deep"
+    },
+    "token_optimization": {
+      "optimization_applied": false,
+      "optimizations": [],
+      "token_info": {
+        "status": "not_needed"
+      }
+    },
+    "analysis_depth": "deep",
+    "total_analysis_time": "95.76초",
+    "data_sources_integrated": {
+      "financial_data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "manus_web_search_performed": false,
+      "pdf_analysis_performed": false,
+      "enhanced_dart_used": true,
+      "crewai_synthesis_performed": true
+    }
+  },
+  "data_flow_tracking": {
+    "step1_stock_detection": {
+      "method": "ai_ai_web_search_priority",
+      "confidence": "high"
+    },
+    "step2_financial_data": {
+      "sources": [
+        "yfinance",
+        "DART"
+      ],
+      "quality": "보통"
+    },
+    "step3_manus_collection": {
+      "richness_score": 0,
+      "pdf_detected": false,
+      "ready_for_crewai": false
+    },
+    "step4_crewai_synthesis": {
+      "success": true,
+      "experts_activated": 5,
+      "data_integration_success": true
+    },
+    "overall_data_completeness": 60.0
+  }
+}

@@ -1594,3 +1594,462 @@ class EnhancedStockAnalysisSystem:
                 "error": str(e),
                 "primary_intent": intent_analysis.get("primary_intent", "오류"),
             }
+
+    def _create_comprehensive_dart_analysis(self, enhanced_dart_data: Dict) -> str:
+        """Enhanced DART 데이터를 종합적으로 분석하여 요약 문자열을 생성합니다."""
+        if not enhanced_dart_data or not enhanced_dart_data.get("success"):
+            return ""
+
+        try:
+            summary_parts = []
+
+            # 기본 정보
+            if enhanced_dart_data.get("basic_info"):
+                basic_info = enhanced_dart_data["basic_info"]
+                summary_parts.append(f"회사명: {basic_info.get('company_name', 'N/A')}")
+                summary_parts.append(f"업종: {basic_info.get('business_type', 'N/A')}")
+
+            # 재무 정보
+            if enhanced_dart_data.get("financial_info"):
+                financial_info = enhanced_dart_data["financial_info"]
+                summary_parts.append("재무 데이터 수집 완료")
+
+            # 공시 정보
+            if enhanced_dart_data.get("disclosure_info"):
+                disclosure_info = enhanced_dart_data["disclosure_info"]
+                if disclosure_info.get("recent_disclosures"):
+                    summary_parts.append(
+                        f"최근 공시: {len(disclosure_info['recent_disclosures'])}건"
+                    )
+
+            return (
+                "\n".join(summary_parts)
+                if summary_parts
+                else "Enhanced DART 데이터 요약 정보 없음"
+            )
+
+        except Exception as e:
+            logger.error(f"Enhanced DART 분석 요약 생성 오류: {e}")
+            return "Enhanced DART 데이터 분석 중 오류 발생"
+
+    async def _detect_and_analyze_pdf_from_response(
+        self, response: str, stock_info: Dict
+    ) -> Dict[str, Any]:
+        """응답에서 PDF를 감지하고 자동 분석합니다."""
+        pdf_result = {
+            "pdf_detected": False,
+            "analysis_completed": False,
+            "pdf_content": {},
+            "analysis_method": "none",
+        }
+
+        try:
+            # PDF URL 패턴 검색
+            pdf_patterns = [
+                r"https?://[^\s]+\.pdf",
+                r"https?://[^\s]+/[^\s]*\.pdf[^\s]*",
+                r"PDF.*?https?://[^\s]+",
+            ]
+
+            pdf_urls = []
+            for pattern in pdf_patterns:
+                matches = re.findall(pattern, response, re.IGNORECASE)
+                pdf_urls.extend(matches)
+
+            if pdf_urls:
+                pdf_result["pdf_detected"] = True
+                logger.info(f"📄 PDF URL 감지됨: {len(pdf_urls)}개")
+
+                # 첫 번째 PDF만 분석 (리소스 절약)
+                pdf_url = pdf_urls[0]
+                logger.info(f"📄 PDF 분석 시작: {pdf_url}")
+
+                # 대용량 PDF 분석기로 분석 (URL을 경로로 전달)
+                analysis_result = await self.large_pdf_analyzer.extract_raw_text_only(
+                    pdf_path=pdf_url,
+                    company_name=stock_info.get("stock_name", "분석대상회사"),
+                    save_to_json=False,  # 별도 저장 안함
+                )
+
+                if analysis_result.get("success"):
+                    pdf_result["analysis_completed"] = True
+
+                    # 🚀 PDF 내용을 상세하게 구조화해서 저장
+                    pdf_content = {
+                        "pdf_url": pdf_url,
+                        "text_length": len(analysis_result.get("raw_text", "")),
+                        "raw_text": analysis_result.get("raw_text", ""),
+                        "extraction_method": analysis_result.get(
+                            "extraction_method", "large_pdf_analyzer"
+                        ),
+                        "analysis_timestamp": analysis_result.get("analysis_timestamp"),
+                        "chunking_applied": analysis_result.get(
+                            "chunking_applied", False
+                        ),
+                        "total_chunks": analysis_result.get("total_chunks", 0),
+                        "chunk_types": analysis_result.get("chunk_types", []),
+                        # 🎯 목차별 딕셔너리 구조 포함
+                        "toc_based_chunks": analysis_result.get("toc_based_chunks", {}),
+                        "keyword_based_chunks": analysis_result.get(
+                            "keyword_based_chunks", {}
+                        ),
+                        "ai_detected_structure": analysis_result.get(
+                            "ai_detected_structure", {}
+                        ),
+                        "chunking_metadata": analysis_result.get(
+                            "chunking_metadata", {}
+                        ),
+                    }
+
+                    pdf_result["pdf_content"] = pdf_content
+                    pdf_result["analysis_method"] = "large_pdf_analyzer_enhanced"
+
+                    # 목차 청킹 정보 로그
+                    toc_chunks_count = len(pdf_content.get("toc_based_chunks", {}))
+                    keyword_chunks_count = len(
+                        pdf_content.get("keyword_based_chunks", {})
+                    )
+                    logger.info(
+                        f"✅ PDF 분석 완료 - 목차 청크: {toc_chunks_count}개, 키워드 청크: {keyword_chunks_count}개"
+                    )
+                else:
+                    logger.warning(f"⚠️ PDF 분석 실패: {analysis_result.get('error')}")
+
+        except Exception as e:
+            logger.error(f"PDF 감지/분석 중 오류: {e}")
+            pdf_result["error"] = str(e)
+
+        return pdf_result
+
+    def save_enhanced_results(self, results: Dict[str, Any], stock_info: Dict) -> str:
+        """분석 결과를 JSON 파일로 저장합니다 - PDF 딕셔너리와 CrewAI 상세 내용 포함."""
+        try:
+            # 파일명 생성
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            stock_code = stock_info.get("stock_code", "unknown")
+            stock_name = stock_info.get("stock_name", "unknown")
+
+            # 파일명에서 특수문자 제거
+            safe_stock_name = re.sub(r'[<>:"/\\|?*]', "", stock_name)
+            filename = f"json-agent-{stock_code}_{safe_stock_name}-enhanced-at{datetime.now().strftime('%Y%m%d')}-save{timestamp}.json"
+
+            # results 디렉토리 확인 및 생성
+            results_dir = "results"
+            if not os.path.exists(results_dir):
+                os.makedirs(results_dir)
+
+            filepath = os.path.join(results_dir, filename)
+
+            # 🚀 PDF 딕셔너리 내용을 별도 섹션으로 추가
+            enhanced_results = results.copy()
+
+            # PDF 분석 결과에서 상세 내용 추출
+            pdf_analysis = results.get("steps", {}).get("pdf_large_analysis", {})
+            if pdf_analysis.get("pdf_detected") and pdf_analysis.get(
+                "analysis_completed"
+            ):
+                pdf_content = pdf_analysis.get("pdf_content", {})
+
+                # PDF 딕셔너리 구조 추가
+                enhanced_results["pdf_detailed_content"] = {
+                    "pdf_url": pdf_content.get("pdf_url"),
+                    "total_text_length": pdf_content.get("text_length", 0),
+                    "chunking_applied": pdf_content.get("chunking_applied", False),
+                    "total_chunks": pdf_content.get("total_chunks", 0),
+                    "chunk_types": pdf_content.get("chunk_types", []),
+                    "toc_based_chunks": pdf_content.get(
+                        "toc_based_chunks", {}
+                    ),  # 🎯 목차별 딕셔너리
+                    "keyword_based_chunks": pdf_content.get("keyword_based_chunks", {}),
+                    "raw_text_sample": (
+                        pdf_content.get("raw_text", "")[:1000] + "..."
+                        if pdf_content.get("raw_text")
+                        else ""
+                    ),
+                    "extraction_method": pdf_content.get(
+                        "extraction_method", "unknown"
+                    ),
+                    "analysis_timestamp": pdf_content.get("analysis_timestamp"),
+                }
+
+                logger.info(
+                    f"📄 PDF 상세 내용 JSON에 추가됨: {len(pdf_content.get('toc_based_chunks', {}))}개 목차 청크"
+                )
+
+            # 🎯 CrewAI 분석 결과 상세 내용 추가
+            crewai_analysis = results.get("steps", {}).get(
+                "step4_crewai_comprehensive_analysis", {}
+            )
+            if crewai_analysis.get("success"):
+                expert_insights = crewai_analysis.get("expert_insights", {})
+
+                enhanced_results["crewai_detailed_analysis"] = {
+                    "detected_sector": crewai_analysis.get("detected_sector"),
+                    "sector_korean_name": crewai_analysis.get("sector_korean_name"),
+                    "activated_experts": crewai_analysis.get("activated_experts", []),
+                    "expert_count": len(crewai_analysis.get("activated_experts", [])),
+                    "individual_expert_analyses": expert_insights.get(
+                        "individual_expert_analyses", []
+                    ),
+                    "synthesis_result": expert_insights.get("synthesis_result", {}),
+                    "data_integration_quality": crewai_analysis.get(
+                        "data_integration_quality"
+                    ),
+                    "cost_savings": crewai_analysis.get("cost_savings", {}),
+                    "token_optimization": crewai_analysis.get("token_optimization", {}),
+                    "analysis_depth": crewai_analysis.get("analysis_depth"),
+                    "total_analysis_time": expert_insights.get("total_analysis_time"),
+                    "data_sources_integrated": self._extract_integrated_data_sources(
+                        results
+                    ),  # 🔗 데이터 연결고리
+                }
+
+                logger.info(
+                    f"🎯 CrewAI 상세 분석 JSON에 추가됨: {len(expert_insights.get('individual_expert_analyses', []))}명 전문가 의견"
+                )
+
+            # 🔗 데이터 흐름 추적 정보 추가
+            enhanced_results["data_flow_tracking"] = {
+                "step1_stock_detection": {
+                    "method": results.get("steps", {})
+                    .get("step1_stock_detection", {})
+                    .get("detection_method"),
+                    "confidence": (
+                        "high"
+                        if results.get("steps", {})
+                        .get("step1_stock_detection", {})
+                        .get("detected")
+                        else "low"
+                    ),
+                },
+                "step2_financial_data": {
+                    "sources": results.get("steps", {})
+                    .get("step2_financial_data", {})
+                    .get("data_sources", []),
+                    "quality": results.get("steps", {})
+                    .get("step2_financial_data", {})
+                    .get("data_quality"),
+                },
+                "step3_manus_collection": {
+                    "richness_score": results.get("steps", {})
+                    .get("step3_information_collection", {})
+                    .get("data_richness_score", 0),
+                    "pdf_detected": results.get("steps", {})
+                    .get("step3_information_collection", {})
+                    .get("pdf_analysis", {})
+                    .get("pdf_detected", False),
+                    "ready_for_crewai": results.get("steps", {})
+                    .get("step3_information_collection", {})
+                    .get("ready_for_crewai", False),
+                },
+                "step4_crewai_synthesis": {
+                    "success": crewai_analysis.get("success", False),
+                    "experts_activated": len(
+                        crewai_analysis.get("activated_experts", [])
+                    ),
+                    "data_integration_success": crewai_analysis.get(
+                        "expert_insights", {}
+                    )
+                    .get("synthesis_result", {})
+                    .get("synthesis_success", False),
+                },
+                "overall_data_completeness": self._calculate_data_completeness(results),
+            }
+
+            # JSON 저장
+            with open(filepath, "w", encoding="utf-8") as f:
+                json.dump(enhanced_results, f, ensure_ascii=False, indent=2)
+
+            logger.info(f"💾 개선된 결과 저장 완료: {filepath}")
+            logger.info(
+                f"📊 추가된 섹션: pdf_detailed_content, crewai_detailed_analysis, data_flow_tracking"
+            )
+            return filepath
+
+        except Exception as e:
+            logger.error(f"❌ 결과 저장 실패: {e}")
+            return f"저장 실패: {e}"
+
+    def _extract_integrated_data_sources(self, results: Dict) -> Dict[str, Any]:
+        """통합된 데이터 소스 정보를 추출합니다."""
+        integrated_sources = {
+            "financial_data_sources": [],
+            "manus_web_search_performed": False,
+            "pdf_analysis_performed": False,
+            "enhanced_dart_used": False,
+            "crewai_synthesis_performed": False,
+        }
+
+        # 재무데이터 소스
+        financial_data = results.get("steps", {}).get("step2_financial_data", {})
+        if financial_data.get("success"):
+            integrated_sources["financial_data_sources"] = financial_data.get(
+                "data_sources", []
+            )
+
+        # Enhanced DART 사용 여부
+        enhanced_dart = results.get("steps", {}).get("step2_enhanced_dart_data", {})
+        if enhanced_dart and enhanced_dart.get("success"):
+            integrated_sources["enhanced_dart_used"] = True
+
+        # Manus 웹검색 수행 여부
+        manus_collection = results.get("steps", {}).get(
+            "step3_information_collection", {}
+        )
+        if manus_collection.get("performed"):
+            integrated_sources["manus_web_search_performed"] = True
+
+        # PDF 분석 수행 여부
+        pdf_analysis = results.get("steps", {}).get("pdf_large_analysis", {})
+        if pdf_analysis.get("pdf_detected") and pdf_analysis.get("analysis_completed"):
+            integrated_sources["pdf_analysis_performed"] = True
+
+        # CrewAI 종합 분석 수행 여부
+        crewai_analysis = results.get("steps", {}).get(
+            "step4_crewai_comprehensive_analysis", {}
+        )
+        if crewai_analysis.get("success"):
+            integrated_sources["crewai_synthesis_performed"] = True
+
+        return integrated_sources
+
+    def _calculate_data_completeness(self, results: Dict) -> float:
+        """전체 데이터 완성도를 계산합니다 (0-100%)."""
+        completeness_score = 0.0
+
+        # 종목 감지 (20점)
+        if results.get("steps", {}).get("step1_stock_detection", {}).get("detected"):
+            completeness_score += 20
+
+        # 재무데이터 (20점)
+        if results.get("steps", {}).get("step2_financial_data", {}).get("success"):
+            completeness_score += 20
+
+        # 정보 수집 (20점)
+        manus_collection = results.get("steps", {}).get(
+            "step3_information_collection", {}
+        )
+        if manus_collection.get("performed"):
+            richness = manus_collection.get("data_richness_score", 0)
+            completeness_score += (richness / 100) * 20
+
+        # PDF 분석 (20점)
+        pdf_analysis = results.get("steps", {}).get("pdf_large_analysis", {})
+        if pdf_analysis.get("pdf_detected"):
+            if pdf_analysis.get("analysis_completed"):
+                completeness_score += 20
+            else:
+                completeness_score += 10  # 감지는 됐지만 분석 실패
+
+        # CrewAI 종합 분석 (20점)
+        crewai_analysis = results.get("steps", {}).get(
+            "step4_crewai_comprehensive_analysis", {}
+        )
+        if crewai_analysis.get("success"):
+            completeness_score += 20
+
+        return min(completeness_score, 100.0)
+
+
+async def main():
+    """
+    🚀 Enhanced 주식 분석 시스템 메인 함수
+
+    사용자 입력을 받아서 종합적인 주식 분석을 수행합니다.
+    """
+    print("🚀 Enhanced 주식 분석 시스템 시작!")
+    print("=" * 50)
+
+    try:
+        # 시스템 초기화
+        system = EnhancedStockAnalysisSystem()
+
+        # 사용자 입력 받기
+        print("\n💬 분석하고 싶은 종목이나 질문을 입력해주세요:")
+        print("예시: '삼성전자 투자 의견 알려줘', '005930 재무분석', 'AAPL 주가 전망'")
+        print("-" * 50)
+
+        user_input = input("질문: ").strip()
+
+        if not user_input:
+            print("❌ 질문을 입력해주세요.")
+            return
+
+        print(f"\n🔍 분석 시작: {user_input}")
+        print("=" * 50)
+
+        # 분석 실행
+        results = await system.run_enhanced_analysis(user_input)
+
+        # 결과 출력
+        print("\n✅ 분석 완료!")
+        print("=" * 50)
+
+        if results.get("success"):
+            # 기본 정보 출력
+            stock_info = results["steps"].get("step1_stock_detection", {})
+            if stock_info.get("detected"):
+                print(
+                    f"📊 분석 종목: {stock_info.get('stock_name')} ({stock_info.get('stock_code')})"
+                )
+                print(f"🏢 GICS 섹터: {stock_info.get('gics_sector', '알 수 없음')}")
+
+            # 데이터 수집 상태
+            financial_data = results["steps"].get("step2_financial_data", {})
+            if financial_data.get("success"):
+                print(
+                    f"💹 재무데이터: ✅ 수집 완료 ({', '.join(financial_data.get('data_sources', []))})"
+                )
+
+            # 정보 수집 상태
+            manus_collection = results["steps"].get("step3_information_collection", {})
+            if manus_collection.get("performed"):
+                richness_score = manus_collection.get("data_richness_score", 0)
+                print(f"🔍 정보 수집: ✅ 완료 (풍부함: {richness_score:.1f}/100)")
+
+            # CrewAI 분석 상태
+            crewai_analysis = results["steps"].get(
+                "step4_crewai_comprehensive_analysis", {}
+            )
+            if crewai_analysis and not crewai_analysis.get("error"):
+                print("🎯 CrewAI 종합 분석: ✅ 완료")
+
+            # 저장된 파일
+            saved_file = results.get("saved_file")
+            if saved_file and not saved_file.startswith("저장 실패"):
+                print(f"💾 결과 파일: {saved_file}")
+
+            print("\n📋 분석 요약:")
+            final_summary = results.get("final_summary", {})
+            if final_summary:
+                analyzed_stock = final_summary.get("analyzed_stock", {})
+                print(
+                    f"  종목: {analyzed_stock.get('name')} ({analyzed_stock.get('code')})"
+                )
+                print(f"  섹터: {analyzed_stock.get('gics_sector', '알 수 없음')}")
+
+                key_insights = final_summary.get("key_insights", {})
+                print(
+                    f"  분석 품질: {key_insights.get('overall_analysis_depth', '알 수 없음')}"
+                )
+        else:
+            print(f"❌ 분석 실패: {results.get('error', '알 수 없는 오류')}")
+
+    except KeyboardInterrupt:
+        print("\n\n👋 분석이 중단되었습니다.")
+    except Exception as e:
+        print(f"\n❌ 오류 발생: {e}")
+        logger.error(f"메인 함수 오류: {e}")
+
+
+if __name__ == "__main__":
+    """
+    스크립트가 직접 실행될 때 main 함수를 실행합니다.
+    """
+    print("🔥 Enhanced Stock Analysis System v2.0")
+    print("🚀 AI 기반 종합 주식 분석 시스템")
+    print("💡 ManusAgent + CrewAI + Enhanced DART API")
+    print()
+
+    # 비동기 함수 실행
+    asyncio.run(main())

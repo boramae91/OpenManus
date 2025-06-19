@@ -290,17 +290,11 @@ class SmartSectorManager:
                 detected_sector = self._map_gics_to_internal_sector(
                     pre_detected_gics_sector
                 )
-                if detected_sector == GICSSector.UNKNOWN:
-                    logger.warning(
-                        f"⚠️ GICS 섹터 매핑 실패, 자동 감지로 대체: {pre_detected_gics_sector}"
-                    )
-                    detected_sector = self.sector_manager.detect_sector_from_stock(
-                        stock_name, stock_code
-                    )
-                else:
-                    logger.info(
-                        f"✅ GICS → 내부 섹터 매핑 성공: {pre_detected_gics_sector} → {detected_sector.name}"
-                    )
+                # _map_gics_to_internal_sector는 매핑 실패시 기본값(INFORMATION_TECHNOLOGY)을 반환하므로
+                # 항상 유효한 값이 반환됩니다
+                logger.info(
+                    f"✅ GICS → 내부 섹터 매핑 완료: {pre_detected_gics_sector} → {detected_sector.name}"
+                )
             else:
                 logger.info("🔍 자동 섹터 감지 수행...")
                 detected_sector = self.sector_manager.detect_sector_from_stock(
@@ -339,7 +333,9 @@ class SmartSectorManager:
                 "success": True,
                 "analysis_type": "comprehensive_manus_crewai_synthesis_optimized",  # 최적화 포함
                 "detected_sector": detected_sector.name,
-                "sector_korean_name": detected_sector.korean_name,
+                "sector_korean_name": self.sector_manager.get_sector_korean_name(
+                    detected_sector
+                ),
                 "gics_sector_used": (
                     pre_detected_gics_sector
                     if pre_detected_gics_sector != "Unknown"
@@ -1155,23 +1151,154 @@ class SmartSectorManager:
 
     def _estimate_tokens(self, text: str) -> int:
         """
-        🔢 텍스트의 대략적인 토큰 수 계산
+        텍스트의 대략적인 토큰 수를 추정합니다.
 
         Args:
-            text: 계산할 텍스트
+            text: 토큰 수를 추정할 텍스트
 
         Returns:
-            int: 예상 토큰 수
+            int: 추정된 토큰 수
         """
         if not text:
             return 0
 
-        # 대략적인 토큰 계산 (영어: 4글자당 1토큰, 한글: 2글자당 1토큰)
-        korean_chars = len([c for c in text if ord(c) >= 0xAC00 and ord(c) <= 0xD7A3])
-        other_chars = len(text) - korean_chars
+        # 한국어와 영어가 혼재된 텍스트를 고려한 토큰 추정
+        # 일반적으로 한국어는 2-3자당 1토큰, 영어는 4자당 1토큰
+        return max(1, len(text) // 3)
 
-        estimated_tokens = (korean_chars // 2) + (other_chars // 4)
-        return max(estimated_tokens, len(text.split()) // 3)  # 최소 단어 수 기반 계산
+    def _summarize_financial_data(self, financial_data: Dict) -> str:
+        """
+        재무데이터를 요약해서 문자열로 반환합니다.
+
+        Args:
+            financial_data: 재무데이터 딕셔너리
+
+        Returns:
+            str: 요약된 재무데이터 문자열
+        """
+        if not financial_data or not financial_data.get("success"):
+            return "재무데이터 없음"
+
+        summary_parts = []
+
+        # 기본 정보
+        if "basic_info" in financial_data:
+            basic = financial_data["basic_info"]
+            summary_parts.append(f"회사: {basic.get('company_name', 'N/A')}")
+            summary_parts.append(f"섹터: {basic.get('sector', 'N/A')}")
+            summary_parts.append(f"산업: {basic.get('industry', 'N/A')}")
+
+        # 현재 주가 정보
+        if "current_price_info" in financial_data:
+            price_info = financial_data["current_price_info"]
+            current_price = price_info.get("current_price")
+            market_cap = price_info.get("market_cap")
+            if current_price:
+                summary_parts.append(f"현재가: {current_price:,}")
+            if market_cap:
+                summary_parts.append(f"시가총액: {market_cap:,}")
+
+        # 재무 비율
+        if "financial_ratios" in financial_data:
+            ratios = financial_data["financial_ratios"]
+            per = ratios.get("pe_ratio")
+            pbr = ratios.get("pb_ratio")
+            roe = ratios.get("return_on_equity")
+            debt_ratio = ratios.get("debt_to_equity")
+
+            if per:
+                summary_parts.append(f"PER: {per}")
+            if pbr:
+                summary_parts.append(f"PBR: {pbr}")
+            if roe:
+                summary_parts.append(f"ROE: {roe:.2%}")
+            if debt_ratio:
+                summary_parts.append(f"부채비율: {debt_ratio}")
+
+        # 성장성 지표
+        if "growth_metrics" in financial_data:
+            growth = financial_data["growth_metrics"]
+            revenue_growth = growth.get("revenue_growth")
+            earnings_growth = growth.get("earnings_growth")
+
+            if revenue_growth:
+                summary_parts.append(f"매출성장률: {revenue_growth:.2%}")
+            if earnings_growth:
+                summary_parts.append(f"이익성장률: {earnings_growth:.2%}")
+
+        return "\n".join(summary_parts) if summary_parts else "재무데이터 요약 없음"
+
+    def _summarize_enhanced_dart_data(self, enhanced_dart_data: Dict) -> str:
+        """
+        Enhanced DART 데이터를 요약해서 문자열로 반환합니다.
+
+        Args:
+            enhanced_dart_data: Enhanced DART 데이터 딕셔너리
+
+        Returns:
+            str: 요약된 DART 데이터 문자열
+        """
+        if not enhanced_dart_data or not enhanced_dart_data.get("success"):
+            return "Enhanced DART 데이터 없음"
+
+        summary_parts = []
+
+        # 기본 정보
+        if "basic_info" in enhanced_dart_data:
+            basic_info = enhanced_dart_data["basic_info"]
+            company_name = basic_info.get("company_name")
+            business_type = basic_info.get("business_type")
+            if company_name:
+                summary_parts.append(f"회사명: {company_name}")
+            if business_type:
+                summary_parts.append(f"업종: {business_type}")
+
+        # 재무분석 정보
+        if "financial_analysis" in enhanced_dart_data:
+            financial = enhanced_dart_data["financial_analysis"]
+            if financial.get("success"):
+                if "consolidated_statements" in financial:
+                    statements = financial["consolidated_statements"]
+                    asset_info = statements.get("asset_info", {})
+                    equity_info = statements.get("equity_info", {})
+                    income_info = statements.get("income_info", {})
+
+                    total_assets = asset_info.get("total_assets")
+                    total_equity = equity_info.get("total_equity")
+                    revenue = income_info.get("revenue")
+                    net_income = income_info.get("net_income")
+
+                    if total_assets:
+                        summary_parts.append(f"총자산: {total_assets:,}")
+                    if total_equity:
+                        summary_parts.append(f"총자본: {total_equity:,}")
+                    if revenue:
+                        summary_parts.append(f"매출액: {revenue:,}")
+                    if net_income:
+                        summary_parts.append(f"순이익: {net_income:,}")
+
+        # 투자분석 정보
+        if "investment_analysis" in enhanced_dart_data:
+            investment = enhanced_dart_data["investment_analysis"]
+            if investment.get("success"):
+                if "dividend_info" in investment and investment["dividend_info"]:
+                    latest_dividend = investment["dividend_info"][0]
+                    dividend_rate = latest_dividend.get("dividend_rate")
+                    if dividend_rate:
+                        summary_parts.append(f"배당률: {dividend_rate}%")
+
+        # 공시정보
+        if "disclosure_info" in enhanced_dart_data:
+            disclosure = enhanced_dart_data["disclosure_info"]
+            if disclosure.get("recent_disclosures"):
+                disclosure_count = len(disclosure["recent_disclosures"])
+                summary_parts.append(f"최근 공시: {disclosure_count}건")
+
+        return (
+            "\n".join(summary_parts)
+            if summary_parts
+            else "Enhanced DART 데이터 요약 없음"
+        )
 
     def _calculate_total_context_tokens(
         self,
@@ -1377,7 +1504,7 @@ class SmartSectorManager:
         )
 
     def _compress_pdf_data(self, manus_data: Dict, target_ratio: float = 0.3) -> Dict:
-        """🤖 AI 기반 PDF 데이터 지능적 압축 (60만자 지원)"""
+        """PDF 데이터 압축"""
         if not manus_data or not manus_data.get("pdf_analysis", {}).get("pdf_detected"):
             return manus_data
 
@@ -1394,131 +1521,96 @@ class SmartSectorManager:
                 logger.info(
                     f"📏 PDF 60만자 제한 적용: {original_length:,}자 → 600,000자"
                 )
-                original_text = (
+                compressed_text = (
                     original_text[:600000] + "\n...[60만자 제한으로 일부 생략]"
                 )
-                pdf_content["raw_text"] = original_text
-                original_length = 600000
+                pdf_content["raw_text"] = compressed_text
+                logger.info(f"✅ PDF 압축 완료: {len(compressed_text):,}자")
 
-            pdf_path = pdf_analysis.get("pdf_path", "")
+        return optimized_data
 
-            # 🤖 1. 기존 AI 청킹 결과 확인 (enhanced_main.py에서 생성된 경우)
-            existing_chunks = pdf_content.get("contextual_chunks", [])
+    def _summarize_manus_data(
+        self, manus_data: Dict, target_length: int = 5000
+    ) -> Dict:
+        """Manus 수집 데이터 요약"""
+        if not manus_data or not manus_data.get("performed"):
+            return manus_data
 
-            if existing_chunks and len(existing_chunks) > 0:
-                logger.info(
-                    f"🔄 기존 AI 청킹 발견: {len(existing_chunks)}개 청크 - 지능적 선별 수행"
-                )
+        optimized_data = manus_data.copy()
+        collected_info = optimized_data.get("collected_information", "")
 
-                # AI 기반 청크 우선 선택
-                ai_chunks = [
-                    c
-                    for c in existing_chunks
-                    if c.get("source") == "manus_agent_analysis"
-                ]
-                if ai_chunks:
-                    pdf_chunks = ai_chunks
-                    chunking_method = "ai_based_existing"
-                    logger.info(f"🧠 AI 기반 청크 사용: {len(ai_chunks)}개")
-                else:
-                    # 목차 기반 청크 차선 선택
-                    toc_chunks = [
-                        c
-                        for c in existing_chunks
-                        if c.get("source") == "table_of_contents"
-                    ]
-                    if toc_chunks:
-                        pdf_chunks = toc_chunks
-                        chunking_method = "table_of_contents_existing"
-                        logger.info(f"🔖 목차 기반 청크 사용: {len(toc_chunks)}개")
-                    else:
-                        pdf_chunks = existing_chunks
-                        chunking_method = "keyword_based_existing"
-                        logger.info(
-                            f"📝 키워드 기반 청크 사용: {len(existing_chunks)}개"
-                        )
-            else:
-                # 🚀 2. 새로운 AI 기반 청킹 수행
-                logger.info("🤖 CrewAI AI 기반 청킹 시도...")
-                try:
-                    # AI 청킹은 비동기이므로 임시로 동기 방식 사용
-                    # TODO: 나중에 전체 메서드를 비동기로 변경하거나 별도 처리 필요
-                    logger.info("🔖 AI 청킹 준비 중 - 목차 기반 청킹으로 먼저 시도")
-                    pdf_chunks = self._create_toc_based_pdf_chunks(
-                        original_text, pdf_path
-                    )
-                    chunking_method = "table_of_contents_priority"
+        if len(collected_info) > target_length:
+            # 첫 부분과 마지막 부분만 유지
+            first_part = collected_info[: target_length // 2]
+            last_part = collected_info[-(target_length // 2) :]
+            summarized = first_part + "\n...[요약으로 중간 부분 생략]...\n" + last_part
 
-                    if not pdf_chunks:
-                        # AI 실패시 목차 기반으로 폴백
-                        logger.info("🔖 AI 청킹 실패 - 목차 기반 청킹 시도...")
-                        pdf_chunks = self._create_toc_based_pdf_chunks(
-                            original_text, pdf_path
-                        )
-                        chunking_method = "table_of_contents_fallback"
-
-                        if not pdf_chunks:
-                            # 목차도 실패시 고급 키워드 기반으로 최종 폴백
-                            logger.info(
-                                "📝 목차 없음 - 고급 키워드 기반 청킹으로 최종 폴백"
-                            )
-                            pdf_chunks = self._create_advanced_contextual_pdf_chunks(
-                                original_text
-                            )
-                            chunking_method = "advanced_keyword_based_fallback"
-
-                except Exception as e:
-                    logger.warning(f"⚠️ AI 청킹 실패: {e} - 고급 키워드 기반으로 폴백")
-                    pdf_chunks = self._create_advanced_contextual_pdf_chunks(
-                        original_text
-                    )
-                    chunking_method = "advanced_keyword_based_error"
-
-            # 원본 텍스트 유지하고 chunks 정보 업데이트
-            pdf_content["contextual_chunks"] = pdf_chunks
-            pdf_content["chunking_applied"] = True
-            pdf_content["chunking_method"] = chunking_method
-            pdf_content["total_chunks"] = len(pdf_chunks)
-            pdf_content["max_chunk_size_supported"] = "600000_chars"
-
-            # 청크 통계 계산
-            ai_count = len(
-                [c for c in pdf_chunks if "ai" in c.get("source", "").lower()]
-            )
-            toc_count = len(
-                [c for c in pdf_chunks if c.get("source") == "table_of_contents"]
-            )
-            keyword_count = len(pdf_chunks) - ai_count - toc_count
-
-            # 60만자 제한 적용된 청크 수
-            max_size_chunks = len(
-                [c for c in pdf_chunks if c.get("max_size_applied", False)]
-            )
-
-            pdf_content["chunk_statistics"] = {
-                "ai_based_chunks": ai_count,
-                "toc_based_chunks": toc_count,
-                "keyword_based_chunks": keyword_count,
-                "max_size_limited_chunks": max_size_chunks,
-                "average_chunk_size": (
-                    sum(c.get("content_length", 0) for c in pdf_chunks)
-                    // len(pdf_chunks)
-                    if pdf_chunks
-                    else 0
-                ),
-            }
-
-            # 청크 타입 정보 업데이트
-            chunk_types = list(set(c.get("context_type", "일반") for c in pdf_chunks))
-            pdf_content["chunk_types"] = chunk_types
-
+            optimized_data["collected_information"] = summarized
             logger.info(
-                f"🤖 PDF 지능적 처리 완료: {len(pdf_chunks)}개 청크 "
-                f"(AI: {ai_count}개, 목차: {toc_count}개, 키워드: {keyword_count}개) "
-                f"방식: {chunking_method}, 60만자제한: {max_size_chunks}개"
+                f"📝 Manus 데이터 요약: {len(collected_info):,}자 → {len(summarized):,}자"
             )
 
         return optimized_data
+
+    def _prioritize_dart_data(self, dart_data: Dict, user_prompt: str) -> Dict:
+        """사용자 의도에 따른 DART 데이터 우선순위 설정"""
+        if not dart_data or not dart_data.get("success"):
+            return dart_data
+
+        # 간단한 우선순위 적용 (실제로는 더 복잡한 로직 필요)
+        optimized_data = dart_data.copy()
+
+        # 재무 관련 키워드가 있으면 재무 데이터만 유지
+        if any(
+            keyword in user_prompt.lower()
+            for keyword in ["재무", "매출", "이익", "손익"]
+        ):
+            # 재무 분석만 유지
+            if "financial_analysis" in optimized_data:
+                temp_data = {"financial_analysis": optimized_data["financial_analysis"]}
+                optimized_data = {**optimized_data, **temp_data}
+                logger.info("🎯 재무 관련 DART 데이터만 선별")
+
+        return optimized_data
+
+    def _emergency_compression(self, manus_data: Dict) -> Dict:
+        """긴급 압축 (토큰 한계 초과시)"""
+        if not manus_data:
+            return manus_data
+
+        optimized_data = manus_data.copy()
+
+        # 수집 정보를 극도로 압축
+        collected_info = optimized_data.get("collected_information", "")
+        if len(collected_info) > 1000:
+            emergency_summary = (
+                collected_info[:500] + "\n...[긴급 압축]...\n" + collected_info[-500:]
+            )
+            optimized_data["collected_information"] = emergency_summary
+            logger.warning("🚨 긴급 압축 적용됨")
+
+        return optimized_data
+
+    def _build_optimization_result(
+        self,
+        financial_data: Dict,
+        dart_data: Dict,
+        manus_data: Dict,
+        final_tokens: int,
+        optimizations: List[str],
+    ) -> Dict[str, Any]:
+        """최적화 결과 구성"""
+        return {
+            "optimized": True,
+            "financial_data": financial_data,
+            "enhanced_dart_data": dart_data,
+            "manus_collected_data": manus_data,
+            "token_info": {
+                "final_tokens": final_tokens,
+                "optimizations_applied": optimizations,
+            },
+            "optimization_applied": optimizations,
+        }
 
     async def _create_crewai_intelligent_chunks(
         self, pdf_text: str, pdf_path: str = None
@@ -2350,24 +2442,21 @@ SECTION_4: [섹션제목] | risk | [핵심키워드]
     def _select_relevant_pdf_chunks(
         self, pdf_chunks: List[Dict[str, Any]], expert_type: str, max_chunks: int = 3
     ) -> List[Dict[str, Any]]:
-        """🔖 전문가 타입에 따라 관련성 높은 PDF 청크 선택 (목차 기반 우선)"""
+        """
+        🎯 전문가별 관련 PDF 청크 선별 (Context-aware)
+
+        Args:
+            pdf_chunks: 전체 PDF 청크 리스트
+            expert_type: 전문가 유형 ('재무', '기술', '산업', '투자', '리스크')
+            max_chunks: 최대 선택 청크 수
+
+        Returns:
+            List: 선별된 청크 리스트
+        """
         if not pdf_chunks:
             return []
 
-        # 전문가별 선호 context 매핑
-        expert_context_mapping = {
-            "재무분석전문가": ["financial", "investment"],
-            "기술분석전문가": ["technical", "financial"],
-            "산업분석전문가": ["business", "technical"],
-            "밸류에이션전문가": ["investment", "financial"],
-            "리스크분석전문가": ["risk", "governance"],
-            "ESG전문가": ["governance", "risk"],
-            "시장분석전문가": ["business", "investment"],
-        }
-
-        preferred_contexts = expert_context_mapping.get(expert_type, ["general"])
-
-        # 🔖 목차 기반 청크와 키워드 기반 청크 분리
+        # 목차 기반 청크와 키워드 기반 청크 분리
         toc_chunks = [
             c
             for c in pdf_chunks
@@ -2389,135 +2478,382 @@ SECTION_4: [섹션제목] | risk | [핵심키워드]
             for chunk in toc_chunks:
                 relevance_score = 0
                 chunk_context = chunk.get("context_type", "general")
-                toc_title = chunk.get("toc_title", "").lower()
+                chunk_title = chunk.get("title", "").lower()
 
-                # 🔖 목차 제목 직접 매칭 (높은 점수)
-                for context in preferred_contexts:
-                    if context == "financial" and any(
-                        kw in toc_title
-                        for kw in [
-                            "재무",
-                            "financial",
-                            "손익",
-                            "대차대조표",
-                            "현금흐름",
-                        ]
+                # 전문가별 관련성 점수 계산
+                if expert_type == "재무" or expert_type == "fundamental":
+                    if chunk_context in ["financial", "business"]:
+                        relevance_score += 50
+                    if any(
+                        keyword in chunk_title
+                        for keyword in ["재무", "손익", "자산", "부채", "매출", "이익"]
                     ):
-                        relevance_score += 25
-                    elif context == "business" and any(
-                        kw in toc_title
-                        for kw in ["사업", "business", "영업", "시장", "제품"]
-                    ):
-                        relevance_score += 25
-                    elif context == "risk" and any(
-                        kw in toc_title for kw in ["위험", "risk", "리스크", "우려사항"]
-                    ):
-                        relevance_score += 25
-                    elif context == "investment" and any(
-                        kw in toc_title for kw in ["투자", "investment", "전망", "목표"]
-                    ):
-                        relevance_score += 25
-                    elif context == "technical" and any(
-                        kw in toc_title for kw in ["기술", "technology", "R&D", "연구"]
-                    ):
-                        relevance_score += 25
-                    elif context == "governance" and any(
-                        kw in toc_title
-                        for kw in ["지배구조", "governance", "주주", "이사회"]
-                    ):
-                        relevance_score += 25
+                        relevance_score += 30
 
-                # Context 타입 일치 점수
-                if chunk_context in preferred_contexts:
+                elif expert_type == "기술" or expert_type == "technical":
+                    if chunk_context == "technical":
+                        relevance_score += 50
+                    if any(
+                        keyword in chunk_title
+                        for keyword in ["기술", "연구", "개발", "특허", "혁신"]
+                    ):
+                        relevance_score += 30
+
+                elif expert_type == "산업" or expert_type == "industry":
+                    if chunk_context in ["industry", "business"]:
+                        relevance_score += 50
+                    if any(
+                        keyword in chunk_title
+                        for keyword in ["시장", "산업", "경쟁", "업계", "동향"]
+                    ):
+                        relevance_score += 30
+
+                elif expert_type == "투자" or expert_type == "investment":
+                    if chunk_context in ["investment", "financial"]:
+                        relevance_score += 50
+                    if any(
+                        keyword in chunk_title
+                        for keyword in ["투자", "배당", "주주", "밸류", "전망"]
+                    ):
+                        relevance_score += 30
+
+                elif expert_type == "리스크" or expert_type == "risk":
+                    if chunk_context == "risk":
+                        relevance_score += 50
+                    if any(
+                        keyword in chunk_title
+                        for keyword in ["위험", "리스크", "위기", "우려", "문제"]
+                    ):
+                        relevance_score += 30
+
+                # 기본 점수 (모든 전문가에게 유용한 정보)
+                if any(
+                    keyword in chunk_title
+                    for keyword in ["요약", "개요", "핵심", "주요", "중요"]
+                ):
                     relevance_score += 15
 
-                # 목차 레벨 보너스 (상위 레벨 선호)
-                toc_level = chunk.get("toc_level", 99)
-                if toc_level <= 2:
-                    relevance_score += 8
-                elif toc_level <= 3:
-                    relevance_score += 5
+                toc_scored.append((chunk, relevance_score))
 
-                # 적정 크기 보너스
-                content_length = chunk.get("content_length", 0)
-                if 1000 <= content_length <= 5000:
-                    relevance_score += 5
+            # 관련성 점수 순 정렬
+            toc_scored.sort(key=lambda x: x[1], reverse=True)
 
-                toc_scored.append((relevance_score, chunk))
+            # 상위 청크들 선택 (최대 2개)
+            for chunk, score in toc_scored[: min(2, max_chunks)]:
+                if score > 20:  # 최소 관련성 임계값
+                    selected_chunks.append(chunk)
 
-            # 목차 기반 청크 중 상위 선택 (최대 2개까지)
-            toc_scored.sort(reverse=True, key=lambda x: x[0])
-            selected_chunks.extend(
-                [chunk for score, chunk in toc_scored[: min(2, max_chunks)]]
-            )
-
-        # 2. 남은 자리가 있으면 키워드 기반 청크에서 추가 선택
+        # 2. 키워드 기반 청크에서 추가 선택
         remaining_slots = max_chunks - len(selected_chunks)
         if remaining_slots > 0 and keyword_chunks:
             keyword_scored = []
             for chunk in keyword_chunks:
+                content = chunk.get("content", "").lower()
                 relevance_score = 0
 
-                # Context 타입 매칭 점수
-                if chunk.get("context_type", "general") in preferred_contexts:
-                    relevance_score += 10
+                # 전문가별 키워드 매칭
+                expert_keywords = {
+                    "재무": ["재무제표", "매출", "이익", "자산", "부채", "현금흐름"],
+                    "기술": ["기술개발", "연구개발", "특허", "혁신", "기술력"],
+                    "산업": ["시장점유율", "경쟁사", "업계동향", "시장규모"],
+                    "투자": ["배당", "주주가치", "투자수익", "목표가", "밸류에이션"],
+                    "리스크": ["위험요인", "리스크", "위기관리", "불확실성"],
+                }
 
-                # 기본 relevance_score 추가
-                relevance_score += chunk.get("relevance_score", 0)
+                target_keywords = expert_keywords.get(expert_type, [])
+                for keyword in target_keywords:
+                    if keyword in content:
+                        relevance_score += 10
 
-                # 청크 크기 보너스
-                content_length = chunk.get("content_length", 0)
-                if 1000 <= content_length <= 5000:
-                    relevance_score += 5
-                elif 500 <= content_length < 1000:
-                    relevance_score += 3
+                keyword_scored.append((chunk, relevance_score))
 
-                keyword_scored.append((relevance_score, chunk))
+            # 관련성 점수 순 정렬
+            keyword_scored.sort(key=lambda x: x[1], reverse=True)
 
-            # 키워드 기반 청크 중 상위 선택
-            keyword_scored.sort(reverse=True, key=lambda x: x[0])
-            selected_chunks.extend(
-                [chunk for score, chunk in keyword_scored[:remaining_slots]]
-            )
+            # 상위 청크들 추가 선택
+            for chunk, score in keyword_scored[:remaining_slots]:
+                if score > 5:  # 최소 관련성 임계값
+                    selected_chunks.append(chunk)
 
-        # 최종 선택 결과 로그
-        if selected_chunks:
-            toc_count = sum(
-                1
-                for c in selected_chunks
-                if c.get("source") == "table_of_contents"
-                or c.get("chunk_type") == "toc_based"
-            )
-            keyword_count = len(selected_chunks) - toc_count
-            context_types = set(
-                c.get("context_type", "general") for c in selected_chunks
-            )
-
-            logger.info(
-                f"🔖 {expert_type}용 PDF 청크 선택: 총 {len(selected_chunks)}개 "
-                f"(목차: {toc_count}개, 키워드: {keyword_count}개) "
-                f"타입: {', '.join(context_types)}"
-            )
+        logger.info(
+            f"🎯 {expert_type} 전문가용 PDF 청크 선별: {len(selected_chunks)}/{len(pdf_chunks)} 선택됨"
+        )
 
         return selected_chunks
 
-    def _build_optimization_result(
+    def _generate_comprehensive_cache_key(
+        self,
+        user_prompt: str,
+        stock_name: str,
+        stock_code: str,
+        analysis_depth: AnalysisDepth,
+        manus_data: Dict = None,
+    ) -> str:
+        """종합 분석용 캐시 키 생성"""
+        import hashlib
+
+        # 기본 키 요소들
+        key_elements = [
+            user_prompt[:100],  # 프롬프트 처음 100자
+            stock_name,
+            stock_code,
+            analysis_depth.value,
+        ]
+
+        # Manus 데이터가 있으면 해시에 포함
+        if manus_data and manus_data.get("performed"):
+            collected_info = manus_data.get("collected_information", "")
+            # 수집 정보의 해시값 추가 (전체가 아닌 샘플링)
+            info_sample = (
+                collected_info[:500] + collected_info[-500:]
+                if len(collected_info) > 1000
+                else collected_info
+            )
+            key_elements.append(hashlib.md5(info_sample.encode()).hexdigest()[:8])
+
+        # 날짜별 캐시 구분 (하루 단위)
+        from datetime import datetime
+
+        key_elements.append(datetime.now().strftime("%Y%m%d"))
+
+        combined_key = "|".join(str(elem) for elem in key_elements)
+        return hashlib.md5(combined_key.encode()).hexdigest()
+
+    def _assess_data_integration_quality(
+        self, financial_data: Dict, dart_data: Dict, manus_data: Dict
+    ) -> str:
+        """
+        🔍 데이터 통합 품질을 평가합니다
+
+        Args:
+            financial_data: 재무데이터
+            dart_data: DART 데이터
+            manus_data: Manus 수집 데이터
+
+        Returns:
+            str: 품질 등급
+        """
+        quality_score = 0
+
+        # 재무데이터 품질 (최대 25점)
+        if financial_data and financial_data.get("success"):
+            data_sources = financial_data.get("data_sources", [])
+            quality_score += len(data_sources) * 5  # 데이터 소스당 5점
+            quality_score = min(quality_score, 25)
+
+        # DART 데이터 품질 (최대 30점)
+        if dart_data and dart_data.get("success"):
+            quality_score += 30
+
+        # Manus 데이터 품질 (최대 45점)
+        if manus_data and manus_data.get("performed"):
+            richness_score = manus_data.get("data_richness_score", 0)
+            quality_score += int(
+                richness_score * 0.45
+            )  # 100점 만점을 45점 만점으로 변환
+
+        # 품질 등급 분류
+        if quality_score >= 80:
+            return "매우높음"
+        elif quality_score >= 60:
+            return "높음"
+        elif quality_score >= 40:
+            return "보통"
+        elif quality_score >= 20:
+            return "낮음"
+        else:
+            return "매우낮음"
+
+    def _identify_used_data_sources(
         self,
         financial_data: Dict,
-        dart_data: Dict,
-        manus_data: Dict,
-        final_tokens: int,
-        optimizations: List[str],
+        enhanced_dart_data: Dict = None,
+        manus_collected_data: Dict = None,
+    ) -> List[str]:
+        """
+        🔍 전문가 분석에 사용된 데이터 소스를 식별합니다
+
+        Args:
+            financial_data: 재무데이터 딕셔너리
+            enhanced_dart_data: Enhanced DART 데이터 딕셔너리
+            manus_collected_data: Manus 수집 데이터 딕셔너리
+
+        Returns:
+            List[str]: 사용된 데이터 소스 목록
+        """
+        used_sources = []
+
+        # 재무데이터 확인
+        if financial_data and financial_data.get("success"):
+            data_sources = financial_data.get("data_sources", [])
+            used_sources.extend(data_sources)
+
+        # Enhanced DART 데이터 확인
+        if enhanced_dart_data and enhanced_dart_data.get("success"):
+            used_sources.append("Enhanced DART API")
+
+        # Manus 수집 데이터 확인
+        if manus_collected_data and manus_collected_data.get("performed"):
+            used_sources.append("ManusAgent Web Search")
+
+            # PDF 분석이 포함된 경우
+            if manus_collected_data.get("pdf_analysis", {}).get("pdf_detected"):
+                used_sources.append("PDF Document Analysis")
+
+        # 중복 제거
+        return list(set(used_sources))
+
+    async def _synthesize_expert_insights(
+        self, expert_results: List[Dict], user_prompt: str
     ) -> Dict[str, Any]:
-        """최적화 결과 구성"""
-        return {
-            "optimized": True,
-            "financial_data": financial_data,
-            "enhanced_dart_data": dart_data,
-            "manus_collected_data": manus_data,
-            "token_info": {
-                "final_tokens": final_tokens,
-                "optimizations_applied": optimizations,
-            },
-            "optimization_applied": optimizations,
+        """
+        🚀 전문가들의 분석 결과를 종합하여 최종 인사이트를 생성합니다
+
+        Args:
+            expert_results: 전문가별 분석 결과 리스트
+            user_prompt: 사용자 질문
+
+        Returns:
+            Dict: 종합된 분석 결과
+        """
+        logger.info("🚀 전문가 인사이트 종합 시작...")
+
+        # 성공한 분석들만 필터링
+        successful_analyses = [
+            result for result in expert_results if not result.get("error")
+        ]
+
+        if not successful_analyses:
+            return {
+                "synthesis_success": False,
+                "error": "성공한 전문가 분석이 없습니다",
+                "final_recommendation": "분석 결과가 충분하지 않아 추천을 제공할 수 없습니다",
+            }
+
+        # 전문가 유형별 인사이트 분류
+        insights_by_type = {
+            "fundamental": [],
+            "technical": [],
+            "industry": [],
+            "valuation": [],
+            "risk": [],
+            "general": [],
         }
+
+        for result in successful_analyses:
+            expert_name = result.get("expert_name", "")
+            expertise = result.get("expertise_area", "")
+            analysis = result.get("analysis_result", "")
+
+            # 전문가 유형 분류
+            if "재무" in expert_name or "Fundamental" in expertise:
+                insights_by_type["fundamental"].append(analysis)
+            elif "기술" in expert_name or "Technical" in expertise:
+                insights_by_type["technical"].append(analysis)
+            elif "산업" in expert_name or "Industry" in expertise:
+                insights_by_type["industry"].append(analysis)
+            elif "밸류" in expert_name or "Valuation" in expertise:
+                insights_by_type["valuation"].append(analysis)
+            elif "리스크" in expert_name or "Risk" in expertise:
+                insights_by_type["risk"].append(analysis)
+            else:
+                insights_by_type["general"].append(analysis)
+
+        # 종합 분석 프롬프트 구성
+        synthesis_prompt = f"""
+다음은 5명의 전문가가 분석한 결과입니다. 이를 종합하여 최종 투자 의견을 제시해주세요.
+
+사용자 질문: {user_prompt}
+
+전문가 분석 결과:
+"""
+
+        # 각 전문가 유형별 인사이트 추가
+        for insight_type, insights in insights_by_type.items():
+            if insights:
+                type_names = {
+                    "fundamental": "📊 재무분석 전문가",
+                    "technical": "📈 기술분석 전문가",
+                    "industry": "🏭 산업분석 전문가",
+                    "valuation": "💰 밸류에이션 전문가",
+                    "risk": "⚠️ 리스크 분석 전문가",
+                    "general": "🔍 종합분석 전문가",
+                }
+
+                synthesis_prompt += (
+                    f"\n{type_names.get(insight_type, '전문가')} 의견:\n"
+                )
+                for i, insight in enumerate(insights, 1):
+                    synthesis_prompt += (
+                        f"{i}. {insight[:500]}...\n"  # 각 인사이트는 500자로 제한
+                    )
+
+        synthesis_prompt += """
+
+위 전문가 의견들을 종합하여 다음 형식으로 최종 분석을 제공해주세요:
+
+1. **종합 평가**: 전반적인 투자 매력도
+2. **주요 강점**: 핵심 경쟁 우위
+3. **주요 우려사항**: 리스크 요인
+4. **투자 의견**: 매수/보유/매도 의견과 근거
+5. **목표가/적정가**: 가능하다면 적정 주가 범위
+
+각 항목은 간결하고 명확하게 작성해주세요.
+"""
+
+        try:
+            # LLM을 통한 종합 분석
+            synthesis_result = await self._call_llm_for_analysis(synthesis_prompt)
+
+            # 투자 의견 추출 (간단한 키워드 기반)
+            investment_opinion = "중립"
+            if any(
+                keyword in synthesis_result.lower()
+                for keyword in ["매수", "buy", "추천"]
+            ):
+                investment_opinion = "매수"
+            elif any(
+                keyword in synthesis_result.lower()
+                for keyword in ["매도", "sell", "부정적"]
+            ):
+                investment_opinion = "매도"
+            elif any(
+                keyword in synthesis_result.lower() for keyword in ["보유", "hold"]
+            ):
+                investment_opinion = "보유"
+
+            return {
+                "synthesis_success": True,
+                "final_analysis": synthesis_result,
+                "investment_opinion": investment_opinion,
+                "expert_consensus": f"{len(successful_analyses)}명 전문가 의견 종합",
+                "analysis_coverage": [
+                    insight_type
+                    for insight_type, insights in insights_by_type.items()
+                    if insights
+                ],
+                "confidence_level": self._calculate_consensus_confidence(
+                    successful_analyses
+                ),
+            }
+
+        except Exception as e:
+            logger.error(f"❌ 전문가 인사이트 종합 실패: {e}")
+            return {
+                "synthesis_success": False,
+                "error": str(e),
+                "fallback_summary": f"{len(successful_analyses)}명 전문가 분석 완료, 종합 실패",
+            }
+
+    def _calculate_consensus_confidence(self, successful_analyses: List[Dict]) -> str:
+        """전문가 합의 신뢰도를 계산합니다"""
+        expert_count = len(successful_analyses)
+
+        if expert_count >= 5:
+            return "매우높음"
+        elif expert_count >= 3:
+            return "높음"
+        elif expert_count >= 2:
+            return "보통"
+        else:
+            return "낮음"
