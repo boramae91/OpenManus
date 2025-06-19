@@ -38,6 +38,15 @@ from app.llm import LLM
 
 # 🚀 PDFReader 의존성 완전 제거! ChunkProcessor 독립 구현
 
+# 🔖 목차 기반 청킹을 위한 PyMuPDF import 추가
+try:
+    import fitz  # PyMuPDF
+
+    PYMUPDF_AVAILABLE = True
+except ImportError:
+    PYMUPDF_AVAILABLE = False
+    logger.warning("⚠️ PyMuPDF를 찾을 수 없습니다. 목차 기반 청킹이 비활성화됩니다.")
+
 logging.getLogger("pdfminer").setLevel(logging.ERROR)
 warnings.filterwarnings("ignore", category=UserWarning, module="pdfminer")
 
@@ -49,6 +58,7 @@ class IndependentChunkProcessor:
     대용량 PDF를 위한 전용 청크 프로세서예요:
     - PDFReader 의존성 완전 제거
     - 60만+ 글자 지원
+    - 🔖 목차 기반 청킹 지원
     - 스마트 섹션 보존
     """
 
@@ -65,6 +75,11 @@ class IndependentChunkProcessor:
         logger.info(
             f"🔧 독립 청크 프로세서 초기화 (청크: {chunk_size:,}자, 겹침: {overlap_size:,}자)"
         )
+
+        # 🔖 목차 기반 청킹 지원 여부
+        self.toc_chunking_available = PYMUPDF_AVAILABLE
+        if self.toc_chunking_available:
+            logger.info("🔖 PDF 목차 기반 청킹 지원 활성화됨")
 
     def smart_chunk_text(
         self, text: str, preserve_sections: bool = True
@@ -128,6 +143,402 @@ class IndependentChunkProcessor:
 
         logger.info(f"📊 스마트 청킹 완료: {len(chunks)}개 청크 생성")
         return chunks
+
+    def extract_pdf_table_of_contents(self, pdf_path: str) -> List[Dict[str, Any]]:
+        """
+        🔖 PDF에서 목차(Table of Contents) 추출
+
+        PyMuPDF를 사용하여 PDF의 북마크/아웃라인을 추출하고
+        계층 구조로 정리합니다.
+
+        Args:
+            pdf_path: PDF 파일 경로
+
+        Returns:
+            List[Dict]: 목차 구조 리스트
+        """
+        if not self.toc_chunking_available:
+            logger.warning("⚠️ PyMuPDF가 없어서 목차 추출이 불가능합니다")
+            return []
+
+        try:
+            # PDF 문서 열기
+            doc = fitz.open(pdf_path)
+
+            # 목차 추출 (toc = table of contents)
+            toc = doc.get_toc(simple=False)  # detailed=True
+            doc.close()
+
+            if not toc:
+                logger.info("📄 PDF에 목차가 없습니다")
+                return []
+
+            # 목차 구조 정리
+            structured_toc = []
+            for item in toc:
+                level = item[0]  # 계층 레벨 (1=최상위, 2=하위 등)
+                title = item[1]  # 목차 제목
+                page_num = item[2]  # 페이지 번호
+
+                # 추가 정보가 있으면 추출
+                if len(item) > 3:
+                    dest = item[3]  # 목적지 정보
+                else:
+                    dest = None
+
+                structured_toc.append(
+                    {
+                        "level": level,
+                        "title": title.strip(),
+                        "page": page_num,
+                        "destination": dest,
+                        "section_id": len(structured_toc) + 1,
+                    }
+                )
+
+            logger.info(f"🔖 PDF 목차 추출 완료: {len(structured_toc)}개 항목")
+
+            # 목차 구조를 계층별로 로그 출력
+            for item in structured_toc[:10]:  # 처음 10개만 출력
+                indent = "  " * (item["level"] - 1)
+                logger.info(f"  {indent}📑 {item['title']} (페이지 {item['page']})")
+
+            if len(structured_toc) > 10:
+                logger.info(f"  ... 외 {len(structured_toc) - 10}개 목차 항목")
+
+            return structured_toc
+
+        except Exception as e:
+            logger.error(f"❌ PDF 목차 추출 실패: {e}")
+            return []
+
+    def chunk_by_table_of_contents(
+        self,
+        pdf_path: str,
+        text: str,
+        min_chunk_size: int = 1000,
+        max_chunk_size: int = 50000,
+    ) -> List[Dict[str, Any]]:
+        """
+        🔖 PDF 목차 기반으로 텍스트를 청킹
+
+        PDF의 목차 구조를 기반으로 의미있는 섹션별로 텍스트를 분할합니다.
+        각 목차 항목이 하나의 청크가 되어 더 논리적인 구분이 가능합니다.
+
+        Args:
+            pdf_path: PDF 파일 경로
+            text: 분할할 전체 텍스트
+            min_chunk_size: 최소 청크 크기 (너무 작은 섹션 방지)
+            max_chunk_size: 최대 청크 크기 (너무 큰 섹션 분할)
+
+        Returns:
+            List[Dict]: 목차 기반 청크 목록
+        """
+        if not self.toc_chunking_available:
+            logger.warning("⚠️ 목차 기반 청킹 불가능 - 기본 청킹으로 대체")
+            return self.smart_chunk_text(text, preserve_sections=True)
+
+        # 1. 목차 추출
+        toc = self.extract_pdf_table_of_contents(pdf_path)
+        if not toc:
+            logger.info("📄 목차가 없어서 기본 청킹으로 대체")
+            return self.smart_chunk_text(text, preserve_sections=True)
+
+        # 2. 목차 기반 텍스트 매핑
+        toc_chunks = self._map_text_to_toc_sections(text, toc, pdf_path)
+
+        # 3. 청크 크기 조정
+        optimized_chunks = self._optimize_toc_chunk_sizes(
+            toc_chunks, min_chunk_size, max_chunk_size
+        )
+
+        logger.info(
+            f"🔖 목차 기반 청킹 완료: {len(optimized_chunks)}개 청크 "
+            f"(원본 목차: {len(toc)}개 항목)"
+        )
+
+        return optimized_chunks
+
+    def _map_text_to_toc_sections(
+        self, text: str, toc: List[Dict], pdf_path: str
+    ) -> List[Dict[str, Any]]:
+        """
+        목차 정보와 텍스트를 매핑하여 섹션별로 분할
+
+        Args:
+            text: 전체 텍스트
+            toc: 목차 구조
+            pdf_path: PDF 파일 경로 (페이지 매핑용)
+
+        Returns:
+            List[Dict]: 목차 기반 텍스트 섹션들
+        """
+        chunks = []
+
+        try:
+            # PDF에서 페이지별 텍스트 추출 (목차 매핑용)
+            doc = fitz.open(pdf_path)
+            page_texts = []
+
+            for page_num in range(len(doc)):
+                page = doc.load_page(page_num)
+                page_text = page.get_text()
+                page_texts.append(page_text)
+
+            doc.close()
+
+            # 목차 항목별로 해당 텍스트 섹션 추출
+            for i, toc_item in enumerate(toc):
+                section_title = toc_item["title"]
+                section_level = toc_item["level"]
+                start_page = max(0, toc_item["page"] - 1)  # 0-based 인덱스
+
+                # 다음 동일/상위 레벨까지가 이 섹션의 범위
+                end_page = len(page_texts) - 1  # 기본값: 마지막 페이지
+
+                for j in range(i + 1, len(toc)):
+                    next_item = toc[j]
+                    if next_item["level"] <= section_level:
+                        end_page = max(start_page, next_item["page"] - 2)
+                        break
+
+                # 해당 페이지 범위의 텍스트 추출
+                section_text = ""
+                for page_idx in range(start_page, min(end_page + 1, len(page_texts))):
+                    section_text += page_texts[page_idx] + "\n"
+
+                # 섹션 제목으로 텍스트에서 정확한 시작 위치 찾기
+                refined_text = self._refine_section_text(
+                    section_text, section_title, toc_item
+                )
+
+                if refined_text and len(refined_text.strip()) > 100:  # 최소 길이 필터
+                    chunks.append(
+                        {
+                            "chunk_id": i + 1,
+                            "toc_title": section_title,
+                            "toc_level": section_level,
+                            "start_page": start_page + 1,  # 1-based로 변환
+                            "end_page": end_page + 1,
+                            "content": refined_text.strip(),
+                            "content_length": len(refined_text.strip()),
+                            "chunk_type": "toc_based",
+                            "section_hierarchy": self._build_section_hierarchy(toc, i),
+                            "metadata": {
+                                "original_toc_item": toc_item,
+                                "extraction_method": "pymupdf_toc_mapping",
+                            },
+                        }
+                    )
+
+        except Exception as e:
+            logger.error(f"❌ 목차-텍스트 매핑 실패: {e}")
+            # 폴백: 목차 제목으로 텍스트 검색
+            chunks = self._fallback_toc_text_mapping(text, toc)
+
+        return chunks
+
+    def _refine_section_text(
+        self, raw_text: str, section_title: str, toc_item: Dict
+    ) -> str:
+        """
+        추출된 섹션 텍스트를 정제하여 정확한 섹션 내용만 추출
+        """
+        if not raw_text or not section_title:
+            return raw_text
+
+        # 섹션 제목을 기준으로 텍스트 시작점 찾기
+        title_variations = [
+            section_title,
+            section_title.replace(" ", ""),
+            section_title.replace(".", ""),
+            section_title.upper(),
+            section_title.lower(),
+        ]
+
+        best_start = 0
+        for variation in title_variations:
+            start_pos = raw_text.find(variation)
+            if start_pos != -1:
+                best_start = start_pos
+                break
+
+        # 정제된 텍스트 반환
+        refined_text = raw_text[best_start:]
+
+        # 너무 긴 경우 적절히 자르기
+        if len(refined_text) > 100000:  # 10만자 제한
+            refined_text = refined_text[:100000] + "..."
+
+        return refined_text
+
+    def _build_section_hierarchy(
+        self, toc: List[Dict], current_index: int
+    ) -> List[str]:
+        """
+        현재 섹션의 계층 구조를 문자열 리스트로 구성
+        """
+        hierarchy = []
+        current_level = toc[current_index]["level"]
+
+        # 현재 섹션까지의 상위 레벨들 추적
+        for i in range(current_index + 1):
+            item = toc[i]
+            if item["level"] < current_level:
+                hierarchy.append(item["title"])
+            elif item["level"] == current_level and i == current_index:
+                hierarchy.append(item["title"])
+
+        return hierarchy
+
+    def _fallback_toc_text_mapping(
+        self, text: str, toc: List[Dict]
+    ) -> List[Dict[str, Any]]:
+        """
+        목차 기반 매핑 실패시 폴백: 텍스트에서 목차 제목 검색으로 분할
+        """
+        chunks = []
+
+        for i, toc_item in enumerate(toc):
+            section_title = toc_item["title"]
+
+            # 텍스트에서 섹션 제목 찾기
+            title_pos = text.find(section_title)
+            if title_pos == -1:
+                continue
+
+            # 다음 섹션까지의 텍스트 추출
+            next_pos = len(text)
+            for j in range(i + 1, len(toc)):
+                next_title = toc[j]["title"]
+                next_title_pos = text.find(next_title, title_pos + 1)
+                if next_title_pos != -1:
+                    next_pos = next_title_pos
+                    break
+
+            section_text = text[title_pos:next_pos].strip()
+
+            if len(section_text) > 100:  # 최소 길이 필터
+                chunks.append(
+                    {
+                        "chunk_id": i + 1,
+                        "toc_title": section_title,
+                        "toc_level": toc_item["level"],
+                        "content": section_text,
+                        "content_length": len(section_text),
+                        "chunk_type": "toc_fallback",
+                        "metadata": {
+                            "extraction_method": "text_search_fallback",
+                            "text_position": title_pos,
+                        },
+                    }
+                )
+
+        return chunks
+
+    def _optimize_toc_chunk_sizes(
+        self, toc_chunks: List[Dict], min_size: int, max_size: int
+    ) -> List[Dict[str, Any]]:
+        """
+        목차 기반 청크들의 크기를 최적화
+
+        - 너무 작은 청크들은 병합
+        - 너무 큰 청크들은 분할
+        """
+        optimized_chunks = []
+
+        for chunk in toc_chunks:
+            content_length = chunk["content_length"]
+
+            if content_length < min_size:
+                # 너무 작은 청크: 이전 청크와 병합 시도
+                if (
+                    optimized_chunks
+                    and optimized_chunks[-1]["chunk_type"] == "toc_based"
+                ):
+                    last_chunk = optimized_chunks[-1]
+                    if last_chunk["content_length"] + content_length < max_size:
+                        # 병합 수행
+                        last_chunk["content"] += "\n\n" + chunk["content"]
+                        last_chunk["content_length"] += content_length
+                        last_chunk["toc_title"] += f" + {chunk['toc_title']}"
+                        last_chunk["merged_sections"] = (
+                            last_chunk.get("merged_sections", 1) + 1
+                        )
+                        continue
+
+            elif content_length > max_size:
+                # 너무 큰 청크: 분할
+                sub_chunks = self._split_large_toc_chunk(chunk, max_size)
+                optimized_chunks.extend(sub_chunks)
+                continue
+
+            # 적정 크기의 청크는 그대로 추가
+            optimized_chunks.append(chunk)
+
+        # 청크 ID 재정렬
+        for i, chunk in enumerate(optimized_chunks):
+            chunk["chunk_id"] = i + 1
+
+        return optimized_chunks
+
+    def _split_large_toc_chunk(
+        self, large_chunk: Dict, max_size: int
+    ) -> List[Dict[str, Any]]:
+        """
+        큰 목차 청크를 여러 개로 분할
+        """
+        content = large_chunk["content"]
+        sub_chunks = []
+
+        # 문단 단위로 분할 시도
+        paragraphs = content.split("\n\n")
+        current_content = ""
+        sub_chunk_id = 1
+
+        for paragraph in paragraphs:
+            if len(current_content + paragraph) > max_size and current_content:
+                # 현재 내용을 청크로 저장
+                sub_chunk = large_chunk.copy()
+                sub_chunk.update(
+                    {
+                        "content": current_content.strip(),
+                        "content_length": len(current_content.strip()),
+                        "toc_title": f"{large_chunk['toc_title']} (Part {sub_chunk_id})",
+                        "chunk_type": "toc_split",
+                        "split_info": {
+                            "parent_title": large_chunk["toc_title"],
+                            "part_number": sub_chunk_id,
+                            "is_split": True,
+                        },
+                    }
+                )
+                sub_chunks.append(sub_chunk)
+
+                current_content = paragraph
+                sub_chunk_id += 1
+            else:
+                current_content += "\n\n" + paragraph if current_content else paragraph
+
+        # 마지막 내용 처리
+        if current_content.strip():
+            sub_chunk = large_chunk.copy()
+            sub_chunk.update(
+                {
+                    "content": current_content.strip(),
+                    "content_length": len(current_content.strip()),
+                    "toc_title": f"{large_chunk['toc_title']} (Part {sub_chunk_id})",
+                    "chunk_type": "toc_split",
+                    "split_info": {
+                        "parent_title": large_chunk["toc_title"],
+                        "part_number": sub_chunk_id,
+                        "is_split": True,
+                    },
+                }
+            )
+            sub_chunks.append(sub_chunk)
+
+        return sub_chunks
 
 
 class LargePDFAnalyzer:
@@ -229,11 +640,100 @@ class LargePDFAnalyzer:
                 "extraction_method", "unknown"
             )
 
-            # 원문 전체 저장
+            # 🔖 목차 기반 청킹 시도 (새로운 기능!)
+            actual_pdf_path = await self._handle_pdf_source(pdf_path)
+            contextual_chunks = []
+            chunking_method = "none"
+
+            if len(full_text) > 1000:  # 최소 길이 체크
+                try:
+                    logger.info("🔖 PDF 목차 기반 청킹 시도...")
+                    # 목차 기반 청킹 우선 시도
+                    contextual_chunks = self.chunk_processor.chunk_by_table_of_contents(
+                        pdf_path=actual_pdf_path,
+                        text=full_text,
+                        min_chunk_size=1000,
+                        max_chunk_size=50000,
+                    )
+
+                    if contextual_chunks:
+                        logger.info(
+                            f"✅ 목차 기반 청킹 성공: {len(contextual_chunks)}개 청크 생성"
+                        )
+                        chunking_method = "table_of_contents"
+
+                        # 목차 구조 로그 출력
+                        toc_chunks = [
+                            c
+                            for c in contextual_chunks
+                            if c.get("chunk_type") == "toc_based"
+                        ]
+                        if toc_chunks:
+                            logger.info("📑 목차 구조:")
+                            for chunk in toc_chunks[:5]:  # 처음 5개만 출력
+                                level = chunk.get("toc_level", 1)
+                                title = chunk.get("toc_title", "제목없음")
+                                length = chunk.get("content_length", 0)
+                                indent = "  " * (level - 1)
+                                logger.info(f"  {indent}📄 {title} ({length:,}자)")
+                            if len(toc_chunks) > 5:
+                                logger.info(
+                                    f"  ... 외 {len(toc_chunks) - 5}개 목차 청크"
+                                )
+                    else:
+                        logger.info("📄 목차가 없거나 목차 기반 청킹 실패")
+                        chunking_method = "no_toc_available"
+
+                except Exception as e:
+                    logger.warning(f"⚠️ 목차 기반 청킹 중 오류: {e}")
+                    chunking_method = "error_fallback"
+
+            # 원문 전체 저장 (목차 기반 청킹 정보 추가)
             result["raw_content"] = {
                 "full_text": full_text,
                 "text_length": len(full_text),
                 "note": "원문 그대로 추출됨 (AI 분석/요약 없음)",
+                # 🔖 목차 기반 청킹 정보 추가
+                "contextual_chunks": contextual_chunks,
+                "chunking_applied": len(contextual_chunks) > 0,
+                "chunking_method": chunking_method,
+                "total_chunks": len(contextual_chunks),
+                "chunk_types": (
+                    list(
+                        set(
+                            chunk.get("chunk_type", "unknown")
+                            for chunk in contextual_chunks
+                        )
+                    )
+                    if contextual_chunks
+                    else []
+                ),
+                "toc_available": any(
+                    chunk.get("chunk_type") == "toc_based"
+                    for chunk in contextual_chunks
+                ),
+                "chunk_summary": {
+                    "toc_based_chunks": len(
+                        [
+                            c
+                            for c in contextual_chunks
+                            if c.get("chunk_type") == "toc_based"
+                        ]
+                    ),
+                    "fallback_chunks": len(
+                        [
+                            c
+                            for c in contextual_chunks
+                            if c.get("chunk_type") in ["toc_fallback", "toc_split"]
+                        ]
+                    ),
+                    "average_chunk_size": (
+                        sum(c.get("content_length", 0) for c in contextual_chunks)
+                        // len(contextual_chunks)
+                        if contextual_chunks
+                        else 0
+                    ),
+                },
             }
 
             # 미리보기용 (처음 2000자)

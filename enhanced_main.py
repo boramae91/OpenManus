@@ -1715,15 +1715,29 @@ class EnhancedStockAnalysisSystem:
                 # 📄 PDF 분석 결과를 분석 응답에 포함 (chunking 정보 추가)
                 raw_text = pdf_result.get("raw_content", {}).get("full_text", "")
 
-                # 🚀 PDF를 context별로 chunking (SmartSectorManager와 동일한 방식)
+                # 🔖 PDF를 목차 기반으로 chunking (목차 우선, 키워드 폴백)
                 contextual_chunks = []
                 if raw_text and len(raw_text) > 1000:
                     try:
-                        # SmartSectorManager의 chunking 로직 재사용
-                        contextual_chunks = self._create_pdf_chunks_for_crewai(raw_text)
-                        logger.info(
-                            f"📄 PDF Context Chunking 완료: {len(contextual_chunks)}개 청크 생성"
+                        # 목차 기반 청킹 우선 시도 (PDF 경로 전달)
+                        contextual_chunks = self._create_pdf_chunks_for_crewai(
+                            raw_text, pdf_path
                         )
+                        logger.info(
+                            f"📄 PDF Chunking 완료: {len(contextual_chunks)}개 청크 생성"
+                        )
+
+                        # 목차 기반 청킹 성공 여부 로그
+                        toc_chunks = [
+                            c
+                            for c in contextual_chunks
+                            if c.get("source") == "table_of_contents"
+                        ]
+                        if toc_chunks:
+                            logger.info(f"🔖 목차 기반 청크: {len(toc_chunks)}개")
+                        else:
+                            logger.info("📝 키워드 기반 청킹 사용됨 (목차 없음)")
+
                     except Exception as e:
                         logger.warning(f"⚠️ PDF Chunking 실패: {e} - 원본 텍스트 유지")
 
@@ -2880,15 +2894,18 @@ class EnhancedStockAnalysisSystem:
                 count += 1
         return count
 
-    def _create_pdf_chunks_for_crewai(self, pdf_text: str) -> List[Dict[str, Any]]:
+    def _create_pdf_chunks_for_crewai(
+        self, pdf_text: str, pdf_path: str = None
+    ) -> List[Dict[str, Any]]:
         """
-        📄 PDF를 CrewAI용 context별 청크로 분할
+        📄 PDF를 CrewAI용 context별 청크로 분할 (목차 기반 우선)
 
-        SmartSectorManager와 동일한 chunking 로직을 사용하여
-        PDF 텍스트를 의미있는 context별로 분할합니다.
+        1. 목차 기반 청킹 우선 시도 (PDF 경로가 있는 경우)
+        2. 실패시 키워드 기반 청킹으로 폴백
 
         Args:
             pdf_text: 분할할 PDF 텍스트
+            pdf_path: PDF 파일 경로 (목차 기반 청킹용)
 
         Returns:
             List[Dict]: context별 청크 목록
@@ -2896,10 +2913,121 @@ class EnhancedStockAnalysisSystem:
         if not pdf_text or len(pdf_text) < 1000:
             return []
 
+        # 🔖 1. 목차 기반 청킹 우선 시도 (PDF 경로가 있는 경우)
+        if pdf_path and hasattr(self, "large_pdf_analyzer") and self.large_pdf_analyzer:
+            try:
+                logger.info("🔖 목차 기반 청킹 시도...")
+                toc_chunks = (
+                    self.large_pdf_analyzer.chunk_processor.chunk_by_table_of_contents(
+                        pdf_path=pdf_path,
+                        text=pdf_text,
+                        min_chunk_size=1000,
+                        max_chunk_size=50000,
+                    )
+                )
+
+                if toc_chunks:
+                    logger.info(f"✅ 목차 기반 청킹 성공: {len(toc_chunks)}개 청크")
+                    # 목차 청크를 CrewAI 형식으로 변환
+                    converted_chunks = []
+                    for i, chunk in enumerate(toc_chunks):
+                        converted_chunks.append(
+                            {
+                                "chunk_id": i + 1,
+                                "context_type": self._infer_context_from_toc_title(
+                                    chunk.get("toc_title", "")
+                                ),
+                                "content": chunk.get("content", ""),
+                                "content_length": chunk.get("content_length", 0),
+                                "toc_title": chunk.get("toc_title", ""),
+                                "toc_level": chunk.get("toc_level", 1),
+                                "chunk_type": chunk.get("chunk_type", "toc_based"),
+                                "section_hierarchy": chunk.get("section_hierarchy", []),
+                                "keywords_found": self._extract_pdf_chunk_keywords(
+                                    chunk.get("content", "")
+                                ),
+                                "source": "table_of_contents",
+                            }
+                        )
+                    return converted_chunks
+
+            except Exception as e:
+                logger.warning(f"⚠️ 목차 기반 청킹 실패: {e} - 키워드 기반으로 폴백")
+
+        # 📝 2. 키워드 기반 청킹 (폴백)
+        logger.info("📝 키워드 기반 청킹 수행...")
+        return self._keyword_based_chunking(pdf_text)
+
+    def _infer_context_from_toc_title(self, toc_title: str) -> str:
+        """
+        목차 제목에서 context 타입 추론
+        """
+        if not toc_title:
+            return "general"
+
+        title_lower = toc_title.lower()
+
+        # 재무 관련
+        if any(
+            keyword in title_lower
+            for keyword in [
+                "재무",
+                "financial",
+                "손익",
+                "대차대조표",
+                "현금흐름",
+                "자산",
+                "부채",
+            ]
+        ):
+            return "financial"
+
+        # 사업 관련
+        elif any(
+            keyword in title_lower
+            for keyword in ["사업", "business", "영업", "시장", "제품", "서비스"]
+        ):
+            return "business"
+
+        # 리스크 관련
+        elif any(
+            keyword in title_lower
+            for keyword in ["위험", "risk", "리스크", "우려", "문제"]
+        ):
+            return "risk"
+
+        # 투자 관련
+        elif any(
+            keyword in title_lower
+            for keyword in ["투자", "investment", "주가", "전망", "목표"]
+        ):
+            return "investment"
+
+        # 지배구조 관련
+        elif any(
+            keyword in title_lower
+            for keyword in ["지배구조", "governance", "주주", "이사회", "경영진"]
+        ):
+            return "governance"
+
+        # 기술 관련
+        elif any(
+            keyword in title_lower
+            for keyword in ["기술", "technology", "개발", "R&D", "연구", "특허"]
+        ):
+            return "technical"
+
+        else:
+            return "general"
+
+    def _keyword_based_chunking(self, pdf_text: str) -> List[Dict[str, Any]]:
+        """
+        키워드 기반 청킹 (기존 로직)
+        """
         chunks = []
         lines = pdf_text.split("\n")
 
-        # Context 타입별 키워드 정의 (SmartSectorManager와 동일)
+        # Context 타입별 키워드 정의
         context_keywords = {
             "financial": [
                 "재무",
@@ -3079,6 +3207,7 @@ class EnhancedStockAnalysisSystem:
                         "line_count": len(chunk_data["lines"]),
                         "relevance_score": chunk_data["score"],
                         "keywords_found": self._extract_pdf_chunk_keywords(chunk_text),
+                        "source": "keyword_based",
                     }
                 )
 

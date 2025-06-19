@@ -1377,7 +1377,7 @@ class SmartSectorManager:
         )
 
     def _compress_pdf_data(self, manus_data: Dict, target_ratio: float = 0.3) -> Dict:
-        """📄 PDF 데이터 context별 chunking (압축 대신 스마트 선택)"""
+        """🔖 PDF 데이터 목차 기반 chunking (압축 대신 스마트 구조화)"""
         if not manus_data or not manus_data.get("pdf_analysis", {}).get("pdf_detected"):
             return manus_data
 
@@ -1387,24 +1387,225 @@ class SmartSectorManager:
 
         if "raw_text" in pdf_content:
             original_text = pdf_content["raw_text"]
+            pdf_path = pdf_analysis.get("pdf_path", "")
 
-            # 🚀 PDF를 context별로 chunking하여 저장
-            pdf_chunks = self._create_contextual_pdf_chunks(original_text)
+            # 🔖 기존 contextual_chunks가 있는지 확인 (enhanced_main.py에서 이미 생성된 경우)
+            existing_chunks = pdf_content.get("contextual_chunks", [])
 
-            # 원본 텍스트는 유지하고 chunks 정보 추가
+            if existing_chunks:
+                # 이미 chunking이 완료된 경우 - 최적화만 수행
+                logger.info(
+                    f"📄 기존 청킹 발견: {len(existing_chunks)}개 청크 - 최적화 수행"
+                )
+
+                # 목차 기반 청크 우선 선택
+                toc_chunks = [
+                    c for c in existing_chunks if c.get("source") == "table_of_contents"
+                ]
+                if toc_chunks:
+                    pdf_chunks = toc_chunks
+                    chunking_method = "table_of_contents_existing"
+                    logger.info(f"🔖 목차 기반 청크 사용: {len(toc_chunks)}개")
+                else:
+                    pdf_chunks = existing_chunks
+                    chunking_method = "keyword_based_existing"
+                    logger.info(f"📝 키워드 기반 청크 사용: {len(existing_chunks)}개")
+            else:
+                # 새로 chunking 수행
+                logger.info("🔖 PDF 목차 기반 청킹 시도...")
+                try:
+                    # enhanced_main.py와 동일한 방식으로 청킹
+                    pdf_chunks = self._create_toc_based_pdf_chunks(
+                        original_text, pdf_path
+                    )
+                    chunking_method = "table_of_contents_new"
+
+                    if not pdf_chunks:
+                        # 목차 기반 실패시 키워드 기반으로 폴백
+                        logger.info("📝 목차 없음 - 키워드 기반 청킹으로 폴백")
+                        pdf_chunks = self._create_contextual_pdf_chunks(original_text)
+                        chunking_method = "keyword_based_fallback"
+
+                except Exception as e:
+                    logger.warning(f"⚠️ 목차 기반 청킹 실패: {e} - 키워드 기반으로 폴백")
+                    pdf_chunks = self._create_contextual_pdf_chunks(original_text)
+                    chunking_method = "keyword_based_error"
+
+            # 원본 텍스트는 유지하고 chunks 정보 업데이트
             pdf_content["contextual_chunks"] = pdf_chunks
             pdf_content["chunking_applied"] = True
+            pdf_content["chunking_method"] = chunking_method
             pdf_content["total_chunks"] = len(pdf_chunks)
-            pdf_content["chunk_types"] = list(
-                set(chunk["context_type"] for chunk in pdf_chunks)
-            )
+
+            # 청크 타입 정보 업데이트
+            chunk_types = []
+            toc_count = 0
+            for chunk in pdf_chunks:
+                if (
+                    chunk.get("source") == "table_of_contents"
+                    or chunk.get("chunk_type") == "toc_based"
+                ):
+                    chunk_types.append("목차기반")
+                    toc_count += 1
+                else:
+                    chunk_types.append(chunk.get("context_type", "일반"))
+
+            pdf_content["chunk_types"] = list(set(chunk_types))
+            pdf_content["toc_chunks_count"] = toc_count
+            pdf_content["keyword_chunks_count"] = len(pdf_chunks) - toc_count
 
             logger.info(
-                f"📄 PDF Context Chunking: {len(pdf_chunks)}개 청크 생성 "
-                f"(타입: {', '.join(pdf_content['chunk_types'])})"
+                f"🔖 PDF Chunking 완료: {len(pdf_chunks)}개 청크 "
+                f"(목차: {toc_count}개, 키워드: {len(pdf_chunks) - toc_count}개) "
+                f"방식: {chunking_method}"
             )
 
         return optimized_data
+
+    def _create_toc_based_pdf_chunks(
+        self, pdf_text: str, pdf_path: str
+    ) -> List[Dict[str, Any]]:
+        """
+        🔖 목차 기반 PDF 청킹 (enhanced_main.py와 동일한 방식)
+
+        목차 구조에 따라 PDF를 의미있는 섹션으로 분할합니다.
+        """
+        if not pdf_text or not pdf_path:
+            return []
+
+        try:
+            import re
+
+            # enhanced_main.py의 large_pdf_analyzer와 유사한 로직
+            # 하지만 SmartSectorManager에서는 simplified 버전 사용
+            # 목차 패턴 감지 시도
+            toc_patterns = [
+                r"^\s*(\d+)\.\s+(.+)$",  # "1. 제목" 패턴
+                r"^\s*([\d\.]+)\s+(.+)$",  # "1.1 제목" 패턴
+                r"^\s*([가-힣])\.\s+(.+)$",  # "가. 제목" 패턴
+                r"^\s*\(?([가-힣])\)?\s+(.+)$",  # "(가) 제목" 패턴
+            ]
+
+            lines = pdf_text.split("\n")
+            toc_items = []
+
+            for i, line in enumerate(lines):
+                line = line.strip()
+                if not line or len(line) < 3:
+                    continue
+
+                for pattern in toc_patterns:
+                    match = re.match(pattern, line)
+                    if match:
+                        toc_items.append(
+                            {
+                                "line_number": i,
+                                "title": match.group(2).strip(),
+                                "level": 1,  # 간단한 레벨링
+                                "content_start": i,
+                            }
+                        )
+                        break
+
+            if len(toc_items) < 2:  # 최소 2개 섹션은 있어야 함
+                return []
+
+            # 목차 기반 청크 생성
+            chunks = []
+            for i, toc_item in enumerate(toc_items):
+                start_line = toc_item["content_start"]
+                end_line = (
+                    toc_items[i + 1]["content_start"]
+                    if i + 1 < len(toc_items)
+                    else len(lines)
+                )
+
+                section_text = "\n".join(lines[start_line:end_line]).strip()
+
+                if len(section_text) > 200:  # 최소 길이 체크
+                    chunks.append(
+                        {
+                            "chunk_id": i + 1,
+                            "toc_title": toc_item["title"],
+                            "toc_level": toc_item["level"],
+                            "content": section_text,
+                            "content_length": len(section_text),
+                            "chunk_type": "toc_based",
+                            "source": "table_of_contents",
+                            "context_type": self._infer_context_from_title(
+                                toc_item["title"]
+                            ),
+                            "section_hierarchy": [toc_item["title"]],
+                        }
+                    )
+
+            return chunks
+
+        except Exception as e:
+            logger.warning(f"⚠️ 목차 기반 청킹 실패: {e}")
+            return []
+
+    def _infer_context_from_title(self, title: str) -> str:
+        """
+        목차 제목에서 context 타입 추론
+        """
+        if not title:
+            return "general"
+
+        title_lower = title.lower()
+
+        # 재무 관련
+        if any(
+            keyword in title_lower
+            for keyword in [
+                "재무",
+                "financial",
+                "손익",
+                "대차대조표",
+                "현금흐름",
+                "자산",
+                "부채",
+            ]
+        ):
+            return "financial"
+
+        # 사업 관련
+        elif any(
+            keyword in title_lower
+            for keyword in ["사업", "business", "영업", "시장", "제품", "서비스"]
+        ):
+            return "business"
+
+        # 리스크 관련
+        elif any(
+            keyword in title_lower
+            for keyword in ["위험", "risk", "리스크", "우려", "문제"]
+        ):
+            return "risk"
+
+        # 투자 관련
+        elif any(
+            keyword in title_lower
+            for keyword in ["투자", "investment", "주가", "전망", "목표"]
+        ):
+            return "investment"
+
+        # 지배구조 관련
+        elif any(
+            keyword in title_lower
+            for keyword in ["지배구조", "governance", "주주", "이사회", "경영진"]
+        ):
+            return "governance"
+
+        # 기술 관련
+        elif any(
+            keyword in title_lower
+            for keyword in ["기술", "technology", "개발", "R&D", "연구", "특허"]
+        ):
+            return "technical"
+
+        else:
+            return "general"
 
     def _create_contextual_pdf_chunks(self, pdf_text: str) -> List[Dict[str, Any]]:
         """📄 PDF를 context별로 의미있는 청크로 분할"""
@@ -1624,7 +1825,7 @@ class SmartSectorManager:
     def _select_relevant_pdf_chunks(
         self, pdf_chunks: List[Dict[str, Any]], expert_type: str, max_chunks: int = 3
     ) -> List[Dict[str, Any]]:
-        """전문가 타입에 따라 관련성 높은 PDF 청크 선택"""
+        """🔖 전문가 타입에 따라 관련성 높은 PDF 청크 선택 (목차 기반 우선)"""
         if not pdf_chunks:
             return []
 
@@ -1641,35 +1842,136 @@ class SmartSectorManager:
 
         preferred_contexts = expert_context_mapping.get(expert_type, ["general"])
 
-        # 관련성 점수 계산하여 정렬
-        scored_chunks = []
-        for chunk in pdf_chunks:
-            relevance_score = 0
+        # 🔖 목차 기반 청크와 키워드 기반 청크 분리
+        toc_chunks = [
+            c
+            for c in pdf_chunks
+            if c.get("source") == "table_of_contents"
+            or c.get("chunk_type") == "toc_based"
+        ]
+        keyword_chunks = [
+            c
+            for c in pdf_chunks
+            if c.get("source") != "table_of_contents"
+            and c.get("chunk_type") != "toc_based"
+        ]
 
-            # Context 타입 매칭 점수
-            if chunk["context_type"] in preferred_contexts:
-                relevance_score += 10
+        selected_chunks = []
 
-            # 기본 relevance_score 추가
-            relevance_score += chunk.get("relevance_score", 0)
+        # 1. 목차 기반 청크에서 먼저 선택 (제목 기반 정확한 매칭)
+        if toc_chunks:
+            toc_scored = []
+            for chunk in toc_chunks:
+                relevance_score = 0
+                chunk_context = chunk.get("context_type", "general")
+                toc_title = chunk.get("toc_title", "").lower()
 
-            # 청크 크기 보너스 (너무 작거나 크지 않은 것 선호)
-            content_length = chunk["content_length"]
-            if 1000 <= content_length <= 5000:
-                relevance_score += 5
-            elif 500 <= content_length < 1000:
-                relevance_score += 3
+                # 🔖 목차 제목 직접 매칭 (높은 점수)
+                for context in preferred_contexts:
+                    if context == "financial" and any(
+                        kw in toc_title
+                        for kw in [
+                            "재무",
+                            "financial",
+                            "손익",
+                            "대차대조표",
+                            "현금흐름",
+                        ]
+                    ):
+                        relevance_score += 25
+                    elif context == "business" and any(
+                        kw in toc_title
+                        for kw in ["사업", "business", "영업", "시장", "제품"]
+                    ):
+                        relevance_score += 25
+                    elif context == "risk" and any(
+                        kw in toc_title for kw in ["위험", "risk", "리스크", "우려사항"]
+                    ):
+                        relevance_score += 25
+                    elif context == "investment" and any(
+                        kw in toc_title for kw in ["투자", "investment", "전망", "목표"]
+                    ):
+                        relevance_score += 25
+                    elif context == "technical" and any(
+                        kw in toc_title for kw in ["기술", "technology", "R&D", "연구"]
+                    ):
+                        relevance_score += 25
+                    elif context == "governance" and any(
+                        kw in toc_title
+                        for kw in ["지배구조", "governance", "주주", "이사회"]
+                    ):
+                        relevance_score += 25
 
-            scored_chunks.append((relevance_score, chunk))
+                # Context 타입 일치 점수
+                if chunk_context in preferred_contexts:
+                    relevance_score += 15
 
-        # 점수 순으로 정렬하고 상위 청크 선택
-        scored_chunks.sort(reverse=True, key=lambda x: x[0])
-        selected_chunks = [chunk for score, chunk in scored_chunks[:max_chunks]]
+                # 목차 레벨 보너스 (상위 레벨 선호)
+                toc_level = chunk.get("toc_level", 99)
+                if toc_level <= 2:
+                    relevance_score += 8
+                elif toc_level <= 3:
+                    relevance_score += 5
 
+                # 적정 크기 보너스
+                content_length = chunk.get("content_length", 0)
+                if 1000 <= content_length <= 5000:
+                    relevance_score += 5
+
+                toc_scored.append((relevance_score, chunk))
+
+            # 목차 기반 청크 중 상위 선택 (최대 2개까지)
+            toc_scored.sort(reverse=True, key=lambda x: x[0])
+            selected_chunks.extend(
+                [chunk for score, chunk in toc_scored[: min(2, max_chunks)]]
+            )
+
+        # 2. 남은 자리가 있으면 키워드 기반 청크에서 추가 선택
+        remaining_slots = max_chunks - len(selected_chunks)
+        if remaining_slots > 0 and keyword_chunks:
+            keyword_scored = []
+            for chunk in keyword_chunks:
+                relevance_score = 0
+
+                # Context 타입 매칭 점수
+                if chunk.get("context_type", "general") in preferred_contexts:
+                    relevance_score += 10
+
+                # 기본 relevance_score 추가
+                relevance_score += chunk.get("relevance_score", 0)
+
+                # 청크 크기 보너스
+                content_length = chunk.get("content_length", 0)
+                if 1000 <= content_length <= 5000:
+                    relevance_score += 5
+                elif 500 <= content_length < 1000:
+                    relevance_score += 3
+
+                keyword_scored.append((relevance_score, chunk))
+
+            # 키워드 기반 청크 중 상위 선택
+            keyword_scored.sort(reverse=True, key=lambda x: x[0])
+            selected_chunks.extend(
+                [chunk for score, chunk in keyword_scored[:remaining_slots]]
+            )
+
+        # 최종 선택 결과 로그
         if selected_chunks:
+            toc_count = sum(
+                1
+                for c in selected_chunks
+                if c.get("source") == "table_of_contents"
+                or c.get("chunk_type") == "toc_based"
+            )
+            keyword_count = len(selected_chunks) - toc_count
+            context_types = set(
+                c.get("context_type", "general") for c in selected_chunks
+            )
+
             logger.info(
-                f"📄 {expert_type}용 PDF 청크 선택: {len(selected_chunks)}개 "
-                f"(타입: {', '.join(set(c['context_type'] for c in selected_chunks))})"
+                f"🔖 {expert_type}용 PDF 청크 선택: 총 {len(selected_chunks)}개 "
+                f"(목차: {toc_count}개, 키워드: {keyword_count}개) "
+                f"타입: {', '.join(context_types)}"
             )
 
         return selected_chunks
