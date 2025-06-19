@@ -130,16 +130,17 @@ class EnhancedStockAnalysisSystem:
 
     async def run_enhanced_analysis(self, user_prompt: str) -> Dict[str, Any]:
         """
-        🚀 개선된 종합 주식 분석 시스템 (PDF는 AI Agent가 필요시 자동 처리)
+        🚀 개선된 종합 주식 분석 시스템 (수정된 워크플로우)
 
-        워크플로우:
+        수정된 워크플로우:
         1. 🎯 사용자 의도 분석
         2. 📋 종목 감지 (AI 웹검색 우선)
         3. 🏷️ ticker_bbg 매핑
         4. 📊 재무데이터 수집 (기본 + Enhanced DART)
-        5. 📈 의도 맞춤형 상세 분석 (AI Agent가 필요시 PDF 자동 처리)
-        6. 📋 종합 결과 정리
-        7. 💾 JSON 저장
+        5. 📈 의도 맞춤형 정보 수집 (Manus Agent 먼저 실행)
+        6. 🎯 CrewAI 종합 분석 (모든 데이터 통합 분석)
+        7. 📋 종합 결과 정리
+        8. 💾 JSON 저장
 
         Args:
             user_prompt: 사용자 입력 프롬프트
@@ -147,12 +148,12 @@ class EnhancedStockAnalysisSystem:
         Returns:
             Dict: 전체 분석 결과
         """
-        logger.info(f"🔍 개선된 분석 시작: {user_prompt}")
+        logger.info(f"🔍 개선된 분석 시작 (수정된 워크플로우): {user_prompt}")
 
         results = {
             "user_prompt": user_prompt,
             "timestamp": datetime.now().isoformat(),
-            "analysis_flow": "enhanced_intent_based",
+            "analysis_flow": "enhanced_manus_first_crewai_synthesis",
             "success": False,
             "steps": {},
         }
@@ -211,36 +212,6 @@ class EnhancedStockAnalysisSystem:
             )
             results["steps"]["step2_financial_data"] = financial_data
 
-            # 🚀 Step 2.5: One-Hot 섹터 감지 및 활성화 (새로운 핵심 기능!)
-            sector_analysis_result = None
-            if self.smart_sector_manager:
-                logger.info("🎯 Step 2.5: GICS 섹터 감지 및 전문가 팀 활성화")
-                try:
-                    # 분석 깊이 자동 감지
-                    analysis_depth = self._detect_analysis_depth_from_prompt(
-                        user_prompt
-                    )
-
-                    # 섹터별 전문가 분석 수행
-                    sector_analysis_result = (
-                        await self.smart_sector_manager.analyze_with_optimal_team(
-                            user_prompt=user_prompt,
-                            stock_name=stock_info.get("stock_name"),
-                            stock_code=stock_info.get("stock_code"),
-                            financial_data=financial_data,
-                            analysis_depth=analysis_depth,
-                        )
-                    )
-
-                    results["steps"]["step2_5_sector_analysis"] = sector_analysis_result
-                    logger.info(
-                        f"✅ 섹터 전문가 분석 완료 - 섹터: {sector_analysis_result.get('detected_sector', '알 수 없음')}"
-                    )
-
-                except Exception as e:
-                    logger.error(f"섹터 전문가 분석 실패: {e}")
-                    results["steps"]["step2_5_sector_analysis"] = {"error": str(e)}
-
             if not financial_data["success"]:
                 logger.warning("⚠️ 기본 재무데이터 수집 실패 - 기존 방식으로 진행")
             else:
@@ -273,31 +244,66 @@ class EnhancedStockAnalysisSystem:
                     "ℹ️ Enhanced DART 데이터 수집 생략 (API 키 없음 또는 해외 종목)"
                 )
 
-            # Step 3: 종목 분류 기능 제거 (기능 단순화)
-            logger.info("⏭️ Step 3: 종목 분류 기능 제거됨 (시스템 단순화)")
+            # 🚀 Step 3: 의도 맞춤형 정보 수집 (Manus Agent 먼저 실행!)
+            logger.info("📈 Step 3: 의도 맞춤형 정보 수집 (Manus Agent 웹검색 우선)")
             classification_result = {"performed": False, "reason": "분류 기능 제거됨"}
 
-            # Step 3: 의도 맞춤형 상세 분석 (AI Agent가 필요시 PDF 자동 처리)
-            logger.info("📈 Step 3: 의도 맞춤형 상세 분석 (PDF 자동 처리 포함)")
-            analysis_result = await self.perform_intent_based_analysis(
+            manus_collection_result = await self.perform_information_collection_first(
                 user_prompt,
                 stock_info,
                 financial_data,
                 classification_result,
                 enhanced_dart_data,
                 intent_analysis,
-                sector_analysis_result,  # 🚀 섹터 전문가 분석 결과 추가
             )
-            results["steps"]["step3_detailed_analysis"] = analysis_result
+            results["steps"]["step3_information_collection"] = manus_collection_result
 
             # 📄 PDF 분석 결과가 있다면 별도 스텝으로 추가
-            if analysis_result.get("pdf_analysis", {}).get("pdf_detected"):
+            if manus_collection_result.get("pdf_analysis", {}).get("pdf_detected"):
                 logger.info("📄 PDF 분석 결과 감지됨 - 별도 단계로 기록")
-                results["steps"]["pdf_large_analysis"] = analysis_result["pdf_analysis"]
+                results["steps"]["pdf_large_analysis"] = manus_collection_result[
+                    "pdf_analysis"
+                ]
+
+            # 🎯 Step 2.5: CrewAI 종합 분석 (모든 데이터 통합!)
+            sector_analysis_result = None
+            if self.smart_sector_manager:
+                logger.info(
+                    "🎯 Step 2.5: CrewAI 종합 분석 (재무데이터 + Manus 수집 정보 통합)"
+                )
+                try:
+                    # 분석 깊이 자동 감지
+                    analysis_depth = self._detect_analysis_depth_from_prompt(
+                        user_prompt
+                    )
+
+                    # 🚀 통합 데이터로 CrewAI 섹터별 전문가 분석 수행
+                    sector_analysis_result = await self.smart_sector_manager.analyze_with_comprehensive_data(
+                        user_prompt=user_prompt,
+                        stock_name=stock_info.get("stock_name"),
+                        stock_code=stock_info.get("stock_code"),
+                        financial_data=financial_data,
+                        enhanced_dart_data=enhanced_dart_data,
+                        manus_collected_data=manus_collection_result,  # 🚀 Manus 수집 데이터 추가
+                        analysis_depth=analysis_depth,
+                    )
+
+                    results["steps"][
+                        "step2_5_crewai_comprehensive_analysis"
+                    ] = sector_analysis_result
+                    logger.info(
+                        f"✅ CrewAI 종합 분석 완료 - 섹터: {sector_analysis_result.get('detected_sector', '알 수 없음')}"
+                    )
+
+                except Exception as e:
+                    logger.error(f"CrewAI 종합 분석 실패: {e}")
+                    results["steps"]["step2_5_crewai_comprehensive_analysis"] = {
+                        "error": str(e)
+                    }
 
             # Step 4: 종합 결과 정리
             logger.info("📋 Step 4: 종합 결과 정리")
-            final_summary = self.create_comprehensive_summary(results)
+            final_summary = self.create_comprehensive_summary_v2(results)
             results["final_summary"] = final_summary
 
             # Step 5: JSON 파일 저장
@@ -306,13 +312,317 @@ class EnhancedStockAnalysisSystem:
             results["saved_file"] = saved_file
 
             results["success"] = True
-            logger.info("🎉 개선된 분석 완료!")
+            logger.info("🎉 개선된 분석 완료 (수정된 워크플로우)!")
 
         except Exception as e:
             logger.error(f"❌ 분석 중 오류 발생: {e}")
             results["error"] = str(e)
 
         return results
+
+    async def perform_information_collection_first(
+        self,
+        user_prompt: str,
+        stock_info: Dict,
+        financial_data: Dict,
+        classification_result: Dict,
+        enhanced_dart_data: Dict = None,
+        intent_analysis: Dict = None,
+    ) -> Dict[str, Any]:
+        """
+        📈 정보 수집 우선 실행 (CrewAI 피딩용 데이터 준비)
+
+        Manus Agent가 먼저 웹 검색으로 정보를 수집하고,
+        이 결과를 나중에 CrewAI에게 피딩할 수 있도록 준비해요.
+
+        Args:
+            user_prompt: 사용자 질문
+            stock_info: 감지된 종목 정보
+            financial_data: 수집된 재무데이터
+            classification_result: 분류 결과
+            enhanced_dart_data: Enhanced DART 데이터
+            intent_analysis: 의도 분석 결과
+
+        Returns:
+            Dict: Manus Agent 수집 결과 (CrewAI 피딩용)
+        """
+        try:
+            logger.info("📈 Manus Agent 정보 수집 시작 (CrewAI 피딩 준비)...")
+
+            # 의도 분석 결과 추출
+            primary_intent = intent_analysis.get("primary_intent", "일반문의")
+            analysis_focus = intent_analysis.get("analysis_focus", "종합분석")
+            data_priority = intent_analysis.get("data_priority", "기본")
+            confidence = intent_analysis.get("confidence", 0.0)
+
+            logger.info(
+                f"🎯 정보 수집 - 의도: {primary_intent}, 포커스: {analysis_focus}, 신뢰도: {confidence:.2f}"
+            )
+
+            # 🎯 정보 수집용 프롬프트 구성 (CrewAI 피딩을 위한 포괄적 수집)
+            collection_prompt = f"""
+사용자의 핵심 질문: {user_prompt}
+
+분석 대상: {stock_info.get('stock_name', '정보없음')} ({stock_info.get('stock_code', '정보없음')})
+감지된 의도: {primary_intent}
+분석 포커스: {analysis_focus}
+
+🎯 **정보 수집 미션**:
+다음 정보들을 웹에서 포괄적으로 수집해주세요. 이 정보는 나중에 전문가 팀(CrewAI)이 종합 분석할 때 사용됩니다:
+
+1. **최신 뉴스 및 이슈**: 최근 1개월 내 주요 뉴스, 공시, 이슈들
+2. **시장 동향**: 해당 종목 관련 시장 트렌드, 업계 동향
+3. **애널리스트 의견**: 증권사 리포트, 목표가, 투자 의견
+4. **경쟁사 정보**: 주요 경쟁업체 현황과 비교 정보
+5. **기술적 분석**: 차트 패턴, 기술적 지표 현황
+6. **특별 정보**: PDF 보고서, 특별 자료 등 (발견시 자동 분석)
+
+**중요**: 단순 요약이 아닌, 나중에 전문가들이 분석할 수 있도록 상세한 정보를 수집해주세요.
+"""
+
+            # 재무데이터 포함 (참고자료로)
+            basic_financial_included = False
+            if financial_data.get("success"):
+                financial_summary = self.financial_collector.get_analysis_summary(
+                    financial_data
+                )
+                collection_prompt += f"""
+
+📊 **참고 재무데이터**:
+{financial_summary}
+"""
+                basic_financial_included = True
+
+            # Enhanced DART 데이터 포함
+            enhanced_dart_included = False
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                enhanced_summary = self._create_comprehensive_dart_analysis(
+                    enhanced_dart_data
+                )
+                if enhanced_summary:
+                    collection_prompt += f"""
+
+🚀 **Enhanced DART 상세정보**:
+{enhanced_summary}
+"""
+                    enhanced_dart_included = True
+
+            collection_prompt += f"""
+
+📋 **수집 지침**:
+- 위의 재무데이터는 참고용이며, 추가 정보 수집에 집중해주세요
+- 모든 정보는 나중에 전문가 팀이 종합 분석할 예정입니다
+- 특히 {primary_intent} 관련 정보를 중점적으로 수집해주세요
+- PDF나 특별 자료 발견시 즉시 분석해주세요
+"""
+
+            logger.info(f"🎯 정보 수집 프롬프트 생성 완료 - 의도: {primary_intent}")
+
+            # Manus 에이전트 실행
+            self.manus_agent.memory.clear()
+            self.manus_agent.update_memory("user", collection_prompt)
+
+            collection_response = ""
+            run_result = await self.manus_agent.run()
+
+            if hasattr(run_result, "__aiter__"):
+                async for response in run_result:
+                    collection_response += response + "\n"
+            else:
+                collection_response = str(run_result)
+
+            # 📄 PDF 감지 및 자동 분석
+            pdf_analysis_result = await self._detect_and_analyze_pdf_from_response(
+                collection_response, stock_info
+            )
+
+            return {
+                "performed": True,
+                "method": f"information_collection_for_crewai_{primary_intent}",
+                "collected_information": collection_response.strip(),
+                "primary_intent": primary_intent,
+                "analysis_focus": analysis_focus,
+                "data_priority": data_priority,
+                "confidence": confidence,
+                "basic_financial_data_used": basic_financial_included,
+                "enhanced_dart_data_used": enhanced_dart_included,
+                "collection_purpose": "crewai_feeding",
+                "ready_for_crewai": True,
+                # 📄 PDF 분석 결과 추가
+                "pdf_analysis": pdf_analysis_result,
+                "data_richness_score": self._calculate_data_richness(
+                    collection_response, pdf_analysis_result
+                ),
+            }
+
+        except Exception as e:
+            logger.error(f"정보 수집 중 오류: {e}")
+            return {
+                "performed": False,
+                "error": str(e),
+                "primary_intent": intent_analysis.get("primary_intent", "오류"),
+                "ready_for_crewai": False,
+            }
+
+    def _calculate_data_richness(
+        self, collection_response: str, pdf_analysis: Dict
+    ) -> float:
+        """수집된 데이터의 풍부함 점수 계산 (CrewAI 피딩 품질 평가용)"""
+        try:
+            richness_score = 0.0
+
+            # 텍스트 길이 기반 점수 (최대 30점)
+            text_length = len(collection_response)
+            if text_length > 5000:
+                richness_score += 30
+            elif text_length > 3000:
+                richness_score += 20
+            elif text_length > 1000:
+                richness_score += 10
+            else:
+                richness_score += 5
+
+            # 키워드 다양성 점수 (최대 25점)
+            key_terms = [
+                "뉴스",
+                "공시",
+                "애널리스트",
+                "목표가",
+                "리포트",
+                "전망",
+                "경쟁사",
+                "시장",
+                "업계",
+                "트렌드",
+            ]
+            found_terms = sum(1 for term in key_terms if term in collection_response)
+            richness_score += (found_terms / len(key_terms)) * 25
+
+            # PDF 분석 보너스 (최대 25점)
+            if pdf_analysis.get("pdf_detected") and pdf_analysis.get(
+                "analysis_completed"
+            ):
+                pdf_text_length = pdf_analysis.get("pdf_content", {}).get(
+                    "text_length", 0
+                )
+                if pdf_text_length > 10000:
+                    richness_score += 25
+                elif pdf_text_length > 5000:
+                    richness_score += 15
+                elif pdf_text_length > 1000:
+                    richness_score += 10
+                else:
+                    richness_score += 5
+
+            # 구조화된 정보 보너스 (최대 20점)
+            structured_indicators = ["1.", "2.", "3.", "•", "-", "**", "###"]
+            structure_count = sum(
+                1
+                for indicator in structured_indicators
+                if indicator in collection_response
+            )
+            richness_score += min(structure_count * 2, 20)
+
+            # 최대 100점으로 정규화
+            richness_score = min(richness_score, 100.0)
+
+            logger.info(f"📊 데이터 풍부함 점수: {richness_score:.1f}/100")
+            return richness_score
+
+        except Exception as e:
+            logger.error(f"데이터 풍부함 점수 계산 오류: {e}")
+            return 50.0  # 기본값
+
+    def create_comprehensive_summary_v2(
+        self, results: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """수정된 워크플로우용 종합 요약 생성"""
+        stock_info = results["steps"].get("step1_stock_detection", {})
+        financial_data = results["steps"].get("step2_financial_data", {})
+        manus_collection = results["steps"].get("step3_information_collection", {})
+        crewai_analysis = results["steps"].get(
+            "step2_5_crewai_comprehensive_analysis", {}
+        )
+
+        return {
+            "analyzed_stock": {
+                "name": stock_info.get("stock_name"),
+                "code": stock_info.get("stock_code"),
+                "ticker_bbg": stock_info.get("ticker_bbg"),
+                "detection_method": stock_info.get("detection_method"),
+            },
+            "data_sources": {
+                "financial_data_collected": financial_data.get("success", False),
+                "data_sources": financial_data.get("data_sources", []),
+                "data_quality": financial_data.get("data_quality", "없음"),
+                "manus_information_collected": manus_collection.get("performed", False),
+                "data_richness_score": manus_collection.get("data_richness_score", 0.0),
+            },
+            "analysis_quality": {
+                "information_collection_performed": manus_collection.get(
+                    "performed", False
+                ),
+                "crewai_comprehensive_analysis_performed": bool(
+                    crewai_analysis and not crewai_analysis.get("error")
+                ),
+                "financial_data_enhanced": financial_data.get("success", False),
+                "workflow_type": "manus_first_crewai_synthesis",
+            },
+            "key_insights": self.extract_key_insights_v2(
+                manus_collection, crewai_analysis
+            ),
+        }
+
+    def extract_key_insights_v2(
+        self, manus_collection: Dict, crewai_analysis: Dict
+    ) -> Dict[str, Any]:
+        """수정된 워크플로우용 핵심 인사이트 추출"""
+        insights = {
+            "information_collection_quality": "알 수 없음",
+            "crewai_analysis_quality": "알 수 없음",
+            "overall_analysis_depth": "알 수 없음",
+            "data_integration_success": False,
+        }
+
+        # Manus 정보 수집 품질 평가
+        if manus_collection.get("performed"):
+            richness_score = manus_collection.get("data_richness_score", 0)
+            if richness_score >= 80:
+                insights["information_collection_quality"] = "매우 높음"
+            elif richness_score >= 60:
+                insights["information_collection_quality"] = "높음"
+            elif richness_score >= 40:
+                insights["information_collection_quality"] = "보통"
+            else:
+                insights["information_collection_quality"] = "낮음"
+
+        # CrewAI 분석 품질 평가
+        if crewai_analysis and not crewai_analysis.get("error"):
+            insights["crewai_analysis_quality"] = "성공"
+            insights["data_integration_success"] = True
+        elif crewai_analysis.get("error"):
+            insights["crewai_analysis_quality"] = "실패"
+
+        # 전체 분석 깊이 평가
+        if (
+            insights["information_collection_quality"] in ["높음", "매우 높음"]
+            and insights["crewai_analysis_quality"] == "성공"
+        ):
+            insights["overall_analysis_depth"] = "매우 높음"
+        elif (
+            insights["information_collection_quality"] != "알 수 없음"
+            and insights["crewai_analysis_quality"] == "성공"
+        ):
+            insights["overall_analysis_depth"] = "높음"
+        elif (
+            insights["information_collection_quality"] != "알 수 없음"
+            or insights["crewai_analysis_quality"] == "성공"
+        ):
+            insights["overall_analysis_depth"] = "보통"
+        else:
+            insights["overall_analysis_depth"] = "낮음"
+
+        return insights
 
     async def extract_stock_info(self, prompt: str) -> Dict[str, Any]:
         """
@@ -1972,7 +2282,7 @@ class EnhancedStockAnalysisSystem:
             steps_text = []
             steps_text.append("")  # 첫 번째는 빈 문자열
 
-            # 각 단계별 결과를 문자열로 변환
+            # 각 단계별 결과를 문자열로 변환 (수정된 워크플로우)
             for step_key, step_data in results.get("steps", {}).items():
                 if step_key == "step1_stock_detection" and step_data.get("detected"):
                     steps_text.append(
@@ -1986,11 +2296,19 @@ class EnhancedStockAnalysisSystem:
                     "success"
                 ):
                     steps_text.append("🚀 Enhanced DART 데이터 수집 성공")
-                    # 분류 기능 제거됨 - elif step_key == "step3_classification" and step_data.get("performed"):
-                elif step_key == "step3_detailed_analysis" and step_data.get(
+                elif step_key == "step3_information_collection" and step_data.get(
                     "performed"
                 ):
-                    steps_text.append("📊 상세 분석 완료")
+                    richness_score = step_data.get("data_richness_score", 0)
+                    steps_text.append(
+                        f"🤖 Manus Agent 정보 수집 완료 (풍부함: {richness_score:.1f}/100)"
+                    )
+                elif (
+                    step_key == "step2_5_crewai_comprehensive_analysis"
+                    and step_data.get("success")
+                ):
+                    sector = step_data.get("detected_sector", "알 수 없음")
+                    steps_text.append(f"🎯 CrewAI 종합 분석 완료 (섹터: {sector})")
 
             # 전체 응답 내용을 steps에 중복 추가하지 않음 (response 필드에 이미 있음)
             steps_text.append("")  # 마지막은 빈 문자열
@@ -2049,13 +2367,15 @@ class EnhancedStockAnalysisSystem:
                 "dart_basic_data_available": False,
                 "enhanced_dart_data_available": False,
                 "pdf_data_available": False,
-                "crewai_sector_analysis_available": False,  # 🚀 CrewAI 섹터 분석 추가
+                "manus_collection_available": False,  # 🤖 Manus Agent 수집 데이터 추가
+                "crewai_comprehensive_analysis_available": False,  # 🚀 CrewAI 종합 분석 수정
             },
             "yfinance_raw_data": {},
             "dart_basic_raw_data": {},
             "enhanced_dart_raw_data": {},
             "pdf_raw_data": {},
-            "crewai_sector_analysis_raw_data": {},  # 🚀 CrewAI 원본 데이터 섹션 추가
+            "manus_collection_raw_data": {},  # 🤖 Manus Agent 원본 데이터 섹션 추가
+            "crewai_comprehensive_analysis_raw_data": {},  # 🚀 CrewAI 종합 분석 원본 데이터 섹션
         }
 
         try:
@@ -2163,107 +2483,102 @@ class EnhancedStockAnalysisSystem:
                     "✅ PDF 원본 데이터 JSON 준비 완료 - 별도 파일 저장 없이 통합"
                 )
 
-            # 4. 🎯 CrewAI 섹터 분석 원본 데이터 추출 (새로 추가!)
-            sector_analysis = results.get("steps", {}).get(
-                "step2_5_sector_analysis", {}
+            # 4. 🤖 Manus Agent 정보 수집 원본 데이터 추출 (새로 추가!)
+            manus_collection = results.get("steps", {}).get(
+                "step3_information_collection", {}
             )
-            if sector_analysis and not sector_analysis.get("error"):
+            if manus_collection and manus_collection.get("performed"):
+                raw_data["data_sources_summary"]["manus_collection_available"] = True
+
+                # Manus Agent 수집 데이터를 포함
+                manus_raw = {
+                    "collection_info": {
+                        "performed": manus_collection.get("performed", False),
+                        "method": manus_collection.get("method", ""),
+                        "collection_purpose": manus_collection.get(
+                            "collection_purpose", ""
+                        ),
+                        "ready_for_crewai": manus_collection.get(
+                            "ready_for_crewai", False
+                        ),
+                        "data_richness_score": manus_collection.get(
+                            "data_richness_score", 0
+                        ),
+                        "primary_intent": manus_collection.get("primary_intent", ""),
+                        "analysis_focus": manus_collection.get("analysis_focus", ""),
+                        "confidence": manus_collection.get("confidence", 0.0),
+                    },
+                    "collected_information_full": manus_collection.get(
+                        "collected_information", ""
+                    ),
+                    "data_sources_used": {
+                        "basic_financial_data_used": manus_collection.get(
+                            "basic_financial_data_used", False
+                        ),
+                        "enhanced_dart_data_used": manus_collection.get(
+                            "enhanced_dart_data_used", False
+                        ),
+                    },
+                    "pdf_analysis_included": manus_collection.get("pdf_analysis", {}),
+                }
+
+                raw_data["manus_collection_raw_data"] = manus_raw
+                logger.info("✅ Manus Agent 수집 원본 데이터 JSON 준비 완료")
+
+            # 5. 🎯 CrewAI 종합 분석 원본 데이터 추출 (수정됨!)
+            crewai_analysis = results.get("steps", {}).get(
+                "step2_5_crewai_comprehensive_analysis", {}
+            )
+            if crewai_analysis and not crewai_analysis.get("error"):
                 raw_data["data_sources_summary"][
-                    "crewai_sector_analysis_available"
+                    "crewai_comprehensive_analysis_available"
                 ] = True
 
-                # CrewAI 섹터 분석의 모든 과정과 결과를 포함
+                # CrewAI 종합 분석의 모든 과정과 결과를 포함 (수정된 워크플로우)
                 crewai_raw = {
+                    "analysis_type": crewai_analysis.get("analysis_type", ""),
                     "sector_detection_process": {
-                        "detected_sector": sector_analysis.get("detected_sector", ""),
-                        "sector_korean_name": sector_analysis.get(
+                        "detected_sector": crewai_analysis.get("detected_sector", ""),
+                        "sector_korean_name": crewai_analysis.get(
                             "sector_korean_name", ""
                         ),
-                        "detection_method": sector_analysis.get("detection_method", ""),
-                        "detection_confidence": sector_analysis.get(
-                            "detection_confidence", 0.0
+                        "activated_experts": crewai_analysis.get(
+                            "activated_experts", []
                         ),
-                        "detection_timestamp": sector_analysis.get(
-                            "detection_timestamp", ""
-                        ),
-                    },
-                    "activated_team_info": {
-                        "team_name": sector_analysis.get("activated_team", {}).get(
-                            "team_name", ""
-                        ),
-                        "team_description": sector_analysis.get(
-                            "activated_team", {}
-                        ).get("team_description", ""),
-                        "total_experts": len(
-                            sector_analysis.get("activated_team", {}).get("experts", [])
-                        ),
-                        "experts_details": sector_analysis.get(
-                            "activated_team", {}
-                        ).get("experts", []),
-                        "collaboration_strategy": sector_analysis.get(
-                            "activated_team", {}
-                        ).get("collaboration_strategy", ""),
-                        "report_structure": sector_analysis.get(
-                            "activated_team", {}
-                        ).get("report_structure", {}),
-                    },
-                    "analysis_depth_info": {
-                        "selected_depth": sector_analysis.get("analysis_depth", ""),
-                        "selected_experts_count": sector_analysis.get(
+                        "selected_experts_count": crewai_analysis.get(
                             "selected_experts_count", 0
                         ),
-                        "selected_experts": sector_analysis.get("selected_experts", []),
-                        "cost_per_analysis": sector_analysis.get(
-                            "cost_estimation", {}
-                        ).get("cost_per_analysis", 0.0),
-                        "cache_ttl_hours": sector_analysis.get(
-                            "cost_estimation", {}
-                        ).get("cache_ttl_hours", 0),
+                        "analysis_depth": crewai_analysis.get("analysis_depth", ""),
                     },
-                    "expert_analysis_results": {
-                        "individual_analyses": sector_analysis.get(
-                            "expert_analysis_results", []
+                    "data_integration_info": {
+                        "data_integration_quality": crewai_analysis.get(
+                            "data_integration_quality", {}
                         ),
-                        "synthesis_result": sector_analysis.get("synthesis_result", ""),
-                        "total_analysis_time": sector_analysis.get(
-                            "total_processing_time", ""
+                        "synthesis_completeness": crewai_analysis.get(
+                            "synthesis_completeness", ""
                         ),
                     },
-                    "one_hot_activation_metrics": {
-                        "traditional_cost": sector_analysis.get("cost_savings", {}).get(
-                            "traditional_cost", 0.0
-                        ),
-                        "one_hot_cost": sector_analysis.get("cost_savings", {}).get(
-                            "one_hot_cost", 0.0
-                        ),
-                        "savings_amount": sector_analysis.get("cost_savings", {}).get(
-                            "savings_amount", 0.0
-                        ),
-                        "savings_percentage": sector_analysis.get(
-                            "cost_savings", {}
-                        ).get("savings_percentage", 0.0),
-                        "efficiency_gain": sector_analysis.get("cost_savings", {}).get(
-                            "efficiency_description", ""
-                        ),
-                    },
+                    "expert_analysis_results": crewai_analysis.get(
+                        "expert_insights", {}
+                    ),
+                    "cost_savings_metrics": crewai_analysis.get("cost_savings", {}),
                     "cache_and_performance": {
-                        "cache_used": sector_analysis.get("cache_used", False),
-                        "cache_key": sector_analysis.get("cache_key", ""),
-                        "performance_stats": sector_analysis.get(
-                            "performance_stats", {}
-                        ),
+                        "cache_key": crewai_analysis.get("cache_key", ""),
+                        "cache_used": False,  # 새로운 분석이므로 캐시 사용 안됨
                     },
-                    "sector_specific_insights": {
-                        "sector_context": sector_analysis.get("sector_context", {}),
-                        "key_metrics": sector_analysis.get("sector_key_metrics", []),
-                        "sector_trends": sector_analysis.get("sector_trends", ""),
-                        "industry_outlook": sector_analysis.get("industry_outlook", ""),
+                    "workflow_integration": {
+                        "manus_data_integrated": True,  # Manus 데이터가 통합됨
+                        "financial_data_integrated": True,  # 재무데이터 통합됨
+                        "enhanced_dart_integrated": bool(
+                            enhanced_dart_data
+                        ),  # Enhanced DART 통합 여부
+                        "comprehensive_analysis": True,  # 종합 분석 수행됨
                     },
                 }
 
-                raw_data["crewai_sector_analysis_raw_data"] = crewai_raw
+                raw_data["crewai_comprehensive_analysis_raw_data"] = crewai_raw
                 logger.info(
-                    "✅ CrewAI 섹터 분석 원본 데이터 JSON 준비 완료 - One-Hot Activation 전체 과정 포함"
+                    "✅ CrewAI 종합 분석 원본 데이터 JSON 준비 완료 - Manus+재무+DART 통합 분석"
                 )
 
             # 5. 📊 데이터 소스별 통계 정보 추가
@@ -2284,7 +2599,8 @@ class EnhancedStockAnalysisSystem:
             "yfinance_data_points": 0,
             "enhanced_dart_data_points": 0,
             "pdf_data_points": 0,
-            "crewai_data_points": 0,  # 🚀 CrewAI 데이터 포인트 추가
+            "manus_collection_data_points": 0,  # 🤖 Manus Agent 데이터 포인트 추가
+            "crewai_data_points": 0,  # 🚀 CrewAI 데이터 포인트 수정
             "data_completeness": "정보없음",
         }
 
@@ -2331,8 +2647,30 @@ class EnhancedStockAnalysisSystem:
 
                 stats["pdf_data_points"] = pdf_count
 
-            # 🚀 CrewAI 섹터 분석 데이터 포인트 계산 (새로 추가!)
-            crewai_data = raw_data.get("crewai_sector_analysis_raw_data", {})
+            # 🤖 Manus Agent 수집 데이터 포인트 계산 (새로 추가!)
+            manus_data = raw_data.get("manus_collection_raw_data", {})
+            if manus_data:
+                manus_count = 0
+
+                # 수집된 정보 길이를 데이터 포인트로 환산 (500자 = 1포인트)
+                collected_info = manus_data.get("collected_information_full", "")
+                if collected_info:
+                    manus_count += max(1, len(collected_info) // 500)  # 최소 1포인트
+
+                # 데이터 풍부함 점수도 포인트로 환산
+                collection_info = manus_data.get("collection_info", {})
+                richness_score = collection_info.get("data_richness_score", 0)
+                manus_count += int(richness_score // 10)  # 10점당 1포인트
+
+                # PDF 분석 포함시 보너스
+                pdf_analysis = manus_data.get("pdf_analysis_included", {})
+                if pdf_analysis.get("pdf_detected"):
+                    manus_count += 20  # PDF 분석 보너스
+
+                stats["manus_collection_data_points"] = manus_count
+
+            # 🚀 CrewAI 종합 분석 데이터 포인트 계산 (수정됨!)
+            crewai_data = raw_data.get("crewai_comprehensive_analysis_raw_data", {})
             if crewai_data:
                 crewai_count = 0
 
@@ -2384,20 +2722,23 @@ class EnhancedStockAnalysisSystem:
 
                 stats["crewai_data_points"] = crewai_count
 
-            # 총 데이터 포인트
+            # 총 데이터 포인트 (수정된 워크플로우)
             stats["total_data_points"] = (
                 stats["yfinance_data_points"]
                 + stats["enhanced_dart_data_points"]
                 + stats["pdf_data_points"]
+                + stats.get("manus_collection_data_points", 0)  # 🤖 Manus Agent 포함
                 + stats["crewai_data_points"]  # 🚀 CrewAI 포함
             )
 
-            # 데이터 완성도 평가 (CrewAI 포함하여 기준 다시 상향 조정)
-            if stats["total_data_points"] > 300:  # CrewAI 포함하여 기준 다시 상향
+            # 데이터 완성도 평가 (Manus Agent + CrewAI 포함하여 기준 재조정)
+            if (
+                stats["total_data_points"] > 400
+            ):  # Manus Agent + CrewAI 포함하여 기준 다시 상향
                 stats["data_completeness"] = "매우높음"
-            elif stats["total_data_points"] > 150:
+            elif stats["total_data_points"] > 200:
                 stats["data_completeness"] = "높음"
-            elif stats["total_data_points"] > 75:
+            elif stats["total_data_points"] > 100:
                 stats["data_completeness"] = "보통"
             else:
                 stats["data_completeness"] = "낮음"
