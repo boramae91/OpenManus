@@ -133,14 +133,14 @@ class EnhancedStockAnalysisSystem:
         🚀 개선된 종합 주식 분석 시스템 (수정된 워크플로우)
 
         수정된 워크플로우:
-        1. 🎯 사용자 의도 분석
-        2. 📋 종목 감지 (AI 웹검색 우선)
-        3. 🏷️ ticker_bbg 매핑
-        4. 📊 재무데이터 수집 (기본 + Enhanced DART)
-        5. 📈 의도 맞춤형 정보 수집 (Manus Agent 먼저 실행)
-        6. 🎯 CrewAI 종합 분석 (모든 데이터 통합 분석)
-        7. 📋 종합 결과 정리
-        8. 💾 JSON 저장
+        0. 🎯 사용자 의도 분석
+        1. 📋 종목 감지 (AI 웹검색 우선)
+        1.5. 🏷️ ticker_bbg + GICS 섹터 매핑
+        2. 📊 재무데이터 수집 (기본 + Enhanced DART)
+        3. 📈 의도 맞춤형 정보 수집 (Manus Agent 먼저 실행)
+        4. 🎯 CrewAI 종합 분석 (모든 데이터 통합 분석)
+        5. 📋 종합 결과 정리
+        6. 💾 JSON 저장
 
         Args:
             user_prompt: 사용자 입력 프롬프트
@@ -181,24 +181,30 @@ class EnhancedStockAnalysisSystem:
                 f"✅ 감지된 종목: {stock_info['stock_name']} ({stock_info['stock_code']})"
             )
 
-            # 🏢 Step 1.5: ticker_bbg 매핑 시도
-            logger.info("🏷️ Step 1.5: ticker_bbg 매핑 시도")
-            ticker_bbg = self.get_ticker_bbg_from_name(
+            # 🏢 Step 1.5: ticker_bbg + GICS 섹터 매핑 시도
+            logger.info("🏷️ Step 1.5: ticker_bbg + GICS 섹터 매핑 시도")
+            mapping_result = self.get_ticker_bbg_from_name(
                 stock_name=stock_info.get("stock_name"),
                 stock_code=stock_info.get("stock_code"),
             )
 
-            # stock_info에 ticker_bbg 정보 추가
-            stock_info["ticker_bbg"] = ticker_bbg
+            # stock_info에 매핑 결과 추가 (🎯 GICS 섹터 포함!)
+            stock_info["ticker_bbg"] = mapping_result["ticker_bbg"]
+            stock_info["gics_sector"] = mapping_result["gics_sector"]
+            stock_info["mapped_company_name"] = mapping_result["company_name"]
+            stock_info["market_index"] = mapping_result.get("market_index", "Unknown")
             stock_info["original_stock_code"] = stock_info.get("stock_code")
             stock_info["original_stock_name"] = stock_info.get("stock_name")
 
-            if ticker_bbg != (
+            if mapping_result["ticker_bbg"] != (
                 stock_info.get("stock_code") or stock_info.get("stock_name")
             ):
-                logger.info(f"🎯 ticker_bbg 매핑 성공: {ticker_bbg}")
+                logger.info(f"🎯 ticker_bbg 매핑 성공: {mapping_result['ticker_bbg']}")
+                logger.info(f"🏢 GICS 섹터 감지: {mapping_result['gics_sector']}")
             else:
                 logger.info("ℹ️ ticker_bbg 매핑: 원본 코드 유지")
+                if mapping_result["gics_sector"] != "Unknown":
+                    logger.info(f"🏢 GICS 섹터 감지: {mapping_result['gics_sector']}")
 
             # 분석 결과에 매핑 정보 업데이트
             results["steps"]["step1_stock_detection"] = stock_info
@@ -265,11 +271,11 @@ class EnhancedStockAnalysisSystem:
                     "pdf_analysis"
                 ]
 
-            # 🎯 Step 2.5: CrewAI 종합 분석 (모든 데이터 통합!)
+            # 🎯 Step 4: CrewAI 종합 분석 (모든 데이터 통합!)
             sector_analysis_result = None
             if self.smart_sector_manager:
                 logger.info(
-                    "🎯 Step 2.5: CrewAI 종합 분석 (재무데이터 + Manus 수집 정보 통합)"
+                    "🎯 Step 4: CrewAI 종합 분석 (재무데이터 + Manus 수집 정보 통합)"
                 )
                 try:
                     # 분석 깊이 자동 감지
@@ -277,7 +283,7 @@ class EnhancedStockAnalysisSystem:
                         user_prompt
                     )
 
-                    # 🚀 통합 데이터로 CrewAI 섹터별 전문가 분석 수행
+                    # 🚀 통합 데이터로 CrewAI 섹터별 전문가 분석 수행 (🎯 GICS 섹터 사전 감지됨!)
                     sector_analysis_result = await self.smart_sector_manager.analyze_with_comprehensive_data(
                         user_prompt=user_prompt,
                         stock_name=stock_info.get("stock_name"),
@@ -286,10 +292,13 @@ class EnhancedStockAnalysisSystem:
                         enhanced_dart_data=enhanced_dart_data,
                         manus_collected_data=manus_collection_result,  # 🚀 Manus 수집 데이터 추가
                         analysis_depth=analysis_depth,
+                        pre_detected_gics_sector=stock_info.get(
+                            "gics_sector"
+                        ),  # 🎯 사전 감지된 GICS 섹터 전달
                     )
 
                     results["steps"][
-                        "step2_5_crewai_comprehensive_analysis"
+                        "step4_crewai_comprehensive_analysis"
                     ] = sector_analysis_result
                     logger.info(
                         f"✅ CrewAI 종합 분석 완료 - 섹터: {sector_analysis_result.get('detected_sector', '알 수 없음')}"
@@ -297,17 +306,17 @@ class EnhancedStockAnalysisSystem:
 
                 except Exception as e:
                     logger.error(f"CrewAI 종합 분석 실패: {e}")
-                    results["steps"]["step2_5_crewai_comprehensive_analysis"] = {
+                    results["steps"]["step4_crewai_comprehensive_analysis"] = {
                         "error": str(e)
                     }
 
-            # Step 4: 종합 결과 정리
-            logger.info("📋 Step 4: 종합 결과 정리")
+            # Step 5: 종합 결과 정리
+            logger.info("📋 Step 5: 종합 결과 정리")
             final_summary = self.create_comprehensive_summary_v2(results)
             results["final_summary"] = final_summary
 
-            # Step 5: JSON 파일 저장
-            logger.info("💾 Step 5: 결과 저장")
+            # Step 6: JSON 파일 저장
+            logger.info("💾 Step 6: 결과 저장")
             saved_file = self.save_enhanced_results(results, stock_info)
             results["saved_file"] = saved_file
 
@@ -541,7 +550,7 @@ class EnhancedStockAnalysisSystem:
         financial_data = results["steps"].get("step2_financial_data", {})
         manus_collection = results["steps"].get("step3_information_collection", {})
         crewai_analysis = results["steps"].get(
-            "step2_5_crewai_comprehensive_analysis", {}
+            "step4_crewai_comprehensive_analysis", {}
         )
 
         return {
@@ -549,6 +558,12 @@ class EnhancedStockAnalysisSystem:
                 "name": stock_info.get("stock_name"),
                 "code": stock_info.get("stock_code"),
                 "ticker_bbg": stock_info.get("ticker_bbg"),
+                "gics_sector": stock_info.get(
+                    "gics_sector", "Unknown"
+                ),  # 🎯 GICS 섹터 추가
+                "market_index": stock_info.get(
+                    "market_index", "Unknown"
+                ),  # 🎯 시장 지수 추가
                 "detection_method": stock_info.get("detection_method"),
             },
             "data_sources": {
@@ -1344,27 +1359,39 @@ class EnhancedStockAnalysisSystem:
 
         return mapping_tables
 
-    def get_ticker_bbg_from_name(self, stock_name: str, stock_code: str = None) -> str:
+    def get_ticker_bbg_from_name(
+        self, stock_name: str, stock_code: str = None
+    ) -> Dict[str, str]:
         """
-        종목명 또는 종목코드로부터 ticker_bbg를 찾아서 반환합니다.
+        종목명 또는 종목코드로부터 ticker_bbg와 GICS 섹터 정보를 찾아서 반환합니다.
 
         Args:
             stock_name: 종목명 (한글 또는 영문)
             stock_code: 종목코드 (선택사항)
 
         Returns:
-            str: ticker_bbg 또는 원본 종목코드
+            Dict: {"ticker_bbg": str, "gics_sector": str, "company_name": str} 또는 원본 정보
         """
         if not self.stock_mapping_table:
-            logger.warning("⚠️ 매핑 테이블이 없어서 원본 종목코드를 반환합니다")
-            return stock_code or stock_name
+            logger.warning("⚠️ 매핑 테이블이 없어서 원본 정보를 반환합니다")
+            return {
+                "ticker_bbg": stock_code or stock_name,
+                "gics_sector": "Unknown",
+                "company_name": stock_name or stock_code or "Unknown",
+            }
 
         try:
             # 전체 통합 테이블 사용
             df = self.stock_mapping_table.get("ALL")
             if df is None or df.empty:
                 logger.warning("⚠️ 통합 매핑 테이블이 비어있습니다")
-                return stock_code or stock_name
+                return {
+                    "ticker_bbg": stock_code or stock_name,
+                    "gics_sector": "Unknown",
+                    "company_name": stock_name or stock_code or "Unknown",
+                }
+
+            matched_row = None
 
             # 1. 종목코드로 먼저 찾기 (가장 정확함)
             if stock_code:
@@ -1375,65 +1402,88 @@ class EnhancedStockAnalysisSystem:
                         df["ticker_bbg"].str.contains(f"{stock_code} KS", na=False)
                     ]
                     if not matched.empty:
-                        ticker_bbg = matched.iloc[0]["ticker_bbg"]
+                        matched_row = matched.iloc[0]
                         logger.info(
-                            f"✅ 종목코드 매칭 성공: {stock_code} -> {ticker_bbg}"
+                            f"✅ 종목코드 매칭 성공: {stock_code} -> {matched_row['ticker_bbg']}"
                         )
-                        return ticker_bbg
 
-                # 해외 종목코드 직접 매칭
-                matched = df[df["ticker_bbg"].str.contains(stock_code, na=False)]
-                if not matched.empty:
-                    ticker_bbg = matched.iloc[0]["ticker_bbg"]
-                    logger.info(f"✅ 종목코드 매칭 성공: {stock_code} -> {ticker_bbg}")
-                    return ticker_bbg
+                if matched_row is None:
+                    # 해외 종목코드 직접 매칭
+                    matched = df[df["ticker_bbg"].str.contains(stock_code, na=False)]
+                    if not matched.empty:
+                        matched_row = matched.iloc[0]
+                        logger.info(
+                            f"✅ 종목코드 매칭 성공: {stock_code} -> {matched_row['ticker_bbg']}"
+                        )
 
             # 2. 종목명으로 찾기 (한글 우선)
-            if stock_name:
+            if matched_row is None and stock_name:
                 # 한글명 매칭 (NAME_KOREAN 컬럼)
                 if "NAME_KOREAN" in df.columns:
                     matched = df[df["NAME_KOREAN"].str.contains(stock_name, na=False)]
                     if not matched.empty:
-                        ticker_bbg = matched.iloc[0]["ticker_bbg"]
+                        matched_row = matched.iloc[0]
                         logger.info(
-                            f"✅ 한글명 매칭 성공: {stock_name} -> {ticker_bbg}"
+                            f"✅ 한글명 매칭 성공: {stock_name} -> {matched_row['ticker_bbg']}"
                         )
-                        return ticker_bbg
 
-                # 영문명 매칭 (NAME 컬럼)
-                if "NAME" in df.columns:
-                    matched = df[
-                        df["NAME"].str.contains(
-                            stock_name.upper(), na=False, case=False
-                        )
-                    ]
-                    if not matched.empty:
-                        ticker_bbg = matched.iloc[0]["ticker_bbg"]
-                        logger.info(
-                            f"✅ 영문명 매칭 성공: {stock_name} -> {ticker_bbg}"
-                        )
-                        return ticker_bbg
-
-                # 부분 매칭 시도 (더 관대한 매칭)
-                if "NAME_KOREAN" in df.columns:
-                    for _, row in df.iterrows():
-                        if (
-                            pd.notna(row["NAME_KOREAN"])
-                            and stock_name in row["NAME_KOREAN"]
-                        ):
-                            ticker_bbg = row["ticker_bbg"]
-                            logger.info(
-                                f"✅ 부분 매칭 성공: {stock_name} -> {ticker_bbg}"
+                if matched_row is None:
+                    # 영문명 매칭 (NAME 컬럼)
+                    if "NAME" in df.columns:
+                        matched = df[
+                            df["NAME"].str.contains(
+                                stock_name.upper(), na=False, case=False
                             )
-                            return ticker_bbg
+                        ]
+                        if not matched.empty:
+                            matched_row = matched.iloc[0]
+                            logger.info(
+                                f"✅ 영문명 매칭 성공: {stock_name} -> {matched_row['ticker_bbg']}"
+                            )
 
-            # 3. 매칭 실패
-            logger.warning(f"⚠️ 매칭 실패: {stock_name} ({stock_code}) - 원본 반환")
-            return stock_code or stock_name
+                if matched_row is None:
+                    # 부분 매칭 시도 (더 관대한 매칭)
+                    if "NAME_KOREAN" in df.columns:
+                        for _, row in df.iterrows():
+                            if (
+                                pd.notna(row["NAME_KOREAN"])
+                                and stock_name in row["NAME_KOREAN"]
+                            ):
+                                matched_row = row
+                                logger.info(
+                                    f"✅ 부분 매칭 성공: {stock_name} -> {matched_row['ticker_bbg']}"
+                                )
+                                break
+
+            # 3. 매칭 성공 시 전체 정보 반환 (🎯 GICS 섹터 포함!)
+            if matched_row is not None:
+                result = {
+                    "ticker_bbg": matched_row.get(
+                        "ticker_bbg", stock_code or stock_name
+                    ),
+                    "gics_sector": matched_row.get("GICS_SECTOR_NAME", "Unknown"),
+                    "company_name": matched_row.get("NAME", stock_name or "Unknown"),
+                    "market_index": matched_row.get("market_index", "Unknown"),
+                }
+
+                logger.info(f"🎯 GICS 섹터 감지 성공: {result['gics_sector']}")
+                return result
+
+            # 4. 매칭 실패
+            logger.warning(f"⚠️ 매핑 실패: {stock_name} ({stock_code}) - 원본 반환")
+            return {
+                "ticker_bbg": stock_code or stock_name,
+                "gics_sector": "Unknown",
+                "company_name": stock_name or stock_code or "Unknown",
+            }
 
         except Exception as e:
             logger.error(f"❌ ticker_bbg 매핑 중 오류: {e}")
-            return stock_code or stock_name
+            return {
+                "ticker_bbg": stock_code or stock_name,
+                "gics_sector": "Unknown",
+                "company_name": stock_name or stock_code or "Unknown",
+            }
 
     # 종목 분류 기능 제거됨 - perform_selective_classification 메서드 삭제
 
@@ -2224,26 +2274,25 @@ class EnhancedStockAnalysisSystem:
     ) -> str:
         """🚀 io_logger를 사용해서 개선된 분석 결과를 일관된 형식으로 저장해요 (원본 데이터 포함)"""
         try:
-            # 🏢 ticker_bbg 매핑 시도
-            original_stock_code = stock_info.get("stock_code")
-            original_stock_name = stock_info.get("stock_name")
+            # 🏢 이미 Step 1.5에서 매핑된 정보 사용 (GICS 섹터 포함)
+            original_stock_code = stock_info.get(
+                "original_stock_code"
+            ) or stock_info.get("stock_code")
+            original_stock_name = stock_info.get(
+                "original_stock_name"
+            ) or stock_info.get("stock_name")
+            ticker_bbg = stock_info.get("ticker_bbg")
+            gics_sector = stock_info.get("gics_sector", "Unknown")
 
-            # dataset에서 ticker_bbg 가져오기
-            ticker_bbg = self.get_ticker_bbg_from_name(
-                stock_name=original_stock_name, stock_code=original_stock_code
-            )
-
-            # stock_info 업데이트 (ticker_bbg 정보 추가)
+            # stock_info 업데이트 (이미 매핑된 정보 활용)
             updated_stock_info = stock_info.copy()
-            updated_stock_info["ticker_bbg"] = ticker_bbg
-            updated_stock_info["original_stock_code"] = original_stock_code
-            updated_stock_info["original_stock_name"] = original_stock_name
 
             # 파일명에 사용할 종목 코드를 ticker_bbg로 교체
             if ticker_bbg != (original_stock_code or original_stock_name):
                 logger.info(
                     f"📊 파일명 종목코드 변환: {original_stock_code or original_stock_name} -> {ticker_bbg}"
                 )
+                logger.info(f"🏢 GICS 섹터 정보: {gics_sector}")
                 updated_stock_info["stock_code"] = ticker_bbg  # 파일명 생성용으로 교체
 
             # 사용자 프롬프트와 최종 응답 추출
@@ -2260,6 +2309,10 @@ class EnhancedStockAnalysisSystem:
                         f"📊 감지된 종목: {stock_detection.get('stock_name')} ({stock_detection.get('stock_code')})"
                     )
                     final_response.append(f"🏷️ ticker_bbg: {ticker_bbg}")
+                    if gics_sector != "Unknown":
+                        final_response.append(
+                            f"🏢 GICS 섹터: {gics_sector}"
+                        )  # 🎯 GICS 섹터 정보 추가
 
             # 분류 결과
             # 분류 기능 제거됨 - step3_classification 관련 로직 삭제
@@ -2288,6 +2341,13 @@ class EnhancedStockAnalysisSystem:
                     steps_text.append(
                         f"📊 감지된 종목: {step_data.get('stock_name')} ({step_data.get('stock_code')})"
                     )
+                    if (
+                        step_data.get("gics_sector")
+                        and step_data.get("gics_sector") != "Unknown"
+                    ):
+                        steps_text.append(
+                            f"🏢 GICS 섹터: {step_data.get('gics_sector')}"
+                        )  # 🎯 GICS 섹터 정보 추가
                 elif step_key == "step2_financial_data" and step_data.get("success"):
                     steps_text.append(
                         f"📈 재무데이터 수집 성공: {', '.join(step_data.get('data_sources', []))}"
@@ -2304,7 +2364,7 @@ class EnhancedStockAnalysisSystem:
                         f"🤖 Manus Agent 정보 수집 완료 (풍부함: {richness_score:.1f}/100)"
                     )
                 elif (
-                    step_key == "step2_5_crewai_comprehensive_analysis"
+                    step_key == "step4_crewai_comprehensive_analysis"
                     and step_data.get("success")
                 ):
                     sector = step_data.get("detected_sector", "알 수 없음")
@@ -2336,6 +2396,9 @@ class EnhancedStockAnalysisSystem:
                     .get("step3_detailed_analysis", {})
                     .get("performed", False),
                     "ticker_bbg_mapping_used": True,  # 🏢 ticker_bbg 매핑 사용 표시
+                    "gics_sector_detected": gics_sector
+                    != "Unknown",  # 🎯 GICS 섹터 감지 성공 여부
+                    "dataset_sector_mapping_used": True,  # 🎯 Dataset 기반 섹터 매핑 사용
                 },
                 # 🚀 원본 데이터 섹션 추가
                 "raw_data": raw_data_section,
@@ -2527,7 +2590,7 @@ class EnhancedStockAnalysisSystem:
 
             # 5. 🎯 CrewAI 종합 분석 원본 데이터 추출 (수정됨!)
             crewai_analysis = results.get("steps", {}).get(
-                "step2_5_crewai_comprehensive_analysis", {}
+                "step4_crewai_comprehensive_analysis", {}
             )
             if crewai_analysis and not crewai_analysis.get("error"):
                 raw_data["data_sources_summary"][

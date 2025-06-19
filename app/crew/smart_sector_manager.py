@@ -147,11 +147,22 @@ class SmartSectorManager:
                 logger.info("⚡ 캐시된 결과 반환 - 추가 비용 없음!")
                 return cached_result
 
-            # 2. 섹터 감지
-            detected_sector = self.sector_manager.detect_sector_from_stock(
-                stock_name, stock_code
-            )
-            logger.info(f"📊 감지된 섹터: {detected_sector.name}")
+            # 2. 섹터 감지 (🎯 사전 감지된 GICS 섹터 우선 사용!)
+            if pre_detected_gics_sector and pre_detected_gics_sector != "Unknown":
+                logger.info(
+                    f"🎯 Dataset에서 사전 감지된 GICS 섹터 사용: {pre_detected_gics_sector}"
+                )
+                # GICS 섹터명을 우리 시스템의 GICSSector로 매핑
+                detected_sector = self._map_gics_to_internal_sector(
+                    pre_detected_gics_sector
+                )
+                logger.info(f"📊 매핑된 내부 섹터: {detected_sector.name}")
+            else:
+                logger.info("🔍 기존 방식으로 섹터 감지...")
+                detected_sector = self.sector_manager.detect_sector_from_stock(
+                    stock_name, stock_code
+                )
+                logger.info(f"📊 감지된 섹터: {detected_sector.name}")
 
             # 3. One-Hot 활성화 (기존 팀 비활성화 + 새 팀 활성화)
             self._deactivate_current_team()
@@ -208,6 +219,7 @@ class SmartSectorManager:
         enhanced_dart_data: Dict[str, Any] = None,
         manus_collected_data: Dict[str, Any] = None,
         analysis_depth: AnalysisDepth = AnalysisDepth.STANDARD,
+        pre_detected_gics_sector: str = None,  # 🎯 사전 감지된 GICS 섹터 추가
     ) -> Dict[str, Any]:
         """
         🚀 종합 데이터 기반 CrewAI 분석 (수정된 워크플로우용)
@@ -926,3 +938,117 @@ class SmartSectorManager:
                 sources.append("PDF 문서 분석")
 
         return list(set(sources))  # 중복 제거
+
+    def _map_gics_to_internal_sector(self, gics_sector_name: str):
+        """
+        🎯 Dataset의 GICS 섹터명을 내부 GICSSector로 매핑
+
+        Args:
+            gics_sector_name: Dataset에서 가져온 GICS 섹터명
+
+        Returns:
+            GICSSector: 매핑된 내부 섹터 객체
+        """
+        from app.crew.gics_sectors import GICSSector
+
+        # GICS 섹터명 매핑 테이블
+        gics_mapping = {
+            # Technology 관련
+            "Information Technology": GICSSector.INFORMATION_TECHNOLOGY,
+            "Information Technology Services": GICSSector.INFORMATION_TECHNOLOGY,
+            "Technology Hardware & Equipment": GICSSector.INFORMATION_TECHNOLOGY,
+            "Software & Services": GICSSector.INFORMATION_TECHNOLOGY,
+            # Healthcare 관련
+            "Health Care": GICSSector.HEALTH_CARE,
+            "Healthcare": GICSSector.HEALTH_CARE,
+            "Pharmaceuticals, Biotechnology & Life Sciences": GICSSector.HEALTH_CARE,
+            # Financial 관련
+            "Financials": GICSSector.FINANCIALS,
+            "Financial Services": GICSSector.FINANCIALS,
+            "Banks": GICSSector.FINANCIALS,
+            "Insurance": GICSSector.FINANCIALS,
+            # Consumer 관련
+            "Consumer Discretionary": GICSSector.CONSUMER_DISCRETIONARY,
+            "Consumer Staples": GICSSector.CONSUMER_STAPLES,
+            "Food, Beverage & Tobacco": GICSSector.CONSUMER_STAPLES,
+            "Retailing": GICSSector.CONSUMER_DISCRETIONARY,
+            # Communication 관련
+            "Communication Services": GICSSector.COMMUNICATION_SERVICES,
+            "Telecommunication Services": GICSSector.COMMUNICATION_SERVICES,
+            "Media & Entertainment": GICSSector.COMMUNICATION_SERVICES,
+            # Industrial 관련
+            "Industrials": GICSSector.INDUSTRIALS,
+            "Capital Goods": GICSSector.INDUSTRIALS,
+            "Transportation": GICSSector.INDUSTRIALS,
+            # Energy 관련
+            "Energy": GICSSector.ENERGY,
+            "Oil, Gas & Consumable Fuels": GICSSector.ENERGY,
+            # Materials 관련
+            "Materials": GICSSector.MATERIALS,
+            "Chemicals": GICSSector.MATERIALS,
+            "Metals & Mining": GICSSector.MATERIALS,
+            # Utilities 관련
+            "Utilities": GICSSector.UTILITIES,
+            "Electric Utilities": GICSSector.UTILITIES,
+            # Real Estate 관련
+            "Real Estate": GICSSector.REAL_ESTATE,
+        }
+
+        # 정확한 매핑 찾기
+        mapped_sector = gics_mapping.get(gics_sector_name)
+        if mapped_sector:
+            logger.info(
+                f"✅ GICS 매핑 성공: {gics_sector_name} -> {mapped_sector.name}"
+            )
+            return mapped_sector
+
+        # 부분 매칭 시도 (키워드 기반)
+        gics_lower = gics_sector_name.lower()
+        if (
+            "technolog" in gics_lower
+            or "software" in gics_lower
+            or "information" in gics_lower
+        ):
+            logger.info(f"🔍 키워드 매핑: {gics_sector_name} -> Technology")
+            return GICSSector.INFORMATION_TECHNOLOGY
+        elif (
+            "health" in gics_lower or "pharma" in gics_lower or "biotech" in gics_lower
+        ):
+            logger.info(f"🔍 키워드 매핑: {gics_sector_name} -> Healthcare")
+            return GICSSector.HEALTH_CARE
+        elif "financial" in gics_lower or "bank" in gics_lower:
+            logger.info(f"🔍 키워드 매핑: {gics_sector_name} -> Financials")
+            return GICSSector.FINANCIALS
+        elif "consumer" in gics_lower:
+            if "discretionary" in gics_lower:
+                logger.info(
+                    f"🔍 키워드 매핑: {gics_sector_name} -> Consumer Discretionary"
+                )
+                return GICSSector.CONSUMER_DISCRETIONARY
+            else:
+                logger.info(f"🔍 키워드 매핑: {gics_sector_name} -> Consumer Staples")
+                return GICSSector.CONSUMER_STAPLES
+        elif "communication" in gics_lower or "media" in gics_lower:
+            logger.info(f"🔍 키워드 매핑: {gics_sector_name} -> Communication")
+            return GICSSector.COMMUNICATION_SERVICES
+        elif "industrial" in gics_lower:
+            logger.info(f"🔍 키워드 매핑: {gics_sector_name} -> Industrials")
+            return GICSSector.INDUSTRIALS
+        elif "energy" in gics_lower:
+            logger.info(f"🔍 키워드 매핑: {gics_sector_name} -> Energy")
+            return GICSSector.ENERGY
+        elif "material" in gics_lower:
+            logger.info(f"🔍 키워드 매핑: {gics_sector_name} -> Materials")
+            return GICSSector.MATERIALS
+        elif "utilities" in gics_lower:
+            logger.info(f"🔍 키워드 매핑: {gics_sector_name} -> Utilities")
+            return GICSSector.UTILITIES
+        elif "real estate" in gics_lower:
+            logger.info(f"🔍 키워드 매핑: {gics_sector_name} -> Real Estate")
+            return GICSSector.REAL_ESTATE
+
+        # 매핑 실패시 기본값 (Technology)
+        logger.warning(
+            f"⚠️ GICS 매핑 실패: {gics_sector_name} -> 기본값(Technology) 사용"
+        )
+        return GICSSector.INFORMATION_TECHNOLOGY
