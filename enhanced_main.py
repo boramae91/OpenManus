@@ -264,12 +264,23 @@ class EnhancedStockAnalysisSystem:
             )
             results["steps"]["step3_information_collection"] = manus_collection_result
 
-            # 📄 PDF 분석 결과가 있다면 별도 스텝으로 추가
+            # 🚀 PDF 분석 결과가 있다면 별도 스텝으로 추가 (chunking 정보 포함)
             if manus_collection_result.get("pdf_analysis", {}).get("pdf_detected"):
-                logger.info("📄 PDF 분석 결과 감지됨 - 별도 단계로 기록")
-                results["steps"]["pdf_large_analysis"] = manus_collection_result[
-                    "pdf_analysis"
-                ]
+                logger.info(
+                    "📄 PDF 분석 결과 감지됨 - 별도 단계로 기록 (chunking 포함)"
+                )
+                pdf_analysis_data = manus_collection_result["pdf_analysis"]
+
+                # Chunking 정보 로그
+                pdf_content = pdf_analysis_data.get("pdf_content", {})
+                if pdf_content.get("chunking_applied"):
+                    total_chunks = pdf_content.get("total_chunks", 0)
+                    chunk_types = pdf_content.get("chunk_types", [])
+                    logger.info(
+                        f"📄 PDF Chunking 적용됨: {total_chunks}개 청크, 타입: {', '.join(chunk_types)}"
+                    )
+
+                results["steps"]["pdf_large_analysis"] = pdf_analysis_data
 
             # 🎯 Step 4: CrewAI 종합 분석 (모든 데이터 통합!)
             sector_analysis_result = None
@@ -1701,14 +1712,38 @@ class EnhancedStockAnalysisSystem:
             if pdf_result.get("metadata", {}).get("success", False):
                 logger.info("✅ PDF 분석 완료!")
 
-                # 📄 PDF 분석 결과를 분석 응답에 포함
+                # 📄 PDF 분석 결과를 분석 응답에 포함 (chunking 정보 추가)
+                raw_text = pdf_result.get("raw_content", {}).get("full_text", "")
+
+                # 🚀 PDF를 context별로 chunking (SmartSectorManager와 동일한 방식)
+                contextual_chunks = []
+                if raw_text and len(raw_text) > 1000:
+                    try:
+                        # SmartSectorManager의 chunking 로직 재사용
+                        contextual_chunks = self._create_pdf_chunks_for_crewai(raw_text)
+                        logger.info(
+                            f"📄 PDF Context Chunking 완료: {len(contextual_chunks)}개 청크 생성"
+                        )
+                    except Exception as e:
+                        logger.warning(f"⚠️ PDF Chunking 실패: {e} - 원본 텍스트 유지")
+
                 return {
                     "pdf_detected": True,
                     "pdf_path": pdf_path,
                     "analysis_completed": True,
-                    "pdf_content": {  # 🚀 PDF 내용을 직접 포함
-                        "raw_text": pdf_result.get("raw_content", {}).get(
-                            "full_text", ""
+                    "pdf_content": {  # 🚀 PDF 내용을 직접 포함 (chunking 정보 추가)
+                        "raw_text": raw_text,
+                        "contextual_chunks": contextual_chunks,  # 🚀 Context별 청크 정보 추가
+                        "chunking_applied": len(contextual_chunks) > 0,
+                        "total_chunks": len(contextual_chunks),
+                        "chunk_types": (
+                            list(
+                                set(
+                                    chunk["context_type"] for chunk in contextual_chunks
+                                )
+                            )
+                            if contextual_chunks
+                            else []
                         ),
                         "text_length": pdf_result.get("metadata", {}).get(
                             "total_text_length", 0
@@ -1733,6 +1768,20 @@ class EnhancedStockAnalysisSystem:
                             "total_processing_time", "정보없음"
                         ),
                         "content_preview": pdf_result.get("content_preview", ""),
+                        "chunking_info": {
+                            "total_chunks": len(contextual_chunks),
+                            "chunk_types": (
+                                list(
+                                    set(
+                                        chunk["context_type"]
+                                        for chunk in contextual_chunks
+                                    )
+                                )
+                                if contextual_chunks
+                                else []
+                            ),
+                            "chunking_success": len(contextual_chunks) > 0,
+                        },
                     },
                 }
 
@@ -2830,6 +2879,232 @@ class EnhancedStockAnalysisSystem:
             elif value is not None:
                 count += 1
         return count
+
+    def _create_pdf_chunks_for_crewai(self, pdf_text: str) -> List[Dict[str, Any]]:
+        """
+        📄 PDF를 CrewAI용 context별 청크로 분할
+
+        SmartSectorManager와 동일한 chunking 로직을 사용하여
+        PDF 텍스트를 의미있는 context별로 분할합니다.
+
+        Args:
+            pdf_text: 분할할 PDF 텍스트
+
+        Returns:
+            List[Dict]: context별 청크 목록
+        """
+        if not pdf_text or len(pdf_text) < 1000:
+            return []
+
+        chunks = []
+        lines = pdf_text.split("\n")
+
+        # Context 타입별 키워드 정의 (SmartSectorManager와 동일)
+        context_keywords = {
+            "financial": [
+                "재무",
+                "financial",
+                "매출",
+                "revenue",
+                "이익",
+                "profit",
+                "손익",
+                "income",
+                "자산",
+                "assets",
+                "부채",
+                "liabilities",
+                "현금",
+                "cash",
+                "배당",
+                "dividend",
+                "ROE",
+                "ROA",
+                "PER",
+                "PBR",
+                "부채비율",
+                "유동비율",
+                "재무제표",
+                "대차대조표",
+            ],
+            "business": [
+                "사업",
+                "business",
+                "영업",
+                "operation",
+                "시장",
+                "market",
+                "경쟁",
+                "competition",
+                "고객",
+                "customer",
+                "제품",
+                "product",
+                "서비스",
+                "service",
+                "전략",
+                "strategy",
+                "성장",
+                "growth",
+                "점유율",
+                "market share",
+            ],
+            "risk": [
+                "리스크",
+                "risk",
+                "위험",
+                "danger",
+                "문제",
+                "problem",
+                "우려",
+                "concern",
+                "하락",
+                "decline",
+                "부정적",
+                "negative",
+                "위기",
+                "crisis",
+                "불확실",
+                "uncertainty",
+                "변동",
+                "volatility",
+                "손실",
+                "loss",
+            ],
+            "investment": [
+                "투자",
+                "investment",
+                "주가",
+                "stock price",
+                "목표가",
+                "target price",
+                "전망",
+                "outlook",
+                "추천",
+                "recommendation",
+                "매수",
+                "buy",
+                "매도",
+                "sell",
+                "밸류에이션",
+                "valuation",
+                "적정가",
+                "fair value",
+            ],
+            "governance": [
+                "지배구조",
+                "governance",
+                "주주",
+                "shareholder",
+                "이사회",
+                "board",
+                "경영진",
+                "management",
+                "임원",
+                "executive",
+                "보상",
+                "compensation",
+                "의결권",
+                "voting",
+                "투명성",
+                "transparency",
+            ],
+            "technical": [
+                "기술",
+                "technology",
+                "혁신",
+                "innovation",
+                "개발",
+                "development",
+                "R&D",
+                "연구",
+                "특허",
+                "patent",
+                "플랫폼",
+                "platform",
+                "시스템",
+                "system",
+                "솔루션",
+                "solution",
+            ],
+        }
+
+        current_chunk = {"lines": [], "context_type": "general", "score": 0}
+        chunks_buffer = []
+
+        for i, line in enumerate(lines):
+            line = line.strip()
+            if not line:
+                continue
+
+            # 각 라인의 context 점수 계산
+            line_scores = {}
+            line_lower = line.lower()
+
+            for context_type, keywords in context_keywords.items():
+                score = sum(1 for keyword in keywords if keyword in line_lower)
+                if score > 0:
+                    line_scores[context_type] = score
+
+            # 현재 청크에 라인 추가
+            current_chunk["lines"].append(line)
+
+            # 청크 크기가 적당하면 (10-30줄) context 결정
+            if len(current_chunk["lines"]) >= 10:
+                # 청크의 주요 context 결정
+                if line_scores:
+                    best_context = max(line_scores.items(), key=lambda x: x[1])
+                    current_chunk["context_type"] = best_context[0]
+                    current_chunk["score"] = best_context[1]
+
+                # 청크가 너무 크면 (30줄 이상) 분할
+                if len(current_chunk["lines"]) >= 30:
+                    chunks_buffer.append(current_chunk)
+                    current_chunk = {"lines": [], "context_type": "general", "score": 0}
+
+        # 마지막 청크 처리
+        if current_chunk["lines"]:
+            chunks_buffer.append(current_chunk)
+
+        # 청크를 최종 형태로 변환
+        for i, chunk_data in enumerate(chunks_buffer):
+            chunk_text = "\n".join(chunk_data["lines"])
+            if len(chunk_text) > 500:  # 최소 크기 필터
+                chunks.append(
+                    {
+                        "chunk_id": i + 1,
+                        "context_type": chunk_data["context_type"],
+                        "content": chunk_text,
+                        "content_length": len(chunk_text),
+                        "line_count": len(chunk_data["lines"]),
+                        "relevance_score": chunk_data["score"],
+                        "keywords_found": self._extract_pdf_chunk_keywords(chunk_text),
+                    }
+                )
+
+        return chunks
+
+    def _extract_pdf_chunk_keywords(self, text: str) -> List[str]:
+        """PDF 청크에서 핵심 키워드 추출"""
+        import re
+
+        # 숫자가 포함된 중요한 패턴들
+        patterns = [
+            r"\d+[%％]",  # 퍼센트
+            r"\d+[조억만천]원?",  # 한국 단위
+            r"\d+\.?\d*[MB]?억?원?",  # 금액
+            r"ROE|ROA|PER|PBR|EPS",  # 재무비율
+            r"[가-힣]{2,}주식회사?|[A-Z]{2,}",  # 회사명/브랜드
+        ]
+
+        keywords = []
+        text_lower = text.lower()
+
+        for pattern in patterns:
+            matches = re.findall(pattern, text, re.IGNORECASE)
+            keywords.extend(matches[:3])  # 각 패턴에서 최대 3개
+
+        return keywords[:10]  # 최대 10개 키워드
 
 
 async def main():
