@@ -757,9 +757,9 @@ class SmartSectorManager:
         if manus_collected_data and manus_collected_data.get("performed"):
             used_sources.append("Manus_Web_Search")
 
-            # PDF 분석 여부 확인
-            if manus_collected_data.get("pdf_analysis", {}).get("pdf_detected"):
-                used_sources.append("PDF_Analysis")
+        # PDF 분석 여부 확인
+        if manus_collected_data.get("pdf_analysis", {}).get("pdf_detected"):
+            used_sources.append("PDF_Analysis")
 
         return list(set(used_sources))  # 중복 제거
 
@@ -962,9 +962,9 @@ class SmartSectorManager:
                         section_count += 1
                         total_content_length += len(content)
 
-                    logger.info(
-                        f"📄 {expert.name}: {section_count}개 섹션, 총 {total_content_length:,}자 (제한 없음)"
-                    )
+                logger.info(
+                    f"📄 {expert.name}: {section_count}개 섹션, 총 {total_content_length:,}자 (제한 없음)"
+                )
 
         # 전문가별 추가 데이터 선별 (기존 로직 유지)
         if "재무" in expert.expertise or "Fundamental" in expert.role:
@@ -1431,3 +1431,183 @@ class SmartSectorManager:
         # 한국어와 영어가 혼재된 텍스트를 고려한 토큰 추정
         # 일반적으로 한국어는 2-3자당 1토큰, 영어는 4자당 1토큰
         return max(1, len(text) // 3)
+
+    def _optimize_data_for_token_limit(
+        self,
+        financial_data: Dict,
+        enhanced_dart_data: Dict = None,
+        manus_collected_data: Dict = None,
+        target_token_limit: int = 100000,
+    ) -> Dict[str, Any]:
+        """
+        🎯 토큰 제한에 맞춰 데이터를 최적화합니다.
+
+        Args:
+            financial_data: 재무 데이터
+            enhanced_dart_data: Enhanced DART 데이터
+            manus_collected_data: Manus 수집 데이터
+            target_token_limit: 목표 토큰 제한
+
+        Returns:
+            Dict: 최적화된 데이터
+        """
+        logger.info(f"🔢 토큰 최적화 시작 - 목표: {target_token_limit:,} 토큰")
+
+        optimized_data = {
+            "financial_data": financial_data,
+            "enhanced_dart_data": enhanced_dart_data,
+            "manus_collected_data": manus_collected_data,
+            "optimization_applied": False,
+            "original_token_estimate": 0,
+            "optimized_token_estimate": 0,
+        }
+
+        try:
+            # 현재 토큰 수 추정
+            current_tokens = 0
+
+            if financial_data:
+                financial_text = str(financial_data)
+                current_tokens += self._estimate_tokens(financial_text)
+
+            if enhanced_dart_data:
+                dart_text = str(enhanced_dart_data)
+                current_tokens += self._estimate_tokens(dart_text)
+
+            if manus_collected_data:
+                manus_text = str(manus_collected_data)
+                current_tokens += self._estimate_tokens(manus_text)
+
+            optimized_data["original_token_estimate"] = current_tokens
+
+            # 토큰 제한을 초과하는 경우 최적화 적용
+            if current_tokens > target_token_limit:
+                logger.info(
+                    f"⚠️ 토큰 제한 초과: {current_tokens:,} > {target_token_limit:,}"
+                )
+
+                # 각 데이터 소스별 우선순위에 따라 압축
+                compression_ratio = target_token_limit / current_tokens
+
+                # 재무데이터 압축 (가장 중요하므로 80% 유지)
+                if financial_data:
+                    optimized_data["financial_data"] = self._compress_financial_data(
+                        financial_data, compression_ratio * 0.8
+                    )
+
+                # Enhanced DART 데이터 압축 (70% 유지)
+                if enhanced_dart_data:
+                    optimized_data["enhanced_dart_data"] = self._compress_dart_data(
+                        enhanced_dart_data, compression_ratio * 0.7
+                    )
+
+                # Manus 데이터 압축 (60% 유지)
+                if manus_collected_data:
+                    optimized_data["manus_collected_data"] = self._compress_manus_data(
+                        manus_collected_data, compression_ratio * 0.6
+                    )
+
+                optimized_data["optimization_applied"] = True
+
+                # 최적화 후 토큰 수 재계산
+                optimized_tokens = 0
+                for key in [
+                    "financial_data",
+                    "enhanced_dart_data",
+                    "manus_collected_data",
+                ]:
+                    if optimized_data[key]:
+                        optimized_tokens += self._estimate_tokens(
+                            str(optimized_data[key])
+                        )
+
+                optimized_data["optimized_token_estimate"] = optimized_tokens
+
+                logger.info(
+                    f"✅ 토큰 최적화 완료: {current_tokens:,} → {optimized_tokens:,}"
+                )
+
+            else:
+                logger.info(f"✅ 토큰 제한 내: {current_tokens:,} 토큰")
+                optimized_data["optimized_token_estimate"] = current_tokens
+
+        except Exception as e:
+            logger.error(f"❌ 토큰 최적화 실패: {e}")
+            # 실패시 원본 데이터 반환
+            optimized_data["optimization_applied"] = False
+
+        return optimized_data
+
+    def _compress_financial_data(self, financial_data: Dict, ratio: float) -> Dict:
+        """재무데이터를 압축합니다."""
+        if not financial_data or ratio >= 1.0:
+            return financial_data
+
+        # 핵심 재무지표만 유지
+        compressed = {}
+        important_keys = [
+            "success",
+            "data_sources",
+            "data_quality",
+            "stock_info",
+            "financial_summary",
+            "key_metrics",
+            "ratios",
+        ]
+
+        for key in important_keys:
+            if key in financial_data:
+                compressed[key] = financial_data[key]
+
+        return compressed
+
+    def _compress_dart_data(self, dart_data: Dict, ratio: float) -> Dict:
+        """Enhanced DART 데이터를 압축합니다."""
+        if not dart_data or ratio >= 1.0:
+            return dart_data
+
+        compressed = {}
+        important_keys = [
+            "success",
+            "basic_info",
+            "financial_info",
+            "recent_disclosures",
+        ]
+
+        for key in important_keys:
+            if key in dart_data:
+                compressed[key] = dart_data[key]
+
+        return compressed
+
+    def _compress_manus_data(self, manus_data: Dict, ratio: float) -> Dict:
+        """Manus 수집 데이터를 압축합니다."""
+        if not manus_data or ratio >= 1.0:
+            return manus_data
+
+        compressed = {
+            "performed": manus_data.get("performed", False),
+            "method": manus_data.get("method"),
+            "primary_intent": manus_data.get("primary_intent"),
+            "data_richness_score": manus_data.get("data_richness_score"),
+        }
+
+        # 수집된 정보는 요약해서 포함
+        if "collected_information" in manus_data:
+            full_info = manus_data["collected_information"]
+            if len(full_info) > 5000:
+                compressed["collected_information"] = full_info[:5000] + "...[압축됨]"
+            else:
+                compressed["collected_information"] = full_info
+
+        # PDF 분석 정보는 메타데이터만 유지
+        if "pdf_analysis" in manus_data:
+            pdf_info = manus_data["pdf_analysis"]
+            compressed["pdf_analysis"] = {
+                "pdf_detected": pdf_info.get("pdf_detected", False),
+                "analysis_completed": pdf_info.get("analysis_completed", False),
+                "analysis_method": pdf_info.get("analysis_method"),
+                "pdf_dictionary_interface": pdf_info.get("pdf_dictionary_interface"),
+            }
+
+        return compressed

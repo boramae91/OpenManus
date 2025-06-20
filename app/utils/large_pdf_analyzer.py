@@ -1,55 +1,47 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-📊 대용량 PDF 보고서 분석 시스템
+🚀 대용량 PDF 보고서 분석 시스템
 
-이 시스템은 60만 글자 정도의 대용량 사업보고서나 분기보고서를 처리하는 전문 도구입니다.
-마치 숙련된 재무분석가가 두꺼운 보고서를 체계적으로 분석하는 것처럼,
-AI가 단계별로 꼼꼼히 분석해서 JSON 파일로 정리해 줍니다.
+60만 글자까지의 대용량 PDF 파일을 AI로 완전 분석하는 전문 시스템입니다.
+CrewAI 전문가들이 활용할 수 있는 PDF 딕셔너리 인터페이스도 제공해요!
 
-🔍 주요 기능:
-1. 대용량 PDF 텍스트 추출 (무제한 크기)
-2. 스마트 섹션 분할 (재무제표, 주석, 경영진단 등)
-3. 섹션별 AI 전문 분석
-4. 통합 리포트 생성
-5. 구조화된 JSON 결과 저장
+주요 기능:
+1. 📄 무제한 PDF 텍스트 추출 (URL + 로컬 파일 지원)
+2. 🧩 스마트 청킹 (목차 기반 + AI 구조 분석)
+3. 🎯 CrewAI용 PDF 딕셔너리 생성 (60만자 지원)
+4. 📝 전문가별 섹션 선별 시스템
+5. 💾 구조화된 JSON 결과 저장
+
+🔧 지원하는 PDF 처리:
+- 로컬 파일: /path/to/file.pdf
+- URL: https://example.com/report.pdf
+- 대용량: 60만+ 글자 처리 가능
+- 다양한 형식: 사업보고서, 분기보고서, 연구보고서 등
 """
 
 import asyncio
-import io  # 🚀 io 모듈 추가!
+import io
 import json
-
-# PDF 처리 경고 숨기기
-import logging
 import os
 import re
 import time
-import warnings
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
-import aiohttp  # 🌐 URL PDF 다운로드용 추가!
+import fitz  # PyMuPDF
+import pdfplumber
+import PyPDF2
 from loguru import logger
 
-from app.agent.manus import Manus
-
-# OpenManus 모듈들 import
 from app.llm import LLM
 
-# 🚀 PDFReader 의존성 완전 제거! ChunkProcessor 독립 구현
-
-# 🔖 목차 기반 청킹을 위한 PyMuPDF import 추가
+# 🔖 목차 기반 청킹을 위한 PyMuPDF 가용성 확인
 try:
-    import fitz  # PyMuPDF
-
     PYMUPDF_AVAILABLE = True
 except ImportError:
     PYMUPDF_AVAILABLE = False
     logger.warning("⚠️ PyMuPDF를 찾을 수 없습니다. 목차 기반 청킹이 비활성화됩니다.")
-
-logging.getLogger("pdfminer").setLevel(logging.ERROR)
-warnings.filterwarnings("ignore", category=UserWarning, module="pdfminer")
 
 
 class IndependentChunkProcessor:
@@ -82,68 +74,100 @@ class IndependentChunkProcessor:
         if self.toc_chunking_available:
             logger.info("🔖 PDF 목차 기반 청킹 지원 활성화됨")
 
+    async def _download_pdf_from_url(self, url: str) -> Optional[io.BytesIO]:
+        """
+        URL에서 PDF 파일을 다운로드하여 메모리 스트림으로 반환
+
+        Args:
+            url: PDF 파일 URL
+
+        Returns:
+            Optional[io.BytesIO]: 다운로드된 PDF 데이터 스트림 또는 None (실패시)
+        """
+        try:
+            logger.info(f"🌐 PDF URL 다운로드 시작: {url}")
+
+            import aiohttp
+
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as response:
+                    if response.status == 200:
+                        pdf_data = await response.read()
+                        pdf_stream = io.BytesIO(pdf_data)
+                        logger.info(f"✅ PDF 다운로드 완료: {len(pdf_data):,} bytes")
+                        return pdf_stream
+                    else:
+                        logger.error(f"❌ PDF 다운로드 실패: HTTP {response.status}")
+                        return None
+
+        except Exception as e:
+            logger.error(f"❌ PDF URL 다운로드 오류: {e}")
+            return None
+
     def smart_chunk_text(
         self, text: str, preserve_sections: bool = True
     ) -> List[Dict[str, Any]]:
         """
-        텍스트를 스마트하게 청크로 분할
+        텍스트를 논리적 섹션으로 분할합니다 (목차가 없는 경우)
 
-        Args:
-            text: 분할할 텍스트
-            preserve_sections: 섹션 구조 보존 여부
-
-        Returns:
-            List[Dict]: 청크 목록
+        🚀 60만자 지원으로 대용량 섹션도 완벽 처리!
         """
-        if not text or len(text.strip()) == 0:
-            return []
+        sections = {}
 
-        chunks = []
-        start_pos = 0
-        chunk_id = 1
+        # 간단한 섹션 분할 패턴들
+        section_patterns = [
+            r"\n\s*\d+\.\s+[가-힣\w\s]+\n",  # 1. 섹션명
+            r"\n\s*[가-힣]+\s*\n",  # 단독 한글 제목
+            r"\n\s*[A-Z][A-Z\s]+\n",  # 영문 대문자 제목
+        ]
 
-        while start_pos < len(text):
-            # 청크 끝 위치 계산
-            end_pos = min(start_pos + self.chunk_size, len(text))
+        # 패턴으로 분할점 찾기
+        split_points = [0]
+        for pattern in section_patterns:
+            matches = re.finditer(pattern, text)
+            for match in matches:
+                split_points.append(match.start())
 
-            # 단어 경계에서 자르기 (preserve_sections가 True인 경우)
-            if preserve_sections and end_pos < len(text):
-                # 문장 끝이나 문단 끝에서 자르기 시도
-                for boundary in ["\n\n", "\n", ". ", "? ", "! "]:
-                    boundary_pos = text.rfind(boundary, start_pos, end_pos)
-                    if (
-                        boundary_pos > start_pos + self.chunk_size // 2
-                    ):  # 최소 절반 이상은 포함
-                        end_pos = boundary_pos + len(boundary)
-                        break
+        split_points.append(len(text))
+        split_points = sorted(list(set(split_points)))
 
-            # 청크 텍스트 추출
-            chunk_text = text[start_pos:end_pos].strip()
+        # 섹션 생성
+        for i in range(len(split_points) - 1):
+            start = split_points[i]
+            end = split_points[i + 1]
 
-            if chunk_text:
-                chunks.append(
-                    {
-                        "chunk_id": chunk_id,
-                        "content": chunk_text,
-                        "start_pos": start_pos,
-                        "end_pos": end_pos,
-                        "length": len(chunk_text),
-                        "metadata": {
-                            "chunk_type": (
-                                "smart_section" if preserve_sections else "fixed_size"
-                            ),
-                            "overlap_start": max(0, start_pos - self.overlap_size),
-                            "overlap_end": min(len(text), end_pos + self.overlap_size),
-                        },
-                    }
-                )
-                chunk_id += 1
+            section_text = text[start:end].strip()
 
-            # 다음 청크 시작 위치 (겹침 고려)
-            start_pos = max(start_pos + 1, end_pos - self.overlap_size)
+            # 🚀 최소 길이 100자로 유지하되, 최대 크기는 60만자로 확장
+            if len(section_text) >= 100:  # 최소 길이
+                # 섹션 제목 추출
+                title_match = re.match(r"(.*?)\n", section_text)
+                if title_match:
+                    section_title = title_match.group(1).strip()[:50]
+                else:
+                    section_title = f"섹션_{i+1}"
 
-        logger.info(f"📊 스마트 청킹 완료: {len(chunks)}개 청크 생성")
-        return chunks
+                # 🚀 60만자 제한 적용 (기존보다 12배 확장!)
+                if len(section_text) > self.chunk_size:
+                    section_text = (
+                        section_text[: self.chunk_size]
+                        + "...[60만자 제한으로 내용 일부 생략]"
+                    )
+
+                sections[section_title] = section_text
+
+        logger.info(f"🤖 논리적 섹션 분할 완료 - {len(sections)}개 섹션 (60만자 지원)")
+        return [
+            {
+                "chunk_id": i + 1,
+                "section_type": "unknown",
+                "analysis_priority": "medium",
+                "content": section_text,
+                "content_length": len(section_text),
+                "metadata": {},
+            }
+            for i, section_text in enumerate(sections.values())
+        ]
 
     async def extract_pdf_table_of_contents(
         self, pdf_path: str
@@ -230,351 +254,6 @@ class IndependentChunkProcessor:
             logger.error(f"❌ PDF 목차 추출 실패: {e}")
             return []
 
-    async def chunk_by_table_of_contents(
-        self,
-        pdf_path: str,
-        text: str,
-        min_chunk_size: int = 1000,
-        max_chunk_size: int = 50000,
-    ) -> List[Dict[str, Any]]:
-        """
-        🔖 PDF 목차 기반으로 텍스트를 청킹
-
-        PDF의 목차 구조를 기반으로 의미있는 섹션별로 텍스트를 분할합니다.
-        각 목차 항목이 하나의 청크가 되어 더 논리적인 구분이 가능합니다.
-
-        URL과 로컬 파일 모두 지원해요!
-
-        Args:
-            pdf_path: PDF 파일 경로 또는 URL
-            text: 분할할 전체 텍스트
-            min_chunk_size: 최소 청크 크기 (너무 작은 섹션 방지)
-            max_chunk_size: 최대 청크 크기 (너무 큰 섹션 분할)
-
-        Returns:
-            List[Dict]: 목차 기반 청크 목록
-        """
-        if not self.toc_chunking_available:
-            logger.warning("⚠️ 목차 기반 청킹 불가능 - 기본 청킹으로 대체")
-            return self.smart_chunk_text(text, preserve_sections=True)
-
-        # 1. 목차 추출 (URL 지원)
-        toc = await self.extract_pdf_table_of_contents(pdf_path)
-        if not toc:
-            logger.info("📄 목차가 없어서 기본 청킹으로 대체")
-            return self.smart_chunk_text(text, preserve_sections=True)
-
-        # 2. 목차 기반 텍스트 매핑
-        toc_chunks = await self._map_text_to_toc_sections(text, toc, pdf_path)
-
-        # 3. 청크 크기 조정
-        optimized_chunks = self._optimize_toc_chunk_sizes(
-            toc_chunks, min_chunk_size, max_chunk_size
-        )
-
-        logger.info(
-            f"🔖 목차 기반 청킹 완료: {len(optimized_chunks)}개 청크 "
-            f"(원본 목차: {len(toc)}개 항목)"
-        )
-
-        return optimized_chunks
-
-    async def _map_text_to_toc_sections(
-        self, text: str, toc: List[Dict], pdf_path: str
-    ) -> List[Dict[str, Any]]:
-        """
-        목차 정보와 텍스트를 매핑하여 섹션별로 분할
-
-        URL과 로컬 파일 모두 지원해요!
-
-        Args:
-            text: 전체 텍스트
-            toc: 목차 구조
-            pdf_path: PDF 파일 경로 또는 URL (페이지 매핑용)
-
-        Returns:
-            List[Dict]: 목차 기반 텍스트 섹션들
-        """
-        chunks = []
-
-        try:
-            # URL인지 로컬 파일인지 확인하고 적절히 처리
-            if pdf_path.startswith(("http://", "https://")):
-                # 🌐 URL PDF - 메모리에서 처리
-                pdf_data = await self._download_pdf_from_url(pdf_path)
-                if not pdf_data:
-                    logger.error(f"❌ URL PDF 다운로드 실패: {pdf_path}")
-                    return self._fallback_toc_text_mapping(text, toc)
-
-                # 메모리 스트림으로 PDF 문서 열기
-                doc = fitz.open(stream=pdf_data.getvalue(), filetype="pdf")
-            else:
-                # 📁 로컬 파일 처리
-                doc = fitz.open(pdf_path)
-
-            # PDF에서 페이지별 텍스트 추출 (목차 매핑용)
-            page_texts = []
-
-            for page_num in range(len(doc)):
-                page = doc.load_page(page_num)
-                page_text = page.get_text()
-                page_texts.append(page_text)
-
-            doc.close()
-
-            # 목차 항목별로 해당 텍스트 섹션 추출
-            for i, toc_item in enumerate(toc):
-                section_title = toc_item["title"]
-                section_level = toc_item["level"]
-                start_page = max(0, toc_item["page"] - 1)  # 0-based 인덱스
-
-                # 다음 동일/상위 레벨까지가 이 섹션의 범위
-                end_page = len(page_texts) - 1  # 기본값: 마지막 페이지
-
-                for j in range(i + 1, len(toc)):
-                    next_item = toc[j]
-                    if next_item["level"] <= section_level:
-                        end_page = max(start_page, next_item["page"] - 2)
-                        break
-
-                # 해당 페이지 범위의 텍스트 추출
-                section_text = ""
-                for page_idx in range(start_page, min(end_page + 1, len(page_texts))):
-                    section_text += page_texts[page_idx] + "\n"
-
-                # 섹션 제목으로 텍스트에서 정확한 시작 위치 찾기
-                refined_text = self._refine_section_text(
-                    section_text, section_title, toc_item
-                )
-
-                if refined_text and len(refined_text.strip()) > 100:  # 최소 길이 필터
-                    chunks.append(
-                        {
-                            "chunk_id": i + 1,
-                            "toc_title": section_title,
-                            "toc_level": section_level,
-                            "start_page": start_page + 1,  # 1-based로 변환
-                            "end_page": end_page + 1,
-                            "content": refined_text.strip(),
-                            "content_length": len(refined_text.strip()),
-                            "chunk_type": "toc_based",
-                            "section_hierarchy": self._build_section_hierarchy(toc, i),
-                            "metadata": {
-                                "original_toc_item": toc_item,
-                                "extraction_method": "pymupdf_toc_mapping",
-                            },
-                        }
-                    )
-
-        except Exception as e:
-            logger.error(f"❌ 목차-텍스트 매핑 실패: {e}")
-            # 폴백: 목차 제목으로 텍스트 검색
-            chunks = self._fallback_toc_text_mapping(text, toc)
-
-        return chunks
-
-    def _refine_section_text(
-        self, raw_text: str, section_title: str, toc_item: Dict
-    ) -> str:
-        """
-        추출된 섹션 텍스트를 정제하여 정확한 섹션 내용만 추출
-        """
-        if not raw_text or not section_title:
-            return raw_text
-
-        # 섹션 제목을 기준으로 텍스트 시작점 찾기
-        title_variations = [
-            section_title,
-            section_title.replace(" ", ""),
-            section_title.replace(".", ""),
-            section_title.upper(),
-            section_title.lower(),
-        ]
-
-        best_start = 0
-        for variation in title_variations:
-            start_pos = raw_text.find(variation)
-            if start_pos != -1:
-                best_start = start_pos
-                break
-
-        # 정제된 텍스트 반환
-        refined_text = raw_text[best_start:]
-
-        # 너무 긴 경우 적절히 자르기
-        if len(refined_text) > 100000:  # 10만자 제한
-            refined_text = refined_text[:100000] + "..."
-
-        return refined_text
-
-    def _build_section_hierarchy(
-        self, toc: List[Dict], current_index: int
-    ) -> List[str]:
-        """
-        현재 섹션의 계층 구조를 문자열 리스트로 구성
-        """
-        hierarchy = []
-        current_level = toc[current_index]["level"]
-
-        # 현재 섹션까지의 상위 레벨들 추적
-        for i in range(current_index + 1):
-            item = toc[i]
-            if item["level"] < current_level:
-                hierarchy.append(item["title"])
-            elif item["level"] == current_level and i == current_index:
-                hierarchy.append(item["title"])
-
-        return hierarchy
-
-    def _fallback_toc_text_mapping(
-        self, text: str, toc: List[Dict]
-    ) -> List[Dict[str, Any]]:
-        """
-        목차 기반 매핑 실패시 폴백: 텍스트에서 목차 제목 검색으로 분할
-        """
-        chunks = []
-
-        for i, toc_item in enumerate(toc):
-            section_title = toc_item["title"]
-
-            # 텍스트에서 섹션 제목 찾기
-            title_pos = text.find(section_title)
-            if title_pos == -1:
-                continue
-
-            # 다음 섹션까지의 텍스트 추출
-            next_pos = len(text)
-            for j in range(i + 1, len(toc)):
-                next_title = toc[j]["title"]
-                next_title_pos = text.find(next_title, title_pos + 1)
-                if next_title_pos != -1:
-                    next_pos = next_title_pos
-                    break
-
-            section_text = text[title_pos:next_pos].strip()
-
-            if len(section_text) > 100:  # 최소 길이 필터
-                chunks.append(
-                    {
-                        "chunk_id": i + 1,
-                        "toc_title": section_title,
-                        "toc_level": toc_item["level"],
-                        "content": section_text,
-                        "content_length": len(section_text),
-                        "chunk_type": "toc_fallback",
-                        "metadata": {
-                            "extraction_method": "text_search_fallback",
-                            "text_position": title_pos,
-                        },
-                    }
-                )
-
-        return chunks
-
-    def _optimize_toc_chunk_sizes(
-        self, toc_chunks: List[Dict], min_size: int, max_size: int
-    ) -> List[Dict[str, Any]]:
-        """
-        목차 기반 청크들의 크기를 최적화
-
-        - 너무 작은 청크들은 병합
-        - 너무 큰 청크들은 분할
-        """
-        optimized_chunks = []
-
-        for chunk in toc_chunks:
-            content_length = chunk["content_length"]
-
-            if content_length < min_size:
-                # 너무 작은 청크: 이전 청크와 병합 시도
-                if (
-                    optimized_chunks
-                    and optimized_chunks[-1]["chunk_type"] == "toc_based"
-                ):
-                    last_chunk = optimized_chunks[-1]
-                    if last_chunk["content_length"] + content_length < max_size:
-                        # 병합 수행
-                        last_chunk["content"] += "\n\n" + chunk["content"]
-                        last_chunk["content_length"] += content_length
-                        last_chunk["toc_title"] += f" + {chunk['toc_title']}"
-                        last_chunk["merged_sections"] = (
-                            last_chunk.get("merged_sections", 1) + 1
-                        )
-                        continue
-
-            elif content_length > max_size:
-                # 너무 큰 청크: 분할
-                sub_chunks = self._split_large_toc_chunk(chunk, max_size)
-                optimized_chunks.extend(sub_chunks)
-                continue
-
-            # 적정 크기의 청크는 그대로 추가
-            optimized_chunks.append(chunk)
-
-        # 청크 ID 재정렬
-        for i, chunk in enumerate(optimized_chunks):
-            chunk["chunk_id"] = i + 1
-
-        return optimized_chunks
-
-    def _split_large_toc_chunk(
-        self, large_chunk: Dict, max_size: int
-    ) -> List[Dict[str, Any]]:
-        """
-        큰 목차 청크를 여러 개로 분할
-        """
-        content = large_chunk["content"]
-        sub_chunks = []
-
-        # 문단 단위로 분할 시도
-        paragraphs = content.split("\n\n")
-        current_content = ""
-        sub_chunk_id = 1
-
-        for paragraph in paragraphs:
-            if len(current_content + paragraph) > max_size and current_content:
-                # 현재 내용을 청크로 저장
-                sub_chunk = large_chunk.copy()
-                sub_chunk.update(
-                    {
-                        "content": current_content.strip(),
-                        "content_length": len(current_content.strip()),
-                        "toc_title": f"{large_chunk['toc_title']} (Part {sub_chunk_id})",
-                        "chunk_type": "toc_split",
-                        "split_info": {
-                            "parent_title": large_chunk["toc_title"],
-                            "part_number": sub_chunk_id,
-                            "is_split": True,
-                        },
-                    }
-                )
-                sub_chunks.append(sub_chunk)
-
-                current_content = paragraph
-                sub_chunk_id += 1
-            else:
-                current_content += "\n\n" + paragraph if current_content else paragraph
-
-        # 마지막 내용 처리
-        if current_content.strip():
-            sub_chunk = large_chunk.copy()
-            sub_chunk.update(
-                {
-                    "content": current_content.strip(),
-                    "content_length": len(current_content.strip()),
-                    "toc_title": f"{large_chunk['toc_title']} (Part {sub_chunk_id})",
-                    "chunk_type": "toc_split",
-                    "split_info": {
-                        "parent_title": large_chunk["toc_title"],
-                        "part_number": sub_chunk_id,
-                        "is_split": True,
-                    },
-                }
-            )
-            sub_chunks.append(sub_chunk)
-
-        return sub_chunks
-
 
 class LargePDFAnalyzer:
     """
@@ -598,7 +277,17 @@ class LargePDFAnalyzer:
 
         # AI 에이전트들 초기화
         self.llm = llm if llm else LLM()
-        self.manus_agent = Manus(llm=self.llm)
+
+        # Manus agent import 처리
+        try:
+            from app.agent.manus import Manus
+
+            self.manus_agent = Manus(llm=self.llm)
+        except ImportError:
+            logger.warning(
+                "⚠️ Manus agent를 찾을 수 없습니다. 일부 기능이 제한될 수 있습니다."
+            )
+            self.manus_agent = None
 
         # 🚀 독립 청크 처리기 초기화 (PDFReader 완전 제거!)
         self.chunk_processor = IndependentChunkProcessor(
@@ -1029,141 +718,32 @@ class LargePDFAnalyzer:
 
     async def _download_pdf_from_url(self, url: str) -> Optional[io.BytesIO]:
         """
-        🌐 URL에서 PDF 스트림 가져오기 (메모리 처리용)
-        브라우저 에뮬레이션으로 접근 제한 우회 + HTML 리다이렉트 자동 추적
+        URL에서 PDF 파일을 다운로드하여 메모리 스트림으로 반환
 
         Args:
             url: PDF 파일 URL
 
         Returns:
-            Optional[io.BytesIO]: PDF 데이터 스트림 (실패시 None)
+            Optional[io.BytesIO]: 다운로드된 PDF 데이터 스트림 또는 None (실패시)
         """
-        import re
-
-        import aiohttp
-
         try:
-            # 🌐 브라우저 에뮬레이션 헤더 (접근 제한 우회용)
-            headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                "Accept": "application/pdf,application/octet-stream,*/*;q=0.9",
-                "Accept-Language": "ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3",
-                "Accept-Encoding": "gzip, deflate, br",
-                "DNT": "1",
-                "Connection": "keep-alive",
-                "Upgrade-Insecure-Requests": "1",
-            }
+            logger.info(f"🌐 PDF URL 다운로드 시작: {url}")
 
-            current_url = url
-            max_redirects = 3  # 최대 3번 리다이렉트 추적
+            import aiohttp
 
-            # HTTP 요청으로 PDF 스트림 가져오기
-            timeout = aiohttp.ClientTimeout(total=60)  # 60초 타임아웃
-            async with aiohttp.ClientSession(
-                timeout=timeout, headers=headers
-            ) as session:
-
-                for redirect_count in range(max_redirects + 1):
-                    logger.info(
-                        f"📥 PDF 스트림 로드 시도 ({redirect_count+1}/{max_redirects+1}): {current_url}"
-                    )
-
-                    async with session.get(
-                        current_url, allow_redirects=True
-                    ) as response:
-                        logger.info(
-                            f"📡 HTTP 응답: {response.status} | Content-Type: {response.headers.get('content-type', '알 수 없음')}"
-                        )
-
-                        if response.status == 200:
-                            # Content-Type 검증
-                            content_type = response.headers.get(
-                                "content-type", ""
-                            ).lower()
-
-                            # 🎯 PDF 콘텐츠인지 확인
-                            if (
-                                "application/pdf" in content_type
-                                or "application/octet-stream" in content_type
-                            ):
-                                pdf_data = await response.read()
-
-                                if pdf_data and len(pdf_data) > 1000:  # 최소 1KB 이상
-                                    # PDF 헤더 검증
-                                    pdf_header = pdf_data[:8]
-                                    if pdf_header.startswith(b"%PDF-"):
-                                        logger.info(
-                                            f"✅ 유효한 PDF 스트림 로드 완료: {len(pdf_data):,} bytes"
-                                        )
-                                        return io.BytesIO(pdf_data)
-
-                            # 🔄 HTML 리다이렉트 페이지인 경우 실제 PDF URL 추출
-                            elif "text/html" in content_type:
-                                html_content = await response.text()
-                                logger.warning(
-                                    f"⚠️ HTML 페이지 감지, 리다이렉트 URL 추출 시도..."
-                                )
-
-                                # HTML에서 리다이렉트 URL 패턴 찾기
-                                redirect_patterns = [
-                                    r'<meta[^>]+http-equiv="refresh"[^>]+content="[^;]*;\s*URL=([^"]+)"',  # meta refresh
-                                    r'window\.location\.href\s*=\s*["\']([^"\']+)["\']',  # JavaScript redirect
-                                    r'document\.location\s*=\s*["\']([^"\']+)["\']',  # document.location
-                                    r'href="([^"]*\.pdf[^"]*)"',  # 직접 PDF 링크
-                                ]
-
-                                redirect_url = None
-                                for pattern in redirect_patterns:
-                                    match = re.search(
-                                        pattern, html_content, re.IGNORECASE
-                                    )
-                                    if match:
-                                        potential_url = match.group(1)
-                                        # 상대 URL을 절대 URL로 변환
-                                        if potential_url.startswith("http"):
-                                            redirect_url = potential_url
-                                        elif potential_url.startswith("/"):
-                                            from urllib.parse import urljoin
-
-                                            redirect_url = urljoin(
-                                                current_url, potential_url
-                                            )
-                                        break
-
-                                if redirect_url and redirect_url != current_url:
-                                    logger.info(
-                                        f"🔄 리다이렉트 URL 발견: {redirect_url}"
-                                    )
-                                    current_url = redirect_url
-                                    continue  # 다시 시도
-                                else:
-                                    logger.error(
-                                        "❌ 유효한 리다이렉트 URL을 찾을 수 없음"
-                                    )
-                                    logger.error(
-                                        f"📄 HTML 내용 미리보기: {html_content[:500]}"
-                                    )
-                                    return None
-
-                            # PDF도 HTML도 아닌 경우
-                            else:
-                                logger.error(
-                                    f"❌ 지원하지 않는 콘텐츠 타입: {content_type}"
-                                )
-                                return None
-
-                        else:
-                            logger.error(
-                                f"❌ HTTP 오류: {response.status} - {current_url}"
-                            )
-                            return None
-
-                # 최대 리다이렉트 횟수 초과
-                logger.error(f"❌ 최대 리다이렉트 횟수 ({max_redirects}) 초과")
-                return None
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as response:
+                    if response.status == 200:
+                        pdf_data = await response.read()
+                        pdf_stream = io.BytesIO(pdf_data)
+                        logger.info(f"✅ PDF 다운로드 완료: {len(pdf_data):,} bytes")
+                        return pdf_stream
+                    else:
+                        logger.error(f"❌ PDF 다운로드 실패: HTTP {response.status}")
+                        return None
 
         except Exception as e:
-            logger.error(f"❌ PDF 스트림 로드 실패: {str(e)}")
+            logger.error(f"❌ PDF URL 다운로드 오류: {e}")
             return None
 
     async def _direct_pdf_extraction(self, pdf_path: str) -> Dict[str, Any]:
@@ -1778,6 +1358,131 @@ class LargePDFAnalyzer:
             logger.error(f"❌ 원문 결과 저장 중 오류: {e}")
             return ""
 
+    async def extract_pdf_table_of_contents(
+        self,
+        pdf_path: str,
+        company_name: str = "분석대상회사",
+        save_to_json: bool = True,
+    ) -> Dict[str, Any]:
+        """
+        PDF에서 목차(Table of Contents)를 추출합니다.
+
+        Args:
+            pdf_path: PDF 파일 경로 또는 URL
+            company_name: 회사명
+            save_to_json: JSON 파일로 저장 여부
+
+        Returns:
+            Dict: 추출된 목차 정보
+        """
+        logger.info(f"📋 PDF 목차 추출 시작: {pdf_path}")
+
+        result = {
+            "success": False,
+            "table_of_contents": [],
+            "metadata": {
+                "pdf_path": pdf_path,
+                "company_name": company_name,
+                "extraction_timestamp": datetime.now().isoformat(),
+            },
+        }
+
+        try:
+            # IndependentChunkProcessor를 사용해서 목차 추출
+            toc_list = await self.chunk_processor.extract_pdf_table_of_contents(
+                pdf_path
+            )
+
+            if toc_list:
+                result["success"] = True
+                result["table_of_contents"] = toc_list
+                result["metadata"]["total_toc_items"] = len(toc_list)
+                logger.info(f"✅ 목차 추출 성공: {len(toc_list)}개 항목")
+            else:
+                result["error"] = "목차를 찾을 수 없습니다"
+                logger.warning("⚠️ PDF에서 목차를 찾을 수 없습니다")
+
+        except Exception as e:
+            error_msg = f"목차 추출 실패: {str(e)}"
+            result["error"] = error_msg
+            logger.error(f"❌ {error_msg}")
+
+        return result
+
+    async def _map_text_to_toc_sections(
+        self,
+        full_text: str,
+        table_of_contents: List[Dict],
+        max_section_size: int,
+    ) -> Dict[str, str]:
+        """
+        전체 텍스트를 목차 구조에 따라 섹션별로 매핑합니다.
+
+        Args:
+            full_text: PDF 전체 텍스트
+            table_of_contents: 목차 구조
+            max_section_size: 각 섹션의 최대 크기
+
+        Returns:
+            Dict: {목차_제목: 섹션_내용} 딕셔너리
+        """
+        logger.info(f"📝 목차-텍스트 매핑 시작: {len(table_of_contents)}개 목차 항목")
+
+        sections = {}
+
+        try:
+            for i, toc_item in enumerate(table_of_contents):
+                section_title = toc_item.get("title", f"섹션_{i+1}")
+
+                # 텍스트에서 해당 섹션 찾기
+                title_pos = full_text.find(section_title)
+                if title_pos == -1:
+                    # 제목 변형으로 다시 시도
+                    title_variations = [
+                        section_title.replace(" ", ""),
+                        section_title.replace(".", ""),
+                        section_title.upper(),
+                        section_title.lower(),
+                    ]
+
+                    for variation in title_variations:
+                        title_pos = full_text.find(variation)
+                        if title_pos != -1:
+                            break
+
+                if title_pos == -1:
+                    logger.warning(
+                        f"⚠️ 섹션 '{section_title}'을 텍스트에서 찾을 수 없습니다"
+                    )
+                    continue
+
+                # 다음 섹션까지의 텍스트 추출
+                next_pos = len(full_text)
+                for j in range(i + 1, len(table_of_contents)):
+                    next_title = table_of_contents[j].get("title", "")
+                    next_title_pos = full_text.find(next_title, title_pos + 1)
+                    if next_title_pos != -1:
+                        next_pos = next_title_pos
+                        break
+
+                section_text = full_text[title_pos:next_pos].strip()
+
+                # 섹션 크기 제한 적용
+                if len(section_text) > max_section_size:
+                    section_text = (
+                        section_text[:max_section_size] + "...[내용 일부 생략]"
+                    )
+
+                if len(section_text) >= 100:  # 최소 길이 필터
+                    sections[section_title] = section_text
+
+            logger.info(f"✅ 목차-텍스트 매핑 완료: {len(sections)}개 섹션")
+
+        except Exception as e:
+            logger.error(f"❌ 목차-텍스트 매핑 실패: {e}")
+
+        return sections
+
     async def create_pdf_dictionary_for_crewai(
         self,
         pdf_path: str,
@@ -1790,7 +1495,7 @@ class LargePDFAnalyzer:
         대용량 PDF를 목차별/섹션별 딕셔너리로 구조화해서
         CrewAI 전문가들이 필요한 부분만 선택적으로 가져와서 분석할 수 있게 해요!
 
-        이게 바로 토큰 절약과 정확성 향상의 핵심 아이디어예요! 🎯
+        이게 바로 토큰 절약과 정확성 향상의 핵심이에요! 🎯
 
         Args:
             pdf_path: PDF 파일 경로 또는 URL
@@ -1901,90 +1606,6 @@ class LargePDFAnalyzer:
 
         except Exception as e:
             error_msg = f"PDF 딕셔너리 생성 실패: {str(e)}"
-            logger.error(f"❌ {error_msg}")
-
-            return {
-                "success": False,
-                "pdf_dictionary": {},
-                "interface": None,
-                "metadata": {
-                    "company_name": company_name,
-                    "pdf_source": pdf_path,
-                    "error": error_msg,
-                    "processing_time": time.time() - start_time,
-                },
-                "error": error_msg,
-            }
-
-    async def _create_dictionary_without_toc(
-        self, pdf_path: str, company_name: str, max_section_size: int
-    ) -> Dict[str, Any]:
-        """
-        목차가 없는 PDF를 위한 딕셔너리 생성 (AI 기반 섹션 분할)
-
-        🚀 60만자 지원으로 대용량 PDF도 완벽 처리!
-        """
-        logger.info("🤖 AI 기반 섹션 분할로 딕셔너리 생성...")
-        logger.info(f"   최대 섹션 크기: {max_section_size:,}자")
-
-        try:
-            # 전체 텍스트 추출
-            full_text_result = await self.extract_raw_text_only(
-                pdf_path=pdf_path, company_name=company_name, save_to_json=False
-            )
-
-            if not full_text_result.get("success"):
-                raise Exception(
-                    f"PDF 텍스트 추출 실패: {full_text_result.get('error')}"
-                )
-
-            full_text = full_text_result.get("raw_text", "")
-
-            # AI를 사용해서 의미 있는 섹션으로 분할 (간단한 패턴 기반)
-            sections = self._split_text_into_logical_sections(
-                full_text, max_section_size
-            )
-
-            # 주석 섹션 추가
-            footnote_sections = self._extract_footnote_sections(
-                full_text, max_section_size
-            )
-            sections.update(footnote_sections)
-
-            # 메타데이터 생성
-            metadata = {
-                "company_name": company_name,
-                "pdf_source": pdf_path,
-                "creation_timestamp": datetime.now().isoformat(),
-                "total_sections": len(sections),
-                "toc_based_sections": len(sections) - len(footnote_sections),
-                "footnote_sections": len(footnote_sections),
-                "total_text_length": sum(len(content) for content in sections.values()),
-                "avg_section_length": (
-                    sum(len(content) for content in sections.values()) // len(sections)
-                    if sections
-                    else 0
-                ),
-                "max_section_size_limit": max_section_size,
-                "splitting_method": "ai_logical_sections",
-            }
-
-            # PDFDictionaryInterface 생성
-            pdf_interface = PDFDictionaryInterface(
-                pdf_dictionary=sections, metadata=metadata
-            )
-
-            logger.info(f"✅ AI 기반 딕셔너리 생성 완료 - {len(sections)}개 섹션")
-
-            return {
-                "success": True,
-                "pdf_dictionary": sections,
-                "interface": pdf_interface,
-                "metadata": metadata,
-            }
-
-        except Exception as e:
-            error_msg = f"AI 기반 딕셔너리 생성 실패: {str(e)}"
             logger.error(f"❌ {error_msg}")
 
             return {
@@ -2163,275 +1784,3 @@ class PDFDictionaryInterface:
             "footnote_specialist": [],  # 주석 전문가
             "general": [],  # 일반 (여러 전문가 공통)
         }
-
-        for section_title in self.pdf_dictionary.keys():
-            title_lower = section_title.lower()
-
-            # 📝 주석 전문가용 섹션들
-            if any(
-                keyword in title_lower
-                for keyword in [
-                    "주석",
-                    "각주",
-                    "주",
-                    "우발",
-                    "보증",
-                    "파생",
-                    "관계회사",
-                    "연결",
-                    "note",
-                    "footnote",
-                    "contingent",
-                    "derivative",
-                    "related",
-                ]
-            ):
-                categories["footnote_specialist"].append(section_title)
-
-            # 💹 펀더멘털 분석가용 섹션들
-            elif any(
-                keyword in title_lower
-                for keyword in [
-                    "재무",
-                    "손익",
-                    "현금",
-                    "자산",
-                    "부채",
-                    "자본",
-                    "매출",
-                    "영업",
-                    "financial",
-                    "income",
-                    "cash",
-                    "asset",
-                    "liability",
-                    "revenue",
-                ]
-            ):
-                categories["fundamental_analyst"].append(section_title)
-
-            # 🏭 산업 분석가용 섹션들
-            elif any(
-                keyword in title_lower
-                for keyword in [
-                    "사업",
-                    "산업",
-                    "시장",
-                    "경쟁",
-                    "제품",
-                    "서비스",
-                    "영업현황",
-                    "business",
-                    "industry",
-                    "market",
-                    "competition",
-                    "product",
-                ]
-            ):
-                categories["industry_analyst"].append(section_title)
-
-            # 💰 밸류에이션 전문가용 섹션들
-            elif any(
-                keyword in title_lower
-                for keyword in [
-                    "주식",
-                    "배당",
-                    "주주",
-                    "지분",
-                    "투자",
-                    "가치",
-                    "평가",
-                    "stock",
-                    "dividend",
-                    "shareholder",
-                    "investment",
-                    "valuation",
-                ]
-            ):
-                categories["valuation_expert"].append(section_title)
-
-            # ⚠️ 리스크 평가자용 섹션들
-            elif any(
-                keyword in title_lower
-                for keyword in [
-                    "위험",
-                    "리스크",
-                    "감사",
-                    "내부통제",
-                    "준법",
-                    "규제",
-                    "risk",
-                    "audit",
-                    "control",
-                    "compliance",
-                    "regulation",
-                ]
-            ):
-                categories["risk_assessor"].append(section_title)
-
-            # 📈 기술적 분석가용 섹션들 (거의 없지만)
-            elif any(
-                keyword in title_lower
-                for keyword in [
-                    "주가",
-                    "거래량",
-                    "기술적",
-                    "차트",
-                    "price",
-                    "volume",
-                    "technical",
-                    "chart",
-                ]
-            ):
-                categories["technical_analyst"].append(section_title)
-
-            # 🔍 일반 섹션 (여러 전문가가 공통으로 관심)
-            else:
-                categories["general"].append(section_title)
-
-        return categories
-
-    def get_sections_for_expert(
-        self, expert_type: str, max_sections: int = 3
-    ) -> Dict[str, str]:
-        """
-        🎯 특정 전문가를 위한 PDF 섹션들을 가져와요!
-
-        Args:
-            expert_type: 전문가 타입 (예: "fundamental_analyst")
-            max_sections: 최대 반환할 섹션 수
-
-        Returns:
-            Dict: {섹션_제목: 섹션_내용} 형태의 딕셔너리
-        """
-        relevant_sections = {}
-
-        # 전문가별 특화 섹션 먼저 추가
-        if expert_type in self.section_categories:
-            expert_sections = self.section_categories[expert_type][:max_sections]
-            for section_title in expert_sections:
-                if section_title in self.pdf_dictionary:
-                    relevant_sections[section_title] = self.pdf_dictionary[
-                        section_title
-                    ]
-
-        # 부족하면 일반 섹션에서 보충
-        if len(relevant_sections) < max_sections:
-            remaining_slots = max_sections - len(relevant_sections)
-            general_sections = self.section_categories["general"][:remaining_slots]
-
-            for section_title in general_sections:
-                if (
-                    section_title in self.pdf_dictionary
-                    and section_title not in relevant_sections
-                ):
-                    relevant_sections[section_title] = self.pdf_dictionary[
-                        section_title
-                    ]
-
-        logger.info(f"🎯 {expert_type}: {len(relevant_sections)}개 섹션 선별 완료")
-        return relevant_sections
-
-    def get_footnote_sections(self) -> Dict[str, str]:
-        """
-        📝 주석/각주 전문가를 위한 섹션들만 가져와요!
-
-        주석 전문가가 사업보고서와 분기보고서의 주석을 분석할 때 사용합니다.
-        """
-        footnote_sections = {}
-
-        footnote_section_titles = self.section_categories["footnote_specialist"]
-        for section_title in footnote_section_titles:
-            if section_title in self.pdf_dictionary:
-                footnote_sections[section_title] = self.pdf_dictionary[section_title]
-
-        logger.info(f"📝 주석 전문가: {len(footnote_sections)}개 주석 섹션 추출 완료")
-        return footnote_sections
-
-    def get_section_summary(self) -> Dict[str, Any]:
-        """PDF 딕셔너리의 요약 정보를 반환합니다."""
-        return {
-            "total_sections": len(self.pdf_dictionary),
-            "expert_distribution": {
-                expert_type: len(sections)
-                for expert_type, sections in self.section_categories.items()
-            },
-            "total_characters": sum(
-                len(content) for content in self.pdf_dictionary.values()
-            ),
-            "avg_section_length": (
-                sum(len(content) for content in self.pdf_dictionary.values())
-                // len(self.pdf_dictionary)
-                if self.pdf_dictionary
-                else 0
-            ),
-        }
-
-    def get_total_sections(self) -> int:
-        """총 섹션 수를 반환합니다."""
-        return len(self.pdf_dictionary)
-
-    def search_sections_by_keyword(
-        self, keyword: str, max_results: int = 5
-    ) -> Dict[str, str]:
-        """
-        키워드로 관련 섹션들을 검색합니다.
-
-        Args:
-            keyword: 검색 키워드
-            max_results: 최대 반환할 결과 수
-
-        Returns:
-            Dict: 키워드와 관련된 섹션들
-        """
-        matching_sections = {}
-        keyword_lower = keyword.lower()
-
-        for section_title, section_content in self.pdf_dictionary.items():
-            # 제목이나 내용에 키워드가 포함된 경우
-            if (
-                keyword_lower in section_title.lower()
-                or keyword_lower in section_content.lower()[:1000]
-            ):  # 내용은 처음 1000자만 검색
-                matching_sections[section_title] = section_content
-
-                if len(matching_sections) >= max_results:
-                    break
-
-        logger.info(f"🔍 키워드 '{keyword}' 검색: {len(matching_sections)}개 섹션 발견")
-        return matching_sections
-
-
-# 사용 예시 함수
-async def analyze_large_pdf_report(
-    pdf_path: str, company_name: str = "", report_type: str = "사업보고서"
-) -> Dict[str, Any]:
-    """
-    대용량 PDF 보고서 분석 간편 함수
-
-    사용법:
-    result = await analyze_large_pdf_report(
-        pdf_path="reports/삼성전자_2024_사업보고서.pdf",
-        company_name="삼성전자",
-        report_type="사업보고서"
-    )
-    """
-    analyzer = LargePDFAnalyzer()
-    return await analyzer.analyze_large_report(
-        pdf_path=pdf_path, company_name=company_name, report_type=report_type
-    )
-
-
-if __name__ == "__main__":
-    # 테스트 실행 예시
-    async def main():
-        result = await analyze_large_pdf_report(
-            pdf_path="test_report.pdf",
-            company_name="테스트회사",
-            report_type="분기보고서",
-        )
-        print(f"분석 완료: {result['metadata']['success']}")
-        if result["metadata"]["success"]:
-            print(f"저장 경로: {result['metadata']['save_path']}")
-
-    # asyncio.run(main())

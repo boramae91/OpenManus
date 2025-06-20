@@ -1755,7 +1755,7 @@ class EnhancedStockAnalysisSystem:
                         )
                     )
 
-                    if analysis_result.get("success"):
+                    if analysis_result and analysis_result.get("success"):
                         pdf_result["analysis_completed"] = True
 
                         # 기존 구조 유지
@@ -1791,9 +1791,10 @@ class EnhancedStockAnalysisSystem:
                         pdf_result["pdf_content"] = pdf_content
                         pdf_result["analysis_method"] = "large_pdf_analyzer_fallback"
                     else:
-                        logger.warning(
-                            f"⚠️ 기존 PDF 분석도 실패: {analysis_result.get('error')}"
-                        )
+                        error_msg = "분석 결과 없음"
+                        if analysis_result:
+                            error_msg = analysis_result.get("error", "알 수 없는 오류")
+                        logger.warning(f"⚠️ 기존 PDF 분석도 실패: {error_msg}")
 
         except Exception as e:
             logger.error(f"PDF 감지/분석 중 오류: {e}")
