@@ -1799,11 +1799,24 @@ class EnhancedStockAnalysisSystem:
                         pdf_result["pdf_content"] = pdf_content
                         pdf_result["analysis_method"] = "large_pdf_analyzer_fallback"
                     else:
+                        # 더 상세한 오류 메시지 생성
                         error_msg = "분석 결과 없음"
-                        if analysis_result:
-                            error_msg = analysis_result.get("metadata", {}).get(
-                                "error", "알 수 없는 오류"
-                            )
+                        if analysis_result is None:
+                            error_msg = "extract_raw_text_only가 None을 반환함"
+                        elif not analysis_result.get("success"):
+                            # error 필드 확인
+                            if analysis_result.get("error"):
+                                error_msg = analysis_result.get("error")
+                            # metadata에서 오류 확인
+                            elif analysis_result.get("metadata", {}).get("error"):
+                                error_msg = analysis_result.get("metadata", {}).get(
+                                    "error"
+                                )
+                            else:
+                                error_msg = f"success=False, 상세 오류 정보 없음"
+                        else:
+                            error_msg = "성공 플래그는 True인데 처리 실패"
+
                         logger.warning(f"⚠️ 기존 PDF 분석도 실패: {error_msg}")
                         pdf_result["error"] = error_msg
 

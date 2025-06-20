@@ -464,7 +464,7 @@ class SmartSectorManager:
         for expert in experts:
             try:
                 # 전문가별 맞춤 프롬프트 생성
-                expert_prompt = self._build_expert_specific_context(
+                expert_prompt = await self._create_expert_specific_context(
                     expert,
                     prompt,
                     stock_name,
@@ -971,7 +971,7 @@ class SmartSectorManager:
 
         # 전문가별 추가 데이터 선별 (기존 로직 유지)
         if "재무" in expert.expertise or "Fundamental" in expert.role:
-            # 재무 분석 전문가 - 재무데이터 중심
+            # 재무 분석 전문가 - 🎯 시니어 애널리스트 수준 지침 추가
             if financial_data and financial_data.get("success"):
                 financial_summary = self._summarize_financial_data(financial_data)
                 context_parts.append("📊 재무데이터:")
@@ -983,8 +983,48 @@ class SmartSectorManager:
                     context_parts.append("🚀 상세 재무정보 (DART):")
                     context_parts.append(dart_financial)
 
+            # 🎯 시니어 펀더멘털 애널리스트 분석 지침 (구체적 산출식 포함)
+            context_parts.append("\n🎯 펀더멘털 분석 필수 수행사항:")
+            context_parts.append("1. 재무비율 종합분석:")
+            context_parts.append(
+                "   - ROE = 순이익/평균자기자본 (3년 트렌드와 동종업계 Percentile)"
+            )
+            context_parts.append(
+                "   - DuPont 3단계: ROE = 순이익률 × 자산회전율 × 레버리지"
+            )
+            context_parts.append("   - ROIC = NOPAT/(차입금+자기자본) vs WACC 비교")
+            context_parts.append("   - 유동비율 = 유동자산/유동부채 (안전성 지표)")
+            context_parts.append("")
+            context_parts.append("2. 현금흐름 정밀분석:")
+            context_parts.append("   - FCF = 영업CF - 자본적지출 (3년 평균 산출)")
+            context_parts.append("   - FCF Yield = FCF/시가총액 × 100 (%)")
+            context_parts.append("   - Cash Conversion Cycle = DIO + DSO - DPO")
+            context_parts.append("   - Working Capital 변동이 OCF에 미치는 영향 정량화")
+            context_parts.append("")
+            context_parts.append("3. 수익성 및 성장성 심화분석:")
+            context_parts.append(
+                "   - 매출 성장률 = (당기매출-전기매출)/전기매출 × 100"
+            )
+            context_parts.append("   - 영업레버리지 = 영업이익 증가율/매출 증가율")
+            context_parts.append("   - EBITDA 마진 = EBITDA/매출 × 100 (현금창출력)")
+            context_parts.append("   - Asset Turnover = 매출/평균총자산 (자산효율성)")
+            context_parts.append("")
+            context_parts.append("4. 재무건전성 스트레스 테스트:")
+            context_parts.append(
+                "   - Interest Coverage = EBIT/이자비용 (이자지급능력)"
+            )
+            context_parts.append("   - Debt Service Coverage = OCF/(원금상환+이자지급)")
+            context_parts.append("   - Net Debt/EBITDA 비율 (부채상환 소요연수)")
+            context_parts.append("   - 경기침체 시나리오 하에서 부채상환능력 평가")
+            context_parts.append("")
+            context_parts.append("⚠️ 분석 시 주의사항:")
+            context_parts.append("- 모든 비율은 반드시 3년 트렌드로 분석")
+            context_parts.append("- 동종업계 상위 25%, 50%, 75% 대비 위치 명시")
+            context_parts.append("- 계절성/일회성 요인 제거한 정상화 수치 병기")
+            context_parts.append("- 연결재무제표 기준으로 분석 (별도 재무제표 참고)")
+
         elif "기술" in expert.expertise or "Technical" in expert.role:
-            # 기술 분석 전문가 - 가격/차트 데이터 중심
+            # 기술 분석 전문가 - 🎯 시니어 애널리스트 수준 지침 추가
             if financial_data and financial_data.get("success"):
                 price_data = self._extract_price_data_only(financial_data)
                 if price_data:
@@ -999,14 +1039,113 @@ class SmartSectorManager:
                     context_parts.append("🔍 기술분석 관련 정보:")
                     context_parts.append(technical_info)
 
+            # 🎯 시니어 기술적 애널리스트 분석 지침 (구체적 계산식 포함)
+            context_parts.append("\n🎯 기술적 분석 필수 수행사항:")
+            context_parts.append("1. 주요 이동평균선 분석:")
+            context_parts.append("   - 5일선 vs 20일선 Golden/Dead Cross 여부와 시점")
+            context_parts.append("   - 20일선 vs 60일선 중기 추세 전환 신호")
+            context_parts.append("   - 60일선 vs 120일선 장기 추세 방향성")
+            context_parts.append("   - 현재가의 이평선 배열 상태 (정배열/역배열/혼재)")
+            context_parts.append("")
+            context_parts.append("2. 모멘텀 지표 정밀분석:")
+            context_parts.append(
+                "   - MACD(12,26,9): Signal Line 교차와 히스토그램 변화율"
+            )
+            context_parts.append(
+                "   - RSI(14): 과매수(70이상)/과매도(30이하) 구간과 Divergence"
+            )
+            context_parts.append("   - Stochastic(%K,%D): 80이상 과매수, 20이하 과매도")
+            context_parts.append("   - Williams %R: -20이상 과매수, -80이하 과매도")
+            context_parts.append("")
+            context_parts.append("3. 지지저항 및 목표가 산출:")
+            context_parts.append("   - 주요 지지선/저항선 레벨 식별 (최근 6개월 기준)")
+            context_parts.append("   - Fibonacci Retracement: 38.2%, 50%, 61.8% 되돌림")
+            context_parts.append(
+                "   - 돌파시 목표가 = 저항선 + (저항선-지지선) [측정이론]"
+            )
+            context_parts.append("   - 하락시 목표가 = 지지선 - (저항선-지지선)")
+            context_parts.append("")
+            context_parts.append("4. 거래량 및 섹터 분석:")
+            context_parts.append(
+                "   - 거래량 동반 여부 (20일 평균 대비 150% 이상시 유의미)"
+            )
+            context_parts.append("   - OBV (On Balance Volume) 추세와 주가 Divergence")
+            context_parts.append(
+                "   - 섹터 상대강도 = (개별주/섹터지수) / (전일 개별주/전일 섹터지수)"
+            )
+            context_parts.append("   - 시장 대비 Beta 계수와 변동성 비교")
+            context_parts.append("")
+            context_parts.append("⚠️ 기술적 분석 주의사항:")
+            context_parts.append("- 모든 신호는 거래량 동반 여부 필수 확인")
+            context_parts.append(
+                "- False Breakout 가능성 (저항선 돌파 후 3일 지속성 관찰)"
+            )
+            context_parts.append("- 공시나 이벤트 전후 기술적 신호 신뢰도 하락")
+            context_parts.append(
+                "- 단기(1주), 중기(1개월), 장기(3개월) 시계열 종합 판단"
+            )
+
         # 기타 전문가별 데이터 처리
         if "산업" in expert.expertise or "Industry" in expert.role:
-            # 산업 분석 전문가 - 산업 동향 중심
+            # 산업 분석 전문가 - 🎯 시니어 애널리스트 수준 지침 추가
             if manus_collected_data and manus_collected_data.get("performed"):
                 industry_info = self._extract_industry_info(manus_collected_data)
                 if industry_info:
                     context_parts.append("🏭 산업 동향 정보:")
                     context_parts.append(industry_info)
+
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                business_info = self._extract_dart_business_info(enhanced_dart_data)
+                if business_info:
+                    context_parts.append("\n📋 사업현황 정보:")
+                    context_parts.append(business_info)
+
+            # 🎯 시니어 산업 애널리스트 분석 지침 (정량적 분석 프레임워크)
+            context_parts.append("\n🎯 산업 분석 필수 수행사항:")
+            context_parts.append("1. Porter 5 Forces 정량평가:")
+            context_parts.append(
+                "   - 진입장벽 강도 (1-5점): 자본집약도, 규제, 기술장벽"
+            )
+            context_parts.append(
+                "   - 공급업체 협상력 (1-5점): 집중도, 전환비용, 차별화"
+            )
+            context_parts.append(
+                "   - 구매자 협상력 (1-5점): 집중도, 가격민감도, 대체재"
+            )
+            context_parts.append("   - 대체재 위협 (1-5점): 성능, 가격, 전환비용")
+            context_parts.append("   - 경쟁강도 (1-5점): 경쟁자수, 성장률, 차별화")
+            context_parts.append(
+                "   ⭐ 각 Force별 점수와 종합점수(25점 만점) 산출 필수"
+            )
+            context_parts.append("")
+            context_parts.append("2. 시장구조 및 경쟁력 분석:")
+            context_parts.append("   - HHI 지수 = Σ(시장점유율%)² (시장집중도)")
+            context_parts.append("   - Top 3 집중도 = 상위 3사 시장점유율 합계")
+            context_parts.append("   - 시장성장률 vs GDP 성장률 대비 배수")
+            context_parts.append("   - 가격결정력 지수 = 가격인상률/원가상승률")
+            context_parts.append("")
+            context_parts.append("3. 경쟁우위 지속성 평가:")
+            context_parts.append(
+                "   - Economic Moat 평가: 네트워크효과, 브랜드, 규모경제, 전환비용"
+            )
+            context_parts.append("   - R&D 집약도 = R&D비용/매출 × 100 (혁신력)")
+            context_parts.append(
+                "   - 특허 포트폴리오 강도 (특허수, 핵심기술 보유현황)"
+            )
+            context_parts.append("   - 고객 충성도 지표 (재구매율, NPS, 전환비용)")
+            context_parts.append("")
+            context_parts.append("4. 산업 라이프사이클 진단:")
+            context_parts.append("   - 도입기: 높은 성장률, 표준화 부재, 높은 진입")
+            context_parts.append("   - 성장기: 가속 성장, 시장점유율 경쟁, 표준화")
+            context_parts.append("   - 성숙기: 성장률 둔화, 효율성 경쟁, 통합")
+            context_parts.append("   - 쇠퇴기: 마이너스 성장, 구조조정, 대체재")
+            context_parts.append("   ⭐ 현재 단계와 향후 3-5년 전망 명시")
+            context_parts.append("")
+            context_parts.append("⚠️ 산업분석 주의사항:")
+            context_parts.append("- 글로벌 vs 국내 시장 구분하여 분석")
+            context_parts.append("- ESG 트렌드가 산업구조에 미치는 장기 영향")
+            context_parts.append("- 디지털 전환이 기존 밸류체인에 미치는 파괴적 영향")
+            context_parts.append("- 지정학적 리스크가 글로벌 공급망에 미치는 영향")
 
         elif "밸류" in expert.expertise or "Valuation" in expert.role:
             # 밸류에이션 전문가 - 가치평가 데이터 중심
@@ -1016,8 +1155,42 @@ class SmartSectorManager:
                     context_parts.append("💰 밸류에이션 데이터:")
                     context_parts.append(valuation_data)
 
+            # 🎯 목표가 산출 근거 요구사항 추가
+            context_parts.append("\n🎯 목표가 산출 시 필수 포함사항:")
+            context_parts.append("1. DCF 분석:")
+            context_parts.append("   - 자유현금흐름(FCF) 5년 예측값과 근거")
+            context_parts.append(
+                "   - 할인율(WACC) 산출 과정: 무위험수익률 + 베타 × 위험프리미엄"
+            )
+            context_parts.append("   - 영구성장률 가정과 근거")
+            context_parts.append(
+                "   - 잔존가치 계산: FCF_5년차 × (1+영구성장률) / (WACC-영구성장률)"
+            )
+            context_parts.append("   - 최종 내재가치 = 현재가치의 합")
+            context_parts.append("")
+            context_parts.append("2. 멀티플 분석:")
+            context_parts.append("   - 동종업계 평균 PER, PBR, EV/EBITDA 데이터")
+            context_parts.append("   - 해당 기업의 적정 멀티플 근거")
+            context_parts.append("   - 멀티플 × 해당지표 = 목표가")
+            context_parts.append("")
+            context_parts.append("3. 종합 목표가 산출:")
+            context_parts.append("   - DCF 목표가: [구체적 금액]원 (가중치 40%)")
+            context_parts.append("   - PER 목표가: [구체적 금액]원 (가중치 30%)")
+            context_parts.append("   - PBR 목표가: [구체적 금액]원 (가중치 30%)")
+            context_parts.append("   - 최종 목표가 = (DCF×0.4 + PER×0.3 + PBR×0.3)")
+            context_parts.append("   - 투자의견: 목표가 vs 현재가 괴리율 기준")
+            context_parts.append("")
+            context_parts.append("4. 시나리오 분석:")
+            context_parts.append("   - 낙관 시나리오: [목표가] (확률 25%)")
+            context_parts.append("   - 기본 시나리오: [목표가] (확률 50%)")
+            context_parts.append("   - 비관 시나리오: [목표가] (확률 25%)")
+            context_parts.append("")
+            context_parts.append(
+                "⚠️ 모든 계산 과정과 전제조건을 명시하여 투자자가 검증할 수 있도록 해주세요."
+            )
+
         elif "리스크" in expert.expertise or "Risk" in expert.role:
-            # 리스크 평가자 - 위험 요소 중심
+            # 리스크 평가자 - 🎯 시니어 애널리스트 수준 지침 추가
             if financial_data and financial_data.get("success"):
                 risk_indicators = self._extract_risk_indicators(financial_data)
                 if risk_indicators:
@@ -1029,6 +1202,125 @@ class SmartSectorManager:
                 if risk_factors:
                     context_parts.append("🚨 시장 리스크 요소:")
                     context_parts.append(risk_factors)
+
+            # 🎯 시니어 리스크 애널리스트 분석 지침 (정량적 리스크 측정)
+            context_parts.append("\n🎯 리스크 분석 필수 수행사항:")
+            context_parts.append("1. 정량적 리스크 지표 산출:")
+            context_parts.append(
+                "   - VaR (95% 신뢰구간): 1일, 10일, 1개월 손실 예상액"
+            )
+            context_parts.append(
+                "   - CVaR (Conditional VaR): 극단손실 상황의 평균 손실"
+            )
+            context_parts.append("   - Maximum Drawdown: 최고점 대비 최대 하락률")
+            context_parts.append("   - Sharpe Ratio = (수익률-무위험수익률)/표준편차")
+            context_parts.append("   - Information Ratio = 초과수익률/추적오차")
+            context_parts.append("")
+            context_parts.append("2. 시나리오 분석 및 확률 산정:")
+            context_parts.append(
+                "   - Base Case (50% 확률): 기본 시나리오 목표가와 근거"
+            )
+            context_parts.append(
+                "   - Bull Case (25% 확률): 낙관 시나리오 목표가와 트리거"
+            )
+            context_parts.append(
+                "   - Bear Case (25% 확률): 비관 시나리오 목표가와 리스크"
+            )
+            context_parts.append("   - Black Swan (5% 확률): 극단적 하락 시나리오")
+            context_parts.append("   ⭐ 각 시나리오별 확률 가중 기댓값 산출")
+            context_parts.append("")
+            context_parts.append("3. 민감도 분석:")
+            context_parts.append("   - 핵심 변수 ±10%, ±20% 변동시 목표가 영향도")
+            context_parts.append("   - 매출성장률, 마진, 할인율, 멀티플 탄력성 측정")
+            context_parts.append("   - 시장 베타 변화가 주가에 미치는 영향도")
+            context_parts.append("   - 환율, 금리, 원자재 가격 변화 충격도")
+            context_parts.append("")
+            context_parts.append("4. 스트레스 테스트:")
+            context_parts.append("   - 2008년 금융위기급 시나리오 하 예상 손실률")
+            context_parts.append("   - 2020년 팬데믹급 시나리오 하 예상 손실률")
+            context_parts.append("   - 섹터별 특화 스트레스 (규제, 기술, 경쟁 등)")
+            context_parts.append("   - 유동성 위기시 매도 가능 시간과 슬리피지")
+            context_parts.append("")
+            context_parts.append("5. ESG 및 기타 리스크:")
+            context_parts.append("   - ESG Score와 ESG 이슈 발생시 주가 영향도 (-X%)")
+            context_parts.append("   - Altman Z-Score 기반 신용위험 평가")
+            context_parts.append("   - 집중도 리스크 (고객/지역/사업 집중도)")
+            context_parts.append("   - 지정학적 리스크와 글로벌 공급망 취약성")
+            context_parts.append("")
+            context_parts.append("⚠️ 리스크 분석 주의사항:")
+            context_parts.append("- 모든 리스크 지표는 과거 3년 데이터 기반 산출")
+            context_parts.append("- Fat Tail 분포 고려한 극단손실 확률 별도 측정")
+            context_parts.append("- 상관관계 변화가 포트폴리오 리스크에 미치는 영향")
+            context_parts.append("- 유동성 리스크와 시장 리스크의 상호작용 고려")
+            context_parts.append("- 모델 리스크 (Black-Scholes 등 모델 가정 오류) 인지")
+
+        elif "주석" in expert.expertise or "Footnote" in expert.role:
+            # 재무제표 주석 전문가 - 🎯 시니어 애널리스트 수준 지침 추가
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                dart_financial = self._extract_dart_financial_only(enhanced_dart_data)
+                if dart_financial:
+                    context_parts.append("📋 DART 재무제표 주석 데이터:")
+                    context_parts.append(dart_financial)
+
+            # 🎯 시니어 주석 분석 전문가 지침 (숨겨진 재무정보 발굴)
+            context_parts.append("\n🎯 재무제표 주석 분석 필수 수행사항:")
+            context_parts.append("1. 우발채무 및 보증채무 정밀분석:")
+            context_parts.append("   - 우발채무 총액과 발생가능성 (%) 평가")
+            context_parts.append("   - 보증채무 잔액과 대상 (자회사, 관계회사 등)")
+            context_parts.append("   - 우발채무/총자산, 보증채무/자기자본 비율 산출")
+            context_parts.append("   - 과거 3년 우발채무 실제 손실 발생률")
+            context_parts.append("")
+            context_parts.append("2. 관계회사 거래 투명성 분석:")
+            context_parts.append("   - 관계회사 매출/총매출, 관계회사 매입/총매입 비율")
+            context_parts.append("   - 관계회사 거래조건의 제3자 대비 공정성")
+            context_parts.append("   - 특수관계자 거래의 회사 수익성에 미치는 영향")
+            context_parts.append("   - 관계회사 대여금/차입금 규모와 조건")
+            context_parts.append("")
+            context_parts.append("3. 금융상품 및 파생상품 위험 평가:")
+            context_parts.append("   - 파생상품 공정가치 변동손익 3년 추이")
+            context_parts.append(
+                "   - 헤지회계 적용 파생상품의 헤지 효과성 (80-125% 기준)"
+            )
+            context_parts.append(
+                "   - 금융상품별 신용위험 등급과 손실충당금 설정 적정성"
+            )
+            context_parts.append("   - 외화표시 자산/부채의 환위험 노출액")
+            context_parts.append("")
+            context_parts.append("4. 리스 및 약정사항 영향도 분석:")
+            context_parts.append("   - 운용리스 미래 최소 지급액의 현재가치")
+            context_parts.append("   - 금융리스 의무의 유동성에 미치는 영향")
+            context_parts.append("   - 매입약정, 투자약정 등의 미래 현금흐름 영향")
+            context_parts.append("   - 리스부채/총부채 비율과 자본구조에 미치는 영향")
+            context_parts.append("")
+            context_parts.append("5. 회계정책 변경 및 추정변경 영향:")
+            context_parts.append("   - 회계정책 변경으로 인한 손익 조정액")
+            context_parts.append("   - 회계추정 변경이 당기 및 미래 손익에 미치는 영향")
+            context_parts.append("   - 감가상각률, 충당금 설정률 등 주요 추정치 변화")
+            context_parts.append(
+                "   - 과거 회계처리 오류 수정으로 인한 재무제표 재작성"
+            )
+            context_parts.append("")
+            context_parts.append("6. 연결범위 변동 및 지배력 분석:")
+            context_parts.append("   - 신규 연결 자회사 편입으로 인한 재무 영향")
+            context_parts.append("   - 연결 제외 자회사로 인한 손익 영향")
+            context_parts.append("   - 지분법 적용 투자주식의 손익 기여도")
+            context_parts.append("   - 사업결합 및 분할로 인한 재무구조 변화")
+            context_parts.append("")
+            context_parts.append("⚠️ 주석 분석시 특별 주의사항:")
+            context_parts.append(
+                "- 주석에 기재된 수치를 재무제표 본문과 반드시 대조 확인"
+            )
+            context_parts.append("- 과거 3개년 주석 정보를 비교하여 트렌드 파악")
+            context_parts.append("- 회계법인 의견에서 강조사항이나 한정의견 사유 분석")
+            context_parts.append(
+                "- 세무조정과 회계조정의 차이가 이익조정에 미치는 영향"
+            )
+            context_parts.append(
+                "- 공시서류 간 불일치 (사업보고서 vs 분기보고서) 여부 확인"
+            )
+            context_parts.append(
+                "- IFRS 도입으로 인한 계정분류 변경이 비교가능성에 미치는 영향"
+            )
 
         final_context = "\n\n".join(context_parts)
 

@@ -1882,14 +1882,35 @@ class LargePDFAnalyzer:
                 pdf_path=pdf_path, company_name=company_name, save_to_json=False
             )
 
-            if not full_text_result.get("success"):
-                raise Exception(
-                    f"PDF 텍스트 추출 실패: {full_text_result.get('error')}"
+            # 🔍 디버깅: 결과 구조 로그
+            logger.info(f"🔍 extract_raw_text_only 결과 타입: {type(full_text_result)}")
+            if full_text_result:
+                logger.info(f"🔍 결과 키들: {list(full_text_result.keys())}")
+                logger.info(f"🔍 success 필드: {full_text_result.get('success')}")
+                logger.info(f"🔍 error 필드: {full_text_result.get('error')}")
+
+            # 결과 검증 - success 필드 확인
+            if not full_text_result or not full_text_result.get("success"):
+                error_msg = (
+                    full_text_result.get("error") if full_text_result else "결과 없음"
                 )
+                raise Exception(f"PDF 텍스트 추출 실패: {error_msg}")
 
             # extract_raw_text_only 결과 구조에 맞춰 수정
             raw_content = full_text_result.get("raw_content", {})
             full_text = raw_content.get("full_text", "")
+
+            # 🔍 디버깅: raw_content 구조 로그
+            logger.info(
+                f"🔍 raw_content 키들: {list(raw_content.keys()) if raw_content else 'None'}"
+            )
+            logger.info(
+                f"🔍 추출된 텍스트 길이: {len(full_text) if full_text else 0}자"
+            )
+
+            # 텍스트가 비어있는지 확인
+            if not full_text or len(full_text.strip()) < 100:
+                raise Exception(f"추출된 텍스트가 너무 짧습니다: {len(full_text)}자")
 
             # 논리적 섹션으로 분할
             pdf_dictionary = self._split_text_into_logical_sections(

@@ -1,0 +1,349 @@
+{
+  "user_prompt": "q\u0004\u0003",
+  "timestamp": "2025-06-20T15:54:03.632984",
+  "analysis_flow": "enhanced_manus_first_crewai_synthesis",
+  "success": false,
+  "steps": {
+    "step0_intent_analysis": {
+      "primary_intent": "일반문의",
+      "secondary_intents": [],
+      "confidence": 0.3,
+      "analysis_focus": "종합분석",
+      "data_priority": "기본",
+      "keywords": []
+    },
+    "step1_stock_detection": {
+      "detected": true,
+      "stock_name": "종목명.",
+      "stock_code": "000020",
+      "detection_method": "ai_ai_web_search_priority",
+      "ticker_bbg": "000020 KS Equity",
+      "gics_sector": "Health Care",
+      "mapped_company_name": "DONGWHA PHARM CO LTD",
+      "market_index": "KOSPI Index",
+      "original_stock_code": "000020",
+      "original_stock_name": "종목명."
+    },
+    "step2_financial_data": {
+      "stock_info": {
+        "stock_code": "000020",
+        "stock_name": "종목명.",
+        "collection_timestamp": "2025-06-20T15:54:23.428548"
+      },
+      "success": true,
+      "errors": [],
+      "data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "basic_info": {
+        "company_name": "Dongwha Pharm.Co.,Ltd",
+        "sector": "Healthcare",
+        "industry": "Drug Manufacturers - Specialty & Generic",
+        "country": "South Korea",
+        "currency": "KRW",
+        "exchange": "KSC",
+        "ticker_symbol": "000020.KS"
+      },
+      "current_price_info": {
+        "current_price": 6850.0,
+        "previous_close": 6840.0,
+        "open_price": 0.0,
+        "day_high": 6880.0,
+        "day_low": 6800.0,
+        "volume": 57908,
+        "market_cap": 189867622400,
+        "shares_outstanding": 27717900
+      },
+      "financial_ratios": {
+        "pe_ratio": null,
+        "peg_ratio": null,
+        "pb_ratio": null,
+        "ps_ratio": 0.40254897,
+        "dividend_yield": 2.63,
+        "profit_margin": 0.0055299997,
+        "operating_margin": 0.01806,
+        "return_on_equity": -0.00393,
+        "return_on_assets": 0.00966,
+        "debt_to_equity": 26.069,
+        "current_ratio": 1.76,
+        "quick_ratio": 1.051
+      },
+      "growth_metrics": {
+        "earnings_growth": -0.989,
+        "revenue_growth": 0.057,
+        "earnings_quarterly_growth": -0.989,
+        "revenue_quarterly_growth": null
+      },
+      "price_history": {
+        "52_week_high": 8318.116774867958,
+        "52_week_low": 5600.0,
+        "avg_volume_3m": 50491.22222222222,
+        "price_change_1y": -13.400587469554894
+      },
+      "data_quality": "보통",
+      "dart_info": {
+        "company_info": {
+          "corp_name": "종목코드_000020",
+          "corp_code": "정보없음",
+          "business_summary": "DART API 연결 실패",
+          "established_date": "정보없음",
+          "listing_date": "정보없음",
+          "ceo_name": "정보없음",
+          "address": "정보없음"
+        },
+        "financial_statements": {
+          "revenue": 0,
+          "operating_profit": 0,
+          "net_income": 0,
+          "total_assets": 0,
+          "total_liabilities": 0,
+          "total_equity": 0,
+          "cash_and_equivalents": 0,
+          "data_source": "fallback_no_dart_connection",
+          "note": "DART API 연결 실패로 기본값 사용"
+        },
+        "business_report": {
+          "main_business": "DART 연결 실패",
+          "business_risks": "정보없음",
+          "future_plans": "정보없음"
+        }
+      }
+    },
+    "step3_information_collection": {
+      "performed": true,
+      "method": "information_collection_for_crewai_일반문의",
+      "collected_information": "Step 3: Observed output of cmd `browser_use` executed:\nSearch results for 'Dongwha Pharm Co Ltd 000020 latest news June 2025':\n\n1. Dongwha Pharm.Co.,Ltd (000020.KS) Stock Price, News, Quote ...\n   URL: https://finance.yahoo.com/quote/000020.KS/\n   Description:  Find the latest Dongwha Pharm.Co.,Ltd (000020.KS) stock quote, history, news and other vital information to help you with your stock trading and investing. \n\nMetadata:\n- Total results: 1\n- Language: en\n- Country: us\nStep 4: Observed output of cmd `browser_use` executed:\nClicked element at index 60\n\nObserved output of cmd `browser_use` executed:\nExtracted from page:\n{'text': 'The page does not contain any specific recent news or financial highlights for Dongwha Pharm Co Ltd. The page is a Yahoo Finance page that provides general links to various sections such as news, finance, sports, and more, but does not include specific information about Dongwha Pharm Co Ltd.', 'metadata': {'source': 'Yahoo Finance'}}\n\nStep 5: Observed output of cmd `browser_use` executed:\nScrolled down by 500 pixels\nStep 6: Observed output of cmd `browser_use` executed:\nClicked element at index 62\nStep 7: Observed output of cmd `browser_use` executed:\nExtracted from page:\n{'text': 'The page does not contain any detailed financial highlights or performance overview for Dongwha Pharm Co Ltd. It appears to be a generic Yahoo Finance page with links to various sections such as news, tech, health, and finance, but no specific information about Dongwha Pharm Co Ltd is provided.', 'metadata': {'source': 'Yahoo Finance'}}\n\nStep 8: Observed output of cmd `terminate` executed:\nThe interaction has been completed with status: failure",
+      "primary_intent": "일반문의",
+      "analysis_focus": "종합분석",
+      "data_priority": "기본",
+      "confidence": 0.3,
+      "basic_financial_data_used": true,
+      "enhanced_dart_data_used": false,
+      "collection_purpose": "crewai_feeding",
+      "ready_for_crewai": true,
+      "pdf_analysis": {
+        "pdf_detected": false,
+        "analysis_completed": false,
+        "pdf_content": {},
+        "analysis_method": "none",
+        "pdf_dictionary_interface": null
+      },
+      "data_richness_score": 14.0
+    },
+    "step4_crewai_comprehensive_analysis": {
+      "success": true,
+      "analysis_type": "comprehensive_manus_crewai_synthesis_optimized",
+      "detected_sector": "HEALTH_CARE",
+      "sector_korean_name": "헬스케어",
+      "gics_sector_used": "Health Care",
+      "activated_experts": [
+        "헬스케어 펀더멘털 분석가",
+        "헬스케어 기술적 분석가"
+      ],
+      "selected_experts_count": 2,
+      "expert_insights": {
+        "individual_expert_analyses": [
+          {
+            "expert_name": "헬스케어 펀더멘털 분석가",
+            "expertise_area": "재무제표 분석, 기업가치 평가, 수익성 분석",
+            "analysis_result": "Dongwha Pharm.Co.,Ltd (종목 코드: 000020.KS)은 한국의 헬스케어 섹터에 속한 전문 및 일반 의약품 제조업체입니다. 이 회사의 재무 건전성과 성장성을 분석해 보겠습니다.\n\n### 재무 건전성\n\n1. **부채 비율**: Dongwha Pharm의 부채 비율은 26.069로, 이는 비교적 낮은 수준입니다. 이는 회사가 자산 대비 부채를 적게 사용하고 있음을 나타내며, 재무 구조가 안정적임을 시사합니다.\n\n2. **유동성 비율**:\n   - **유동 비율 (Current Ratio)**: 1.76으로, 이는 회사가 단기 부채를 충분히 상환할 수 있는 능력을 가지고 있음을 나타냅니다.\n   - **당좌 비율 (Quick Ratio)**: 1.051로, 재고를 제외한 유동 자산으로도 단기 부채를 상환할 수 있는 능력이 있음을 보여줍니다.\n\n### 성장성\n\n1. **수익성 지표**:\n   - **영업 이익률 (Operating Margin)**: 1.806%로, 영업 활동에서의 수익성이 낮은 편입니다.\n   - **순이익률 (Profit Margin)**: 0.5529%로, 전체적인 수익성도 낮은 수준입니다.\n\n2. **수익성 지표**:\n   - **자기자본이익률 (Return on Equity, ROE)**: -0.393%로, 주주 자본에 대한 수익성이 부정적입니다. 이는 회사가 주주 자본을 효과적으로 활용하지 못하고 있음을 나타냅니다.\n   - **자산수익률 (Return on Assets, ROA)**: 0.966%로, 자산을 활용한 수익 창출 능력이 낮습니다.\n\n3. **배당 수익률 (Dividend Yield)**: 2.63%로, 투자자에게 비교적 안정적인 배당 수익을 제공하고 있습니다.\n\n### 결론\n\nDongwha Pharm은 재무 건전성 측면에서는 안정적인 모습을 보이고 있으나, 수익성과 성장성 측면에서는 개선이 필요합니다. 특히, 낮은 영업 이익률과 순이익률, 부정적인 ROE는 회사의 수익성 개선이 필요함을 시사합니다. 그러나 안정적인 배당 수익률은 투자자에게 매력적일 수 있습니다. 향후 회사의 수익성 개선 전략과 시장 내 경쟁력 강화 방안에 주목할 필요가 있습니다.",
+            "data_sources_used": [
+              "Manus_Web_Search",
+              "DART",
+              "yfinance"
+            ],
+            "analysis_timestamp": 1750402574.9534597
+          },
+          {
+            "expert_name": "헬스케어 기술적 분석가",
+            "expertise_area": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+            "analysis_result": "### 헬스케어 섹터의 기술적 분석\n\n#### 현재 가격 정보\n- **현재 가격**: 6,850원\n- **전일 종가**: 6,840원\n- **일중 최고가**: 6,880원\n- **일중 최저가**: 6,800원\n- **거래량**: 57,908주\n\n#### 가격 이력\n- **52주 최고가**: 8,318.12원\n- **52주 최저가**: 5,600원\n- **3개월 평균 거래량**: 50,491주\n- **1년간 가격 변동률**: -13.40%\n\n### 기술적 분석\n\n1. **가격 움직임**\n   - 현재 가격은 전일 종가보다 소폭 상승한 6,850원입니다. 이는 일중 최고가인 6,880원에 근접한 수준으로, 매수세가 강하게 작용하고 있음을 시사합니다.\n   - 52주 최고가와 비교했을 때 현재 가격은 약 17.6% 낮은 수준에 있으며, 이는 최근 1년간의 하락세를 반영합니다.\n\n2. **거래량 분석**\n   - 현재 거래량은 57,908주로, 3개월 평균 거래량인 50,491주를 상회하고 있습니다. 이는 투자자들의 관심이 증가하고 있음을 나타내며, 가격 변동성의 증가 가능성을 시사합니다.\n\n3. **지지 및 저항 수준**\n   - **지지선**: 최근 52주 최저가인 5,600원은 강력한 지지선으로 작용할 수 있습니다.\n   - **저항선**: 52주 최고가인 8,318.12원은 주요 저항선으로 작용할 가능성이 높습니다.\n\n4. **추세 분석**\n   - 1년간의 가격 변동률이 -13.40%로 하락세를 보이고 있으나, 최근 거래량 증가와 함께 단기적인 반등 가능성이 존재합니다.\n\n### 매매 신호\n- **매수 신호**: 현재 가격이 52주 최저가에 비해 상승하고 있으며, 거래량이 증가하고 있어 단기적인 매수 기회가 있을 수 있습니다.\n- **매도 신호**: 52주 최고가에 근접할 경우, 저항선에서의 매도 기회를 고려할 수 있습니다.\n\n### 결론\n현재 종목은 최근 거래량 증가와 함께 단기적인 반등 가능성을 보이고 있습니다. 그러나 장기적인 하락 추세를 고려할 때, 신중한 접근이 필요합니다. 기술적 지표와 시장 상황을 지속적으로 모니터링하며 매매 전략을 수립하는 것이 중요합니다.",
+            "data_sources_used": [
+              "Manus_Web_Search",
+              "DART",
+              "yfinance"
+            ],
+            "analysis_timestamp": 1750402588.3706512
+          }
+        ],
+        "expert_count": 2,
+        "successful_analyses": 2,
+        "synthesis_result": {
+          "synthesis_success": true,
+          "expert_count": 2,
+          "successful_count": 2,
+          "failed_count": 0,
+          "synthesis_content": "### 1. 핵심 투자 포인트\n\n- **재무 건전성**: Dongwha Pharm은 부채 비율이 26.069로 낮아 재무 구조가 안정적입니다. 유동 비율과 당좌 비율도 각각 1.76과 1.051로, 단기 부채 상환 능력이 충분함을 나타냅니다.\n- **배당 수익률**: 2.63%의 배당 수익률은 투자자에게 안정적인 수익을 제공할 수 있는 매력적인 요소입니다.\n- **거래량 증가**: 최근 거래량이 3개월 평균을 상회하고 있어 투자자들의 관심이 증가하고 있으며, 이는 가격 변동성의 증가 가능성을 시사합니다.\n- **단기 반등 가능성**: 현재 가격이 52주 최저가에 비해 상승하고 있으며, 매수세가 강하게 작용하고 있어 단기적인 반등 가능성이 존재합니다.\n\n### 2. 주요 리스크 요인\n\n- **낮은 수익성**: 영업 이익률과 순이익률이 각각 1.806%와 0.5529%로 낮으며, ROE가 -0.393%로 부정적입니다. 이는 회사의 수익성 개선이 필요함을 시사합니다.\n- **장기 하락 추세**: 1년간 가격 변동률이 -13.40%로 하락세를 보이고 있어, 장기적인 투자 관점에서의 리스크가 존재합니다.\n- **저항선 근접 시 매도 압력**: 52주 최고가에 근접할 경우 저항선에서 매도 압력이 증가할 수 있습니다.\n\n### 3. 종합 투자 의견\n\n- **보유**: Dongwha Pharm은 재무 건전성과 배당 수익률 측면에서 안정적인 모습을 보이고 있으나, 수익성 개선이 필요합니다. 단기적인 반등 가능성이 있으나, 장기적인 하락 추세를 고려할 때 신중한 접근이 필요합니다. 따라서 현재 보유 의견을 제시합니다.\n\n### 4. 목표가 또는 적정가 제시\n\n- **목표가**: 7,500원 (단기적인 반등 가능성을 고려한 목표가로, 52주 최고가와의 중간 수준)\n\n### 5. 전문가 의견 일치도\n\n- **보통**: 재무적 안정성과 기술적 분석에서의 단기 반등 가능성에 대한 의견은 일치하나, 수익성 개선 필요성과 장기 하락 추세에 대한 우려가 존재합니다. 두 전문가의 분석이 서로 보완적이지만, 수익성 측면에서의 개선 필요성에 대한 의견이 다소 차이가 있습니다.",
+          "synthesis_timestamp": 1750402603.8296092,
+          "data_sources_integrated": 3
+        },
+        "total_analysis_time": "35.17초",
+        "data_integration_type": "comprehensive_multi_source"
+      },
+      "cost_savings": {
+        "traditional_cost": 11.0,
+        "one_hot_cost": 0.08,
+        "savings_amount": 10.92,
+        "savings_percentage": 99.27272727272727,
+        "activated_agents": 2,
+        "depth": "quick"
+      },
+      "analysis_depth": "quick",
+      "cache_key": "8aa3075c74dd92cd0fb55579c65cc619",
+      "data_integration_quality": {
+        "overall_score": 20.0,
+        "quality_grade": "개선필요",
+        "total_possible_score": 100.0,
+        "achieved_score": 20.0,
+        "details": {
+          "financial_data_score": 10,
+          "manus_data_score": 10
+        },
+        "data_sources_count": 2
+      },
+      "synthesis_completeness": "완전통합_토큰최적화",
+      "token_optimization": {
+        "optimization_applied": false,
+        "original_token_estimate": 1367,
+        "optimized_token_estimate": 1367,
+        "compression_ratio": 1.0
+      }
+    }
+  },
+  "final_summary": {
+    "analyzed_stock": {
+      "name": "종목명.",
+      "code": "000020",
+      "ticker_bbg": "000020 KS Equity",
+      "gics_sector": "Health Care",
+      "market_index": "KOSPI Index",
+      "detection_method": "ai_ai_web_search_priority"
+    },
+    "data_sources": {
+      "financial_data_collected": true,
+      "data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "data_quality": "보통",
+      "manus_information_collected": true,
+      "data_richness_score": 14.0
+    },
+    "analysis_quality": {
+      "information_collection_performed": true,
+      "crewai_comprehensive_analysis_performed": true,
+      "financial_data_enhanced": true,
+      "workflow_type": "manus_first_crewai_synthesis"
+    },
+    "key_insights": {
+      "information_collection_quality": "낮음",
+      "crewai_analysis_quality": "성공",
+      "overall_analysis_depth": "높음",
+      "data_integration_success": true
+    }
+  },
+  "crewai_detailed_analysis": {
+    "detected_sector": "HEALTH_CARE",
+    "sector_korean_name": "헬스케어",
+    "activated_experts": [
+      "헬스케어 펀더멘털 분석가",
+      "헬스케어 기술적 분석가"
+    ],
+    "expert_count": 2,
+    "individual_expert_analyses": [
+      {
+        "expert_name": "헬스케어 펀더멘털 분석가",
+        "expertise_area": "재무제표 분석, 기업가치 평가, 수익성 분석",
+        "analysis_result": "Dongwha Pharm.Co.,Ltd (종목 코드: 000020.KS)은 한국의 헬스케어 섹터에 속한 전문 및 일반 의약품 제조업체입니다. 이 회사의 재무 건전성과 성장성을 분석해 보겠습니다.\n\n### 재무 건전성\n\n1. **부채 비율**: Dongwha Pharm의 부채 비율은 26.069로, 이는 비교적 낮은 수준입니다. 이는 회사가 자산 대비 부채를 적게 사용하고 있음을 나타내며, 재무 구조가 안정적임을 시사합니다.\n\n2. **유동성 비율**:\n   - **유동 비율 (Current Ratio)**: 1.76으로, 이는 회사가 단기 부채를 충분히 상환할 수 있는 능력을 가지고 있음을 나타냅니다.\n   - **당좌 비율 (Quick Ratio)**: 1.051로, 재고를 제외한 유동 자산으로도 단기 부채를 상환할 수 있는 능력이 있음을 보여줍니다.\n\n### 성장성\n\n1. **수익성 지표**:\n   - **영업 이익률 (Operating Margin)**: 1.806%로, 영업 활동에서의 수익성이 낮은 편입니다.\n   - **순이익률 (Profit Margin)**: 0.5529%로, 전체적인 수익성도 낮은 수준입니다.\n\n2. **수익성 지표**:\n   - **자기자본이익률 (Return on Equity, ROE)**: -0.393%로, 주주 자본에 대한 수익성이 부정적입니다. 이는 회사가 주주 자본을 효과적으로 활용하지 못하고 있음을 나타냅니다.\n   - **자산수익률 (Return on Assets, ROA)**: 0.966%로, 자산을 활용한 수익 창출 능력이 낮습니다.\n\n3. **배당 수익률 (Dividend Yield)**: 2.63%로, 투자자에게 비교적 안정적인 배당 수익을 제공하고 있습니다.\n\n### 결론\n\nDongwha Pharm은 재무 건전성 측면에서는 안정적인 모습을 보이고 있으나, 수익성과 성장성 측면에서는 개선이 필요합니다. 특히, 낮은 영업 이익률과 순이익률, 부정적인 ROE는 회사의 수익성 개선이 필요함을 시사합니다. 그러나 안정적인 배당 수익률은 투자자에게 매력적일 수 있습니다. 향후 회사의 수익성 개선 전략과 시장 내 경쟁력 강화 방안에 주목할 필요가 있습니다.",
+        "data_sources_used": [
+          "Manus_Web_Search",
+          "DART",
+          "yfinance"
+        ],
+        "analysis_timestamp": 1750402574.9534597
+      },
+      {
+        "expert_name": "헬스케어 기술적 분석가",
+        "expertise_area": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+        "analysis_result": "### 헬스케어 섹터의 기술적 분석\n\n#### 현재 가격 정보\n- **현재 가격**: 6,850원\n- **전일 종가**: 6,840원\n- **일중 최고가**: 6,880원\n- **일중 최저가**: 6,800원\n- **거래량**: 57,908주\n\n#### 가격 이력\n- **52주 최고가**: 8,318.12원\n- **52주 최저가**: 5,600원\n- **3개월 평균 거래량**: 50,491주\n- **1년간 가격 변동률**: -13.40%\n\n### 기술적 분석\n\n1. **가격 움직임**\n   - 현재 가격은 전일 종가보다 소폭 상승한 6,850원입니다. 이는 일중 최고가인 6,880원에 근접한 수준으로, 매수세가 강하게 작용하고 있음을 시사합니다.\n   - 52주 최고가와 비교했을 때 현재 가격은 약 17.6% 낮은 수준에 있으며, 이는 최근 1년간의 하락세를 반영합니다.\n\n2. **거래량 분석**\n   - 현재 거래량은 57,908주로, 3개월 평균 거래량인 50,491주를 상회하고 있습니다. 이는 투자자들의 관심이 증가하고 있음을 나타내며, 가격 변동성의 증가 가능성을 시사합니다.\n\n3. **지지 및 저항 수준**\n   - **지지선**: 최근 52주 최저가인 5,600원은 강력한 지지선으로 작용할 수 있습니다.\n   - **저항선**: 52주 최고가인 8,318.12원은 주요 저항선으로 작용할 가능성이 높습니다.\n\n4. **추세 분석**\n   - 1년간의 가격 변동률이 -13.40%로 하락세를 보이고 있으나, 최근 거래량 증가와 함께 단기적인 반등 가능성이 존재합니다.\n\n### 매매 신호\n- **매수 신호**: 현재 가격이 52주 최저가에 비해 상승하고 있으며, 거래량이 증가하고 있어 단기적인 매수 기회가 있을 수 있습니다.\n- **매도 신호**: 52주 최고가에 근접할 경우, 저항선에서의 매도 기회를 고려할 수 있습니다.\n\n### 결론\n현재 종목은 최근 거래량 증가와 함께 단기적인 반등 가능성을 보이고 있습니다. 그러나 장기적인 하락 추세를 고려할 때, 신중한 접근이 필요합니다. 기술적 지표와 시장 상황을 지속적으로 모니터링하며 매매 전략을 수립하는 것이 중요합니다.",
+        "data_sources_used": [
+          "Manus_Web_Search",
+          "DART",
+          "yfinance"
+        ],
+        "analysis_timestamp": 1750402588.3706512
+      }
+    ],
+    "synthesis_result": {
+      "synthesis_success": true,
+      "expert_count": 2,
+      "successful_count": 2,
+      "failed_count": 0,
+      "synthesis_content": "### 1. 핵심 투자 포인트\n\n- **재무 건전성**: Dongwha Pharm은 부채 비율이 26.069로 낮아 재무 구조가 안정적입니다. 유동 비율과 당좌 비율도 각각 1.76과 1.051로, 단기 부채 상환 능력이 충분함을 나타냅니다.\n- **배당 수익률**: 2.63%의 배당 수익률은 투자자에게 안정적인 수익을 제공할 수 있는 매력적인 요소입니다.\n- **거래량 증가**: 최근 거래량이 3개월 평균을 상회하고 있어 투자자들의 관심이 증가하고 있으며, 이는 가격 변동성의 증가 가능성을 시사합니다.\n- **단기 반등 가능성**: 현재 가격이 52주 최저가에 비해 상승하고 있으며, 매수세가 강하게 작용하고 있어 단기적인 반등 가능성이 존재합니다.\n\n### 2. 주요 리스크 요인\n\n- **낮은 수익성**: 영업 이익률과 순이익률이 각각 1.806%와 0.5529%로 낮으며, ROE가 -0.393%로 부정적입니다. 이는 회사의 수익성 개선이 필요함을 시사합니다.\n- **장기 하락 추세**: 1년간 가격 변동률이 -13.40%로 하락세를 보이고 있어, 장기적인 투자 관점에서의 리스크가 존재합니다.\n- **저항선 근접 시 매도 압력**: 52주 최고가에 근접할 경우 저항선에서 매도 압력이 증가할 수 있습니다.\n\n### 3. 종합 투자 의견\n\n- **보유**: Dongwha Pharm은 재무 건전성과 배당 수익률 측면에서 안정적인 모습을 보이고 있으나, 수익성 개선이 필요합니다. 단기적인 반등 가능성이 있으나, 장기적인 하락 추세를 고려할 때 신중한 접근이 필요합니다. 따라서 현재 보유 의견을 제시합니다.\n\n### 4. 목표가 또는 적정가 제시\n\n- **목표가**: 7,500원 (단기적인 반등 가능성을 고려한 목표가로, 52주 최고가와의 중간 수준)\n\n### 5. 전문가 의견 일치도\n\n- **보통**: 재무적 안정성과 기술적 분석에서의 단기 반등 가능성에 대한 의견은 일치하나, 수익성 개선 필요성과 장기 하락 추세에 대한 우려가 존재합니다. 두 전문가의 분석이 서로 보완적이지만, 수익성 측면에서의 개선 필요성에 대한 의견이 다소 차이가 있습니다.",
+      "synthesis_timestamp": 1750402603.8296092,
+      "data_sources_integrated": 3
+    },
+    "data_integration_quality": {
+      "overall_score": 20.0,
+      "quality_grade": "개선필요",
+      "total_possible_score": 100.0,
+      "achieved_score": 20.0,
+      "details": {
+        "financial_data_score": 10,
+        "manus_data_score": 10
+      },
+      "data_sources_count": 2
+    },
+    "cost_savings": {
+      "traditional_cost": 11.0,
+      "one_hot_cost": 0.08,
+      "savings_amount": 10.92,
+      "savings_percentage": 99.27272727272727,
+      "activated_agents": 2,
+      "depth": "quick"
+    },
+    "token_optimization": {
+      "optimization_applied": false,
+      "original_token_estimate": 1367,
+      "optimized_token_estimate": 1367,
+      "compression_ratio": 1.0
+    },
+    "analysis_depth": "quick",
+    "total_analysis_time": "35.17초",
+    "data_sources_integrated": {
+      "financial_data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "manus_web_search_performed": true,
+      "pdf_analysis_performed": false,
+      "enhanced_dart_used": false,
+      "crewai_synthesis_performed": true
+    }
+  },
+  "data_flow_tracking": {
+    "step1_stock_detection": {
+      "method": "ai_ai_web_search_priority",
+      "confidence": "high"
+    },
+    "step2_financial_data": {
+      "sources": [
+        "yfinance",
+        "DART"
+      ],
+      "quality": "보통"
+    },
+    "step3_manus_collection": {
+      "richness_score": 14.0,
+      "pdf_detected": false,
+      "ready_for_crewai": true
+    },
+    "step4_crewai_synthesis": {
+      "success": true,
+      "experts_activated": 2,
+      "data_integration_success": true
+    },
+    "overall_data_completeness": 62.8
+  }
+}

@@ -99,79 +99,154 @@ class SectorTeamFactory:
         # 섹터별 5명의 전문가 생성 (섹터별 특화 정보 반영)
         experts = []
 
-        # 1. 펀더멘털 분석가 (섹터 특화)
+        # 1. 펀더멘털 분석가 (섹터 특화) - 🎯 시니어 애널리스트 수준 업그레이드
         fundamental_analyst = AnalystAgent(
             name=f"{sector_korean_name} 펀더멘털 분석가",
             role="Fundamental Analyst",
             expertise="재무제표 분석, 기업가치 평가, 수익성 분석",
             analysis_focus=f"{sector_korean_name} 섹터의 재무 건전성과 성장성 분석",
             key_methods=[
-                "손익계산서 분석",
-                "대차대조표 분석",
-                "현금흐름표 분석",
-                "ROE/ROA 분석",
-                "부채비율 분석",
-                "수익성 분석",
+                "손익계산서 분석 (매출성장률, 영업이익률, 순이익률 트렌드 분석)",
+                "대차대조표 분석 (부채비율, 유동비율, 자기자본비율 정량평가)",
+                "현금흐름표 분석 (영업CF, 투자CF, 재무CF 3년 평균 분석)",
+                "ROE/ROA 분석 (DuPont 3단계 분해분석 수행)",
+                "수익성 분석 (ROIC, EBITDA마진, FCF마진 동종업계 대비)",
+                "재무비율 종합분석 (안전성, 수익성, 성장성, 활동성 4대 영역)",
+                "Working Capital 분석 (운전자본 효율성 및 Cash Cycle 산출)",
+                "Capital Structure 분석 (최적자본구조 대비 현재 레버리지 평가)",
             ],
             sector_context=f"{sector_korean_name} 섹터 전문 펀더멘털 분석가로서 섹터 특성을 반영한 재무 분석을 수행",
             sector_specific_points=(
                 analysis_points_list[:3]
                 if len(analysis_points_list) >= 3
                 else analysis_points_list
-            ),
+            )
+            + [
+                "⭐ 펀더멘털 분석 시 반드시 다음을 포함:",
+                "1. 재무비율 3년 트렌드 분석과 동종업계 Percentile 순위",
+                "2. DuPont 분해를 통한 ROE 동력 분석 (순이익률×자산회전율×레버리지)",
+                "3. Free Cash Flow 산출 및 FCF Yield 계산식 명시",
+                "4. Working Capital 변동이 영업현금흐름에 미치는 영향 정량화",
+                "5. 부채상환능력 지표 (Interest Coverage, Debt Service Coverage) 산출",
+                "6. 배당정책 지속가능성 분석 (Payout Ratio, Dividend Coverage)",
+                "7. 계절성/경기민감성이 재무성과에 미치는 영향도 평가",
+            ],
             risk_awareness=[f"재무적 관점에서 {risk_factors}"],
             critical_metrics=(
                 critical_metrics_list[:4]
                 if len(critical_metrics_list) >= 4
                 else critical_metrics_list
-            ),
+            )
+            + [
+                "ROE/ROA 스프레드 (금융레버리지 효과)",
+                "ROIC vs WACC 스프레드 (가치창출 여부)",
+                "FCF/Net Income 비율 (현금창출력)",
+                "Working Capital/Sales 비율 (운전자본 효율성)",
+            ],
         )
         experts.append(fundamental_analyst)
 
-        # 2. 기술적 분석가 (섹터 특화)
+        # 2. 기술적 분석가 (섹터 특화) - 🎯 시니어 애널리스트 수준 업그레이드
         technical_analyst = AnalystAgent(
             name=f"{sector_korean_name} 기술적 분석가",
             role="Technical Analyst",
             expertise="차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
             analysis_focus=f"{sector_korean_name} 섹터의 가격 움직임과 매매 신호 분석",
             key_methods=[
-                "이동평균선 분석",
-                "MACD/RSI 분석",
-                "볼린저 밴드 분석",
-                "지지저항선 분석",
-                "거래량 분석",
-                "섹터 로테이션 분석",
+                "이동평균선 분석 (5,20,60,120일선 배열과 Golden/Dead Cross 신호)",
+                "MACD/RSI 분석 (MACD(12,26,9) 히스토그램과 RSI(14) Divergence 패턴)",
+                "볼린저 밴드 분석 (20일 이평±2표준편차, 밴드폭 확장/수축 해석)",
+                "지지저항선 분석 (Fibonacci Retracement 38.2%, 50%, 61.8% 레벨)",
+                "거래량 분석 (OBV, Volume Profile, Accumulation/Distribution Line)",
+                "섹터 로테이션 분석 (상대강도 vs KOSPI, 섹터 모멘텀 지표)",
+                "캔들패턴 분석 (Doji, Hammer, Engulfing 등 반전신호 해석)",
+                "스토캐스틱 분석 (%K, %D 교차와 과매수/과매도 구간 판별)",
+                "Price Action 분석 (Higher High/Low, Lower High/Low 트렌드 구조)",
             ],
             sector_context=f"{sector_korean_name} 섹터의 경기민감성과 변동성을 고려한 기술적 분석 전문가",
             sector_specific_points=[
-                f"기술적 관점에서 {sector_context.get('cyclical_nature', '섹터 특성')} 반영"
+                f"기술적 관점에서 {sector_context.get('cyclical_nature', '섹터 특성')} 반영",
+                "⭐ 기술적 분석 시 반드시 다음을 포함:",
+                "1. 주요 이동평균선 배열 상태와 매매신호 해석 (정배열/역배열)",
+                "2. MACD 히스토그램 변화율과 Signal Line 교차 타이밍 분석",
+                "3. RSI Divergence 패턴과 과매수/과매도 구간 진입/이탈 시점",
+                "4. 볼린저 밴드 squeeze/expansion 패턴과 밴드 이탈 방향성",
+                "5. 주요 지지/저항선 수준과 돌파시 목표가 산출 (측정이론 적용)",
+                "6. 거래량 동반 여부와 Price-Volume Relationship 해석",
+                "7. 섹터 상대강도 분석과 시장 대비 아웃퍼폼/언더퍼폼 판단",
+                "8. 단기(1주), 중기(1개월), 장기(3개월) 기술적 전망과 핵심 변곡점",
             ],
-            risk_awareness=[f"기술적 분석 관점에서 {risk_factors}"],
-            critical_metrics=["상대강도", "섹터 모멘텀", "거래량 패턴", "변동성 지표"],
+            risk_awareness=[
+                f"기술적 분석 관점에서 {risk_factors}",
+                "False Breakout 위험 (거래량 미동반시 돌파 실패 가능성)",
+                "Whipsaw 패턴 위험 (박스권에서 매매신호 오류 가능성)",
+                "Gap 위험 (공시나 외부 이벤트로 인한 기술적 분석 무력화)",
+                "섹터 로테이션 위험 (전체 섹터 약세시 개별 기술적 신호 무의미)",
+            ],
+            critical_metrics=[
+                "상대강도 (vs KOSPI, 20일/60일 이동평균)",
+                "Price Momentum (1주/4주/12주 수익률)",
+                "Volume Rate (20일 평균 대비 거래량 비율)",
+                "Volatility Index (20일 변동성 vs 역사적 변동성)",
+                "Technical Score (종합 기술적 지표 점수)",
+                "Trend Strength Index (추세 강도 측정)",
+                "Support/Resistance Distance (현재가 vs 주요 S/R 레벨)",
+                "Beta vs Sector (섹터 내 상대적 변동성)",
+            ],
         )
         experts.append(technical_analyst)
 
-        # 3. 산업 전문가 (섹터 특화)
+        # 3. 산업 전문가 (섹터 특화) - 🎯 시니어 애널리스트 수준 업그레이드
         industry_expert = AnalystAgent(
             name=f"{sector_korean_name} 산업 전문가",
             role="Industry Expert",
             expertise="산업 분석, 경쟁 구조 분석, 트렌드 예측",
             analysis_focus=f"{sector_korean_name} 산업의 구조적 변화와 성장 동력 분석",
             key_methods=[
-                "Porter 5 Forces 분석",
-                "밸류체인 분석",
-                "SWOT 분석",
-                "경쟁사 벤치마킹",
-                "시장점유율 분석",
-                "기술 동향 분석",
+                "Porter 5 Forces 분석 (신규진입, 대체재, 공급업체, 구매자, 경쟁강도)",
+                "밸류체인 분석 (Primary & Support Activities 마진 기여도 분해)",
+                "SWOT 분석 (내부 강점/약점 vs 외부 기회/위협 4분면 매트릭스)",
+                "경쟁사 벤치마킹 (시장점유율, 수익성, 성장률 3년 트렌드 비교)",
+                "시장점유율 분석 (HHI 지수, Top 3/5 집중도, 시장 파워 측정)",
+                "BCG Growth-Share Matrix (Star, Cash Cow, Question Mark, Dog 분류)",
+                "Technology Life Cycle 분석 (도입/성장/성숙/쇠퇴 단계별 전략)",
+                "Competitive Moat 분석 (네트워크 효과, 브랜드, 규모경제, 전환비용)",
+                "Supply Chain 분석 (업스트림/다운스트림 관계와 Power Balance)",
             ],
             sector_context=f"{sector_korean_name} 섹터의 산업 구조와 경쟁 환경을 심도 있게 분석하는 전문가",
-            sector_specific_points=analysis_points_list,
-            risk_awareness=[f"산업 구조적 관점에서 {risk_factors}"],
+            sector_specific_points=analysis_points_list
+            + [
+                "⭐ 산업 분석 시 반드시 다음을 포함:",
+                "1. 산업 Life Cycle 상 현재 위치와 향후 3-5년 전망",
+                "2. Top 5 경쟁사 대비 Market Share 변화 추이와 경쟁 우위 지속성",
+                "3. Porter 5 Forces 각 요소별 점수화 (1-5점)와 종합 매력도 평가",
+                "4. 핵심 성공 요인(KSF) 식별과 해당 기업의 KSF 보유 수준 평가",
+                "5. 밸류체인 상 핵심 가치 창출 활동과 원가 구조 분석",
+                "6. 기술 변화/규제 변화가 산업 구조에 미치는 파급 효과 예측",
+                "7. ESG 이슈가 산업 경쟁력에 미치는 장기적 영향도 평가",
+                "8. 글로벌 공급망 변화와 지정학적 리스크가 산업에 미치는 영향",
+            ],
+            risk_awareness=[
+                f"산업 구조적 관점에서 {risk_factors}",
+                "기술 대체 위험 (Disruptive Innovation으로 인한 산업 구조 변화)",
+                "규제 변화 위험 (정부 정책/법규 변경이 산업 수익성에 미치는 영향)",
+                "경쟁 심화 위험 (신규 진입자 증가나 가격 경쟁 심화)",
+                "공급망 리스크 (원자재 가격 변동성, 공급업체 집중도)",
+                "고객 Power 강화 위험 (구매력 집중, 대체재 증가)",
+                "ESG 규제 강화 위험 (환경/사회적 책임 요구 증대)",
+                "글로벌 Trade War 영향 (관세, 수출입 규제 변화)",
+            ],
             critical_metrics=[
-                metric
-                for metric in critical_metrics_list
-                if any(word in metric for word in ["점유율", "성장률", "경쟁", "시장"])
+                "Market Share (매출 기준, 3년 CAGR)",
+                "Industry Growth Rate (시장 성장률 vs 경제 성장률)",
+                "HHI Index (허핀달 지수, 시장 집중도 측정)",
+                "Entry Barrier Score (진입 장벽 종합 점수)",
+                "Switching Cost Index (고객 전환비용 지수)",
+                "R&D Intensity (R&D/매출 비율, 혁신 투자 수준)",
+                "Capacity Utilization (설비 가동률, 공급 과부족)",
+                "Forward/Backward Integration (수직계열화 정도)",
+                "Price Premium vs Commodity (프리미엄 vs 범용품 포지셔닝)",
+                "Export Dependency (수출 의존도, 환율 민감성)",
             ],
         )
         experts.append(industry_expert)
@@ -183,16 +258,25 @@ class SectorTeamFactory:
             expertise="기업가치 평가, 적정주가 산정, 투자지표 분석",
             analysis_focus=f"{sector_korean_name} 기업의 내재가치와 투자 매력도 평가",
             key_methods=[
-                "DCF 모델링",
-                "PER/PBR 분석",
-                "EV/EBITDA 분석",
-                "Sum-of-Parts 분석",
-                "배당수익률 분석",
-                "상대가치 평가",
+                "DCF 모델링 (구체적 산출식 제시)",
+                "PER/PBR 분석 (업계 평균 대비 산출)",
+                "EV/EBITDA 분석 (멀티플 근거 설명)",
+                "Sum-of-Parts 분석 (사업부문별 밸류에이션)",
+                "배당수익률 분석 (배당성장 모델 적용)",
+                "상대가치 평가 (동종업계 비교분석)",
+                "목표가 산출 근거 명시 (계산 과정 상세 설명)",
+                "시나리오별 민감도 분석 (낙관/기본/비관)",
             ],
             sector_context=f"{sector_korean_name} 섹터 특성을 반영한 맞춤형 밸류에이션 방법론을 적용하는 전문가",
             sector_specific_points=[
-                f"밸류에이션 관점에서 {sector_context.get('valuation_approach', '가치평가 방법')}"
+                f"밸류에이션 관점에서 {sector_context.get('valuation_approach', '가치평가 방법')}",
+                "⭐ 목표가 산출 시 반드시 다음을 포함:",
+                "1. DCF 기반 내재가치 계산식과 전제조건 명시",
+                "2. PER/PBR 멀티플 근거와 업계 비교 데이터",
+                "3. 각 밸류에이션 방법론별 가중평균 산출 과정",
+                "4. 목표가 도출을 위한 구체적 수치와 근거",
+                "5. 시나리오별 목표가 range와 확률 배정",
+                "6. 투자의견(매수/보유/매도) 판단 기준 설명",
             ],
             risk_awareness=[f"밸류에이션 관점에서 {risk_factors}"],
             critical_metrics=[
@@ -203,27 +287,65 @@ class SectorTeamFactory:
         )
         experts.append(valuation_specialist)
 
-        # 5. 리스크 평가자 (섹터 특화)
+        # 5. 리스크 평가자 (섹터 특화) - 🎯 시니어 애널리스트 수준 업그레이드
         risk_assessor = AnalystAgent(
             name=f"{sector_korean_name} 리스크 평가자",
             role="Risk Assessor",
             expertise="위험 요소 분석, 시나리오 분석, 리스크 관리",
             analysis_focus=f"{sector_korean_name} 투자의 주요 리스크와 대응 전략 분석",
             key_methods=[
-                "시나리오 분석",
-                "민감도 분석",
-                "VaR 분석",
-                "스트레스 테스트",
-                "ESG 리스크 분석",
-                "규제 리스크 분석",
+                "VaR 분석 (Value at Risk, 95% 신뢰구간 1일/10일/1개월 손실 예상)",
+                "시나리오 분석 (Base/Bull/Bear Case 3시나리오 확률 가중 평가)",
+                "몬테카르로 시뮬레이션 (주요 변수 1만회 시뮬레이션 확률분포)",
+                "민감도 분석 (핵심 변수 ±10%, ±20% 변동시 목표가 영향도)",
+                "스트레스 테스트 (2008, 2020급 위기상황 가정 충격 시나리오)",
+                "ESG 리스크 스코어링 (환경, 사회, 지배구조 3대 영역 정량평가)",
+                "신용 리스크 분석 (Altman Z-Score, Credit Default Probability)",
+                "유동성 리스크 측정 (시장충격시 매도 가능 시간과 슬리피지)",
+                "Beta 분해 분석 (시장, 섹터, 기업고유 리스크 3단계 분해)",
+                "Tail Risk 분석 (극단적 손실 확률과 Maximum Drawdown 예측)",
             ],
             sector_context=f"{sector_korean_name} 섹터 고유의 리스크 요인과 함정을 전문적으로 분석하는 리스크 전문가",
-            sector_specific_points=[f"리스크 관점에서 {analysis_points}"],
-            risk_awareness=risk_factors_list,
+            sector_specific_points=[
+                f"리스크 관점에서 {analysis_points}",
+                "⭐ 리스크 분석 시 반드시 다음을 포함:",
+                "1. 정량적 리스크 지표 산출 (VaR, CVaR, Maximum Drawdown, Sharpe Ratio)",
+                "2. 3시나리오 분석과 각 시나리오별 발생 확률 및 목표가 Impact",
+                "3. 주요 리스크 팩터별 민감도 계수와 탄력성 측정",
+                "4. 스트레스 테스트 결과 (글로벌 금융위기급 충격시 예상 손실률)",
+                "5. ESG 리스크 스코어와 ESG 이슈 발생시 주가 하락 폭 예측",
+                "6. 신용도 분석 (Altman Z-Score, 부도 확률, Credit Spread 변화)",
+                "7. 유동성 리스크 (일평균 거래대금 대비 대량 매도시 충격도)",
+                "8. 섹터 특화 리스크 (규제, 기술, 원자재, 환율 등) 정량 측정",
+                "9. 리스크 대비 수익률 (Risk-Adjusted Return) 동종업계 대비 평가",
+                "10. 포트폴리오 내 상관관계와 분산투자 효과 분석",
+            ],
+            risk_awareness=risk_factors_list
+            + [
+                "Black Swan Event 리스크 (예측 불가능한 극단적 사건)",
+                "Model Risk (리스크 모델의 가정 오류나 과적합 위험)",
+                "Concentration Risk (단일 고객/공급업체/지역 집중도 위험)",
+                "Operational Risk (시스템 장애, 사기, 인적 오류 등)",
+                "Reputation Risk (브랜드 이미지 손상으로 인한 매출 감소)",
+                "Regulatory Risk (규제 변화로 인한 사업 모델 변경 위험)",
+                "Currency Risk (환율 변동이 손익에 미치는 영향)",
+                "Interest Rate Risk (금리 변동이 자금조달비용에 미치는 영향)",
+                "Inflation Risk (인플레이션이 실질수익률에 미치는 영향)",
+                "Geopolitical Risk (지정학적 긴장이 사업에 미치는 영향)",
+            ],
             critical_metrics=[
-                f"리스크 지표: {metric}"
-                for metric in critical_metrics_list
-                if any(word in metric for word in ["비율", "위험", "변동성", "안전"])
+                "VaR (95% 신뢰구간 1일/1개월)",
+                "CVaR (Conditional VaR, 극단손실 평균)",
+                "Maximum Drawdown (최대 손실 구간)",
+                "Sharpe Ratio (위험 대비 수익률)",
+                "Information Ratio (벤치마크 대비 초과수익/추적오차)",
+                "Beta (시장 민감도, 1년/3년 구간)",
+                "Volatility (20일/60일/252일 변동성)",
+                "Downside Deviation (하방 위험 측정)",
+                "Altman Z-Score (신용도 측정)",
+                "ESG Risk Score (환경/사회/지배구조 리스크)",
+                "Liquidity Ratio (거래량 대비 유동성)",
+                "Concentration Index (사업/지역 집중도)",
             ],
         )
         experts.append(risk_assessor)
