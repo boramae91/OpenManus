@@ -539,6 +539,52 @@ class SmartSectorManager:
         content = f"{prompt}_{stock_name}_{stock_code}_{depth.value}"
         return hashlib.md5(content.encode()).hexdigest()
 
+    def _generate_comprehensive_cache_key(
+        self,
+        prompt: str,
+        stock_name: str,
+        stock_code: str,
+        depth: AnalysisDepth,
+        manus_data: Dict = None,
+    ) -> str:
+        """
+        종합 분석용 캐시 키 생성
+
+        Manus 수집 데이터의 핵심 정보를 포함하여 더 정확한 캐시 키를 생성해요.
+
+        Args:
+            prompt: 사용자 프롬프트
+            stock_name: 종목명
+            stock_code: 종목코드
+            depth: 분석 깊이
+            manus_data: Manus 수집 데이터
+
+        Returns:
+            str: 종합 분석용 캐시 키
+        """
+        # 기본 정보
+        content_parts = [prompt, stock_name, stock_code, depth.value]
+
+        # Manus 데이터 핵심 정보 추가 (캐시 정확도 향상)
+        if manus_data and manus_data.get("performed"):
+            # 데이터 풍부함 점수 포함
+            richness_score = manus_data.get("data_richness_score", 0)
+            content_parts.append(f"richness_{richness_score}")
+
+            # PDF 분석 여부 포함
+            pdf_detected = manus_data.get("pdf_analysis", {}).get("pdf_detected", False)
+            content_parts.append(f"pdf_{pdf_detected}")
+
+            # 수집 정보의 해시값 (내용이 같으면 같은 캐시 사용)
+            collected_info = manus_data.get("collected_information", "")
+            if collected_info:
+                info_hash = hashlib.md5(collected_info[:500].encode()).hexdigest()[:8]
+                content_parts.append(f"info_{info_hash}")
+
+        # 전체 내용을 결합하여 캐시 키 생성
+        full_content = "_".join(str(part) for part in content_parts)
+        return hashlib.md5(full_content.encode()).hexdigest()
+
     def _get_cache_ttl(self, depth: AnalysisDepth) -> int:
         """분석 깊이별 캐시 TTL"""
         ttl_mapping = {
