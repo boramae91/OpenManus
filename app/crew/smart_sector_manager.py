@@ -452,56 +452,160 @@ class SmartSectorManager:
 
     async def _perform_expert_analysis(
         self,
-        experts: List,
-        prompt: str,
-        stock_name: str,
-        stock_code: str,
-        financial_data: Dict,
-    ) -> Dict[str, Any]:
-        """전문가별 분석 수행"""
-        insights = {}
+        expert,
+        financial_data,
+        enhanced_dart_data,
+        manus_collected_data,
+        llm_instance,
+        max_retries=3,
+    ):
+        """
+        🎯 시니어 애널리스트급 전문가 분석 수행
 
-        for expert in experts:
+        개선사항:
+        - 전문가별 시니어 애널리스트 수준 프롬프트
+        - 안전한 데이터 타입 처리
+        - 정량적 분석 지표 명시
+        - 구체적 계산식과 근거 제시
+        """
+        for attempt in range(max_retries):
             try:
-                # 전문가별 맞춤 프롬프트 생성
-                expert_prompt = await self._create_expert_specific_context(
-                    expert,
-                    prompt,
-                    stock_name,
-                    stock_code,
-                    financial_data,
+                logger.info(
+                    f"🎯 {expert.name} 전문가 분석 시작 (시도 {attempt + 1}/{max_retries})"
                 )
 
-                # LLM을 통한 분석 (실제 구현에서는 여기서 LLM 호출)
-                analysis_result = await self._call_llm_for_analysis(expert_prompt)
+                # 🔧 안전한 컨텍스트 생성
+                context = await self._create_expert_specific_context(
+                    expert, financial_data, enhanced_dart_data, manus_collected_data
+                )
 
-                insights[expert.role] = {
-                    "expert_name": expert.name,
-                    "analysis": analysis_result,
-                    "methods_used": expert.key_methods[:3],  # 상위 3개 방법론만
-                }
+                # 🔧 컨텍스트 타입 검증
+                if not isinstance(context, str):
+                    logger.warning(
+                        f"⚠️ {expert.name} 컨텍스트가 문자열이 아님: {type(context)}"
+                    )
+                    context = str(context) if context else "컨텍스트 생성 실패"
 
-                logger.info(f"✅ {expert.name} 분석 완료")
+                # 🎯 시니어 애널리스트급 프롬프트 생성
+                prompt = f"""
+**전문가**: {expert.name} ({expert.role})
+**전문 분야**: {expert.expertise}
+
+{context}
+
+🎯 **시니어 애널리스트 분석 지침**:
+위의 데이터를 바탕으로 실제 증권사 시니어 애널리스트 수준의 전문적이고 정량적인 분석을 수행해주세요.
+
+**필수 포함 요소**:
+1. 구체적인 수치와 계산 과정
+2. 정량적 지표와 기준값 명시
+3. 시나리오별 확률과 근거
+4. 투자 결정에 직접 활용 가능한 구체적 권고
+
+**분석 품질 기준**:
+- 모든 주장에 대한 정량적 근거 제시
+- 계산 과정과 전제 조건 명시
+- 리스크와 기회요인 균형 분석
+- 실무진이 즉시 활용 가능한 구체성
+
+전문가로서의 깊이 있는 인사이트와 실행 가능한 분석을 제공해주세요.
+"""
+
+                # 🔧 안전한 프롬프트 검증
+                if not prompt or len(prompt.strip()) < 100:
+                    raise ValueError(f"{expert.name} 프롬프트가 너무 짧거나 비어있음")
+
+                # LLM 분석 수행
+                logger.info(f"🤖 {expert.name} LLM 분석 요청...")
+
+                # 🔧 안전한 LLM 호출
+                try:
+                    analysis_result = await llm_instance.agenerate(prompt)
+
+                    # 결과 타입 검증
+                    if not analysis_result:
+                        raise ValueError("LLM 분석 결과가 None 또는 빈 값")
+
+                    # 문자열로 변환 (안전한 처리)
+                    if isinstance(analysis_result, str):
+                        analysis_text = analysis_result
+                    elif hasattr(analysis_result, "content"):
+                        analysis_text = str(analysis_result.content)
+                    elif hasattr(analysis_result, "text"):
+                        analysis_text = str(analysis_result.text)
+                    else:
+                        analysis_text = str(analysis_result)
+
+                    # 최소 길이 검증
+                    if len(analysis_text.strip()) < 50:
+                        raise ValueError(
+                            f"분석 결과가 너무 짧음: {len(analysis_text)}자"
+                        )
+
+                    logger.info(f"✅ {expert.name} 분석 완료: {len(analysis_text):,}자")
+
+                    return {
+                        "expert_name": expert.name,
+                        "expert_role": expert.role,
+                        "expertise": expert.expertise,
+                        "analysis_result": analysis_text,
+                        "analysis_timestamp": datetime.now().isoformat(),
+                        "attempt_number": attempt + 1,
+                        "success": True,
+                    }
+
+                except Exception as llm_error:
+                    logger.error(f"❌ {expert.name} LLM 분석 실패: {llm_error}")
+                    if attempt == max_retries - 1:  # 마지막 시도
+                        return {
+                            "expert_name": expert.name,
+                            "expert_role": expert.role,
+                            "expertise": expert.expertise,
+                            "analysis_result": f"분석 실패: {str(llm_error)}",
+                            "analysis_timestamp": datetime.now().isoformat(),
+                            "attempt_number": attempt + 1,
+                            "success": False,
+                            "error": str(llm_error),
+                        }
+                    # 재시도 계속
+                    logger.warning(
+                        f"⚠️ {expert.name} 분석 재시도 중... ({attempt + 1}/{max_retries})"
+                    )
+                    await asyncio.sleep(1)  # 1초 대기
+                    continue
 
             except Exception as e:
-                logger.error(f"❌ {expert.name} 분석 실패: {e}")
-                insights[expert.role] = {
-                    "expert_name": expert.name,
-                    "analysis": f"분석 중 오류 발생: {str(e)}",
-                    "error": True,
-                }
+                logger.error(f"❌ {expert.name} 전문가 분석 중 오류: {e}")
 
-        return insights
+                if attempt == max_retries - 1:  # 마지막 시도
+                    return {
+                        "expert_name": expert.name,
+                        "expert_role": expert.role,
+                        "expertise": expert.expertise,
+                        "analysis_result": f"분석 실패: {str(e)}",
+                        "analysis_timestamp": datetime.now().isoformat(),
+                        "attempt_number": attempt + 1,
+                        "success": False,
+                        "error": str(e),
+                    }
 
-    async def _call_llm_for_analysis(self, prompt: str) -> str:
-        """LLM을 통한 실제 분석"""
-        try:
-            # 실제 LLM 호출 로직 - ask 메서드 사용
-            response = await self.llm.ask([{"role": "user", "content": prompt}])
-            return response
-        except Exception as e:
-            logger.error(f"LLM 호출 실패: {e}")
-            return f"LLM 분석 중 오류 발생: {str(e)}"
+                # 재시도 대기
+                logger.warning(
+                    f"⚠️ {expert.name} 분석 재시도... ({attempt + 1}/{max_retries})"
+                )
+                await asyncio.sleep(2)  # 2초 대기
+
+        # 여기에 도달하면 모든 재시도 실패
+        return {
+            "expert_name": expert.name,
+            "expert_role": expert.role,
+            "expertise": expert.expertise,
+            "analysis_result": f"최대 재시도 횟수 초과: {max_retries}회 시도 후 실패",
+            "analysis_timestamp": datetime.now().isoformat(),
+            "attempt_number": max_retries,
+            "success": False,
+            "error": "Maximum retries exceeded",
+        }
 
     def _calculate_cost_savings(
         self, activated_agents: int, depth: AnalysisDepth
@@ -1095,242 +1199,263 @@ class SmartSectorManager:
                     context_parts.append(industry_info)
 
             if enhanced_dart_data and enhanced_dart_data.get("success"):
-                business_info = self._extract_dart_business_info(enhanced_dart_data)
-                if business_info:
-                    context_parts.append("\n📋 사업현황 정보:")
-                    context_parts.append(business_info)
+                # 🔧 안전한 DART 데이터 처리
+                try:
+                    business_info = self._extract_dart_business_info(enhanced_dart_data)
+                    if business_info and isinstance(business_info, str):
+                        context_parts.append("🏢 사업 정보 (DART):")
+                        context_parts.append(business_info)
+                except Exception as e:
+                    logger.warning(f"⚠️ DART 사업 정보 추출 실패: {e}")
+                    pass
 
-            # 🎯 시니어 산업 애널리스트 분석 지침 (정량적 분석 프레임워크)
+            # 🎯 시니어 산업 애널리스트 분석 지침 (정량적 지표 포함)
             context_parts.append("\n🎯 산업 분석 필수 수행사항:")
             context_parts.append("1. Porter 5 Forces 정량평가:")
             context_parts.append(
-                "   - 진입장벽 강도 (1-5점): 자본집약도, 규제, 기술장벽"
+                "   - 신규진입 위협도 (1-5점): 진입장벽, 자본요구, 규제환경"
             )
             context_parts.append(
-                "   - 공급업체 협상력 (1-5점): 집중도, 전환비용, 차별화"
+                "   - 공급업체 교섭력 (1-5점): 공급업체 집중도, 전환비용"
+            )
+            context_parts.append("   - 구매자 교섭력 (1-5점): 고객 집중도, 가격민감도")
+            context_parts.append(
+                "   - 대체재 위협도 (1-5점): 대체재 성능-가격, 전환 가능성"
             )
             context_parts.append(
-                "   - 구매자 협상력 (1-5점): 집중도, 가격민감도, 대체재"
+                "   - 기존 경쟁강도 (1-5점): 경쟁사 수, 시장성장률, 차별화"
             )
-            context_parts.append("   - 대체재 위협 (1-5점): 성능, 가격, 전환비용")
-            context_parts.append("   - 경쟁강도 (1-5점): 경쟁자수, 성장률, 차별화")
-            context_parts.append(
-                "   ⭐ 각 Force별 점수와 종합점수(25점 만점) 산출 필수"
-            )
+            context_parts.append("   - 종합 점수 = 각 Force별 점수 합계 (최대 25점)")
             context_parts.append("")
-            context_parts.append("2. 시장구조 및 경쟁력 분석:")
-            context_parts.append("   - HHI 지수 = Σ(시장점유율%)² (시장집중도)")
+            context_parts.append("2. 시장구조 분석:")
+            context_parts.append("   - HHI 지수 = Σ(시장점유율%)² (독과점 정도 측정)")
             context_parts.append("   - Top 3 집중도 = 상위 3사 시장점유율 합계")
-            context_parts.append("   - 시장성장률 vs GDP 성장률 대비 배수")
-            context_parts.append("   - 가격결정력 지수 = 가격인상률/원가상승률")
+            context_parts.append(
+                "   - 시장 성장률 = (당기 시장규모 - 전기) / 전기 × 100"
+            )
+            context_parts.append(
+                "   - 시장 포화도 = 현재 시장규모 / 잠재 시장규모 × 100"
+            )
             context_parts.append("")
-            context_parts.append("3. 경쟁우위 지속성 평가:")
-            context_parts.append(
-                "   - Economic Moat 평가: 네트워크효과, 브랜드, 규모경제, 전환비용"
-            )
-            context_parts.append("   - R&D 집약도 = R&D비용/매출 × 100 (혁신력)")
-            context_parts.append(
-                "   - 특허 포트폴리오 강도 (특허수, 핵심기술 보유현황)"
-            )
-            context_parts.append("   - 고객 충성도 지표 (재구매율, NPS, 전환비용)")
+            context_parts.append("3. 경쟁우위 지속성 (Economic Moat):")
+            context_parts.append("   - 네트워크 효과: 사용자 증가 → 가치 증가 선순환")
+            context_parts.append("   - 전환비용: 고객이 타사로 변경시 발생 비용")
+            context_parts.append("   - 무형자산: 브랜드, 특허, 라이선스 가치")
+            context_parts.append("   - 비용우위: 규모의 경제, 독점적 자원")
+            context_parts.append("   - R&D 집약도 = R&D비용 / 매출 × 100 (%)")
             context_parts.append("")
             context_parts.append("4. 산업 라이프사이클 진단:")
-            context_parts.append("   - 도입기: 높은 성장률, 표준화 부재, 높은 진입")
-            context_parts.append("   - 성장기: 가속 성장, 시장점유율 경쟁, 표준화")
-            context_parts.append("   - 성숙기: 성장률 둔화, 효율성 경쟁, 통합")
-            context_parts.append("   - 쇠퇴기: 마이너스 성장, 구조조정, 대체재")
-            context_parts.append("   ⭐ 현재 단계와 향후 3-5년 전망 명시")
+            context_parts.append(
+                "   - 도입기: 높은 성장률(30%+), 높은 변동성, 적자 가능"
+            )
+            context_parts.append("   - 성장기: 중간 성장률(10-30%), 수익성 개선")
+            context_parts.append("   - 성숙기: 낮은 성장률(5-10%), 안정적 수익성")
+            context_parts.append("   - 쇠퇴기: 마이너스 성장률, 구조조정 필요")
             context_parts.append("")
-            context_parts.append("⚠️ 산업분석 주의사항:")
-            context_parts.append("- 글로벌 vs 국내 시장 구분하여 분석")
-            context_parts.append("- ESG 트렌드가 산업구조에 미치는 장기 영향")
-            context_parts.append("- 디지털 전환이 기존 밸류체인에 미치는 파괴적 영향")
-            context_parts.append("- 지정학적 리스크가 글로벌 공급망에 미치는 영향")
+            context_parts.append("⚠️ 산업 분석 주의사항:")
+            context_parts.append("- 글로벌 vs 국내 시장 분리 분석")
+            context_parts.append("- 정부 정책 변화가 산업에 미치는 영향도 정량화")
+            context_parts.append("- 기술 혁신 주기와 산업 내 위치 매핑")
+            context_parts.append("- ESG 규제 강화가 산업 구조에 미치는 영향")
 
-        elif "밸류" in expert.expertise or "Valuation" in expert.role:
-            # 밸류에이션 전문가 - 가치평가 데이터 중심
+        elif "밸류에이션" in expert.expertise or "Valuation" in expert.role:
+            # 밸류에이션 전문가 - 🎯 시니어 애널리스트 수준 지침 추가
             if financial_data and financial_data.get("success"):
-                valuation_data = self._extract_valuation_data(financial_data)
-                if valuation_data:
-                    context_parts.append("💰 밸류에이션 데이터:")
-                    context_parts.append(valuation_data)
+                # 🔧 안전한 재무 데이터 처리
+                try:
+                    valuation_data = self._extract_valuation_data(financial_data)
+                    if valuation_data and isinstance(valuation_data, str):
+                        context_parts.append("💰 밸류에이션 데이터:")
+                        context_parts.append(valuation_data)
+                except Exception as e:
+                    logger.warning(f"⚠️ 밸류에이션 데이터 추출 실패: {e}")
+                    pass
 
-            # 🎯 목표가 산출 근거 요구사항 추가
-            context_parts.append("\n🎯 목표가 산출 시 필수 포함사항:")
-            context_parts.append("1. DCF 분석:")
+            # 🎯 시니어 밸류에이션 애널리스트 구체적 분석 지침
+            context_parts.append("\n🎯 밸류에이션 분석 필수 수행사항:")
+            context_parts.append("1. DCF 분석 (구체적 산출식 제시):")
             context_parts.append("   - 자유현금흐름(FCF) 5년 예측값과 근거")
             context_parts.append(
-                "   - 할인율(WACC) 산출 과정: 무위험수익률 + 베타 × 위험프리미엄"
+                "   - 할인율(WACC) 산출 과정: WACC = (E/V)×Re + (D/V)×Rd×(1-T)"
             )
-            context_parts.append("   - 영구성장률 가정과 근거")
             context_parts.append(
-                "   - 잔존가치 계산: FCF_5년차 × (1+영구성장률) / (WACC-영구성장률)"
+                "   - 영구성장률 가정과 근거 (GDP성장률 + 인플레이션 고려)"
             )
-            context_parts.append("   - 최종 내재가치 = 현재가치의 합")
+            context_parts.append("   - 잔존가치 = FCF₅×(1+g)/(WACC-g)")
+            context_parts.append("   - 최종 내재가치 = Σ(FCF_t/(1+WACC)^t) + 잔존가치")
             context_parts.append("")
-            context_parts.append("2. 멀티플 분석:")
-            context_parts.append("   - 동종업계 평균 PER, PBR, EV/EBITDA 데이터")
-            context_parts.append("   - 해당 기업의 적정 멀티플 근거")
-            context_parts.append("   - 멀티플 × 해당지표 = 목표가")
+            context_parts.append("2. 멀티플 분석 (동종업계 비교):")
+            context_parts.append("   - 동종업계 평균 PER, PBR, EV/EBITDA 데이터 제시")
+            context_parts.append(
+                "   - 프리미엄/디스카운트 근거 (성장성, 수익성, 안정성)"
+            )
+            context_parts.append("   - 멀티플 × 해당지표 = 목표가 (계산과정 상세)")
             context_parts.append("")
-            context_parts.append("3. 종합 목표가 산출:")
-            context_parts.append("   - DCF 목표가: [구체적 금액]원 (가중치 40%)")
-            context_parts.append("   - PER 목표가: [구체적 금액]원 (가중치 30%)")
-            context_parts.append("   - PBR 목표가: [구체적 금액]원 (가중치 30%)")
+            context_parts.append("3. 종합 목표가 산출 (가중평균):")
+            context_parts.append("   - DCF 목표가 (가중치 40%)")
+            context_parts.append("   - PER 목표가 (가중치 30%)")
+            context_parts.append("   - PBR 목표가 (가중치 30%)")
             context_parts.append("   - 최종 목표가 = (DCF×0.4 + PER×0.3 + PBR×0.3)")
-            context_parts.append("   - 투자의견: 목표가 vs 현재가 괴리율 기준")
             context_parts.append("")
-            context_parts.append("4. 시나리오 분석:")
-            context_parts.append("   - 낙관 시나리오: [목표가] (확률 25%)")
-            context_parts.append("   - 기본 시나리오: [목표가] (확률 50%)")
-            context_parts.append("   - 비관 시나리오: [목표가] (확률 25%)")
+            context_parts.append("4. 시나리오 분석 (확률 배정):")
+            context_parts.append("   - 낙관 시나리오 (확률 25%): 최고 실적 가정")
+            context_parts.append("   - 기본 시나리오 (확률 50%): 컨센서스 기반")
+            context_parts.append("   - 비관 시나리오 (확률 25%): 악재 반영")
+            context_parts.append("   - 확률가중 목표가 = Σ(시나리오별 목표가 × 확률)")
             context_parts.append("")
-            context_parts.append(
-                "⚠️ 모든 계산 과정과 전제조건을 명시하여 투자자가 검증할 수 있도록 해주세요."
-            )
+            context_parts.append("⚠️ 밸류에이션 주의사항:")
+            context_parts.append("- 모든 가정과 계산 과정 명시 (검증 가능하도록)")
+            context_parts.append("- 민감도 분석: 핵심 변수 ±10% 변동 시 목표가 변화")
+            context_parts.append("- 과거 멀티플 밴드와 현재 수준 비교")
+            context_parts.append("- 배당할인모델(DDM) 병행 검증 (배당주의 경우)")
 
         elif "리스크" in expert.expertise or "Risk" in expert.role:
             # 리스크 평가자 - 🎯 시니어 애널리스트 수준 지침 추가
             if financial_data and financial_data.get("success"):
-                risk_indicators = self._extract_risk_indicators(financial_data)
-                if risk_indicators:
-                    context_parts.append("⚠️ 리스크 지표:")
-                    context_parts.append(risk_indicators)
+                # 🔧 안전한 리스크 데이터 처리
+                try:
+                    risk_data = self._extract_risk_indicators(financial_data)
+                    if risk_data and isinstance(risk_data, str):
+                        context_parts.append("⚠️ 리스크 지표:")
+                        context_parts.append(risk_data)
+                except Exception as e:
+                    logger.warning(f"⚠️ 리스크 데이터 추출 실패: {e}")
+                    pass
 
             if manus_collected_data and manus_collected_data.get("performed"):
-                risk_factors = self._extract_risk_factors(manus_collected_data)
-                if risk_factors:
-                    context_parts.append("🚨 시장 리스크 요소:")
-                    context_parts.append(risk_factors)
+                # 🔧 안전한 Manus 데이터 처리
+                try:
+                    risk_factors = self._extract_risk_factors(manus_collected_data)
+                    if risk_factors and isinstance(risk_factors, str):
+                        context_parts.append("🚨 위험 요인:")
+                        context_parts.append(risk_factors)
+                except Exception as e:
+                    logger.warning(f"⚠️ Manus 리스크 데이터 추출 실패: {e}")
+                    pass
 
-            # 🎯 시니어 리스크 애널리스트 분석 지침 (정량적 리스크 측정)
+            # 🎯 시니어 리스크 애널리스트 정량적 분석 지침
             context_parts.append("\n🎯 리스크 분석 필수 수행사항:")
             context_parts.append("1. 정량적 리스크 지표 산출:")
-            context_parts.append(
-                "   - VaR (95% 신뢰구간): 1일, 10일, 1개월 손실 예상액"
-            )
-            context_parts.append(
-                "   - CVaR (Conditional VaR): 극단손실 상황의 평균 손실"
-            )
-            context_parts.append("   - Maximum Drawdown: 최고점 대비 최대 하락률")
+            context_parts.append("   - VaR (95% 신뢰구간): 1일, 10일, 1개월 VaR 계산")
+            context_parts.append("   - CVaR (Conditional VaR): VaR 초과 손실의 평균")
+            context_parts.append("   - Maximum Drawdown: 고점 대비 최대 하락률")
             context_parts.append("   - Sharpe Ratio = (수익률-무위험수익률)/표준편차")
             context_parts.append("   - Information Ratio = 초과수익률/추적오차")
             context_parts.append("")
             context_parts.append("2. 시나리오 분석 및 확률 산정:")
-            context_parts.append(
-                "   - Base Case (50% 확률): 기본 시나리오 목표가와 근거"
-            )
-            context_parts.append(
-                "   - Bull Case (25% 확률): 낙관 시나리오 목표가와 트리거"
-            )
-            context_parts.append(
-                "   - Bear Case (25% 확률): 비관 시나리오 목표가와 리스크"
-            )
-            context_parts.append("   - Black Swan (5% 확률): 극단적 하락 시나리오")
-            context_parts.append("   ⭐ 각 시나리오별 확률 가중 기댓값 산출")
+            context_parts.append("   - Base Case (50% 확률): 현재 추세 연장")
+            context_parts.append("   - Bull Case (25% 확률): 긍정적 변화 시나리오")
+            context_parts.append("   - Bear Case (25% 확률): 부정적 변화 시나리오")
+            context_parts.append("   - Black Swan (5% 확률): 극단적 위기 시나리오")
+            context_parts.append("   - 확률가중 기댓값 = Σ(시나리오별 손실 × 확률)")
             context_parts.append("")
-            context_parts.append("3. 민감도 분석:")
-            context_parts.append("   - 핵심 변수 ±10%, ±20% 변동시 목표가 영향도")
-            context_parts.append("   - 매출성장률, 마진, 할인율, 멀티플 탄력성 측정")
-            context_parts.append("   - 시장 베타 변화가 주가에 미치는 영향도")
-            context_parts.append("   - 환율, 금리, 원자재 가격 변화 충격도")
+            context_parts.append("3. 민감도 분석 (핵심 변수 영향도):")
+            context_parts.append("   - 매출성장률 ±10%, ±20% 변화시 목표가 영향도")
+            context_parts.append("   - 마진 ±10%, ±20% 변화시 수익성 영향도")
+            context_parts.append("   - 할인율 ±1%, ±2% 변화시 밸류에이션 영향도")
+            context_parts.append("   - 시장 베타 변화시 주가 변동성 영향도")
             context_parts.append("")
             context_parts.append("4. 스트레스 테스트:")
-            context_parts.append("   - 2008년 금융위기급 시나리오 하 예상 손실률")
-            context_parts.append("   - 2020년 팬데믹급 시나리오 하 예상 손실률")
-            context_parts.append("   - 섹터별 특화 스트레스 (규제, 기술, 경쟁 등)")
-            context_parts.append("   - 유동성 위기시 매도 가능 시간과 슬리피지")
+            context_parts.append("   - 2008년 금융위기급 시나리오 (예상 손실률)")
+            context_parts.append("   - 2020년 팬데믹급 시나리오 (예상 손실률)")
+            context_parts.append("   - 섹터별 특화 스트레스 (기술혁신 실패 등)")
+            context_parts.append("   - 유동성 위기: 매도 가능 시간, 슬리피지 추정")
             context_parts.append("")
             context_parts.append("5. ESG 및 기타 리스크:")
-            context_parts.append("   - ESG Score와 ESG 이슈 발생시 주가 영향도 (-X%)")
-            context_parts.append("   - Altman Z-Score 기반 신용위험 평가")
-            context_parts.append("   - 집중도 리스크 (고객/지역/사업 집중도)")
-            context_parts.append("   - 지정학적 리스크와 글로벌 공급망 취약성")
+            context_parts.append("   - ESG Score 하락시 주가 영향도 (정량화)")
+            context_parts.append("   - Altman Z-Score: 신용위험 평가")
+            context_parts.append("   - 집중도 리스크: 고객, 지역, 제품 다변화 수준")
+            context_parts.append("   - 지정학적 리스크: 공급망, 수출의존도 영향")
             context_parts.append("")
             context_parts.append("⚠️ 리스크 분석 주의사항:")
-            context_parts.append("- 모든 리스크 지표는 과거 3년 데이터 기반 산출")
-            context_parts.append("- Fat Tail 분포 고려한 극단손실 확률 별도 측정")
-            context_parts.append("- 상관관계 변화가 포트폴리오 리스크에 미치는 영향")
-            context_parts.append("- 유동성 리스크와 시장 리스크의 상호작용 고려")
-            context_parts.append("- 모델 리스크 (Black-Scholes 등 모델 가정 오류) 인지")
+            context_parts.append("- 모든 리스크 시나리오에 확률과 손실규모 정량화")
+            context_parts.append("- 상관관계 고려: 동시 발생 가능한 리스크 조합")
+            context_parts.append("- 시점별 리스크: 단기(3개월), 중기(1년), 장기(3년)")
+            context_parts.append(
+                "- 헤지 가능성: 파생상품, 보험 등을 통한 리스크 완화 방안"
+            )
 
         elif "주석" in expert.expertise or "Footnote" in expert.role:
             # 재무제표 주석 전문가 - 🎯 시니어 애널리스트 수준 지침 추가
             if enhanced_dart_data and enhanced_dart_data.get("success"):
-                dart_financial = self._extract_dart_financial_only(enhanced_dart_data)
-                if dart_financial:
-                    context_parts.append("📋 DART 재무제표 주석 데이터:")
-                    context_parts.append(dart_financial)
+                # 🔧 안전한 DART 데이터 처리
+                try:
+                    investment_info = self._extract_dart_investment_info(
+                        enhanced_dart_data
+                    )
+                    if investment_info and isinstance(investment_info, str):
+                        context_parts.append("💼 투자정보 (DART):")
+                        context_parts.append(investment_info)
+                except Exception as e:
+                    logger.warning(f"⚠️ DART 투자정보 추출 실패: {e}")
+                    pass
 
-            # 🎯 시니어 주석 분석 전문가 지침 (숨겨진 재무정보 발굴)
+            # 🎯 시니어 재무제표 주석 전문가 상세 분석 지침
             context_parts.append("\n🎯 재무제표 주석 분석 필수 수행사항:")
             context_parts.append("1. 우발채무 및 보증채무 정밀분석:")
-            context_parts.append("   - 우발채무 총액과 발생가능성 (%) 평가")
-            context_parts.append("   - 보증채무 잔액과 대상 (자회사, 관계회사 등)")
-            context_parts.append("   - 우발채무/총자산, 보증채무/자기자본 비율 산출")
-            context_parts.append("   - 과거 3년 우발채무 실제 손실 발생률")
+            context_parts.append("   - 우발채무 총액과 발생가능성 평가")
+            context_parts.append("   - 우발채무/총자산 비율 (5% 이상시 주의)")
+            context_parts.append("   - 보증채무 잔액과 대상 (관계회사, 임직원 등)")
+            context_parts.append("   - 보증채무/자기자본 비율 (15% 이상시 위험)")
             context_parts.append("")
-            context_parts.append("2. 관계회사 거래 투명성 분석:")
-            context_parts.append("   - 관계회사 매출/총매출, 관계회사 매입/총매입 비율")
-            context_parts.append("   - 관계회사 거래조건의 제3자 대비 공정성")
-            context_parts.append("   - 특수관계자 거래의 회사 수익성에 미치는 영향")
-            context_parts.append("   - 관계회사 대여금/차입금 규모와 조건")
+            context_parts.append("2. 관계회사 거래 투명성:")
+            context_parts.append("   - 관계회사 매출/총매출 비율 (내부거래 의존도)")
+            context_parts.append("   - 관계회사 매입/총매입 비율")
+            context_parts.append("   - 관계회사 대여금, 차입금 규모")
+            context_parts.append("   - 거래조건의 제3자 거래 대비 공정성")
             context_parts.append("")
             context_parts.append("3. 금융상품 및 파생상품 위험 평가:")
             context_parts.append("   - 파생상품 공정가치 변동손익 3년 추이")
-            context_parts.append(
-                "   - 헤지회계 적용 파생상품의 헤지 효과성 (80-125% 기준)"
-            )
-            context_parts.append(
-                "   - 금융상품별 신용위험 등급과 손실충당금 설정 적정성"
-            )
-            context_parts.append("   - 외화표시 자산/부채의 환위험 노출액")
+            context_parts.append("   - 헤지회계 효과성 (80-125% 기준 준수 여부)")
+            context_parts.append("   - 외환위험: 외화자산/부채 규모와 헤지비율")
+            context_parts.append("   - 금리위험: 변동금리 부채 비중과 민감도")
             context_parts.append("")
-            context_parts.append("4. 리스 및 약정사항 영향도 분석:")
+            context_parts.append("4. 리스 및 약정사항 영향도:")
             context_parts.append("   - 운용리스 미래 최소 지급액의 현재가치")
-            context_parts.append("   - 금융리스 의무의 유동성에 미치는 영향")
-            context_parts.append("   - 매입약정, 투자약정 등의 미래 현금흐름 영향")
-            context_parts.append("   - 리스부채/총부채 비율과 자본구조에 미치는 영향")
+            context_parts.append("   - 리스부채/총부채 비율 (K-IFRS 1116 적용)")
+            context_parts.append("   - 약정 미실행 한도 (신용한도, 투자약정 등)")
+            context_parts.append("   - Sale & Leaseback 거래의 손익 영향")
             context_parts.append("")
             context_parts.append("5. 회계정책 변경 및 추정변경 영향:")
             context_parts.append("   - 회계정책 변경으로 인한 손익 조정액")
-            context_parts.append("   - 회계추정 변경이 당기 및 미래 손익에 미치는 영향")
-            context_parts.append("   - 감가상각률, 충당금 설정률 등 주요 추정치 변화")
-            context_parts.append(
-                "   - 과거 회계처리 오류 수정으로 인한 재무제표 재작성"
-            )
+            context_parts.append("   - 회계추정 변경 (내용연수, 잔존가치 등)")
+            context_parts.append("   - 손상차손 인식과 환입 이력")
+            context_parts.append("   - 충당부채 설정과 사용 내역")
             context_parts.append("")
             context_parts.append("6. 연결범위 변동 및 지배력 분석:")
             context_parts.append("   - 신규 연결 자회사 편입으로 인한 재무 영향")
-            context_parts.append("   - 연결 제외 자회사로 인한 손익 영향")
+            context_parts.append("   - 지배력 상실로 인한 연결 제외 영향")
             context_parts.append("   - 지분법 적용 투자주식의 손익 기여도")
-            context_parts.append("   - 사업결합 및 분할로 인한 재무구조 변화")
+            context_parts.append("   - 소수주주 지분 변동과 자본 거래")
             context_parts.append("")
-            context_parts.append("⚠️ 주석 분석시 특별 주의사항:")
-            context_parts.append(
-                "- 주석에 기재된 수치를 재무제표 본문과 반드시 대조 확인"
-            )
-            context_parts.append("- 과거 3개년 주석 정보를 비교하여 트렌드 파악")
-            context_parts.append("- 회계법인 의견에서 강조사항이나 한정의견 사유 분석")
-            context_parts.append(
-                "- 세무조정과 회계조정의 차이가 이익조정에 미치는 영향"
-            )
-            context_parts.append(
-                "- 공시서류 간 불일치 (사업보고서 vs 분기보고서) 여부 확인"
-            )
-            context_parts.append(
-                "- IFRS 도입으로 인한 계정분류 변경이 비교가능성에 미치는 영향"
-            )
+            context_parts.append("⚠️ 주석 분석 주의사항:")
+            context_parts.append("- 숨겨진 부채나 위험요소 발굴이 핵심")
+            context_parts.append("- 정량적 임계치 초과시 반드시 리스크 등급 상향")
+            context_parts.append("- 3년 추이 분석으로 패턴과 변화 방향 파악")
+            context_parts.append("- 감사인 의견과 핵심감사사항(KAM) 교차 검증")
 
-        final_context = "\n\n".join(context_parts)
+        # 컨텍스트를 문자열로 결합하기 전 검증
+        # 🔧 안전한 문자열 변환
+        safe_context_parts = []
+        for part in context_parts:
+            if isinstance(part, str):
+                safe_context_parts.append(part)
+            elif isinstance(part, dict):
+                # dict인 경우 JSON 문자열로 변환
+                safe_context_parts.append(str(part))
+            else:
+                # 기타 타입은 문자열로 변환
+                safe_context_parts.append(str(part))
 
-        # 토큰 수 확인 및 로깅
-        estimated_tokens = self._estimate_tokens(final_context)
+        full_context = "\n".join(safe_context_parts)
+
+        # 토큰 수 계산 및 로깅
+        estimated_tokens = self._estimate_tokens(full_context)
         logger.info(
             f"🎯 {expert.name} 통합 컨텍스트: {estimated_tokens:,} 토큰 (PDF 딕셔너리 완전 활용)"
         )
 
-        return final_context
+        return full_context
 
     def _summarize_financial_data(self, financial_data) -> str:
         """재무데이터를 요약합니다."""
@@ -1387,17 +1512,22 @@ class SmartSectorManager:
             "stability",
         ]
 
-        lines = financial_text.split("\n")
-        summary_lines = []
+        # 🔧 안전한 문자열 처리
+        try:
+            lines = financial_text.split("\n")
+            summary_lines = []
 
-        for line in lines:
-            if any(section.lower() in line.lower() for section in key_sections):
-                summary_lines.append(line)
-            elif any(
-                metric in line
-                for metric in ["ROE", "ROA", "PER", "PBR", "부채비율", "매출액"]
-            ):
-                summary_lines.append(line)
+            for line in lines:
+                if any(section.lower() in line.lower() for section in key_sections):
+                    summary_lines.append(line)
+                elif any(
+                    metric in line
+                    for metric in ["ROE", "ROA", "PER", "PBR", "부채비율", "매출액"]
+                ):
+                    summary_lines.append(line)
+        except Exception as e:
+            logger.warning(f"⚠️ 재무데이터 처리 중 오류: {e}")
+            return str(financial_data)[:2000] if financial_data else ""
 
         if summary_lines:
             return "\n".join(summary_lines)
@@ -1414,386 +1544,552 @@ class SmartSectorManager:
         if not dart_data:
             return ""
 
-        # Dict 타입인 경우 문자열로 변환
-        if isinstance(dart_data, dict):
-            dart_text = json.dumps(dart_data, ensure_ascii=False, indent=2)
-        else:
-            dart_text = str(dart_data)
+        # 🔧 안전한 데이터 타입 처리
+        try:
+            if isinstance(dart_data, dict):
+                dart_text = json.dumps(dart_data, ensure_ascii=False, indent=2)
+            elif isinstance(dart_data, str):
+                dart_text = dart_data
+            else:
+                dart_text = str(dart_data)
 
-        financial_keywords = [
-            "재무",
-            "손익",
-            "대차대조표",
-            "현금흐름",
-            "자산",
-            "부채",
-            "자본",
-            "매출",
-            "이익",
-            "financial",
-            "income",
-            "balance",
-            "cash flow",
-            "asset",
-            "liability",
-            "equity",
-            "revenue",
-            "profit",
-        ]
+            if not dart_text or len(dart_text.strip()) < 10:
+                return ""
 
-        lines = dart_text.split("\n")
-        relevant_lines = []
+            financial_keywords = [
+                "재무",
+                "손익",
+                "대차대조표",
+                "현금흐름",
+                "자산",
+                "부채",
+                "자본",
+                "매출",
+                "이익",
+                "financial",
+                "income",
+                "balance",
+                "cash flow",
+                "asset",
+                "liability",
+                "equity",
+                "revenue",
+                "profit",
+            ]
 
-        for line in lines:
-            if any(keyword.lower() in line.lower() for keyword in financial_keywords):
-                relevant_lines.append(line)
+            lines = dart_text.split("\n")
+            relevant_lines = []
 
-        return "\n".join(relevant_lines) if relevant_lines else ""
+            for line in lines:
+                if any(
+                    keyword.lower() in line.lower() for keyword in financial_keywords
+                ):
+                    relevant_lines.append(line)
+
+            return "\n".join(relevant_lines) if relevant_lines else ""
+        except Exception as e:
+            logger.warning(f"⚠️ DART 재무정보 추출 실패: {e}")
+            return ""
 
     def _extract_price_data_only(self, financial_data) -> str:
         """재무데이터에서 가격/차트 관련 정보만 추출합니다."""
         if not financial_data:
             return ""
 
-        # Dict 타입인 경우 문자열로 변환
-        if isinstance(financial_data, dict):
-            financial_text = json.dumps(financial_data, ensure_ascii=False, indent=2)
-        else:
-            financial_text = str(financial_data)
+        # 🔧 안전한 데이터 타입 처리
+        try:
+            if isinstance(financial_data, dict):
+                financial_text = json.dumps(
+                    financial_data, ensure_ascii=False, indent=2
+                )
+            elif isinstance(financial_data, str):
+                financial_text = financial_data
+            else:
+                financial_text = str(financial_data)
 
-        price_keywords = [
-            "주가",
-            "가격",
-            "시가",
-            "고가",
-            "저가",
-            "종가",
-            "거래량",
-            "시가총액",
-            "price",
-            "high",
-            "low",
-            "close",
-            "volume",
-            "market cap",
-            "trading",
-        ]
+            if not financial_text or len(financial_text.strip()) < 10:
+                return ""
 
-        lines = financial_text.split("\n")
-        relevant_lines = []
+            price_keywords = [
+                "주가",
+                "가격",
+                "시가",
+                "고가",
+                "저가",
+                "종가",
+                "거래량",
+                "시가총액",
+                "price",
+                "high",
+                "low",
+                "close",
+                "volume",
+                "market cap",
+                "trading",
+            ]
 
-        for line in lines:
-            if any(keyword.lower() in line.lower() for keyword in price_keywords):
-                relevant_lines.append(line)
+            lines = financial_text.split("\n")
+            relevant_lines = []
 
-        return "\n".join(relevant_lines) if relevant_lines else ""
+            for line in lines:
+                if any(keyword.lower() in line.lower() for keyword in price_keywords):
+                    relevant_lines.append(line)
+
+            return "\n".join(relevant_lines) if relevant_lines else ""
+        except Exception as e:
+            logger.warning(f"⚠️ 가격 데이터 추출 실패: {e}")
+            return ""
 
     def _extract_technical_analysis_info(self, manus_data) -> str:
         """Manus 데이터에서 기술적 분석 관련 정보만 추출합니다."""
         if not manus_data:
             return ""
 
-        # Dict 타입인 경우 문자열로 변환
-        if isinstance(manus_data, dict):
-            if manus_data.get("collected_information"):
-                manus_text = str(manus_data["collected_information"])
+        # 🔧 안전한 데이터 타입 처리
+        try:
+            if isinstance(manus_data, dict):
+                if manus_data.get("collected_information"):
+                    manus_text = str(manus_data["collected_information"])
+                else:
+                    manus_text = json.dumps(manus_data, ensure_ascii=False, indent=2)
+            elif isinstance(manus_data, str):
+                manus_text = manus_data
             else:
-                manus_text = json.dumps(manus_data, ensure_ascii=False, indent=2)
-        else:
-            manus_text = str(manus_data)
+                manus_text = str(manus_data)
 
-        technical_keywords = [
-            "차트",
-            "이동평균",
-            "MACD",
-            "RSI",
-            "볼린저",
-            "지지",
-            "저항",
-            "거래량",
-            "기술적",
-            "패턴",
-            "트렌드",
-            "chart",
-            "technical",
-            "support",
-            "resistance",
-        ]
+            if not manus_text or len(manus_text.strip()) < 10:
+                return ""
 
-        lines = manus_text.split("\n")
-        relevant_lines = []
+            technical_keywords = [
+                "차트",
+                "이동평균",
+                "MACD",
+                "RSI",
+                "볼린저",
+                "지지",
+                "저항",
+                "거래량",
+                "기술적",
+                "패턴",
+                "트렌드",
+                "chart",
+                "technical",
+                "support",
+                "resistance",
+            ]
 
-        for line in lines:
-            if any(keyword.lower() in line.lower() for keyword in technical_keywords):
-                relevant_lines.append(line)
+            lines = manus_text.split("\n")
+            relevant_lines = []
 
-        return "\n".join(relevant_lines) if relevant_lines else ""
+            for line in lines:
+                if any(
+                    keyword.lower() in line.lower() for keyword in technical_keywords
+                ):
+                    relevant_lines.append(line)
+
+            return "\n".join(relevant_lines) if relevant_lines else ""
+        except Exception as e:
+            logger.warning(f"⚠️ 기술적 분석 정보 추출 실패: {e}")
+            return ""
 
     def _extract_industry_info(self, manus_data) -> str:
         """Manus 데이터에서 산업/경쟁사 관련 정보만 추출합니다."""
         if not manus_data:
             return ""
 
-        # Dict 타입인 경우 문자열로 변환
-        if isinstance(manus_data, dict):
-            if manus_data.get("collected_information"):
-                manus_text = str(manus_data["collected_information"])
+        # 🔧 안전한 데이터 타입 처리
+        try:
+            if isinstance(manus_data, dict):
+                if manus_data.get("collected_information"):
+                    manus_text = str(manus_data["collected_information"])
+                else:
+                    manus_text = json.dumps(manus_data, ensure_ascii=False, indent=2)
+            elif isinstance(manus_data, str):
+                manus_text = manus_data
             else:
-                manus_text = json.dumps(manus_data, ensure_ascii=False, indent=2)
-        else:
-            manus_text = str(manus_data)
+                manus_text = str(manus_data)
 
-        industry_keywords = [
-            "산업",
-            "업계",
-            "경쟁사",
-            "시장점유율",
-            "경쟁력",
-            "업종",
-            "시장규모",
-            "industry",
-            "market",
-            "competition",
-            "competitor",
-            "sector",
-            "trend",
-        ]
+            if not manus_text or len(manus_text.strip()) < 10:
+                return ""
 
-        lines = manus_text.split("\n")
-        relevant_lines = []
+            industry_keywords = [
+                "산업",
+                "업계",
+                "경쟁사",
+                "시장점유율",
+                "경쟁력",
+                "업종",
+                "시장규모",
+                "industry",
+                "market",
+                "competition",
+                "competitor",
+                "sector",
+                "trend",
+            ]
 
-        for line in lines:
-            if any(keyword.lower() in line.lower() for keyword in industry_keywords):
-                relevant_lines.append(line)
+            lines = manus_text.split("\n")
+            relevant_lines = []
 
-        return "\n".join(relevant_lines) if relevant_lines else ""
+            for line in lines:
+                if any(
+                    keyword.lower() in line.lower() for keyword in industry_keywords
+                ):
+                    relevant_lines.append(line)
+
+            return "\n".join(relevant_lines) if relevant_lines else ""
+        except Exception as e:
+            logger.warning(f"⚠️ 산업정보 추출 실패: {e}")
+            return ""
 
     def _extract_risk_factors(self, manus_data) -> str:
         """Manus 데이터에서 리스크 요인 관련 정보만 추출합니다."""
         if not manus_data:
             return ""
 
-        # Dict 타입인 경우 문자열로 변환
-        if isinstance(manus_data, dict):
-            if manus_data.get("collected_information"):
-                manus_text = str(manus_data["collected_information"])
+        # 🔧 안전한 데이터 타입 처리
+        try:
+            if isinstance(manus_data, dict):
+                if manus_data.get("collected_information"):
+                    manus_text = str(manus_data["collected_information"])
+                else:
+                    manus_text = json.dumps(manus_data, ensure_ascii=False, indent=2)
+            elif isinstance(manus_data, str):
+                manus_text = manus_data
             else:
-                manus_text = json.dumps(manus_data, ensure_ascii=False, indent=2)
-        else:
-            manus_text = str(manus_data)
+                manus_text = str(manus_data)
 
-        risk_keywords = [
-            "위험",
-            "리스크",
-            "우려",
-            "하락",
-            "부정적",
-            "위기",
-            "불확실성",
-            "risk",
-            "concern",
-            "negative",
-            "decline",
-            "uncertainty",
-            "threat",
-        ]
+            if not manus_text or len(manus_text.strip()) < 10:
+                return ""
 
-        lines = manus_text.split("\n")
-        relevant_lines = []
+            risk_keywords = [
+                "위험",
+                "리스크",
+                "우려",
+                "하락",
+                "부정적",
+                "위기",
+                "불확실성",
+                "risk",
+                "concern",
+                "negative",
+                "decline",
+                "uncertainty",
+                "threat",
+            ]
 
-        for line in lines:
-            if any(keyword.lower() in line.lower() for keyword in risk_keywords):
-                relevant_lines.append(line)
+            lines = manus_text.split("\n")
+            relevant_lines = []
 
-        return "\n".join(relevant_lines) if relevant_lines else ""
+            for line in lines:
+                if any(keyword.lower() in line.lower() for keyword in risk_keywords):
+                    relevant_lines.append(line)
 
-    def _extract_key_insights_only(self, manus_data: str) -> str:
+            return "\n".join(relevant_lines) if relevant_lines else ""
+        except Exception as e:
+            logger.warning(f"⚠️ 리스크 요인 추출 실패: {e}")
+            return ""
+
+    def _extract_key_insights_only(self, manus_data) -> str:
         """Manus 데이터에서 핵심 인사이트만 추출합니다."""
         if not manus_data:
             return ""
 
-        # 핵심 키워드가 포함된 문장들만 추출
-        insight_keywords = [
-            "핵심",
-            "중요",
-            "주목",
-            "특징",
-            "포인트",
-            "전망",
-            "예상",
-            "분석",
-            "key",
-            "important",
-            "significant",
-            "outlook",
-            "forecast",
-            "analysis",
-        ]
+        # 🔧 안전한 데이터 타입 처리
+        try:
+            if isinstance(manus_data, dict):
+                if manus_data.get("collected_information"):
+                    manus_text = str(manus_data["collected_information"])
+                else:
+                    manus_text = json.dumps(manus_data, ensure_ascii=False, indent=2)
+            elif isinstance(manus_data, str):
+                manus_text = manus_data
+            else:
+                manus_text = str(manus_data)
 
-        lines = manus_data.split("\n")
-        relevant_lines = []
+            if not manus_text or len(manus_text.strip()) < 10:
+                return ""
 
-        for line in lines:
-            if any(keyword.lower() in line.lower() for keyword in insight_keywords):
-                relevant_lines.append(line)
+            # 핵심 키워드가 포함된 문장들만 추출
+            insight_keywords = [
+                "핵심",
+                "중요",
+                "주목",
+                "특징",
+                "포인트",
+                "전망",
+                "예상",
+                "분석",
+                "key",
+                "important",
+                "significant",
+                "outlook",
+                "forecast",
+                "analysis",
+            ]
 
-        return "\n".join(relevant_lines) if relevant_lines else ""
+            lines = manus_text.split("\n")
+            relevant_lines = []
+
+            for line in lines:
+                if any(keyword.lower() in line.lower() for keyword in insight_keywords):
+                    relevant_lines.append(line)
+
+            return "\n".join(relevant_lines) if relevant_lines else ""
+        except Exception as e:
+            logger.warning(f"⚠️ 핵심 인사이트 추출 실패: {e}")
+            return ""
 
     def _extract_valuation_data(self, financial_data) -> str:
         """재무데이터에서 밸류에이션 관련 정보만 추출합니다."""
         if not financial_data:
             return ""
 
-        # Dict 타입인 경우 문자열로 변환
-        if isinstance(financial_data, dict):
-            financial_text = json.dumps(financial_data, ensure_ascii=False, indent=2)
-        else:
-            financial_text = str(financial_data)
+        # 🔧 안전한 데이터 타입 처리
+        try:
+            if isinstance(financial_data, dict):
+                financial_text = json.dumps(
+                    financial_data, ensure_ascii=False, indent=2
+                )
+            elif isinstance(financial_data, str):
+                financial_text = financial_data
+            else:
+                financial_text = str(financial_data)
 
-        valuation_keywords = [
-            "PER",
-            "PBR",
-            "EV/EBITDA",
-            "배당",
-            "수익률",
-            "목표가",
-            "적정가",
-            "valuation",
-            "dividend",
-            "yield",
-            "target",
-            "fair value",
-        ]
+            if not financial_text or len(financial_text.strip()) < 10:
+                return ""
 
-        lines = financial_text.split("\n")
-        relevant_lines = []
+            valuation_keywords = [
+                "PER",
+                "PBR",
+                "EV/EBITDA",
+                "배당",
+                "수익률",
+                "목표가",
+                "적정가",
+                "valuation",
+                "dividend",
+                "yield",
+                "target",
+                "fair value",
+            ]
 
-        for line in lines:
-            if any(keyword.lower() in line.lower() for keyword in valuation_keywords):
-                relevant_lines.append(line)
+            lines = financial_text.split("\n")
+            relevant_lines = []
 
-        return "\n".join(relevant_lines) if relevant_lines else ""
+            for line in lines:
+                if any(
+                    keyword.lower() in line.lower() for keyword in valuation_keywords
+                ):
+                    relevant_lines.append(line)
+
+            return "\n".join(relevant_lines) if relevant_lines else ""
+        except Exception as e:
+            logger.warning(f"⚠️ 밸류에이션 데이터 추출 실패: {e}")
+            return ""
 
     def _extract_risk_indicators(self, financial_data) -> str:
         """재무데이터에서 리스크 지표만 추출합니다."""
         if not financial_data:
             return ""
 
-        # Dict 타입인 경우 문자열로 변환
-        if isinstance(financial_data, dict):
-            financial_text = json.dumps(financial_data, ensure_ascii=False, indent=2)
-        else:
-            financial_text = str(financial_data)
+        # 🔧 안전한 데이터 타입 처리
+        try:
+            if isinstance(financial_data, dict):
+                financial_text = json.dumps(
+                    financial_data, ensure_ascii=False, indent=2
+                )
+            elif isinstance(financial_data, str):
+                financial_text = financial_data
+            else:
+                financial_text = str(financial_data)
 
-        risk_keywords = [
-            "부채비율",
-            "유동비율",
-            "당좌비율",
-            "변동성",
-            "베타",
-            "위험",
-            "debt ratio",
-            "current ratio",
-            "volatility",
-            "beta",
-            "risk",
-        ]
+            if not financial_text or len(financial_text.strip()) < 10:
+                return ""
 
-        lines = financial_text.split("\n")
-        relevant_lines = []
+            risk_keywords = [
+                "부채비율",
+                "유동비율",
+                "당좌비율",
+                "변동성",
+                "베타",
+                "위험",
+                "debt ratio",
+                "current ratio",
+                "volatility",
+                "beta",
+                "risk",
+            ]
 
-        for line in lines:
-            if any(keyword.lower() in line.lower() for keyword in risk_keywords):
-                relevant_lines.append(line)
+            lines = financial_text.split("\n")
+            relevant_lines = []
 
-        return "\n".join(relevant_lines) if relevant_lines else ""
+            for line in lines:
+                if any(keyword.lower() in line.lower() for keyword in risk_keywords):
+                    relevant_lines.append(line)
 
-    def _extract_dart_business_info(self, dart_data: str) -> str:
+            return "\n".join(relevant_lines) if relevant_lines else ""
+        except Exception as e:
+            logger.warning(f"⚠️ 리스크 지표 추출 실패: {e}")
+            return ""
+
+    def _extract_dart_business_info(self, dart_data) -> str:
         """DART 데이터에서 사업 관련 정보만 추출합니다."""
         if not dart_data:
             return ""
 
-        business_keywords = [
-            "사업",
-            "제품",
-            "서비스",
-            "매출",
-            "영업",
-            "사업부문",
-            "주요사업",
-            "business",
-            "product",
-            "service",
-            "revenue",
-            "operation",
-            "segment",
-        ]
+        # 🔧 안전한 데이터 타입 처리
+        try:
+            if isinstance(dart_data, dict):
+                # dict인 경우 텍스트 부분만 추출
+                dart_text = ""
+                if "content" in dart_data:
+                    dart_text = str(dart_data["content"])
+                elif "text" in dart_data:
+                    dart_text = str(dart_data["text"])
+                elif "raw_text" in dart_data:
+                    dart_text = str(dart_data["raw_text"])
+                else:
+                    dart_text = str(dart_data)
+            elif isinstance(dart_data, str):
+                dart_text = dart_data
+            else:
+                dart_text = str(dart_data)
 
-        lines = dart_data.split("\n")
-        relevant_lines = []
+            if not dart_text or len(dart_text.strip()) < 10:
+                return ""
 
-        for line in lines:
-            if any(keyword.lower() in line.lower() for keyword in business_keywords):
-                relevant_lines.append(line)
+            business_keywords = [
+                "사업",
+                "제품",
+                "서비스",
+                "매출",
+                "영업",
+                "사업부문",
+                "주요사업",
+                "business",
+                "product",
+                "service",
+                "revenue",
+                "operation",
+                "segment",
+            ]
 
-        return "\n".join(relevant_lines) if relevant_lines else ""
+            lines = dart_text.split("\n")
+            relevant_lines = []
 
-    def _extract_dart_investment_info(self, dart_data: str) -> str:
+            for line in lines:
+                if any(
+                    keyword.lower() in line.lower() for keyword in business_keywords
+                ):
+                    relevant_lines.append(line)
+
+            return "\n".join(relevant_lines) if relevant_lines else ""
+
+        except Exception as e:
+            logger.warning(f"⚠️ DART 사업정보 추출 실패: {e}")
+            return ""
+
+    def _extract_dart_investment_info(self, dart_data) -> str:
         """DART 데이터에서 투자 관련 정보만 추출합니다."""
         if not dart_data:
             return ""
 
-        investment_keywords = [
-            "투자",
-            "배당",
-            "주주",
-            "자본",
-            "투자계획",
-            "설비투자",
-            "연구개발",
-            "investment",
-            "dividend",
-            "shareholder",
-            "capital",
-            "R&D",
-        ]
+        # 🔧 안전한 데이터 타입 처리
+        try:
+            if isinstance(dart_data, dict):
+                # dict인 경우 텍스트 부분만 추출
+                dart_text = ""
+                if "content" in dart_data:
+                    dart_text = str(dart_data["content"])
+                elif "text" in dart_data:
+                    dart_text = str(dart_data["text"])
+                elif "raw_text" in dart_data:
+                    dart_text = str(dart_data["raw_text"])
+                else:
+                    dart_text = str(dart_data)
+            elif isinstance(dart_data, str):
+                dart_text = dart_data
+            else:
+                dart_text = str(dart_data)
 
-        lines = dart_data.split("\n")
-        relevant_lines = []
+            if not dart_text or len(dart_text.strip()) < 10:
+                return ""
 
-        for line in lines:
-            if any(keyword.lower() in line.lower() for keyword in investment_keywords):
-                relevant_lines.append(line)
+            investment_keywords = [
+                "투자",
+                "배당",
+                "주주",
+                "자본",
+                "투자계획",
+                "설비투자",
+                "연구개발",
+                "investment",
+                "dividend",
+                "shareholder",
+                "capital",
+                "R&D",
+            ]
 
-        return "\n".join(relevant_lines) if relevant_lines else ""
+            lines = dart_text.split("\n")
+            relevant_lines = []
+
+            for line in lines:
+                if any(
+                    keyword.lower() in line.lower() for keyword in investment_keywords
+                ):
+                    relevant_lines.append(line)
+
+            return "\n".join(relevant_lines) if relevant_lines else ""
+
+        except Exception as e:
+            logger.warning(f"⚠️ DART 투자정보 추출 실패: {e}")
+            return ""
 
     def _create_basic_financial_summary(self, financial_data: str) -> str:
         """재무데이터의 기본 요약을 생성합니다."""
         if not financial_data:
             return ""
 
-        # 핵심 재무지표만 추출
-        key_metrics = [
-            "총자산",
-            "총부채",
-            "자기자본",
-            "매출액",
-            "영업이익",
-            "순이익",
-            "ROE",
-            "ROA",
-            "부채비율",
-            "유동비율",
-        ]
+        # 🔧 안전한 데이터 타입 처리
+        try:
+            if isinstance(financial_data, dict):
+                financial_text = json.dumps(
+                    financial_data, ensure_ascii=False, indent=2
+                )
+            elif isinstance(financial_data, str):
+                financial_text = financial_data
+            else:
+                financial_text = str(financial_data)
 
-        lines = financial_data.split("\n")
-        summary_lines = []
+            if not financial_text or len(financial_text.strip()) < 10:
+                return ""
 
-        for line in lines:
-            if any(metric in line for metric in key_metrics):
-                summary_lines.append(line)
+            # 핵심 재무지표만 추출
+            key_metrics = [
+                "총자산",
+                "총부채",
+                "자기자본",
+                "매출액",
+                "영업이익",
+                "순이익",
+                "ROE",
+                "ROA",
+                "부채비율",
+                "유동비율",
+            ]
 
-        return "\n".join(summary_lines) if summary_lines else financial_data[:1000]
+            lines = financial_text.split("\n")
+            summary_lines = []
+
+            for line in lines:
+                if any(metric in line for metric in key_metrics):
+                    summary_lines.append(line)
+
+            return "\n".join(summary_lines) if summary_lines else financial_text[:1000]
+        except Exception as e:
+            logger.warning(f"⚠️ 기본 재무요약 생성 실패: {e}")
+            return ""
 
     def _estimate_tokens(self, text: str) -> int:
         """

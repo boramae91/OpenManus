@@ -469,123 +469,127 @@ class LargePDFAnalyzer:
         save_to_json: bool = True,
     ) -> Dict[str, Any]:
         """
-        PDF에서 원문만 추출해서 JSON으로 저장하는 함수 (AI 분석 없이)
+        🚀 대용량 PDF 원문 추출 (AI 분석 없이 텍스트만)
 
-        기존 PDF 처리를 완전히 대체하는 대용량 지원 버전:
-        - 100만+ 글자 지원
-        - 원문 그대로 추출
-        - AI 분석/요약 없음
-        - 빠른 처리 속도
+        개선된 버전으로 대용량 PDF를 효율적으로 처리하고,
+        목차 기반 청킹을 통해 구조화된 데이터를 제공합니다.
 
         Args:
-            pdf_path: PDF 파일 경로
-            company_name: 회사명 (파일명에서 자동 추출 가능)
+            pdf_path: PDF 파일 경로 또는 URL
+            company_name: 회사명
             save_to_json: JSON 파일로 저장 여부
 
         Returns:
-            Dict: 추출된 원문과 메타데이터
+            Dict: 추출 결과와 구조화된 청크 데이터
         """
-        start_time = datetime.now()
+        start_time = time.time()
         logger.info(f"📄 대용량 PDF 원문 추출 시작: {pdf_path}")
 
-        # 결과 저장용 구조 초기화
+        # 🎯 결과 구조 표준화
         result = {
-            "metadata": {
-                "pdf_path": pdf_path,
-                "company_name": company_name,
-                "extraction_start_time": start_time.isoformat(),
-                "success": False,
-                "mode": "raw_text_only",
-                "total_text_length": 0,
-                "extraction_method": "large_pdf_analyzer",
-                "version": "LargePDFAnalyzer_v1.0_RawText",
-            },
-            "raw_content": {},
+            "success": False,  # 🔧 성공/실패 명확히 표시
+            "pdf_path": pdf_path,
+            "company_name": company_name,
+            "extraction_timestamp": datetime.now().isoformat(),
+            "error": None,  # 🔧 오류 정보 필드 추가
+            "metadata": {},
+            "raw_content": None,  # 🔧 raw_content 구조 명확히 정의
             "content_preview": "",
             "saved_file": None,
         }
 
         try:
-            # 🔍 PDF 전체 텍스트 추출 (무제한 크기)
             logger.info("📖 대용량 PDF 텍스트 추출 중...")
-            extraction_result = await self._extract_full_text(pdf_path)
 
-            if not extraction_result["success"]:
-                result["metadata"]["error"] = extraction_result["error"]
+            # 1️⃣ PDF 전체 텍스트 추출
+            full_text = ""
+            extraction_method = "unknown"
+
+            try:
+                # URL과 로컬 파일 구분하여 처리
+                pdf_result = await self._handle_pdf_source(pdf_path)
+
+                if pdf_result.get("success"):
+                    full_text = pdf_result.get("full_text", "")
+                    extraction_method = pdf_result.get("method", "unknown")
+                    logger.info(f"✅ PDF 추출 성공 (방법: {extraction_method})")
+                else:
+                    error_msg = pdf_result.get("error", "PDF 추출 실패")
+                    logger.error(f"❌ PDF 추출 실패: {error_msg}")
+                    result["error"] = error_msg
+                    return result
+
+            except Exception as e:
+                error_msg = f"PDF 처리 중 오류: {str(e)}"
+                logger.error(f"❌ {error_msg}")
+                result["error"] = error_msg
                 return result
 
-            full_text = extraction_result["full_text"]
-            result["metadata"]["total_text_length"] = len(full_text)
-            result["metadata"]["pages_processed"] = extraction_result.get(
-                "pages_processed", []
-            )
-            result["metadata"]["extraction_method_detail"] = extraction_result.get(
-                "extraction_method", "unknown"
-            )
+            # 텍스트가 비어있는지 확인
+            if not full_text or len(full_text.strip()) < 100:
+                error_msg = f"추출된 텍스트가 너무 짧습니다: {len(full_text)}자"
+                logger.warning(f"⚠️ {error_msg}")
+                result["error"] = error_msg
+                return result
 
-            # 🔖 목차 기반 청킹 시도 (새로운 기능!)
-            actual_pdf_path = await self._handle_pdf_source(pdf_path)
+            # 2️⃣ 목차 기반 청킹 시도
             contextual_chunks = []
             chunking_method = "none"
 
-            if len(full_text) > 1000:  # 최소 길이 체크
-                try:
-                    logger.info("🔖 PDF 목차 기반 청킹 시도...")
-                    # 먼저 목차 추출
-                    table_of_contents = (
-                        await self.chunk_processor.extract_pdf_table_of_contents(
-                            actual_pdf_path
-                        )
+            try:
+                logger.info("🔖 PDF 목차 기반 청킹 시도...")
+
+                # 목차 추출 시도
+                table_of_contents = (
+                    await self.chunk_processor.extract_pdf_table_of_contents(pdf_path)
+                )
+
+                if table_of_contents:
+                    # 목차가 있는 경우
+                    contextual_chunks = self.chunk_processor.chunk_by_table_of_contents(
+                        full_text, table_of_contents
                     )
+                    chunking_method = "table_of_contents"
+                    logger.info(
+                        f"📑 목차 기반 청킹 완료: {len(contextual_chunks)}개 청크"
+                    )
+                else:
+                    # 목차가 없는 경우 스마트 청킹
+                    contextual_chunks = self.chunk_processor.smart_chunk_text(
+                        full_text, preserve_sections=True
+                    )
+                    chunking_method = "smart_chunk"
+                    logger.info(f"🤖 스마트 청킹 완료: {len(contextual_chunks)}개 청크")
 
-                    if table_of_contents:
-                        # 목차 기반 청킹 수행
-                        contextual_chunks = (
-                            self.chunk_processor.chunk_by_table_of_contents(
-                                text=full_text, table_of_contents=table_of_contents
-                            )
-                        )
-                    else:
-                        # 목차가 없으면 기본 청킹
-                        contextual_chunks = self.chunk_processor.smart_chunk_text(
-                            text=full_text, preserve_sections=True
-                        )
+                if contextual_chunks:
+                    logger.info(f"✅ 청킹 성공: {len(contextual_chunks)}개 청크 생성")
 
-                    if contextual_chunks:
-                        logger.info(
-                            f"✅ 청킹 성공: {len(contextual_chunks)}개 청크 생성"
-                        )
-                        chunking_method = (
-                            "table_of_contents" if table_of_contents else "smart_chunk"
-                        )
+                    # 목차 구조 로그 출력
+                    toc_chunks = [
+                        c
+                        for c in contextual_chunks
+                        if c.get("chunk_type") == "toc_based"
+                    ]
+                    if toc_chunks:
+                        logger.info("📑 목차 구조:")
+                        for chunk in toc_chunks[:5]:  # 처음 5개만 출력
+                            level = chunk.get("metadata", {}).get("toc_level", 1)
+                            title = chunk.get("section_title", "제목없음")
+                            length = chunk.get("content_length", 0)
+                            indent = "  " * (level - 1)
+                            logger.info(f"  {indent}📄 {title} ({length:,}자)")
+                        if len(toc_chunks) > 5:
+                            logger.info(f"  ... 외 {len(toc_chunks) - 5}개 목차 청크")
+                else:
+                    logger.info("📄 목차가 없거나 목차 기반 청킹 실패")
+                    chunking_method = "no_toc_available"
 
-                        # 목차 구조 로그 출력
-                        toc_chunks = [
-                            c
-                            for c in contextual_chunks
-                            if c.get("chunk_type") == "toc_based"
-                        ]
-                        if toc_chunks:
-                            logger.info("📑 목차 구조:")
-                            for chunk in toc_chunks[:5]:  # 처음 5개만 출력
-                                level = chunk.get("metadata", {}).get("toc_level", 1)
-                                title = chunk.get("section_title", "제목없음")
-                                length = chunk.get("content_length", 0)
-                                indent = "  " * (level - 1)
-                                logger.info(f"  {indent}📄 {title} ({length:,}자)")
-                            if len(toc_chunks) > 5:
-                                logger.info(
-                                    f"  ... 외 {len(toc_chunks) - 5}개 목차 청크"
-                                )
-                    else:
-                        logger.info("📄 목차가 없거나 목차 기반 청킹 실패")
-                        chunking_method = "no_toc_available"
+            except Exception as e:
+                logger.warning(f"⚠️ 목차 기반 청킹 중 오류: {e}")
+                chunking_method = "error_fallback"
 
-                except Exception as e:
-                    logger.warning(f"⚠️ 목차 기반 청킹 중 오류: {e}")
-                    chunking_method = "error_fallback"
-
-            # 원문 전체 저장 (목차 기반 청킹 정보 추가)
+            # 3️⃣ 결과 구조 생성
+            # 🔧 raw_content 구조 명확히 정의
             result["raw_content"] = {
                 "full_text": full_text,
                 "text_length": len(full_text),
@@ -633,34 +637,82 @@ class LargePDFAnalyzer:
                 },
             }
 
-            # 미리보기용 (처음 2000자)
-            result["content_preview"] = full_text[:2000] + (
-                "..." if len(full_text) > 2000 else ""
+            # 메타데이터 생성
+            result["metadata"] = {
+                "original_file": pdf_path,
+                "company_name": company_name,
+                "total_text_length": len(full_text),
+                "extraction_method": extraction_method,
+                "chunking_method": chunking_method,
+                "chunk_count": len(contextual_chunks),
+                "processing_time_seconds": time.time() - start_time,
+                "creation_timestamp": datetime.now().isoformat(),
+                "has_table_of_contents": any(
+                    chunk.get("chunk_type") == "toc_based"
+                    for chunk in contextual_chunks
+                ),
+            }
+
+            # 내용 미리보기 생성 (처음 500자)
+            result["content_preview"] = (
+                full_text[:500] + "..." if len(full_text) > 500 else full_text
             )
 
-            # ⏱️ 처리 시간 계산
-            end_time = datetime.now()
-            processing_time = (end_time - start_time).total_seconds()
-            result["metadata"]["extraction_end_time"] = end_time.isoformat()
-            result["metadata"]["total_processing_time"] = f"{processing_time:.2f}초"
-            result["metadata"]["success"] = True
-
-            logger.info(
-                f"✅ 원문 추출 완료: {len(full_text):,}자 (처리시간: {processing_time:.1f}초)"
-            )
-
-            # 💾 JSON 파일로 저장
+            # 4️⃣ JSON 파일 저장 (옵션)
             if save_to_json:
-                save_path = await self._save_raw_text_results(result, company_name)
-                result["saved_file"] = save_path
-                logger.info(f"💾 원문 저장 완료: {save_path}")
+                try:
+                    # 저장용 데이터 준비
+                    save_data = {
+                        "extraction_info": {
+                            "pdf_path": pdf_path,
+                            "company_name": company_name,
+                            "extraction_timestamp": result["extraction_timestamp"],
+                            "processing_time": result["metadata"][
+                                "processing_time_seconds"
+                            ],
+                        },
+                        "metadata": result["metadata"],
+                        "raw_text": full_text,
+                        "contextual_chunks": contextual_chunks,
+                        "content_preview": result["content_preview"],
+                    }
+
+                    # 파일명 생성
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    safe_company_name = "".join(
+                        c for c in company_name if c.isalnum() or c in (" ", "-", "_")
+                    ).rstrip()
+                    filename = f"pdf_raw_extract_{safe_company_name}_{timestamp}.json"
+
+                    results_dir = "results"
+                    if not os.path.exists(results_dir):
+                        os.makedirs(results_dir)
+
+                    filepath = os.path.join(results_dir, filename)
+
+                    # UTF-8 인코딩으로 저장
+                    with open(filepath, "w", encoding="utf-8") as f:
+                        json.dump(save_data, f, ensure_ascii=False, indent=2)
+
+                    result["saved_file"] = filepath
+                    logger.info(f"💾 추출 결과 저장: {filepath}")
+
+                except Exception as e:
+                    logger.warning(f"⚠️ JSON 저장 실패: {e}")
+
+            # 🔧 성공 상태로 설정
+            result["success"] = True
+            logger.info(
+                f"✅ 원문 추출 완료: {len(full_text):,}자 (처리시간: {time.time() - start_time:.1f}초)"
+            )
 
             return result
 
         except Exception as e:
-            logger.error(f"❌ PDF 원문 추출 중 오류 발생: {str(e)}")
-            result["metadata"]["error"] = f"원문 추출 중 오류: {str(e)}"
-            result["metadata"]["success"] = False
+            error_msg = f"PDF 원문 추출 실패: {str(e)}"
+            logger.error(f"❌ {error_msg}")
+            result["error"] = error_msg
+            result["success"] = False
             return result
 
     async def analyze_large_report(
