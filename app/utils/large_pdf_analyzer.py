@@ -1887,7 +1887,9 @@ class LargePDFAnalyzer:
                     f"PDF 텍스트 추출 실패: {full_text_result.get('error')}"
                 )
 
-            full_text = full_text_result.get("raw_text", "")
+            # extract_raw_text_only 결과 구조에 맞춰 수정
+            raw_content = full_text_result.get("raw_content", {})
+            full_text = raw_content.get("full_text", "")
 
             # 논리적 섹션으로 분할
             pdf_dictionary = self._split_text_into_logical_sections(

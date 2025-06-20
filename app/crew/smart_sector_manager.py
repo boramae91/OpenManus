@@ -7,6 +7,7 @@
 """
 
 import hashlib
+import json
 import time
 from dataclasses import dataclass
 from enum import Enum
@@ -998,37 +999,36 @@ class SmartSectorManager:
                     context_parts.append("🔍 기술분석 관련 정보:")
                     context_parts.append(technical_info)
 
-        # 기타 전문가별 데이터 처리는 기존 _build_expert_specific_context 로직 활용
-        additional_context = self._build_expert_specific_context(
-            expert,
-            user_prompt,
-            stock_name,
-            stock_code,
-            financial_data,
-            enhanced_dart_data,
-            manus_collected_data,
-        )
+        # 기타 전문가별 데이터 처리
+        if "산업" in expert.expertise or "Industry" in expert.role:
+            # 산업 분석 전문가 - 산업 동향 중심
+            if manus_collected_data and manus_collected_data.get("performed"):
+                industry_info = self._extract_industry_info(manus_collected_data)
+                if industry_info:
+                    context_parts.append("🏭 산업 동향 정보:")
+                    context_parts.append(industry_info)
 
-        # PDF 딕셔너리 부분은 이미 처리했으므로 제외하고 추가
-        additional_lines = additional_context.split("\n")
-        filtered_lines = []
-        skip_pdf_section = False
+        elif "밸류" in expert.expertise or "Valuation" in expert.role:
+            # 밸류에이션 전문가 - 가치평가 데이터 중심
+            if financial_data and financial_data.get("success"):
+                valuation_data = self._extract_valuation_data(financial_data)
+                if valuation_data:
+                    context_parts.append("💰 밸류에이션 데이터:")
+                    context_parts.append(valuation_data)
 
-        for line in additional_lines:
-            if "📄" in line and ("PDF" in line or "pdf" in line):
-                skip_pdf_section = True
-                continue
-            elif line.startswith("###") and skip_pdf_section:
-                continue
-            elif line.strip() == "" and skip_pdf_section:
-                skip_pdf_section = False
-                continue
-            elif not skip_pdf_section:
-                filtered_lines.append(line)
+        elif "리스크" in expert.expertise or "Risk" in expert.role:
+            # 리스크 평가자 - 위험 요소 중심
+            if financial_data and financial_data.get("success"):
+                risk_indicators = self._extract_risk_indicators(financial_data)
+                if risk_indicators:
+                    context_parts.append("⚠️ 리스크 지표:")
+                    context_parts.append(risk_indicators)
 
-        if filtered_lines:
-            context_parts.append("📋 **추가 전문 데이터**:")
-            context_parts.extend(filtered_lines)
+            if manus_collected_data and manus_collected_data.get("performed"):
+                risk_factors = self._extract_risk_factors(manus_collected_data)
+                if risk_factors:
+                    context_parts.append("🚨 시장 리스크 요소:")
+                    context_parts.append(risk_factors)
 
         final_context = "\n\n".join(context_parts)
 
@@ -1040,10 +1040,45 @@ class SmartSectorManager:
 
         return final_context
 
-    def _summarize_financial_data(self, financial_data: str) -> str:
+    def _summarize_financial_data(self, financial_data) -> str:
         """재무데이터를 요약합니다."""
         if not financial_data:
             return ""
+
+        # Dict 타입인 경우 문자열로 변환
+        if isinstance(financial_data, dict):
+            # 재무데이터 Dict에서 주요 정보 추출
+            summary_parts = []
+
+            if financial_data.get("basic_info"):
+                basic_info = financial_data["basic_info"]
+                if isinstance(basic_info, dict):
+                    for key, value in basic_info.items():
+                        summary_parts.append(f"{key}: {value}")
+                else:
+                    summary_parts.append(str(basic_info))
+
+            if financial_data.get("financial_ratios"):
+                ratios = financial_data["financial_ratios"]
+                if isinstance(ratios, dict):
+                    for key, value in ratios.items():
+                        summary_parts.append(f"{key}: {value}")
+                else:
+                    summary_parts.append(str(ratios))
+
+            # 기타 섹션들도 추가
+            for section_name in ["profitability", "growth", "stability", "activity"]:
+                if financial_data.get(section_name):
+                    section_data = financial_data[section_name]
+                    if isinstance(section_data, dict):
+                        for key, value in section_data.items():
+                            summary_parts.append(f"{key}: {value}")
+                    else:
+                        summary_parts.append(str(section_data))
+
+            financial_text = "\n".join(summary_parts)
+        else:
+            financial_text = str(financial_data)
 
         # 핵심 재무지표와 비율만 추출하여 요약
         key_sections = [
@@ -1060,7 +1095,7 @@ class SmartSectorManager:
             "stability",
         ]
 
-        lines = financial_data.split("\n")
+        lines = financial_text.split("\n")
         summary_lines = []
 
         for line in lines:
@@ -1077,15 +1112,21 @@ class SmartSectorManager:
         else:
             # 요약할 내용이 없으면 처음 2000자만 반환
             return (
-                financial_data[:2000] + "...[요약됨]"
-                if len(financial_data) > 2000
-                else financial_data
+                financial_text[:2000] + "...[요약됨]"
+                if len(financial_text) > 2000
+                else financial_text
             )
 
-    def _extract_dart_financial_only(self, dart_data: str) -> str:
+    def _extract_dart_financial_only(self, dart_data) -> str:
         """DART 데이터에서 재무 관련 정보만 추출합니다."""
         if not dart_data:
             return ""
+
+        # Dict 타입인 경우 문자열로 변환
+        if isinstance(dart_data, dict):
+            dart_text = json.dumps(dart_data, ensure_ascii=False, indent=2)
+        else:
+            dart_text = str(dart_data)
 
         financial_keywords = [
             "재무",
@@ -1108,7 +1149,7 @@ class SmartSectorManager:
             "profit",
         ]
 
-        lines = dart_data.split("\n")
+        lines = dart_text.split("\n")
         relevant_lines = []
 
         for line in lines:
@@ -1117,10 +1158,16 @@ class SmartSectorManager:
 
         return "\n".join(relevant_lines) if relevant_lines else ""
 
-    def _extract_price_data_only(self, financial_data: str) -> str:
+    def _extract_price_data_only(self, financial_data) -> str:
         """재무데이터에서 가격/차트 관련 정보만 추출합니다."""
         if not financial_data:
             return ""
+
+        # Dict 타입인 경우 문자열로 변환
+        if isinstance(financial_data, dict):
+            financial_text = json.dumps(financial_data, ensure_ascii=False, indent=2)
+        else:
+            financial_text = str(financial_data)
 
         price_keywords = [
             "주가",
@@ -1140,7 +1187,7 @@ class SmartSectorManager:
             "trading",
         ]
 
-        lines = financial_data.split("\n")
+        lines = financial_text.split("\n")
         relevant_lines = []
 
         for line in lines:
@@ -1149,10 +1196,19 @@ class SmartSectorManager:
 
         return "\n".join(relevant_lines) if relevant_lines else ""
 
-    def _extract_technical_analysis_info(self, manus_data: str) -> str:
+    def _extract_technical_analysis_info(self, manus_data) -> str:
         """Manus 데이터에서 기술적 분석 관련 정보만 추출합니다."""
         if not manus_data:
             return ""
+
+        # Dict 타입인 경우 문자열로 변환
+        if isinstance(manus_data, dict):
+            if manus_data.get("collected_information"):
+                manus_text = str(manus_data["collected_information"])
+            else:
+                manus_text = json.dumps(manus_data, ensure_ascii=False, indent=2)
+        else:
+            manus_text = str(manus_data)
 
         technical_keywords = [
             "차트",
@@ -1172,7 +1228,7 @@ class SmartSectorManager:
             "resistance",
         ]
 
-        lines = manus_data.split("\n")
+        lines = manus_text.split("\n")
         relevant_lines = []
 
         for line in lines:
@@ -1181,10 +1237,19 @@ class SmartSectorManager:
 
         return "\n".join(relevant_lines) if relevant_lines else ""
 
-    def _extract_industry_info(self, manus_data: str) -> str:
+    def _extract_industry_info(self, manus_data) -> str:
         """Manus 데이터에서 산업/경쟁사 관련 정보만 추출합니다."""
         if not manus_data:
             return ""
+
+        # Dict 타입인 경우 문자열로 변환
+        if isinstance(manus_data, dict):
+            if manus_data.get("collected_information"):
+                manus_text = str(manus_data["collected_information"])
+            else:
+                manus_text = json.dumps(manus_data, ensure_ascii=False, indent=2)
+        else:
+            manus_text = str(manus_data)
 
         industry_keywords = [
             "산업",
@@ -1202,7 +1267,7 @@ class SmartSectorManager:
             "trend",
         ]
 
-        lines = manus_data.split("\n")
+        lines = manus_text.split("\n")
         relevant_lines = []
 
         for line in lines:
@@ -1211,10 +1276,19 @@ class SmartSectorManager:
 
         return "\n".join(relevant_lines) if relevant_lines else ""
 
-    def _extract_risk_factors(self, manus_data: str) -> str:
+    def _extract_risk_factors(self, manus_data) -> str:
         """Manus 데이터에서 리스크 요인 관련 정보만 추출합니다."""
         if not manus_data:
             return ""
+
+        # Dict 타입인 경우 문자열로 변환
+        if isinstance(manus_data, dict):
+            if manus_data.get("collected_information"):
+                manus_text = str(manus_data["collected_information"])
+            else:
+                manus_text = json.dumps(manus_data, ensure_ascii=False, indent=2)
+        else:
+            manus_text = str(manus_data)
 
         risk_keywords = [
             "위험",
@@ -1232,7 +1306,7 @@ class SmartSectorManager:
             "threat",
         ]
 
-        lines = manus_data.split("\n")
+        lines = manus_text.split("\n")
         relevant_lines = []
 
         for line in lines:
@@ -1273,10 +1347,16 @@ class SmartSectorManager:
 
         return "\n".join(relevant_lines) if relevant_lines else ""
 
-    def _extract_valuation_data(self, financial_data: str) -> str:
+    def _extract_valuation_data(self, financial_data) -> str:
         """재무데이터에서 밸류에이션 관련 정보만 추출합니다."""
         if not financial_data:
             return ""
+
+        # Dict 타입인 경우 문자열로 변환
+        if isinstance(financial_data, dict):
+            financial_text = json.dumps(financial_data, ensure_ascii=False, indent=2)
+        else:
+            financial_text = str(financial_data)
 
         valuation_keywords = [
             "PER",
@@ -1293,7 +1373,7 @@ class SmartSectorManager:
             "fair value",
         ]
 
-        lines = financial_data.split("\n")
+        lines = financial_text.split("\n")
         relevant_lines = []
 
         for line in lines:
@@ -1302,10 +1382,16 @@ class SmartSectorManager:
 
         return "\n".join(relevant_lines) if relevant_lines else ""
 
-    def _extract_risk_indicators(self, financial_data: str) -> str:
+    def _extract_risk_indicators(self, financial_data) -> str:
         """재무데이터에서 리스크 지표만 추출합니다."""
         if not financial_data:
             return ""
+
+        # Dict 타입인 경우 문자열로 변환
+        if isinstance(financial_data, dict):
+            financial_text = json.dumps(financial_data, ensure_ascii=False, indent=2)
+        else:
+            financial_text = str(financial_data)
 
         risk_keywords = [
             "부채비율",
@@ -1321,7 +1407,7 @@ class SmartSectorManager:
             "risk",
         ]
 
-        lines = financial_data.split("\n")
+        lines = financial_text.split("\n")
         relevant_lines = []
 
         for line in lines:
