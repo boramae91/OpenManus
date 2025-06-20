@@ -1724,14 +1724,33 @@ class EnhancedStockAnalysisSystem:
     def save_enhanced_results(self, results: Dict[str, Any], stock_info: Dict) -> str:
         """분석 결과를 JSON 파일로 저장합니다 - PDF 딕셔너리와 CrewAI 상세 내용 포함."""
         try:
-            # 파일명 생성
+            # 파일명 생성 - ticker_bbg 방식 사용
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            stock_code = stock_info.get("stock_code", "unknown")
-            stock_name = stock_info.get("stock_name", "unknown")
 
-            # 파일명에서 특수문자 제거
-            safe_stock_name = re.sub(r'[<>:"/\\|?*]', "", stock_name)
-            filename = f"json-agent-{stock_code}_{safe_stock_name}-enhanced-at{datetime.now().strftime('%Y%m%d')}-save{timestamp}.json"
+            # ticker_bbg를 우선적으로 사용, 없으면 stock_code 사용
+            ticker_bbg = stock_info.get("ticker_bbg", "")
+            stock_code = stock_info.get("stock_code", "unknown")
+
+            # 분석 타입 결정 (기본값: enhanced)
+            analysis_type = "enhanced"
+
+            # 사용자 의도에 따라 분석 타입 결정
+            user_prompt = results.get("user_prompt", "").lower()
+            if "재무" in user_prompt or "financial" in user_prompt:
+                analysis_type = "financial"
+            elif "일반" in user_prompt or "general" in user_prompt:
+                analysis_type = "general"
+
+            # ticker_bbg가 있으면 사용, 없으면 stock_code 사용
+            if ticker_bbg and ticker_bbg != "":
+                # ticker_bbg에서 파일명에 사용할 수 없는 문자 제거
+                safe_ticker = re.sub(r'[<>:"/\\|?*\s]', "_", ticker_bbg)
+                filename = f"json-agent-{safe_ticker}-{analysis_type}-at{datetime.now().strftime('%Y%m%d')}-save{timestamp}.json"
+            else:
+                # 기존 방식 (fallback)
+                stock_name = stock_info.get("stock_name", "unknown")
+                safe_stock_name = re.sub(r'[<>:"/\\|?*]', "", stock_name)
+                filename = f"json-agent-{stock_code}_{safe_stock_name}-{analysis_type}-at{datetime.now().strftime('%Y%m%d')}-save{timestamp}.json"
 
             # results 디렉토리 확인 및 생성
             results_dir = "results"
