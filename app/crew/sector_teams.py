@@ -228,18 +228,61 @@ class SectorTeamFactory:
         )
         experts.append(risk_assessor)
 
-        # 섹터팀 생성 (특화 정보 반영)
+        # 📝 6. 주석 전문 분석가 (사용자 요청 반영! - 새로 추가)
+        footnote_specialist = AnalystAgent(
+            name=f"{sector_korean_name} 주석 전문 분석가",
+            role="Footnote Specialist",
+            expertise="재무제표 주석 분석, 각주 해석, 숨겨진 정보 발굴",
+            analysis_focus=f"{sector_korean_name} 기업의 재무제표 주석과 각주에 숨겨진 중요 정보를 전문적으로 분석",
+            key_methods=[
+                "재무제표 주석 분석",
+                "각주 상세 해석",
+                "우발채무 분석",
+                "연결범위 변동 분석",
+                "회계정책 변경 영향 분석",
+                "관계회사 거래 분석",
+                "파생상품 위험 분석",
+            ],
+            sector_context=f"{sector_korean_name} 섹터의 특성을 반영한 주석 분석 전문가로서, 재무제표의 숨겨진 위험과 기회를 발굴",
+            sector_specific_points=[
+                f"{sector_korean_name} 섹터 특화 주석 포인트",
+                "재무제표 주석의 핵심 정보 추출",
+                "각주에 숨겨진 위험 요소 발굴",
+                "회계처리 방법 변경의 영향 분석",
+            ],
+            risk_awareness=[
+                "주석에 숨겨진 우발채무와 보증채무",
+                "회계정책 변경으로 인한 손익 조정",
+                "연결범위 변동의 실질적 의미",
+                "파생상품 거래의 잠재적 위험",
+                f"{sector_korean_name} 섹터 특화 주석 위험 요소",
+            ],
+            critical_metrics=[
+                "우발채무/총자산 비율",
+                "보증채무 규모",
+                "관계회사 거래 비중",
+                "파생상품 공정가치 변동",
+                "회계정책 변경 영향액",
+                f"{sector_korean_name} 섹터 주석 특화 지표",
+            ],
+        )
+        experts.append(footnote_specialist)
+
+        # 섹터팀 생성 (6명 전문가로 확장)
         team = SectorTeam(
             sector=sector,
             team_name=f"{sector_korean_name} 섹터 전문 분석팀",
             team_description=(
-                f"{sector_korean_name} 섹터의 종합적인 투자 분석을 수행하는 5명의 전문가팀. "
+                f"{sector_korean_name} 섹터의 종합적인 투자 분석을 수행하는 6명의 전문가팀. "
+                f"재무제표 주석 전문가를 포함하여 숨겨진 정보까지 발굴하는 정밀 분석을 제공합니다. "
                 f"섹터 특화 분석 포인트와 리스크 요소를 반영하여 정확하고 실용적인 분석을 제공합니다."
             ),
             experts=experts,
             collaboration_strategy=(
                 f"{sector_korean_name} 섹터의 {sector_context.get('cyclical_nature', '특성')}을 고려하여 "
-                f"각 전문가가 섹터별 중점 분석 포인트와 주의사항을 바탕으로 협업하는 전략"
+                f"6명의 전문가(펀더멘털, 기술, 산업, 밸류에이션, 리스크, 주석)가 "
+                f"각자의 전문성을 바탕으로 협업하는 전략. 특히 주석 전문가가 재무제표의 숨겨진 정보를 발굴하여 "
+                f"다른 전문가들의 분석 정확도를 향상시킵니다."
             ),
             report_structure={
                 "fundamental": f"{sector_korean_name} 섹터 특화 재무 분석 보고서",
@@ -247,10 +290,13 @@ class SectorTeamFactory:
                 "industry": f"{sector_korean_name} 산업 구조 및 경쟁력 분석 보고서",
                 "valuation": f"{sector_korean_name} 섹터 맞춤 밸류에이션 보고서",
                 "risk": f"{sector_korean_name} 섹터 리스크 요인 및 대응 전략 보고서",
+                "footnotes": f"{sector_korean_name} 재무제표 주석 상세 분석 보고서",
             },
         )
 
-        print(f"✅ {sector_korean_name} 섹터팀 생성 완료 (전문가 {len(experts)}명)")
+        print(
+            f"✅ {sector_korean_name} 섹터팀 생성 완료 (전문가 {len(experts)}명 - 주석 전문가 포함)"
+        )
         return team
 
     def get_expert_by_role(self, team: SectorTeam, role: str) -> Optional[AnalystAgent]:

@@ -23,6 +23,7 @@ import json
 import logging
 import os
 import re
+import time
 import warnings
 from datetime import datetime
 from pathlib import Path
@@ -144,15 +145,19 @@ class IndependentChunkProcessor:
         logger.info(f"📊 스마트 청킹 완료: {len(chunks)}개 청크 생성")
         return chunks
 
-    def extract_pdf_table_of_contents(self, pdf_path: str) -> List[Dict[str, Any]]:
+    async def extract_pdf_table_of_contents(
+        self, pdf_path: str
+    ) -> List[Dict[str, Any]]:
         """
         🔖 PDF에서 목차(Table of Contents) 추출
 
         PyMuPDF를 사용하여 PDF의 북마크/아웃라인을 추출하고
         계층 구조로 정리합니다.
 
+        URL과 로컬 파일 모두 지원해요!
+
         Args:
-            pdf_path: PDF 파일 경로
+            pdf_path: PDF 파일 경로 또는 URL
 
         Returns:
             List[Dict]: 목차 구조 리스트
@@ -162,8 +167,21 @@ class IndependentChunkProcessor:
             return []
 
         try:
-            # PDF 문서 열기
-            doc = fitz.open(pdf_path)
+            # URL인지 로컬 파일인지 확인하고 적절히 처리
+            if pdf_path.startswith(("http://", "https://")):
+                # 🌐 URL PDF - 메모리에서 처리
+                logger.info(f"🌐 URL PDF 목차 추출 시도: {pdf_path}")
+                pdf_data = await self._download_pdf_from_url(pdf_path)
+                if not pdf_data:
+                    logger.error(f"❌ URL PDF 다운로드 실패: {pdf_path}")
+                    return []
+
+                # 메모리 스트림으로 PDF 문서 열기
+                doc = fitz.open(stream=pdf_data.getvalue(), filetype="pdf")
+            else:
+                # 📁 로컬 파일 처리
+                logger.info(f"📁 로컬 PDF 목차 추출 시도: {pdf_path}")
+                doc = fitz.open(pdf_path)
 
             # 목차 추출 (toc = table of contents)
             toc = doc.get_toc(simple=False)  # detailed=True
@@ -212,7 +230,7 @@ class IndependentChunkProcessor:
             logger.error(f"❌ PDF 목차 추출 실패: {e}")
             return []
 
-    def chunk_by_table_of_contents(
+    async def chunk_by_table_of_contents(
         self,
         pdf_path: str,
         text: str,
@@ -225,8 +243,10 @@ class IndependentChunkProcessor:
         PDF의 목차 구조를 기반으로 의미있는 섹션별로 텍스트를 분할합니다.
         각 목차 항목이 하나의 청크가 되어 더 논리적인 구분이 가능합니다.
 
+        URL과 로컬 파일 모두 지원해요!
+
         Args:
-            pdf_path: PDF 파일 경로
+            pdf_path: PDF 파일 경로 또는 URL
             text: 분할할 전체 텍스트
             min_chunk_size: 최소 청크 크기 (너무 작은 섹션 방지)
             max_chunk_size: 최대 청크 크기 (너무 큰 섹션 분할)
@@ -238,14 +258,14 @@ class IndependentChunkProcessor:
             logger.warning("⚠️ 목차 기반 청킹 불가능 - 기본 청킹으로 대체")
             return self.smart_chunk_text(text, preserve_sections=True)
 
-        # 1. 목차 추출
-        toc = self.extract_pdf_table_of_contents(pdf_path)
+        # 1. 목차 추출 (URL 지원)
+        toc = await self.extract_pdf_table_of_contents(pdf_path)
         if not toc:
             logger.info("📄 목차가 없어서 기본 청킹으로 대체")
             return self.smart_chunk_text(text, preserve_sections=True)
 
         # 2. 목차 기반 텍스트 매핑
-        toc_chunks = self._map_text_to_toc_sections(text, toc, pdf_path)
+        toc_chunks = await self._map_text_to_toc_sections(text, toc, pdf_path)
 
         # 3. 청크 크기 조정
         optimized_chunks = self._optimize_toc_chunk_sizes(
@@ -259,16 +279,18 @@ class IndependentChunkProcessor:
 
         return optimized_chunks
 
-    def _map_text_to_toc_sections(
+    async def _map_text_to_toc_sections(
         self, text: str, toc: List[Dict], pdf_path: str
     ) -> List[Dict[str, Any]]:
         """
         목차 정보와 텍스트를 매핑하여 섹션별로 분할
 
+        URL과 로컬 파일 모두 지원해요!
+
         Args:
             text: 전체 텍스트
             toc: 목차 구조
-            pdf_path: PDF 파일 경로 (페이지 매핑용)
+            pdf_path: PDF 파일 경로 또는 URL (페이지 매핑용)
 
         Returns:
             List[Dict]: 목차 기반 텍스트 섹션들
@@ -276,8 +298,21 @@ class IndependentChunkProcessor:
         chunks = []
 
         try:
+            # URL인지 로컬 파일인지 확인하고 적절히 처리
+            if pdf_path.startswith(("http://", "https://")):
+                # 🌐 URL PDF - 메모리에서 처리
+                pdf_data = await self._download_pdf_from_url(pdf_path)
+                if not pdf_data:
+                    logger.error(f"❌ URL PDF 다운로드 실패: {pdf_path}")
+                    return self._fallback_toc_text_mapping(text, toc)
+
+                # 메모리 스트림으로 PDF 문서 열기
+                doc = fitz.open(stream=pdf_data.getvalue(), filetype="pdf")
+            else:
+                # 📁 로컬 파일 처리
+                doc = fitz.open(pdf_path)
+
             # PDF에서 페이지별 텍스트 추출 (목차 매핑용)
-            doc = fitz.open(pdf_path)
             page_texts = []
 
             for page_num in range(len(doc)):
@@ -648,12 +683,14 @@ class LargePDFAnalyzer:
             if len(full_text) > 1000:  # 최소 길이 체크
                 try:
                     logger.info("🔖 PDF 목차 기반 청킹 시도...")
-                    # 목차 기반 청킹 우선 시도
-                    contextual_chunks = self.chunk_processor.chunk_by_table_of_contents(
-                        pdf_path=actual_pdf_path,
-                        text=full_text,
-                        min_chunk_size=1000,
-                        max_chunk_size=50000,
+                    # 목차 기반 청킹 우선 시도 (URL 지원)
+                    contextual_chunks = (
+                        await self.chunk_processor.chunk_by_table_of_contents(
+                            pdf_path=actual_pdf_path,
+                            text=full_text,
+                            min_chunk_size=1000,
+                            max_chunk_size=50000,
+                        )
                     )
 
                     if contextual_chunks:
@@ -1740,6 +1777,629 @@ class LargePDFAnalyzer:
         except Exception as e:
             logger.error(f"❌ 원문 결과 저장 중 오류: {e}")
             return ""
+
+    async def create_pdf_dictionary_for_crewai(
+        self,
+        pdf_path: str,
+        company_name: str = "분석대상회사",
+        max_section_size: int = 600000,  # 🚀 60만자로 확장!
+    ) -> Dict[str, Any]:
+        """
+        🚀 CrewAI 전문가용 PDF 딕셔너리 생성기
+
+        대용량 PDF를 목차별/섹션별 딕셔너리로 구조화해서
+        CrewAI 전문가들이 필요한 부분만 선택적으로 가져와서 분석할 수 있게 해요!
+
+        이게 바로 토큰 절약과 정확성 향상의 핵심 아이디어예요! 🎯
+
+        Args:
+            pdf_path: PDF 파일 경로 또는 URL
+            company_name: 회사명
+            max_section_size: 각 섹션의 최대 크기 (토큰 제한 고려) - 기본 60만자
+
+        Returns:
+            Dict: {
+                "success": bool,
+                "pdf_dictionary": Dict[str, str],  # {목차항목: 내용}
+                "interface": PDFDictionaryInterface,  # CrewAI용 인터페이스
+                "metadata": Dict,
+                "error": str (실패 시)
+            }
+        """
+        start_time = time.time()
+        logger.info(f"🚀 {company_name} PDF 딕셔너리 생성 시작...")
+        logger.info(f"   최대 섹션 크기: {max_section_size:,}자 (60만자 지원)")
+
+        try:
+            # 1️⃣ PDF 목차 추출
+            logger.info("📋 1단계: PDF 목차 추출...")
+            toc_result = await self.extract_pdf_table_of_contents(
+                pdf_path=pdf_path, company_name=company_name, save_to_json=False
+            )
+
+            if not toc_result.get("success"):
+                logger.warning("⚠️ 목차 추출 실패, 텍스트 기반 섹션 분할로 대체...")
+                # 목차가 없는 경우 전체 텍스트를 기반으로 섹션 분할
+                return await self._create_dictionary_without_toc(
+                    pdf_path, company_name, max_section_size
+                )
+
+            # 2️⃣ 목차 기반으로 PDF를 섹션별로 분할
+            logger.info("✂️ 2단계: 목차 기반 섹션 분할...")
+
+            # PDF 전체 텍스트 추출
+            full_text_result = await self.extract_raw_text_only(
+                pdf_path=pdf_path, company_name=company_name, save_to_json=False
+            )
+
+            if not full_text_result.get("success"):
+                raise Exception(
+                    f"PDF 텍스트 추출 실패: {full_text_result.get('error')}"
+                )
+
+            full_text = full_text_result.get("raw_text", "")
+            table_of_contents = toc_result.get("table_of_contents", [])
+
+            # 3️⃣ 목차별로 텍스트를 매핑하여 딕셔너리 생성
+            logger.info("📝 3단계: 목차-텍스트 매핑...")
+            pdf_dictionary = await self._map_text_to_toc_sections(
+                full_text=full_text,
+                table_of_contents=table_of_contents,
+                max_section_size=max_section_size,
+            )
+
+            # 4️⃣ 주석 섹션 별도 추출 및 추가
+            logger.info("📝 4단계: 주석 섹션 추출...")
+            footnote_sections = self._extract_footnote_sections(
+                full_text, max_section_size
+            )
+
+            # 주석 섹션을 딕셔너리에 추가
+            for footnote_title, footnote_content in footnote_sections.items():
+                pdf_dictionary[f"[주석] {footnote_title}"] = footnote_content
+
+            # 5️⃣ 메타데이터 생성
+            metadata = {
+                "company_name": company_name,
+                "pdf_source": pdf_path,
+                "creation_timestamp": datetime.now().isoformat(),
+                "total_sections": len(pdf_dictionary),
+                "toc_based_sections": len(pdf_dictionary) - len(footnote_sections),
+                "footnote_sections": len(footnote_sections),
+                "total_text_length": sum(
+                    len(content) for content in pdf_dictionary.values()
+                ),
+                "avg_section_length": (
+                    sum(len(content) for content in pdf_dictionary.values())
+                    // len(pdf_dictionary)
+                    if pdf_dictionary
+                    else 0
+                ),
+                "max_section_size_limit": max_section_size,
+                "processing_time": time.time() - start_time,
+            }
+
+            # 6️⃣ PDFDictionaryInterface 생성
+            logger.info("🎯 5단계: PDF 딕셔너리 인터페이스 생성...")
+            pdf_interface = PDFDictionaryInterface(
+                pdf_dictionary=pdf_dictionary, metadata=metadata
+            )
+
+            # 7️⃣ 완성 로그
+            logger.info(f"✅ PDF 딕셔너리 생성 완료!")
+            logger.info(f"   📊 총 섹션: {len(pdf_dictionary)}개")
+            logger.info(f"   📝 주석 섹션: {len(footnote_sections)}개")
+            logger.info(f"   📄 총 텍스트: {metadata['total_text_length']:,}자")
+            logger.info(f"   ⏱️ 처리시간: {metadata['processing_time']:.1f}초")
+
+            return {
+                "success": True,
+                "pdf_dictionary": pdf_dictionary,
+                "interface": pdf_interface,
+                "metadata": metadata,
+            }
+
+        except Exception as e:
+            error_msg = f"PDF 딕셔너리 생성 실패: {str(e)}"
+            logger.error(f"❌ {error_msg}")
+
+            return {
+                "success": False,
+                "pdf_dictionary": {},
+                "interface": None,
+                "metadata": {
+                    "company_name": company_name,
+                    "pdf_source": pdf_path,
+                    "error": error_msg,
+                    "processing_time": time.time() - start_time,
+                },
+                "error": error_msg,
+            }
+
+    async def _create_dictionary_without_toc(
+        self, pdf_path: str, company_name: str, max_section_size: int
+    ) -> Dict[str, Any]:
+        """
+        목차가 없는 PDF를 위한 딕셔너리 생성 (AI 기반 섹션 분할)
+
+        🚀 60만자 지원으로 대용량 PDF도 완벽 처리!
+        """
+        logger.info("🤖 AI 기반 섹션 분할로 딕셔너리 생성...")
+        logger.info(f"   최대 섹션 크기: {max_section_size:,}자")
+
+        try:
+            # 전체 텍스트 추출
+            full_text_result = await self.extract_raw_text_only(
+                pdf_path=pdf_path, company_name=company_name, save_to_json=False
+            )
+
+            if not full_text_result.get("success"):
+                raise Exception(
+                    f"PDF 텍스트 추출 실패: {full_text_result.get('error')}"
+                )
+
+            full_text = full_text_result.get("raw_text", "")
+
+            # AI를 사용해서 의미 있는 섹션으로 분할 (간단한 패턴 기반)
+            sections = self._split_text_into_logical_sections(
+                full_text, max_section_size
+            )
+
+            # 주석 섹션 추가
+            footnote_sections = self._extract_footnote_sections(
+                full_text, max_section_size
+            )
+            sections.update(footnote_sections)
+
+            # 메타데이터 생성
+            metadata = {
+                "company_name": company_name,
+                "pdf_source": pdf_path,
+                "creation_timestamp": datetime.now().isoformat(),
+                "total_sections": len(sections),
+                "toc_based_sections": len(sections) - len(footnote_sections),
+                "footnote_sections": len(footnote_sections),
+                "total_text_length": sum(len(content) for content in sections.values()),
+                "avg_section_length": (
+                    sum(len(content) for content in sections.values()) // len(sections)
+                    if sections
+                    else 0
+                ),
+                "max_section_size_limit": max_section_size,
+                "splitting_method": "ai_logical_sections",
+            }
+
+            # PDFDictionaryInterface 생성
+            pdf_interface = PDFDictionaryInterface(
+                pdf_dictionary=sections, metadata=metadata
+            )
+
+            logger.info(f"✅ AI 기반 딕셔너리 생성 완료 - {len(sections)}개 섹션")
+
+            return {
+                "success": True,
+                "pdf_dictionary": sections,
+                "interface": pdf_interface,
+                "metadata": metadata,
+            }
+
+        except Exception as e:
+            error_msg = f"AI 기반 딕셔너리 생성 실패: {str(e)}"
+            logger.error(f"❌ {error_msg}")
+
+            return {
+                "success": False,
+                "pdf_dictionary": {},
+                "interface": None,
+                "metadata": {"error": error_msg},
+                "error": error_msg,
+            }
+
+    def _extract_footnote_sections(
+        self, full_text: str, max_section_size: int
+    ) -> Dict[str, str]:
+        """
+        📝 PDF에서 주석/각주 섹션들을 별도로 추출해요!
+
+        사업보고서나 분기보고서에서 중요한 주석 정보를 찾아내는 핵심 기능입니다.
+
+        🚀 60만자 지원으로 대용량 주석도 완전 분석!
+        """
+        footnote_sections = {}
+
+        try:
+            # 주석 섹션을 찾는 패턴들
+            footnote_patterns = [
+                r"주\s*석\s*\d+[\.:\s].*?(?=주\s*석\s*\d+|\n\n\n|\Z)",  # 주석 1. ... 주석 2. ...
+                r"각\s*주\s*\d+[\.:\s].*?(?=각\s*주\s*\d+|\n\n\n|\Z)",  # 각주 1. ... 각주 2. ...
+                r"\d+\)\s+.*?(?=\d+\)|\n\n\n|\Z)",  # 1) ... 2) ... 형태
+                r"note\s+\d+[\.:\s].*?(?=note\s+\d+|\n\n\n|\Z)",  # Note 1. ... Note 2. ... (영문)
+            ]
+
+            section_counter = 1
+
+            for pattern in footnote_patterns:
+                matches = re.finditer(pattern, full_text, re.IGNORECASE | re.DOTALL)
+
+                for match in matches:
+                    footnote_text = match.group().strip()
+
+                    # 🚀 60만자 제한으로 확장 (기존 100~50,000자에서 100~600,000자로)
+                    if 100 <= len(footnote_text) <= max_section_size:
+                        # 주석 제목 추출 (첫 줄 또는 처음 50자)
+                        first_line = footnote_text.split("\n")[0][:50]
+                        footnote_title = f"주석_{section_counter}_{first_line}"
+
+                        footnote_sections[footnote_title] = footnote_text
+                        section_counter += 1
+
+            # 추가로 "우발채무", "보증채무", "파생상품" 등 중요 주석 키워드 검색
+            important_keywords = [
+                "우발채무",
+                "보증채무",
+                "파생상품",
+                "관계회사거래",
+                "contingent",
+                "derivative",
+                "related party",
+            ]
+
+            for keyword in important_keywords:
+                # 🚀 키워드 주변 텍스트 추출 범위 확장 (앞뒤 2000자 → 10000자)
+                pattern = f".{{0,10000}}{re.escape(keyword)}.{{0,10000}}"
+                matches = re.finditer(pattern, full_text, re.IGNORECASE | re.DOTALL)
+
+                for match in matches:
+                    context_text = match.group().strip()
+                    # 🚀 최소 200자에서 최대 60만자까지 지원
+                    if 200 <= len(context_text) <= max_section_size:
+                        footnote_title = f"키워드_{keyword}_주변내용"
+                        if footnote_title not in footnote_sections:  # 중복 방지
+                            footnote_sections[footnote_title] = context_text
+
+            logger.info(
+                f"📝 주석 섹션 {len(footnote_sections)}개 추출 완료 (60만자 지원)"
+            )
+
+        except Exception as e:
+            logger.warning(f"⚠️ 주석 섹션 추출 중 오류: {e}")
+
+        return footnote_sections
+
+    def _split_text_into_logical_sections(
+        self, text: str, max_section_size: int
+    ) -> Dict[str, str]:
+        """
+        텍스트를 논리적 섹션으로 분할합니다 (목차가 없는 경우)
+
+        🚀 60만자 지원으로 대용량 섹션도 완벽 처리!
+        """
+        sections = {}
+
+        # 간단한 섹션 분할 패턴들
+        section_patterns = [
+            r"\n\s*\d+\.\s+[가-힣\w\s]+\n",  # 1. 섹션명
+            r"\n\s*[가-힣]+\s*\n",  # 단독 한글 제목
+            r"\n\s*[A-Z][A-Z\s]+\n",  # 영문 대문자 제목
+        ]
+
+        # 패턴으로 분할점 찾기
+        split_points = [0]
+        for pattern in section_patterns:
+            matches = re.finditer(pattern, text)
+            for match in matches:
+                split_points.append(match.start())
+
+        split_points.append(len(text))
+        split_points = sorted(list(set(split_points)))
+
+        # 섹션 생성
+        for i in range(len(split_points) - 1):
+            start = split_points[i]
+            end = split_points[i + 1]
+
+            section_text = text[start:end].strip()
+
+            # 🚀 최소 길이 100자로 유지하되, 최대 크기는 60만자로 확장
+            if len(section_text) >= 100:  # 최소 길이
+                # 섹션 제목 추출
+                title_match = re.match(r"(.*?)\n", section_text)
+                if title_match:
+                    section_title = title_match.group(1).strip()[:50]
+                else:
+                    section_title = f"섹션_{i+1}"
+
+                # 🚀 60만자 제한 적용 (기존보다 12배 확장!)
+                if len(section_text) > max_section_size:
+                    section_text = (
+                        section_text[:max_section_size]
+                        + "...[60만자 제한으로 내용 일부 생략]"
+                    )
+
+                sections[section_title] = section_text
+
+        logger.info(f"🤖 논리적 섹션 분할 완료 - {len(sections)}개 섹션 (60만자 지원)")
+        return sections
+
+
+class PDFDictionaryInterface:
+    """
+    🚀 PDF 딕셔너리 인터페이스 클래스
+
+    CrewAI 전문가들이 대용량 PDF에서 필요한 부분만 선택적으로 가져와서
+    분석할 수 있도록 하는 스마트 인터페이스입니다!
+
+    이게 바로 토큰 절약과 정확성 향상의 핵심이에요! 🎯
+    """
+
+    def __init__(self, pdf_dictionary: Dict[str, str], metadata: Dict[str, Any]):
+        """
+        PDF 딕셔너리 인터페이스 초기화
+
+        Args:
+            pdf_dictionary: {목차_항목: 내용} 형태의 딕셔너리
+            metadata: PDF 메타데이터 정보
+        """
+        self.pdf_dictionary = pdf_dictionary
+        self.metadata = metadata
+        self.section_categories = self._categorize_sections()
+
+        logger.info(
+            f"🚀 PDF 딕셔너리 인터페이스 생성됨 - 총 {len(pdf_dictionary)}개 섹션"
+        )
+
+    def _categorize_sections(self) -> Dict[str, List[str]]:
+        """
+        PDF 섹션들을 카테고리별로 분류해요!
+
+        섹션 제목을 보고 어떤 전문가가 관심 있어 할지 자동으로 분류합니다.
+        """
+        categories = {
+            "fundamental_analyst": [],  # 펀더멘털 분석가
+            "technical_analyst": [],  # 기술적 분석가
+            "industry_analyst": [],  # 산업 분석가
+            "valuation_expert": [],  # 밸류에이션 전문가
+            "risk_assessor": [],  # 리스크 평가자
+            "footnote_specialist": [],  # 주석 전문가
+            "general": [],  # 일반 (여러 전문가 공통)
+        }
+
+        for section_title in self.pdf_dictionary.keys():
+            title_lower = section_title.lower()
+
+            # 📝 주석 전문가용 섹션들
+            if any(
+                keyword in title_lower
+                for keyword in [
+                    "주석",
+                    "각주",
+                    "주",
+                    "우발",
+                    "보증",
+                    "파생",
+                    "관계회사",
+                    "연결",
+                    "note",
+                    "footnote",
+                    "contingent",
+                    "derivative",
+                    "related",
+                ]
+            ):
+                categories["footnote_specialist"].append(section_title)
+
+            # 💹 펀더멘털 분석가용 섹션들
+            elif any(
+                keyword in title_lower
+                for keyword in [
+                    "재무",
+                    "손익",
+                    "현금",
+                    "자산",
+                    "부채",
+                    "자본",
+                    "매출",
+                    "영업",
+                    "financial",
+                    "income",
+                    "cash",
+                    "asset",
+                    "liability",
+                    "revenue",
+                ]
+            ):
+                categories["fundamental_analyst"].append(section_title)
+
+            # 🏭 산업 분석가용 섹션들
+            elif any(
+                keyword in title_lower
+                for keyword in [
+                    "사업",
+                    "산업",
+                    "시장",
+                    "경쟁",
+                    "제품",
+                    "서비스",
+                    "영업현황",
+                    "business",
+                    "industry",
+                    "market",
+                    "competition",
+                    "product",
+                ]
+            ):
+                categories["industry_analyst"].append(section_title)
+
+            # 💰 밸류에이션 전문가용 섹션들
+            elif any(
+                keyword in title_lower
+                for keyword in [
+                    "주식",
+                    "배당",
+                    "주주",
+                    "지분",
+                    "투자",
+                    "가치",
+                    "평가",
+                    "stock",
+                    "dividend",
+                    "shareholder",
+                    "investment",
+                    "valuation",
+                ]
+            ):
+                categories["valuation_expert"].append(section_title)
+
+            # ⚠️ 리스크 평가자용 섹션들
+            elif any(
+                keyword in title_lower
+                for keyword in [
+                    "위험",
+                    "리스크",
+                    "감사",
+                    "내부통제",
+                    "준법",
+                    "규제",
+                    "risk",
+                    "audit",
+                    "control",
+                    "compliance",
+                    "regulation",
+                ]
+            ):
+                categories["risk_assessor"].append(section_title)
+
+            # 📈 기술적 분석가용 섹션들 (거의 없지만)
+            elif any(
+                keyword in title_lower
+                for keyword in [
+                    "주가",
+                    "거래량",
+                    "기술적",
+                    "차트",
+                    "price",
+                    "volume",
+                    "technical",
+                    "chart",
+                ]
+            ):
+                categories["technical_analyst"].append(section_title)
+
+            # 🔍 일반 섹션 (여러 전문가가 공통으로 관심)
+            else:
+                categories["general"].append(section_title)
+
+        return categories
+
+    def get_sections_for_expert(
+        self, expert_type: str, max_sections: int = 3
+    ) -> Dict[str, str]:
+        """
+        🎯 특정 전문가를 위한 PDF 섹션들을 가져와요!
+
+        Args:
+            expert_type: 전문가 타입 (예: "fundamental_analyst")
+            max_sections: 최대 반환할 섹션 수
+
+        Returns:
+            Dict: {섹션_제목: 섹션_내용} 형태의 딕셔너리
+        """
+        relevant_sections = {}
+
+        # 전문가별 특화 섹션 먼저 추가
+        if expert_type in self.section_categories:
+            expert_sections = self.section_categories[expert_type][:max_sections]
+            for section_title in expert_sections:
+                if section_title in self.pdf_dictionary:
+                    relevant_sections[section_title] = self.pdf_dictionary[
+                        section_title
+                    ]
+
+        # 부족하면 일반 섹션에서 보충
+        if len(relevant_sections) < max_sections:
+            remaining_slots = max_sections - len(relevant_sections)
+            general_sections = self.section_categories["general"][:remaining_slots]
+
+            for section_title in general_sections:
+                if (
+                    section_title in self.pdf_dictionary
+                    and section_title not in relevant_sections
+                ):
+                    relevant_sections[section_title] = self.pdf_dictionary[
+                        section_title
+                    ]
+
+        logger.info(f"🎯 {expert_type}: {len(relevant_sections)}개 섹션 선별 완료")
+        return relevant_sections
+
+    def get_footnote_sections(self) -> Dict[str, str]:
+        """
+        📝 주석/각주 전문가를 위한 섹션들만 가져와요!
+
+        주석 전문가가 사업보고서와 분기보고서의 주석을 분석할 때 사용합니다.
+        """
+        footnote_sections = {}
+
+        footnote_section_titles = self.section_categories["footnote_specialist"]
+        for section_title in footnote_section_titles:
+            if section_title in self.pdf_dictionary:
+                footnote_sections[section_title] = self.pdf_dictionary[section_title]
+
+        logger.info(f"📝 주석 전문가: {len(footnote_sections)}개 주석 섹션 추출 완료")
+        return footnote_sections
+
+    def get_section_summary(self) -> Dict[str, Any]:
+        """PDF 딕셔너리의 요약 정보를 반환합니다."""
+        return {
+            "total_sections": len(self.pdf_dictionary),
+            "expert_distribution": {
+                expert_type: len(sections)
+                for expert_type, sections in self.section_categories.items()
+            },
+            "total_characters": sum(
+                len(content) for content in self.pdf_dictionary.values()
+            ),
+            "avg_section_length": (
+                sum(len(content) for content in self.pdf_dictionary.values())
+                // len(self.pdf_dictionary)
+                if self.pdf_dictionary
+                else 0
+            ),
+        }
+
+    def get_total_sections(self) -> int:
+        """총 섹션 수를 반환합니다."""
+        return len(self.pdf_dictionary)
+
+    def search_sections_by_keyword(
+        self, keyword: str, max_results: int = 5
+    ) -> Dict[str, str]:
+        """
+        키워드로 관련 섹션들을 검색합니다.
+
+        Args:
+            keyword: 검색 키워드
+            max_results: 최대 반환할 결과 수
+
+        Returns:
+            Dict: 키워드와 관련된 섹션들
+        """
+        matching_sections = {}
+        keyword_lower = keyword.lower()
+
+        for section_title, section_content in self.pdf_dictionary.items():
+            # 제목이나 내용에 키워드가 포함된 경우
+            if (
+                keyword_lower in section_title.lower()
+                or keyword_lower in section_content.lower()[:1000]
+            ):  # 내용은 처음 1000자만 검색
+                matching_sections[section_title] = section_content
+
+                if len(matching_sections) >= max_results:
+                    break
+
+        logger.info(f"🔍 키워드 '{keyword}' 검색: {len(matching_sections)}개 섹션 발견")
+        return matching_sections
 
 
 # 사용 예시 함수

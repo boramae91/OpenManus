@@ -1,0 +1,60 @@
+{
+  "integration_results": {
+    "재무분석전문가": {
+      "selected_sections": [
+        "financial_statements",
+        "income_statement",
+        "business_overview",
+        "market_analysis"
+      ],
+      "estimated_tokens": 315,
+      "token_efficiency": "2.5%",
+      "analysis_focus": "재무 데이터 분석 및 수익성 평가"
+    },
+    "기술분석전문가": {
+      "selected_sections": [
+        "market_analysis",
+        "business_overview"
+      ],
+      "estimated_tokens": 150,
+      "token_efficiency": "1.2%",
+      "analysis_focus": "기술적 지표 및 차트 패턴 분석"
+    },
+    "산업분석전문가": {
+      "selected_sections": [
+        "market_analysis",
+        "business_overview"
+      ],
+      "estimated_tokens": 150,
+      "token_efficiency": "1.2%",
+      "analysis_focus": "산업 동향 및 경쟁 환경 분석"
+    },
+    "리스크분석전문가": {
+      "selected_sections": [
+        "financial_statements",
+        "income_statement",
+        "risk_management",
+        "governance"
+      ],
+      "estimated_tokens": 310,
+      "token_efficiency": "2.5%",
+      "analysis_focus": "리스크 요인 식별 및 관리 방안 제시"
+    },
+    "연구개발전문가": {
+      "selected_sections": [
+        "business_overview",
+        "market_analysis",
+        "rnd_technology"
+      ],
+      "estimated_tokens": 242,
+      "token_efficiency": "1.9%",
+      "analysis_focus": "R&D 투자 및 기술 경쟁력 분석"
+    }
+  },
+  "original_tokens": 50000,
+  "test_summary": {
+    "experts_tested": 5,
+    "average_token_usage": 233,
+    "average_savings_rate": 99.5332
+  }
+}

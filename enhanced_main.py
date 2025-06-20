@@ -1641,6 +1641,7 @@ class EnhancedStockAnalysisSystem:
             "analysis_completed": False,
             "pdf_content": {},
             "analysis_method": "none",
+            "pdf_dictionary_interface": None,  # 🚀 PDF 딕셔너리 인터페이스 추가!
         }
 
         try:
@@ -1664,56 +1665,135 @@ class EnhancedStockAnalysisSystem:
                 pdf_url = pdf_urls[0]
                 logger.info(f"📄 PDF 분석 시작: {pdf_url}")
 
-                # 대용량 PDF 분석기로 분석 (URL을 경로로 전달)
-                analysis_result = await self.large_pdf_analyzer.extract_raw_text_only(
-                    pdf_path=pdf_url,
-                    company_name=stock_info.get("stock_name", "분석대상회사"),
-                    save_to_json=False,  # 별도 저장 안함
+                # 🚀 CrewAI용 PDF 딕셔너리 생성 (핵심 기능!)
+                logger.info("🚀 CrewAI용 PDF 딕셔너리 생성 시도...")
+                pdf_dictionary_result = (
+                    await self.large_pdf_analyzer.create_pdf_dictionary_for_crewai(
+                        pdf_path=pdf_url,
+                        company_name=stock_info.get("stock_name", "분석대상회사"),
+                        max_section_size=600000,  # 🚀 60만자로 확장!
+                    )
                 )
 
-                if analysis_result.get("success"):
-                    pdf_result["analysis_completed"] = True
+                if pdf_dictionary_result.get("success"):
+                    logger.info("✅ PDF 딕셔너리 생성 성공!")
 
-                    # 🚀 PDF 내용을 상세하게 구조화해서 저장
+                    # PDF 딕셔너리 인터페이스 저장 (CrewAI가 활용할 수 있도록)
+                    pdf_result["pdf_dictionary_interface"] = pdf_dictionary_result[
+                        "interface"
+                    ]
+
+                    # 기존 PDF 내용 구조에 딕셔너리 정보 추가
                     pdf_content = {
                         "pdf_url": pdf_url,
-                        "text_length": len(analysis_result.get("raw_text", "")),
-                        "raw_text": analysis_result.get("raw_text", ""),
-                        "extraction_method": analysis_result.get(
-                            "extraction_method", "large_pdf_analyzer"
+                        "text_length": pdf_dictionary_result["metadata"][
+                            "total_text_length"
+                        ],
+                        "extraction_method": "large_pdf_analyzer_dictionary",
+                        "analysis_timestamp": pdf_dictionary_result["metadata"][
+                            "creation_timestamp"
+                        ],
+                        # 🚀 PDF 딕셔너리 구조 정보 (기존 구조 유지하면서 확장)
+                        "chunking_applied": True,
+                        "total_chunks": pdf_dictionary_result["metadata"][
+                            "total_sections"
+                        ],
+                        "chunk_types": ["toc_based", "footnotes", "ai_generated"],
+                        # 🎯 딕셔너리 구조화 정보 (새로 추가!)
+                        "dictionary_structure": {
+                            "total_sections": pdf_dictionary_result["metadata"][
+                                "total_sections"
+                            ],
+                            "toc_based_sections": pdf_dictionary_result["metadata"][
+                                "toc_based_sections"
+                            ],
+                            "footnote_sections": pdf_dictionary_result["metadata"][
+                                "footnote_sections"
+                            ],
+                            "avg_section_length": pdf_dictionary_result["metadata"][
+                                "avg_section_length"
+                            ],
+                            "dictionary_available": True,
+                            "interface_ready": True,
+                        },
+                        # 기존 호환성을 위한 딕셔너리 구조 (enhanced_main.py 기존 로직과 호환)
+                        "toc_based_chunks": pdf_dictionary_result.get(
+                            "pdf_dictionary", {}
                         ),
-                        "analysis_timestamp": analysis_result.get("analysis_timestamp"),
-                        "chunking_applied": analysis_result.get(
-                            "chunking_applied", False
-                        ),
-                        "total_chunks": analysis_result.get("total_chunks", 0),
-                        "chunk_types": analysis_result.get("chunk_types", []),
-                        # 🎯 목차별 딕셔너리 구조 포함
-                        "toc_based_chunks": analysis_result.get("toc_based_chunks", {}),
-                        "keyword_based_chunks": analysis_result.get(
-                            "keyword_based_chunks", {}
-                        ),
-                        "ai_detected_structure": analysis_result.get(
-                            "ai_detected_structure", {}
-                        ),
-                        "chunking_metadata": analysis_result.get(
-                            "chunking_metadata", {}
-                        ),
+                        "keyword_based_chunks": {},  # 딕셔너리 구조로 대체됨
+                        "ai_detected_structure": pdf_dictionary_result["metadata"],
+                        "chunking_metadata": {
+                            "creation_method": "pdf_dictionary_for_crewai",
+                            "selective_access_enabled": True,
+                            "expert_distribution_ready": True,
+                        },
                     }
 
                     pdf_result["pdf_content"] = pdf_content
-                    pdf_result["analysis_method"] = "large_pdf_analyzer_enhanced"
+                    pdf_result["analysis_completed"] = True
+                    pdf_result["analysis_method"] = "pdf_dictionary_for_crewai"
 
-                    # 목차 청킹 정보 로그
-                    toc_chunks_count = len(pdf_content.get("toc_based_chunks", {}))
-                    keyword_chunks_count = len(
-                        pdf_content.get("keyword_based_chunks", {})
+                    # 상세 로그
+                    logger.info(f"📊 PDF 딕셔너리 생성 완료:")
+                    logger.info(
+                        f"   📑 총 섹션: {pdf_dictionary_result['metadata']['total_sections']}개"
                     )
                     logger.info(
-                        f"✅ PDF 분석 완료 - 목차 청크: {toc_chunks_count}개, 키워드 청크: {keyword_chunks_count}개"
+                        f"   📝 주석 섹션: {pdf_dictionary_result['metadata']['footnote_sections']}개"
                     )
+                    logger.info(f"   🎯 CrewAI 전문가별 선택적 접근 준비 완료!")
+
                 else:
-                    logger.warning(f"⚠️ PDF 분석 실패: {analysis_result.get('error')}")
+                    logger.warning(f"⚠️ PDF 딕셔너리 생성 실패, 기존 방식으로 대체...")
+
+                    # 기존 분석 방식으로 폴백
+                    analysis_result = (
+                        await self.large_pdf_analyzer.extract_raw_text_only(
+                            pdf_path=pdf_url,
+                            company_name=stock_info.get("stock_name", "분석대상회사"),
+                            save_to_json=False,
+                        )
+                    )
+
+                    if analysis_result.get("success"):
+                        pdf_result["analysis_completed"] = True
+
+                        # 기존 구조 유지
+                        pdf_content = {
+                            "pdf_url": pdf_url,
+                            "text_length": len(analysis_result.get("raw_text", "")),
+                            "raw_text": analysis_result.get("raw_text", ""),
+                            "extraction_method": analysis_result.get(
+                                "extraction_method", "large_pdf_analyzer"
+                            ),
+                            "analysis_timestamp": analysis_result.get(
+                                "analysis_timestamp"
+                            ),
+                            "chunking_applied": analysis_result.get(
+                                "chunking_applied", False
+                            ),
+                            "total_chunks": analysis_result.get("total_chunks", 0),
+                            "chunk_types": analysis_result.get("chunk_types", []),
+                            "toc_based_chunks": analysis_result.get(
+                                "toc_based_chunks", {}
+                            ),
+                            "keyword_based_chunks": analysis_result.get(
+                                "keyword_based_chunks", {}
+                            ),
+                            "ai_detected_structure": analysis_result.get(
+                                "ai_detected_structure", {}
+                            ),
+                            "chunking_metadata": analysis_result.get(
+                                "chunking_metadata", {}
+                            ),
+                        }
+
+                        pdf_result["pdf_content"] = pdf_content
+                        pdf_result["analysis_method"] = "large_pdf_analyzer_fallback"
+                    else:
+                        logger.warning(
+                            f"⚠️ 기존 PDF 분석도 실패: {analysis_result.get('error')}"
+                        )
 
         except Exception as e:
             logger.error(f"PDF 감지/분석 중 오류: {e}")
