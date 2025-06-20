@@ -1,0 +1,323 @@
+{
+  "user_prompt": "q\u0004\u0003",
+  "timestamp": "2025-06-20T15:30:32.756237",
+  "analysis_flow": "enhanced_manus_first_crewai_synthesis",
+  "success": false,
+  "steps": {
+    "step0_intent_analysis": {
+      "primary_intent": "일반문의",
+      "secondary_intents": [],
+      "confidence": 0.3,
+      "analysis_focus": "종합분석",
+      "data_priority": "기본",
+      "keywords": []
+    },
+    "step1_stock_detection": {
+      "detected": true,
+      "stock_name": "종목명.",
+      "stock_code": "000020",
+      "detection_method": "ai_ai_web_search_priority",
+      "ticker_bbg": "000020 KS Equity",
+      "gics_sector": "Health Care",
+      "mapped_company_name": "DONGWHA PHARM CO LTD",
+      "market_index": "KOSPI Index",
+      "original_stock_code": "000020",
+      "original_stock_name": "종목명."
+    },
+    "step2_financial_data": {
+      "stock_info": {
+        "stock_code": "000020",
+        "stock_name": "종목명.",
+        "collection_timestamp": "2025-06-20T15:31:53.579837"
+      },
+      "success": true,
+      "errors": [],
+      "data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "basic_info": {
+        "company_name": "Dongwha Pharm.Co.,Ltd",
+        "sector": "Healthcare",
+        "industry": "Drug Manufacturers - Specialty & Generic",
+        "country": "South Korea",
+        "currency": "KRW",
+        "exchange": "KSC",
+        "ticker_symbol": "000020.KS"
+      },
+      "current_price_info": {
+        "current_price": 6820.0,
+        "previous_close": 6840.0,
+        "open_price": 0.0,
+        "day_high": 6880.0,
+        "day_low": 6800.0,
+        "volume": 54757,
+        "market_cap": 189036085248,
+        "shares_outstanding": 27717900
+      },
+      "financial_ratios": {
+        "pe_ratio": null,
+        "peg_ratio": null,
+        "pb_ratio": null,
+        "ps_ratio": 0.40078598,
+        "dividend_yield": 2.63,
+        "profit_margin": 0.0055299997,
+        "operating_margin": 0.01806,
+        "return_on_equity": -0.00393,
+        "return_on_assets": 0.00966,
+        "debt_to_equity": 26.069,
+        "current_ratio": 1.76,
+        "quick_ratio": 1.051
+      },
+      "growth_metrics": {
+        "earnings_growth": -0.989,
+        "revenue_growth": 0.057,
+        "earnings_quarterly_growth": -0.989,
+        "revenue_quarterly_growth": null
+      },
+      "price_history": {
+        "52_week_high": 8318.116774867958,
+        "52_week_low": 5600.0,
+        "avg_volume_3m": 50456.21111111111,
+        "price_change_1y": -13.779854969688229
+      },
+      "data_quality": "보통",
+      "dart_info": {
+        "company_info": {
+          "corp_name": "종목코드_000020",
+          "corp_code": "정보없음",
+          "business_summary": "DART API 연결 실패",
+          "established_date": "정보없음",
+          "listing_date": "정보없음",
+          "ceo_name": "정보없음",
+          "address": "정보없음"
+        },
+        "financial_statements": {
+          "revenue": 0,
+          "operating_profit": 0,
+          "net_income": 0,
+          "total_assets": 0,
+          "total_liabilities": 0,
+          "total_equity": 0,
+          "cash_and_equivalents": 0,
+          "data_source": "fallback_no_dart_connection",
+          "note": "DART API 연결 실패로 기본값 사용"
+        },
+        "business_report": {
+          "main_business": "DART 연결 실패",
+          "business_risks": "정보없음",
+          "future_plans": "정보없음"
+        }
+      }
+    },
+    "step3_information_collection": {
+      "performed": true,
+      "method": "information_collection_for_crewai_일반문의",
+      "collected_information": "Step 5: Observed output of cmd `browser_use` executed:\nError: Browser action 'web_search' failed: Page.goto: Target page, context or browser has been closed\nCall log:\n  - navigating to \"https://finance.yahoo.com/quote/000020.KS/\", waiting until \"load\"\n\nStep 6: Observed output of cmd `browser_use` executed:\nError: Browser action 'web_search' failed: Page.goto: Target page, context or browser has been closed\nCall log:\n  - navigating to \"https://finance.yahoo.com/quote/000020.KS/\", waiting until \"load\"\n\nStep 7: Observed output of cmd `browser_use` executed:\nError: Browser action 'go_to_url' failed: Page.goto: Target page, context or browser has been closed\nCall log:\n  - navigating to \"https://www.google.com/\", waiting until \"load\"\n\nStep 8: Observed output of cmd `browser_use` executed:\nError: Browser action 'go_to_url' failed: Page.goto: Target page, context or browser has been closed\nCall log:\n  - navigating to \"https://www.google.com/\", waiting until \"load\"\n\nStep 9: Observed output of cmd `browser_use` executed:\nError: Browser action 'go_to_url' failed: Page.goto: Target page, context or browser has been closed\nCall log:\n  - navigating to \"https://www.google.com/\", waiting until \"load\"\n\nStep 10: Observed output of cmd `terminate` executed:\nThe interaction has been completed with status: failure",
+      "primary_intent": "일반문의",
+      "analysis_focus": "종합분석",
+      "data_priority": "기본",
+      "confidence": 0.3,
+      "basic_financial_data_used": true,
+      "enhanced_dart_data_used": false,
+      "collection_purpose": "crewai_feeding",
+      "ready_for_crewai": true,
+      "pdf_analysis": {
+        "pdf_detected": false,
+        "analysis_completed": false,
+        "pdf_content": {},
+        "analysis_method": "none",
+        "pdf_dictionary_interface": null
+      },
+      "data_richness_score": 12.0
+    },
+    "step4_crewai_comprehensive_analysis": {
+      "success": true,
+      "analysis_type": "comprehensive_manus_crewai_synthesis_optimized",
+      "detected_sector": "HEALTH_CARE",
+      "sector_korean_name": "헬스케어",
+      "gics_sector_used": "Health Care",
+      "activated_experts": [
+        "헬스케어 펀더멘털 분석가",
+        "헬스케어 기술적 분석가"
+      ],
+      "selected_experts_count": 2,
+      "expert_insights": {
+        "individual_expert_analyses": [
+          {
+            "expert_name": "헬스케어 펀더멘털 분석가",
+            "expertise_area": "재무제표 분석, 기업가치 평가, 수익성 분석",
+            "analysis_result": "분석 실패: 'dict' object has no attribute 'split'",
+            "error": true
+          },
+          {
+            "expert_name": "헬스케어 기술적 분석가",
+            "expertise_area": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+            "analysis_result": "분석 실패: 'dict' object has no attribute 'split'",
+            "error": true
+          }
+        ],
+        "expert_count": 2,
+        "successful_analyses": 0,
+        "synthesis_result": {
+          "synthesis_success": false,
+          "error": "성공한 전문가 분석이 없습니다",
+          "expert_count": 2,
+          "successful_count": 0
+        },
+        "total_analysis_time": "0.01초",
+        "data_integration_type": "comprehensive_multi_source"
+      },
+      "cost_savings": {
+        "traditional_cost": 11.0,
+        "one_hot_cost": 0.08,
+        "savings_amount": 10.92,
+        "savings_percentage": 99.27272727272727,
+        "activated_agents": 2,
+        "depth": "quick"
+      },
+      "analysis_depth": "quick",
+      "cache_key": "5fc76eff3444d145087e69834f58c0bc",
+      "data_integration_quality": {
+        "overall_score": 20.0,
+        "quality_grade": "개선필요",
+        "total_possible_score": 100.0,
+        "achieved_score": 20.0,
+        "details": {
+          "financial_data_score": 10,
+          "manus_data_score": 10
+        },
+        "data_sources_count": 2
+      },
+      "synthesis_completeness": "완전통합_토큰최적화",
+      "token_optimization": {
+        "optimization_applied": false,
+        "original_token_estimate": 1249,
+        "optimized_token_estimate": 1249,
+        "compression_ratio": 1.0
+      }
+    }
+  },
+  "final_summary": {
+    "analyzed_stock": {
+      "name": "종목명.",
+      "code": "000020",
+      "ticker_bbg": "000020 KS Equity",
+      "gics_sector": "Health Care",
+      "market_index": "KOSPI Index",
+      "detection_method": "ai_ai_web_search_priority"
+    },
+    "data_sources": {
+      "financial_data_collected": true,
+      "data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "data_quality": "보통",
+      "manus_information_collected": true,
+      "data_richness_score": 12.0
+    },
+    "analysis_quality": {
+      "information_collection_performed": true,
+      "crewai_comprehensive_analysis_performed": true,
+      "financial_data_enhanced": true,
+      "workflow_type": "manus_first_crewai_synthesis"
+    },
+    "key_insights": {
+      "information_collection_quality": "낮음",
+      "crewai_analysis_quality": "성공",
+      "overall_analysis_depth": "높음",
+      "data_integration_success": true
+    }
+  },
+  "crewai_detailed_analysis": {
+    "detected_sector": "HEALTH_CARE",
+    "sector_korean_name": "헬스케어",
+    "activated_experts": [
+      "헬스케어 펀더멘털 분석가",
+      "헬스케어 기술적 분석가"
+    ],
+    "expert_count": 2,
+    "individual_expert_analyses": [
+      {
+        "expert_name": "헬스케어 펀더멘털 분석가",
+        "expertise_area": "재무제표 분석, 기업가치 평가, 수익성 분석",
+        "analysis_result": "분석 실패: 'dict' object has no attribute 'split'",
+        "error": true
+      },
+      {
+        "expert_name": "헬스케어 기술적 분석가",
+        "expertise_area": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+        "analysis_result": "분석 실패: 'dict' object has no attribute 'split'",
+        "error": true
+      }
+    ],
+    "synthesis_result": {
+      "synthesis_success": false,
+      "error": "성공한 전문가 분석이 없습니다",
+      "expert_count": 2,
+      "successful_count": 0
+    },
+    "data_integration_quality": {
+      "overall_score": 20.0,
+      "quality_grade": "개선필요",
+      "total_possible_score": 100.0,
+      "achieved_score": 20.0,
+      "details": {
+        "financial_data_score": 10,
+        "manus_data_score": 10
+      },
+      "data_sources_count": 2
+    },
+    "cost_savings": {
+      "traditional_cost": 11.0,
+      "one_hot_cost": 0.08,
+      "savings_amount": 10.92,
+      "savings_percentage": 99.27272727272727,
+      "activated_agents": 2,
+      "depth": "quick"
+    },
+    "token_optimization": {
+      "optimization_applied": false,
+      "original_token_estimate": 1249,
+      "optimized_token_estimate": 1249,
+      "compression_ratio": 1.0
+    },
+    "analysis_depth": "quick",
+    "total_analysis_time": "0.01초",
+    "data_sources_integrated": {
+      "financial_data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "manus_web_search_performed": true,
+      "pdf_analysis_performed": false,
+      "enhanced_dart_used": false,
+      "crewai_synthesis_performed": true
+    }
+  },
+  "data_flow_tracking": {
+    "step1_stock_detection": {
+      "method": "ai_ai_web_search_priority",
+      "confidence": "high"
+    },
+    "step2_financial_data": {
+      "sources": [
+        "yfinance",
+        "DART"
+      ],
+      "quality": "보통"
+    },
+    "step3_manus_collection": {
+      "richness_score": 12.0,
+      "pdf_detected": false,
+      "ready_for_crewai": true
+    },
+    "step4_crewai_synthesis": {
+      "success": true,
+      "experts_activated": 2,
+      "data_integration_success": false
+    },
+    "overall_data_completeness": 62.4
+  }
+}

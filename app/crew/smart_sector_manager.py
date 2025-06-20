@@ -259,12 +259,13 @@ class SmartSectorManager:
             optimized_dart = optimization_result["enhanced_dart_data"]
             optimized_manus = optimization_result["manus_collected_data"]
 
-            if optimization_result["optimized"]:
-                logger.info("🎯 토큰 최적화 적용됨:")
-                for optimization in optimization_result["optimization_applied"]:
-                    logger.info(f"  • {optimization}")
-                final_tokens = optimization_result["token_info"]["final_tokens"]
-                logger.info(f"📊 최적화 후 예상 토큰 수: {final_tokens:,}")
+            if optimization_result["optimization_applied"]:
+                logger.info("🎯 토큰 최적화 적용됨")
+                original_tokens = optimization_result["original_token_estimate"]
+                optimized_tokens = optimization_result["optimized_token_estimate"]
+                logger.info(
+                    f"📊 토큰 최적화: {original_tokens:,} → {optimized_tokens:,}"
+                )
             else:
                 logger.info("✅ 토큰 수가 목표 범위 내 - 최적화 불필요")
 
@@ -353,16 +354,18 @@ class SmartSectorManager:
                 ),
                 "synthesis_completeness": "완전통합_토큰최적화",  # 모든 데이터 소스 활용 + 토큰 최적화
                 "token_optimization": {  # 🔢 토큰 최적화 정보 추가
-                    "optimization_applied": optimization_result["optimized"],
-                    "optimizations": (
-                        optimization_result["optimization_applied"]
-                        if optimization_result["optimized"]
-                        else []
-                    ),
-                    "token_info": (
-                        optimization_result["token_info"]
-                        if optimization_result["optimized"]
-                        else {"status": "not_needed"}
+                    "optimization_applied": optimization_result["optimization_applied"],
+                    "original_token_estimate": optimization_result[
+                        "original_token_estimate"
+                    ],
+                    "optimized_token_estimate": optimization_result[
+                        "optimized_token_estimate"
+                    ],
+                    "compression_ratio": (
+                        optimization_result["optimized_token_estimate"]
+                        / optimization_result["original_token_estimate"]
+                        if optimization_result["original_token_estimate"] > 0
+                        else 1.0
                     ),
                 },
             }
@@ -1610,3 +1613,211 @@ class SmartSectorManager:
             }
 
         return compressed
+
+    def _assess_data_integration_quality(
+        self,
+        financial_data: Dict,
+        enhanced_dart_data: Dict = None,
+        manus_collected_data: Dict = None,
+    ) -> Dict[str, Any]:
+        """
+        📊 데이터 통합 품질을 평가합니다
+
+        여러 데이터 소스의 완성도와 일관성을 체크해서
+        분석 결과의 신뢰도를 측정해요!
+
+        Args:
+            financial_data: 재무 데이터
+            enhanced_dart_data: Enhanced DART 데이터
+            manus_collected_data: Manus 수집 데이터
+
+        Returns:
+            Dict: 데이터 통합 품질 평가 결과
+        """
+        try:
+            quality_score = 0.0
+            total_possible_score = 0.0
+            quality_details = {}
+
+            # 1. 재무데이터 품질 평가 (40점 만점)
+            if financial_data and financial_data.get("success"):
+                financial_score = 0
+                # 기본 재무정보 존재
+                if financial_data.get("stock_info"):
+                    financial_score += 10
+                # 재무 요약 존재
+                if financial_data.get("financial_summary"):
+                    financial_score += 10
+                # 핵심 지표 존재
+                if financial_data.get("key_metrics"):
+                    financial_score += 10
+                # 비율 분석 존재
+                if financial_data.get("ratios"):
+                    financial_score += 10
+
+                quality_score += financial_score
+                quality_details["financial_data_score"] = financial_score
+            total_possible_score += 40
+
+            # 2. Enhanced DART 데이터 품질 평가 (30점 만점)
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                dart_score = 0
+                # 기본 기업정보 존재
+                if enhanced_dart_data.get("basic_info"):
+                    dart_score += 10
+                # 재무정보 존재
+                if enhanced_dart_data.get("financial_info"):
+                    dart_score += 10
+                # 최근 공시정보 존재
+                if enhanced_dart_data.get("recent_disclosures"):
+                    dart_score += 10
+
+                quality_score += dart_score
+                quality_details["dart_data_score"] = dart_score
+            total_possible_score += 30
+
+            # 3. Manus 수집 데이터 품질 평가 (30점 만점)
+            if manus_collected_data and manus_collected_data.get("performed"):
+                manus_score = 0
+                # 정보 수집 완료
+                if manus_collected_data.get("collected_information"):
+                    manus_score += 10
+                # 데이터 풍부함 점수
+                richness = manus_collected_data.get("data_richness_score", 0)
+                if richness > 50:
+                    manus_score += 10
+                elif richness > 25:
+                    manus_score += 5
+                # PDF 분석 여부
+                if manus_collected_data.get("pdf_analysis", {}).get(
+                    "analysis_completed"
+                ):
+                    manus_score += 10
+
+                quality_score += manus_score
+                quality_details["manus_data_score"] = manus_score
+            total_possible_score += 30
+
+            # 최종 품질 점수 계산 (0-100 점수로 정규화)
+            final_quality_score = (
+                (quality_score / total_possible_score * 100)
+                if total_possible_score > 0
+                else 0
+            )
+
+            # 품질 등급 결정
+            if final_quality_score >= 80:
+                quality_grade = "최고품질"
+            elif final_quality_score >= 60:
+                quality_grade = "우수"
+            elif final_quality_score >= 40:
+                quality_grade = "보통"
+            else:
+                quality_grade = "개선필요"
+
+            return {
+                "overall_score": round(final_quality_score, 1),
+                "quality_grade": quality_grade,
+                "total_possible_score": total_possible_score,
+                "achieved_score": quality_score,
+                "details": quality_details,
+                "data_sources_count": sum(
+                    [
+                        1
+                        for data in [
+                            financial_data,
+                            enhanced_dart_data,
+                            manus_collected_data,
+                        ]
+                        if data and (data.get("success") or data.get("performed"))
+                    ]
+                ),
+            }
+
+        except Exception as e:
+            logger.error(f"❌ 데이터 통합 품질 평가 실패: {e}")
+            return {"overall_score": 0.0, "quality_grade": "평가실패", "error": str(e)}
+
+    def _map_gics_to_internal_sector(self, gics_sector: str):
+        """
+        🎯 GICS 섹터를 내부 섹터 타입으로 매핑합니다
+
+        외부에서 감지된 GICS 섹터를 우리 시스템의 GICSSector 열거형으로
+        변환해주는 매핑 함수에요!
+
+        Args:
+            gics_sector: GICS 섹터명 (예: "Information Technology")
+
+        Returns:
+            GICSSector: 매핑된 내부 섹터 (기본값: INFORMATION_TECHNOLOGY)
+        """
+        from app.crew.gics_sectors import GICSSector
+
+        # GICS 섹터 매핑 테이블
+        gics_mapping = {
+            "Information Technology": GICSSector.INFORMATION_TECHNOLOGY,
+            "Technology": GICSSector.INFORMATION_TECHNOLOGY,
+            "Tech": GICSSector.INFORMATION_TECHNOLOGY,
+            "IT": GICSSector.INFORMATION_TECHNOLOGY,
+            "Health Care": GICSSector.HEALTH_CARE,
+            "Healthcare": GICSSector.HEALTH_CARE,
+            "Pharmaceuticals": GICSSector.HEALTH_CARE,
+            "Medical": GICSSector.HEALTH_CARE,
+            "Financials": GICSSector.FINANCIALS,
+            "Finance": GICSSector.FINANCIALS,
+            "Banking": GICSSector.FINANCIALS,
+            "Insurance": GICSSector.FINANCIALS,
+            "Consumer Discretionary": GICSSector.CONSUMER_DISCRETIONARY,
+            "Consumer Disc": GICSSector.CONSUMER_DISCRETIONARY,
+            "Retail": GICSSector.CONSUMER_DISCRETIONARY,
+            "Automotive": GICSSector.CONSUMER_DISCRETIONARY,
+            "Consumer Staples": GICSSector.CONSUMER_STAPLES,
+            "Consumer Stap": GICSSector.CONSUMER_STAPLES,
+            "Food & Beverage": GICSSector.CONSUMER_STAPLES,
+            "FMCG": GICSSector.CONSUMER_STAPLES,
+            "Communication Services": GICSSector.COMMUNICATION_SERVICES,
+            "Communications": GICSSector.COMMUNICATION_SERVICES,
+            "Telecom": GICSSector.COMMUNICATION_SERVICES,
+            "Media": GICSSector.COMMUNICATION_SERVICES,
+            "Industrials": GICSSector.INDUSTRIALS,
+            "Industrial": GICSSector.INDUSTRIALS,
+            "Manufacturing": GICSSector.INDUSTRIALS,
+            "Aerospace": GICSSector.INDUSTRIALS,
+            "Energy": GICSSector.ENERGY,
+            "Oil & Gas": GICSSector.ENERGY,
+            "Renewable Energy": GICSSector.ENERGY,
+            "Utilities": GICSSector.ENERGY,  # 유틸리티는 Energy로 매핑
+            "Materials": GICSSector.MATERIALS,
+            "Basic Materials": GICSSector.MATERIALS,
+            "Chemicals": GICSSector.MATERIALS,
+            "Mining": GICSSector.MATERIALS,
+            "Real Estate": GICSSector.REAL_ESTATE,
+            "REIT": GICSSector.REAL_ESTATE,
+            "Property": GICSSector.REAL_ESTATE,
+        }
+
+        # 대소문자 구분 없이 매핑 시도
+        gics_sector_clean = gics_sector.strip() if gics_sector else ""
+
+        # 정확한 매칭 시도
+        if gics_sector_clean in gics_mapping:
+            matched_sector = gics_mapping[gics_sector_clean]
+            logger.info(
+                f"🎯 GICS 섹터 매핑 성공: '{gics_sector_clean}' → {matched_sector.name}"
+            )
+            return matched_sector
+
+        # 부분 매칭 시도 (키워드 기반)
+        gics_lower = gics_sector_clean.lower()
+        for key, sector in gics_mapping.items():
+            if key.lower() in gics_lower or gics_lower in key.lower():
+                logger.info(
+                    f"🎯 GICS 섹터 부분 매핑 성공: '{gics_sector_clean}' → {sector.name}"
+                )
+                return sector
+
+        # 매핑 실패시 기본값 반환 (Information Technology)
+        logger.warning(
+            f"⚠️ GICS 섹터 매핑 실패: '{gics_sector_clean}' → 기본값(IT) 사용"
+        )
+        return GICSSector.INFORMATION_TECHNOLOGY

@@ -1,0 +1,1296 @@
+{
+  "user_prompt": "???? ??? ????",
+  "timestamp": "2025-06-20T15:33:19.700954",
+  "analysis_flow": "enhanced_manus_first_crewai_synthesis",
+  "success": false,
+  "steps": {
+    "step0_intent_analysis": {
+      "primary_intent": "일반문의",
+      "secondary_intents": [],
+      "confidence": 0.3,
+      "analysis_focus": "종합분석",
+      "data_priority": "기본",
+      "keywords": []
+    },
+    "step1_stock_detection": {
+      "detected": true,
+      "stock_name": "AJ네트웍스",
+      "stock_code": "095570",
+      "detection_method": "ai_ai_web_search_priority",
+      "ticker_bbg": "095570 KS Equity",
+      "gics_sector": "Industrials",
+      "mapped_company_name": "AJ NETWORKS CO LTD",
+      "market_index": "KOSPI Index",
+      "original_stock_code": "095570",
+      "original_stock_name": "AJ네트웍스"
+    },
+    "step2_financial_data": {
+      "stock_info": {
+        "stock_code": "095570",
+        "stock_name": "AJ네트웍스",
+        "collection_timestamp": "2025-06-20T15:34:41.558196"
+      },
+      "success": true,
+      "errors": [],
+      "data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "basic_info": {
+        "company_name": "AJ Networks Co.,Ltd.",
+        "sector": "Industrials",
+        "industry": "Rental & Leasing Services",
+        "country": "South Korea",
+        "currency": "KRW",
+        "exchange": "KSC",
+        "ticker_symbol": "095570.KS"
+      },
+      "current_price_info": {
+        "current_price": 3965.0,
+        "previous_close": 3955.0,
+        "open_price": 0.0,
+        "day_high": 3995.0,
+        "day_low": 3910.0,
+        "volume": 273598,
+        "market_cap": 177437720576,
+        "shares_outstanding": 44751000
+      },
+      "financial_ratios": {
+        "pe_ratio": null,
+        "peg_ratio": null,
+        "pb_ratio": null,
+        "ps_ratio": 0.16959338,
+        "dividend_yield": 6.83,
+        "profit_margin": 0.02078,
+        "operating_margin": 0.061079998,
+        "return_on_equity": 0.036459997,
+        "return_on_assets": 0.025220001,
+        "debt_to_equity": 275.284,
+        "current_ratio": 0.564,
+        "quick_ratio": 0.5
+      },
+      "growth_metrics": {
+        "earnings_growth": -0.002,
+        "revenue_growth": 0.14,
+        "earnings_quarterly_growth": -0.003,
+        "revenue_quarterly_growth": null
+      },
+      "price_history": {
+        "52_week_high": 4688.28704158545,
+        "52_week_low": 3517.0,
+        "avg_volume_3m": 181916.77777777778,
+        "price_change_1y": -6.91415978150909
+      },
+      "data_quality": "보통",
+      "dart_info": {
+        "company_info": {
+          "corp_name": "AJ네트웍스 주식회사",
+          "corp_code": "00365387",
+          "business_summary": "2148648586",
+          "established_date": "20000210",
+          "listing_date": "12",
+          "ceo_name": "곽정호",
+          "address": "서울특별시 송파구 정의로8길 9 (문정동,AJ빌딩)"
+        },
+        "financial_statements": {
+          "current_assets": 228264959406,
+          "non_current_assets": 1390847762503,
+          "total_assets": 1619112721909,
+          "current_liabilities": 583146741588,
+          "non_current_liabilities": 584993737304,
+          "total_liabilities": 1168140478892,
+          "total_equity": 450972243017,
+          "revenue": 611678378963,
+          "operating_profit": 83151116032,
+          "net_income": 24998759920,
+          "debt_ratio": 2.59,
+          "operating_margin": 0.1359,
+          "net_margin": 0.0409
+        },
+        "business_report": {
+          "main_business": "법인고유번호 00365387 기업의 주요사업",
+          "business_risks": "시장변동성, 경쟁심화 등",
+          "future_plans": "사업확장 및 기술개발 계획"
+        }
+      }
+    },
+    "step2_enhanced_dart_data": {
+      "success": true,
+      "stock_code": "095570",
+      "company_name": "AJ네트웍스",
+      "corp_code": "00365387",
+      "analysis_date": "2025-06-20T15:35:25.183295",
+      "financial_analysis": {
+        "success": true,
+        "corp_code": "00365387",
+        "bsns_year": "2024",
+        "collected_at": "2025-06-20T15:35:25.183295",
+        "individual_statements": {
+          "asset_info": {
+            "current_assets": 228264959406,
+            "non_current_assets": 1390847762503,
+            "total_assets": 1619112721909
+          },
+          "liability_info": {
+            "current_liabilities": 583146741588,
+            "non_current_liabilities": 584993737304,
+            "total_liabilities": 1168140478892
+          },
+          "equity_info": {
+            "capital_stock": 46822295000,
+            "total_equity": 450972243017
+          },
+          "income_info": {
+            "revenue": 611678378963,
+            "operating_income": 83151116032,
+            "net_income": 24998759920,
+            "operating_expenses": 528527262931
+          }
+        },
+        "consolidated_statements": {
+          "asset_info": {
+            "current_assets": 228264959406,
+            "non_current_assets": 1390847762503,
+            "total_assets": 1619112721909
+          },
+          "liability_info": {
+            "current_liabilities": 583146741588,
+            "non_current_liabilities": 584993737304,
+            "total_liabilities": 1168140478892
+          },
+          "equity_info": {
+            "capital_stock": 46822295000,
+            "total_equity": 450972243017
+          },
+          "income_info": {
+            "revenue": 611678378963,
+            "operating_income": 83151116032,
+            "net_income": 24998759920,
+            "operating_expenses": 528527262931
+          }
+        },
+        "quarterly_performance": [
+          {
+            "asset_info": {
+              "current_assets": 245882871564,
+              "non_current_assets": 1353678126088,
+              "total_assets": 1599560997652
+            },
+            "liability_info": {
+              "current_liabilities": 681172341792,
+              "non_current_liabilities": 496145724317,
+              "total_liabilities": 1177318066109
+            },
+            "equity_info": {
+              "capital_stock": 46822295000,
+              "total_equity": 422242931543
+            },
+            "income_info": {
+              "revenue": 144302461007,
+              "operating_income": 20936124890,
+              "net_income": 0
+            },
+            "period": "1분기"
+          },
+          {
+            "asset_info": {
+              "current_assets": 269613242923,
+              "non_current_assets": 1370481068195,
+              "total_assets": 1650421141827
+            },
+            "liability_info": {
+              "current_liabilities": 637877036192,
+              "non_current_liabilities": 583067503362,
+              "total_liabilities": 1220944539554
+            },
+            "equity_info": {
+              "capital_stock": 46822295000,
+              "total_equity": 429476602273
+            },
+            "income_info": {
+              "revenue": 155783127546,
+              "operating_income": 21542639359,
+              "net_income": 0
+            },
+            "period": "반기"
+          },
+          {
+            "asset_info": {
+              "current_assets": 241982157498,
+              "non_current_assets": 1383611648994,
+              "total_assets": 1625593806492
+            },
+            "liability_info": {
+              "current_liabilities": 643522317913,
+              "non_current_liabilities": 547908703112,
+              "total_liabilities": 1191431021025
+            },
+            "equity_info": {
+              "capital_stock": 46822295000,
+              "total_equity": 434162785467
+            },
+            "income_info": {
+              "revenue": 158282968652,
+              "operating_income": 22018660952,
+              "net_income": 0
+            },
+            "period": "3분기"
+          },
+          {
+            "asset_info": {
+              "current_assets": 228264959406,
+              "non_current_assets": 1390847762503,
+              "total_assets": 1619112721909
+            },
+            "liability_info": {
+              "current_liabilities": 583146741588,
+              "non_current_liabilities": 584993737304,
+              "total_liabilities": 1168140478892
+            },
+            "equity_info": {
+              "capital_stock": 46822295000,
+              "total_equity": 450972243017
+            },
+            "income_info": {
+              "revenue": 611678378963,
+              "operating_income": 83151116032,
+              "net_income": 24998759920,
+              "operating_expenses": 528527262931
+            },
+            "period": "연간"
+          }
+        ]
+      },
+      "governance_analysis": {
+        "success": true,
+        "corp_code": "00365387",
+        "bsns_year": "2024",
+        "collected_at": "2025-06-20T15:35:26.345140",
+        "major_shareholders": [
+          {
+            "shareholder_name": "문덕영",
+            "relationship": "최대주주 등",
+            "shares_held": 11760923,
+            "ownership_ratio": 25.99,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "문지회",
+            "relationship": "최대주주 등",
+            "shares_held": 6597178,
+            "ownership_ratio": 14.58,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "문선우",
+            "relationship": "최대주주 등",
+            "shares_held": 6597173,
+            "ownership_ratio": 14.58,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "신기연",
+            "relationship": "최대주주 등",
+            "shares_held": 49600,
+            "ownership_ratio": 0.11,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "계",
+            "relationship": "",
+            "shares_held": 25004874,
+            "ownership_ratio": 55.26,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "계",
+            "relationship": "",
+            "shares_held": 0,
+            "ownership_ratio": 0.0,
+            "report_date": "2024-12-31"
+          }
+        ],
+        "executives": [
+          {
+            "name": "문덕영",
+            "position": "",
+            "career": "",
+            "main_career": "고려대학교 신문방송학과 졸업\n일본 와세다대학교 정치학 연구과석사\n미국 아델파이대학교 경영학석사과정수료\n前 AJ렌터카㈜ 대표이사\n前 아주엘앤에프홀딩스㈜ 대표이사\n現 AJ네트웍스㈜ 이사회 의장(2020년~현재)",
+            "tenure": ""
+          },
+          {
+            "name": "이재홍",
+            "position": "",
+            "career": "",
+            "main_career": "연세대학교 정치외교학과 졸업일본 Keio University 국제정치학 석사KAIST(한국과학기술원) MIS 석사前 삼성물산 상사부문 기획팀前 롯데지주 전략기획팀장/상무前 롯데월드 개발부문장/상무前 큐라코 COO/부사장現 AJ네트웍스㈜ 전략기획실장/부사장",
+            "tenure": ""
+          },
+          {
+            "name": "곽정호",
+            "position": "",
+            "career": "",
+            "main_career": "순천향대학교 물리학과 졸업\n\n前 AJ네트웍스㈜ 로지스영업본부장(2014년~2020년)\n\n前 AJ네트웍스(주) 산업장비 총괄본부 총괄임원(2020년~2024년)\n\nAJ네트웍스㈜ 로지스부문장(2024년 9월~현재)",
+            "tenure": ""
+          },
+          {
+            "name": "정훈",
+            "position": "",
+            "career": "",
+            "main_career": "연세대학교 경영학과 졸업\n\n前 한국 IBM㈜ 사업본부장\n\n前 세일즈포스 코리아 지사장\n\n前 아피니티 에이아이 코리아 부사장\n\n現 AJ네트웍스(주) B&T부문장",
+            "tenure": ""
+          },
+          {
+            "name": "김영일",
+            "position": "",
+            "career": "",
+            "main_career": "고려대학교 경영학과 졸업\n前 AJ파크 경영지원총괄임원\n前 AJ네트웍스㈜ 경영지원본부장\n前 AJ네트웍스㈜ DT추진본부장現 AJ네트웍스㈜ 산업장비부문장(2024년 10월~현재)",
+            "tenure": ""
+          },
+          {
+            "name": "장헌수",
+            "position": "",
+            "career": "",
+            "main_career": "고려대학교 건축공학과 졸업\n\n고려대학교 대학원 건축계획학 석사\n\n前 AJ대원 자산관리본부장\n\n現 AJ네트웍스㈜ 인사기획실 자산관리팀장(2023년 12월~현재)",
+            "tenure": ""
+          },
+          {
+            "name": "김형진",
+            "position": "",
+            "career": "",
+            "main_career": "국민대학교 경영학과 졸업\n\n前 AJ렌터카(주) 영업본부장(2002년~2019년)\n\n現 AJ네트웍스(주) 로지스부문 로지스Pallet사업본부장(2020년~현재)",
+            "tenure": ""
+          },
+          {
+            "name": "여주형",
+            "position": "",
+            "career": "",
+            "main_career": "고려대학교 무역학과 졸업\n\n前 동양증권, 한국투자증권 기업금융본부\n\n前 AJ네트웍스(주) 경영기획실 재무관리팀 (2016년~2021년)前 AJ네트웍스(주) 재무기획실 재무관리팀장 (2021년 11월~2024년)\n現 AJ네트웍스㈜ B&T부문 B&T시너지운영본부장 (2025년 1월~현재)",
+            "tenure": ""
+          },
+          {
+            "name": "문선우",
+            "position": "",
+            "career": "",
+            "main_career": "前 AJ네트웍스㈜ 지주부문 경영기획실 경영관리팀\n前 AJ네트웍스㈜ 로지스부문 전략기획팀장\n\n現 AJ네트웍스㈜ 로지스부문 로지스전략본부장(2022년 12월~현재)",
+            "tenure": ""
+          },
+          {
+            "name": "박재홍",
+            "position": "",
+            "career": "",
+            "main_career": "인덕전문대학 실내건축과 졸업\n前 AJ네트웍스㈜ 렌탈부문 건설장비 서울지점장\n\n現 AJ네트웍스㈜ 산업장비부문 AWP본부장(2016년 6월~현재)",
+            "tenure": ""
+          },
+          {
+            "name": "이예현",
+            "position": "",
+            "career": "",
+            "main_career": "서울대학교 경제학과 졸업\n前 AJ네트웍스㈜ 지주부문 경영기획실 경영전략팀장\n\n現 AJ네트웍스 로지스부문 로지스지원본부장(2025년 1월~현재)",
+            "tenure": ""
+          },
+          {
+            "name": "손삼달",
+            "position": "",
+            "career": "",
+            "main_career": "고려대학교 경영학과 졸업\n건국대학교 부동산경영학 석사\n前 AJ네트웍스(주) 해외법인 담당임원(2019년~2021년)前 AJ네트웍스㈜ 렌탈부문 대표이사現 AJ네트웍스㈜  대표이사(2024년 10월~현재)",
+            "tenure": ""
+          },
+          {
+            "name": "문지회",
+            "position": "",
+            "career": "",
+            "main_career": "Pratt Inst. Film/Video 졸업\n고려대학교 경영대학원 경영학 석사\n前 AJ파크 해외영업 총괄본부장\n前 AJ네트웍스(주) 경영기획실 전략기획본부장(2019년~2022년 11월)前 AJ네트웍스㈜ 지주부문 대표現 AJ네트웍스㈜ 대표(CEO) (2024년 10월~현재)",
+            "tenure": ""
+          },
+          {
+            "name": "황인산",
+            "position": "",
+            "career": "",
+            "main_career": "고려대학교 경영학과 졸업\n고려대학교 경영대학원 경영학 석사\n前 하나은행 부행장\n現 AJ 네트웍스㈜ 감사(2021년~현재)",
+            "tenure": ""
+          },
+          {
+            "name": "류승우",
+            "position": "",
+            "career": "",
+            "main_career": "서강대학교 경영학과 졸업\n홍익대학교 세무대학원 세무학 석사\n숭실대학교 경영대학원 경영학 박사\n前 삼일회계법인 대표\n前 프라이스워터하우스쿠퍼스컨설팅 대표\n現 AJ 네트웍스㈜ 사외이사(2019년~현재)",
+            "tenure": ""
+          },
+          {
+            "name": "김범수",
+            "position": "",
+            "career": "",
+            "main_career": "서울대학교 법과대학 사법학과 졸업\nUniversity of Florida College of Law\nUniversity of Houston Law Center\n前 법무법인 세종 파트너 변호사\n現 법무법인 \n베이커멕켄지앤케이엘파트너스 대표 변호사\n現 AJ네트웍스㈜ 사외이사(2021년~현재)",
+            "tenure": ""
+          },
+          {
+            "name": "김명철",
+            "position": "",
+            "career": "",
+            "main_career": "University of Minnesota 경영대학원 석사(MBA)\n前 두산그룹 지주부문 경영관리 상무\n前 현대그룹 전략기획본부 경영관리 상무\n現 Alvarez & Marsal 한국법인 대표\n現 AJ네트웍스㈜ 기타비상무이사(2023년 9월~현재)",
+            "tenure": ""
+          },
+          {
+            "name": "변상모",
+            "position": "",
+            "career": "",
+            "main_career": "고려대학교 경영학 졸업\n前 신한은행 CIB사업부장\n前 신한인도네시아은행 은행장\n前 신한은행 인도본부 법인장\n前 AJ네트웍스㈜ 경영기획실장 \n現 AJ네트웍스㈜ 재무기획실장",
+            "tenure": ""
+          },
+          {
+            "name": "신현민",
+            "position": "",
+            "career": "",
+            "main_career": "서울대학교 국제경제학 졸업\n前 신한금융지주회사 인사부장\n前 신한은행 인사부장, 본부장\n現 AJ네트웍스㈜ 인사기획실장(2022년 8월~현재)",
+            "tenure": ""
+          }
+        ]
+      },
+      "investment_analysis": {
+        "success": true,
+        "corp_code": "00365387",
+        "bsns_year": "2024",
+        "collected_at": "2025-06-20T15:35:26.989886",
+        "dividend_info": [
+          {
+            "dividend_classification": "주당액면가액(원)",
+            "current_year": 1000.0,
+            "previous_year": 1000.0,
+            "two_years_ago": 1000.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "(연결)당기순이익(백만원)",
+            "current_year": 21601.0,
+            "previous_year": 16472.0,
+            "two_years_ago": 8667.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "(별도)당기순이익(백만원)",
+            "current_year": 24999.0,
+            "previous_year": 23817.0,
+            "two_years_ago": -1729.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "(연결)주당순이익(원)",
+            "current_year": 485.0,
+            "previous_year": 368.0,
+            "two_years_ago": 199.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "현금배당금총액(백만원)",
+            "current_year": 12083.0,
+            "previous_year": 12137.0,
+            "two_years_ago": 12087.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주식배당금총액(백만원)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "(연결)현금배당성향(%)",
+            "current_year": 55.6,
+            "previous_year": 73.5,
+            "two_years_ago": 135.9,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "현금배당수익률(%)",
+            "current_year": 5.7,
+            "previous_year": 5.4,
+            "two_years_ago": 4.6,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "현금배당수익률(%)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주식배당수익률(%)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주식배당수익률(%)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주당 현금배당금(원)",
+            "current_year": 270.0,
+            "previous_year": 270.0,
+            "two_years_ago": 270.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주당 현금배당금(원)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주당 주식배당(주)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주당 주식배당(주)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          }
+        ],
+        "capital_changes": [
+          {
+            "change_type": "-",
+            "settlement_date": "2024-12-31",
+            "note": "증자감자 실적이 없는 경우 '-' 표시"
+          }
+        ],
+        "other_investments": [
+          {
+            "company_name": "AJ토탈㈜",
+            "first_acquisition_date": "2008.03.01",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 13052736000,
+            "ending_shares": 405280,
+            "ownership_ratio": 100.0,
+            "book_value": 22837073000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "류가형골프아카데미㈜",
+            "first_acquisition_date": "2016.01.05",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 500000000,
+            "ending_shares": 100000,
+            "ownership_ratio": 100.0,
+            "book_value": 16294000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "AJ RENTAL ARABIA.LTD",
+            "first_acquisition_date": "2020.07.30",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 160820000,
+            "ending_shares": 500,
+            "ownership_ratio": 100.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "AJ 대원㈜",
+            "first_acquisition_date": "2021.06.02",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 13256229000,
+            "ending_shares": 172346,
+            "ownership_ratio": 100.0,
+            "book_value": 11357748000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "AJ ICT㈜",
+            "first_acquisition_date": "2021.04.23",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 2202562000,
+            "ending_shares": 12355189,
+            "ownership_ratio": 99.83,
+            "book_value": 2230998000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "AJ TOTAL VIETNAM Co., Ltd",
+            "first_acquisition_date": "2021.12.21",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 24039481000,
+            "ending_shares": 28870000,
+            "ownership_ratio": 100.0,
+            "book_value": 22959653000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "AJ TOTAL HANOI Co.,Ltd",
+            "first_acquisition_date": "2021.12.21",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 6970424000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "AJ LogisValue Poland Sp. Z.o.o",
+            "first_acquisition_date": "2022.06.15",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 996015000,
+            "ending_shares": 64500,
+            "ownership_ratio": 100.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "AJ LogisValue Hungary Kft.",
+            "first_acquisition_date": "2022.11.29",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 10260000,
+            "ending_shares": 3000000,
+            "ownership_ratio": 100.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜티에스글로벌",
+            "first_acquisition_date": "2022.11.15",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 3422485000,
+            "ending_shares": 11200,
+            "ownership_ratio": 70.0,
+            "book_value": 1133178000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "AJ LogisValue USA Inc.",
+            "first_acquisition_date": "2023.07.06",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 1302397000,
+            "ending_shares": 1000000,
+            "ownership_ratio": 100.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "AJ에너지㈜",
+            "first_acquisition_date": "2018.11.01",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 15000000000,
+            "ending_shares": 285715,
+            "ownership_ratio": 100.0,
+            "book_value": 25485719000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "에이제이트랜스밸류㈜",
+            "first_acquisition_date": "2024.01.31",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 500000000,
+            "ending_shares": 1000000,
+            "ownership_ratio": 100.0,
+            "book_value": 506478000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "AJ LogisValue India Pvt. Ltd.",
+            "first_acquisition_date": "2024.08.29",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 15900000,
+            "ending_shares": 99999,
+            "ownership_ratio": 99.99,
+            "book_value": 14067000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "차파트너스 퍼블릭모빌리티 제1호 사모투자합자회사",
+            "first_acquisition_date": "2019.12.23",
+            "investment_purpose": "관계회사",
+            "first_acquisition_amount": 7900000000,
+            "ending_shares": 0,
+            "ownership_ratio": 49.38,
+            "book_value": 7747138000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "차파트너스 퍼블릭모빌리티 제2호 사모투자합자회사",
+            "first_acquisition_date": "2020.06.26",
+            "investment_purpose": "관계회사",
+            "first_acquisition_amount": 7900000000,
+            "ending_shares": 0,
+            "ownership_ratio": 49.38,
+            "book_value": 7999976000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "차파트너스 퍼블릭모빌리티 제3호 사모투자합자회사",
+            "first_acquisition_date": "2020.12.02",
+            "investment_purpose": "관계회사",
+            "first_acquisition_amount": 9900000000,
+            "ending_shares": 0,
+            "ownership_ratio": 49.5,
+            "book_value": 10130452000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "AUTO GALLERY HOLDINGS. INC",
+            "first_acquisition_date": "2016.01.28",
+            "investment_purpose": "관계회사",
+            "first_acquisition_amount": 18087600000,
+            "ending_shares": 1080,
+            "ownership_ratio": 49.98,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜모스트엑스",
+            "first_acquisition_date": "2021.04.01",
+            "investment_purpose": "관계회사",
+            "first_acquisition_amount": 9078712000,
+            "ending_shares": 32381,
+            "ownership_ratio": 10.53,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "에이투파트너스라이노스 제 1호 사모투자합자회사",
+            "first_acquisition_date": "2021.06.02",
+            "investment_purpose": "관계회사",
+            "first_acquisition_amount": 18503407000,
+            "ending_shares": 0,
+            "ownership_ratio": 33.2,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜다래파크텍",
+            "first_acquisition_date": "2021.06.25",
+            "investment_purpose": "관계회사",
+            "first_acquisition_amount": 8205769000,
+            "ending_shares": 89230,
+            "ownership_ratio": 37.3,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "전시몰닷컴㈜",
+            "first_acquisition_date": "2015.11.10",
+            "investment_purpose": "관계회사",
+            "first_acquisition_amount": 23428955000,
+            "ending_shares": 828201,
+            "ownership_ratio": 33.33,
+            "book_value": 2550527000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "AJ렌탈서비스㈜",
+            "first_acquisition_date": "2007.11.09",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 439555000,
+            "ending_shares": 87911,
+            "ownership_ratio": 100.0,
+            "book_value": 166635000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "(주)케이탑자기관리부동산투자회사",
+            "first_acquisition_date": "2011.03.24",
+            "investment_purpose": "투자",
+            "first_acquisition_amount": 4169666000,
+            "ending_shares": 3966088,
+            "ownership_ratio": 8.25,
+            "book_value": 3779682000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜알피스페이스",
+            "first_acquisition_date": "2016.08.01",
+            "investment_purpose": "투자",
+            "first_acquisition_amount": 500020000,
+            "ending_shares": 3825,
+            "ownership_ratio": 1.37,
+            "book_value": 500020000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "디스커버리자산운용㈜",
+            "first_acquisition_date": "2016.11.10",
+            "investment_purpose": "투자",
+            "first_acquisition_amount": 189997000,
+            "ending_shares": 80100,
+            "ownership_ratio": 5.95,
+            "book_value": 138798000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "차파트너스이에스지퍼블릭모빌리티사모투자 합자회사",
+            "first_acquisition_date": "2021.12.31",
+            "investment_purpose": "투자",
+            "first_acquisition_amount": 15010000000,
+            "ending_shares": 0,
+            "ownership_ratio": 19.0,
+            "book_value": 16117847000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "에스브이컨슈머제1호사모투자회사",
+            "first_acquisition_date": "2021.04.01",
+            "investment_purpose": "투자",
+            "first_acquisition_amount": 16688194000,
+            "ending_shares": 0,
+            "ownership_ratio": 29.17,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "어쎈타 6호 사모투자 합자회사",
+            "first_acquisition_date": "2021.12.31",
+            "investment_purpose": "투자",
+            "first_acquisition_amount": 0,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 411349000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "(주)클로소사이언스",
+            "first_acquisition_date": "2021.04.01",
+            "investment_purpose": "투자",
+            "first_acquisition_amount": 0,
+            "ending_shares": 9444,
+            "ownership_ratio": 4.17,
+            "book_value": 499984000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "AJ Rental Co., Ltd",
+            "first_acquisition_date": "2008.07.09",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 11542477000,
+            "ending_shares": 10000000,
+            "ownership_ratio": 100.0,
+            "book_value": 14448258000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜AJ전국스카이",
+            "first_acquisition_date": "2017.09.30",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 6000000000,
+            "ending_shares": 1200000,
+            "ownership_ratio": 100.0,
+            "book_value": 5533742000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "AJ RENTAL INC",
+            "first_acquisition_date": "2018.03.15",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 87105510000,
+            "ending_shares": 73700763,
+            "ownership_ratio": 100.0,
+            "book_value": 105452807000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "에이제이메인터넌스파트너스㈜",
+            "first_acquisition_date": "2018.10.15",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 5633519000,
+            "ending_shares": 459732,
+            "ownership_ratio": 100.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜월드컨설팅",
+            "first_acquisition_date": "2018.12.31",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 650000000,
+            "ending_shares": 65000,
+            "ownership_ratio": 100.0,
+            "book_value": 620703000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜포시즌컨설팅",
+            "first_acquisition_date": "2018.12.31",
+            "investment_purpose": "자회사",
+            "first_acquisition_amount": 500000000,
+            "ending_shares": 6000,
+            "ownership_ratio": 100.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "합계",
+            "first_acquisition_date": "-",
+            "investment_purpose": "-",
+            "first_acquisition_amount": 0,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 262639126000,
+            "settlement_date": "2024-12-31"
+          }
+        ]
+      },
+      "disclosure_monitoring": {
+        "success": true,
+        "monitoring_period": "최근 30일",
+        "collected_at": "2025-06-20T15:35:27.664146",
+        "recent_disclosures": [
+          {
+            "corp_name": "AJ네트웍스",
+            "report_name": "주식등의대량보유상황보고서(일반)",
+            "receipt_number": "20250619000301",
+            "receipt_date": "2025-06-19",
+            "receipt_date_raw": "20250619",
+            "submitter": "문덕영",
+            "remarks": ""
+          },
+          {
+            "corp_name": "AJ네트웍스",
+            "report_name": "기업지배구조보고서공시",
+            "receipt_number": "20250529800292",
+            "receipt_date": "2025-05-29",
+            "receipt_date_raw": "20250529",
+            "submitter": "AJ네트웍스",
+            "remarks": "유"
+          },
+          {
+            "corp_name": "AJ네트웍스",
+            "report_name": "임원ㆍ주요주주특정증권등거래계획보고서",
+            "receipt_number": "20250523000488",
+            "receipt_date": "2025-05-23",
+            "receipt_date_raw": "20250523",
+            "submitter": "문선우",
+            "remarks": ""
+          },
+          {
+            "corp_name": "AJ네트웍스",
+            "report_name": "임원ㆍ주요주주특정증권등거래계획보고서",
+            "receipt_number": "20250523000477",
+            "receipt_date": "2025-05-23",
+            "receipt_date_raw": "20250523",
+            "submitter": "문지회",
+            "remarks": ""
+          },
+          {
+            "corp_name": "AJ네트웍스",
+            "report_name": "임원ㆍ주요주주특정증권등거래계획보고서",
+            "receipt_number": "20250523000463",
+            "receipt_date": "2025-05-23",
+            "receipt_date_raw": "20250523",
+            "submitter": "문덕영",
+            "remarks": ""
+          }
+        ],
+        "important_notices": [
+          {
+            "corp_name": "AJ네트웍스",
+            "report_name": "기업지배구조보고서공시",
+            "receipt_number": "20250529800292",
+            "receipt_date": "2025-05-29",
+            "receipt_date_raw": "20250529",
+            "submitter": "AJ네트웍스",
+            "remarks": "유",
+            "importance_level": "일반",
+            "importance_reason": "'기업지배구조' 관련 공시",
+            "priority_score": 40,
+            "content_summary": "수정공시.LCommon기업지배구조 보고서 공시[000001] 기업지배구조보고서 신고서기업지배구조보고서 신고서[000002] I. 기업개요1. 기업명AJ네트웍스2. 공시대상 기간 및 보고서 작성 기준일:공시대상 기간 시작일2024-01-01공시대상 기간 종료일2024-12-31보고서 작성 기준일2024-12-312-1. 당기~전전기 회계연도 기간구분당기전기전전기회계기간 시작일2024-01-012023-01-012022-01-01회계기간 종료일2024-12-312023-12-312022-12-313. 기업지배구조보고서 작성 담당자공시 책임자실무자성명:변상모성명:류중현직급:부사장직급:과장부서:재무기획실부서:재무기획실전화번호:02-6240-0126전화번호:02-6240-0126이메일:smbyun@ajnet.co.kr이메일:jhryu@ajnet.co.krkrx-gcd_PersonInChargeOfDisclosureMemberkrx-gcd_WorkingLevelStaffMember4."
+          }
+        ],
+        "corrections": [],
+        "data": {
+          "recent_disclosures": [
+            {
+              "corp_name": "AJ네트웍스",
+              "report_name": "주식등의대량보유상황보고서(일반)",
+              "receipt_number": "20250619000301",
+              "receipt_date": "2025-06-19",
+              "receipt_date_raw": "20250619",
+              "submitter": "문덕영",
+              "remarks": ""
+            },
+            {
+              "corp_name": "AJ네트웍스",
+              "report_name": "기업지배구조보고서공시",
+              "receipt_number": "20250529800292",
+              "receipt_date": "2025-05-29",
+              "receipt_date_raw": "20250529",
+              "submitter": "AJ네트웍스",
+              "remarks": "유"
+            },
+            {
+              "corp_name": "AJ네트웍스",
+              "report_name": "임원ㆍ주요주주특정증권등거래계획보고서",
+              "receipt_number": "20250523000488",
+              "receipt_date": "2025-05-23",
+              "receipt_date_raw": "20250523",
+              "submitter": "문선우",
+              "remarks": ""
+            },
+            {
+              "corp_name": "AJ네트웍스",
+              "report_name": "임원ㆍ주요주주특정증권등거래계획보고서",
+              "receipt_number": "20250523000477",
+              "receipt_date": "2025-05-23",
+              "receipt_date_raw": "20250523",
+              "submitter": "문지회",
+              "remarks": ""
+            },
+            {
+              "corp_name": "AJ네트웍스",
+              "report_name": "임원ㆍ주요주주특정증권등거래계획보고서",
+              "receipt_number": "20250523000463",
+              "receipt_date": "2025-05-23",
+              "receipt_date_raw": "20250523",
+              "submitter": "문덕영",
+              "remarks": ""
+            }
+          ],
+          "important_notices": [
+            {
+              "corp_name": "AJ네트웍스",
+              "report_name": "기업지배구조보고서공시",
+              "receipt_number": "20250529800292",
+              "receipt_date": "2025-05-29",
+              "receipt_date_raw": "20250529",
+              "submitter": "AJ네트웍스",
+              "remarks": "유",
+              "importance_level": "일반",
+              "importance_reason": "'기업지배구조' 관련 공시",
+              "priority_score": 40,
+              "content_summary": "수정공시.LCommon기업지배구조 보고서 공시[000001] 기업지배구조보고서 신고서기업지배구조보고서 신고서[000002] I. 기업개요1. 기업명AJ네트웍스2. 공시대상 기간 및 보고서 작성 기준일:공시대상 기간 시작일2024-01-01공시대상 기간 종료일2024-12-31보고서 작성 기준일2024-12-312-1. 당기~전전기 회계연도 기간구분당기전기전전기회계기간 시작일2024-01-012023-01-012022-01-01회계기간 종료일2024-12-312023-12-312022-12-313. 기업지배구조보고서 작성 담당자공시 책임자실무자성명:변상모성명:류중현직급:부사장직급:과장부서:재무기획실부서:재무기획실전화번호:02-6240-0126전화번호:02-6240-0126이메일:smbyun@ajnet.co.kr이메일:jhryu@ajnet.co.krkrx-gcd_PersonInChargeOfDisclosureMemberkrx-gcd_WorkingLevelStaffMember4."
+            }
+          ],
+          "corrections": []
+        }
+      }
+    },
+    "step3_information_collection": {
+      "performed": true,
+      "method": "information_collection_for_crewai_일반문의",
+      "collected_information": "Step 8: Observed output of cmd `browser_use` executed:\nSearch results for 'AJ네트웍스 095570 최신 뉴스':\n\n1. AJ네트웍스(095570) | 기업정보, 재무제표, 최신 뉴스 분석 - ZUM 투자\n   URL: https://invest.zum.com/stock/095570/\n   Description:  AJ네트웍스의 주가가 4035.0원으로 0.88% 상승하였습니다. 이러한 변동에 대한 공식적인 뉴스나 발표는 아직 확인되지 않았습니다. AJ네트웍스. \n   Content: AJ네트웍스(095570) | 기업정보, 재무제표, 최신 뉴스 분석 데일리 브리핑 종목이 포함된 ETF 1 주가 정보 주가 시가총액 등락률 거래량 투자 지표 PER PBR EPS DPS 배당수익률 - 인사이트&뉴스 더 보기 No data 뉴스 정보가 없습니다. 공시 정보 더 보기 No data 공시 정보가 없습니다. 증권사리포트 더 보기 No data 관련 자료가 없습니다. 기업 정보 기업명 사업영역 상장일 산업분야 거래소 주소 사업 현황\n\nMetadata:\n- Total results: 1\n- Language: en\n- Country: us\n\nObserved output of cmd `browser_use` executed:\nSearch results for 'AJ네트웍스 095570 시장 동향':\n\n1. AJ네트웍스(A095570) | Snapshot | 기업정보 | Company Guide\n   URL: https://comp.fnguide.com/SVO2/ASP/SVD_Main.asp?gicode=A095570\n   Description:  AJ네트웍스. 095570. |. 12월 결산 ... 파렛트 렌탈사업은 네트워크 기반의 대규모 자산투입이 필요한 과점시장으로, 농산물·전자제품 등 신규 수요 확대가 예상됨. \n   Content: AJ네트웍스(A095570) | Snapshot | 기업정보 | Company Guide 본문 바로가기 메뉴 바로가기 AJ네트웍스 095570 | 12월 결산 | 홈페이지 홈페이지 http://www.ajnetworks.co.kr 전화번호 전화번호 02-6240-0800 | IR 담당자 주소 주소 서울시 송파구 정의로 8길 9 (AJ빌딩) KSE 코스피 일반서비스 코스피 일반서비스 | FICS 운송인프라 PER(Price Earning Ratio) 전일자 보통주 수정주가 / 최근 결산 EPS(주당순이익) * EPS = 당기순이익 / 수정평균발행주식수 * 최근결산은 2024/12 (연간) 기준임. PER 8.23 12M PER 전일자 보통주 수정주가 / 12개월 Forward EPS 12M PER 9.18 업종 PER 시장대표업종||SUM(구성종목 시가총액)/SUM(구성종목 당기순이익) * 전일자 보통주 시가총액 기준 * 당기순이익은 최근결산 2024/12 (연간) 기준임. 업종 PER 17.72 PBR(Price Book-value Ratio) 전일자 보통주 수정주가 / 최근 결산기 BPS(주당순자산) * BPS=(지배주주지분-자기주식) / 무상조정기말주식수(우선주 및 자사주 포함) * 최근결산은 2024/12 (연간) 기준임. PBR 0.40 배당수익률 {최근 결산기 보통주 DPS(현금, 무상조정) / 전일자 보통주 수정주가} *100 * 최근결산은 2024/12 (연간) 기준임. 배당수익률 6.83% 3개월 1년 3년 SELL BUY 외국인 지분율 시가총액 AJ네트웍스 코스피 일반서비스 KOSPI 주가추이, 내부자거래 3,955 외국인 지분율, 시가총액 3.26 상대수익률 * 상대수익률은 조회시작일의 값을 100포인트로 변환하여 산출된 값입니다. * 특정일의 상대수익률 포인트는 (특정일의 지수 및 주가/조회 기준 시작점의 지수 및 주가) * 100 입니다. 상대수익률 -15.49 시세현황 [2025/06/19] 단위 : 원, 주,% 시세현황 종가/ 전일대비 3,955/ +35 거래량 195,825 52주.최고가/ 최저가 4,970/ 3,550 거래대금 (억원) 8 수익률 (1M/ 3M/ 6M/ 1Y) +9.25 / +2.99 / -16.56 / -15.49 외국인 지분율 3.26 시가총액(상장예정포함) 시가총액(상장예정포함): 종가*(상장주식수+상장예정주식수), (보통주+우선주) 시가총액(보통주)+시가총액(우선주) * 상장예정주식수: 유무상증자, 주식배당의 권리락일(배당락일)이 지났으나, 상장되지 않은 주식수 시가총액 (상장예정포함,억원) 1,790 베타 (1년) 0.52104 시가총액(보통주) 종가(보통주)*상장주식수(보통주) 시가총액 (보통주,억원) 1,790 액면가 1,000 발행주식수 (보통주/ 우선주) 45,252,759/ 0 종가(NXT) - 유동주식수/비율 유동주식비율 = 유동주식수 / 지수산정주식수 * 100. 유동주식수 = 지수산정주식수-(최대주주등(본인+특별관계자)+우리사주+자사주+보호예수+정부기관(5%이상)+해외DR). 유동주식수/비율 (보통주) 19,518,736 / 43.13 거래량/거래대금(NXT) (억원) - 실적이슈 [2025/06 기준, 분기] 실적이슈 잠정실적발표예정일 예상실적 (영업이익, 억원) 3개월전예상실적대비 (%) 전년동기대비 (%) 미정 200 -16.67 -4.76 운용사별 보유 현황 [2025/03] 단위 : 천주, 억원, % 운용사별 보유 현황 운용사명 보유수량 시가평가액 상장주식수내비중 운용사내비중 신영자산운용 1,146.74 42.20 2.53 0.08 삼성자산운용 150.43 5.54 0.33 0.00 에이치디씨자산운용 8.95 0.33 0.02 0.02 마이다스에셋자산운용 6.94 0.26 0.02 0.00 미래에셋자산운용 3.74 0.14 0.01 0.00 케이비자산운용 2.93 0.11 0.01 0.00 한화자산운용 2.09 0.08 0.00 0.00 유리자산운용 0.79 0.03 0.00 0.00 한국투자신탁운용 0.19 0.01 0.00 0.00 * 컨텐츠의 보유 수량, 상장주식 내 비중, 운용사 내 비중 값은 최근 분기말에 공시한 공모펀드 보고서 기준이며, 보유수량 기준 상위 10위 까지 운용사를 보여줍니다. 주주현황 단위 : 주, % 주주현황 항목 보통주 지분율 최종변동일 문덕영(외 4인) 주주명^지분율(%)||||문덕영^25.99||||문지회^14.58||||문선우^14.58||||신기연^0.11||||곽정호^0.09 25,044,889 55.34 2025/03/26 자사주신탁 501,709 1.11 2024/08/06 * 위 내용은 금융감독원 지분공시보고서 기준으로 작성되었으며 (단,자기주식,5%미만임원,우리사주 현황은 별도관리), 주주명은 지분율 상위 6개 까지만 보여집니다. * 보통주 지분율이 5%미만이고, 임원이 아닌 주주는 지분공시제출 제외 대상으로서 표시할 수 없습니다. 주주구분 현황 자세히보기 단위 : 주, % 주주현황 주주구분 대표주주수 보통주 지분율 최종변동일 최대주주등 (본인+특별관계자) 1 25,044,889 55.34 2025/03/26 10%이상주주 (본인+특별관계자) 5%이상주주 (본인+특별관계자) 임원 (5%미만 중, 임원인자) 10 143,916 0.32 2024/07/09 자기주식 (자사주+자사주신탁) 1 501,709 1.11 2024/08/06 우리사주조합 1 187,425 0.41 2023/12/31 * 주주 구분자별 지분율은 서로 중복되지 않습니다. 신용등급현황 기업어음 (CP) 신용등급현황 기업어읍(CP) KIS KR NICE A3+ [2024/12/17] A3+ [2025/05/14] 신용등급현황 회사채(Bond) 주주현황 KIS KR NICE BBB+ [2025/04/23] BBB+ [2025/04/22] 투자의견 컨센서스 [2025/06/19] 단위 : 배, 원, % Buy 4.0 강력매도 매도 중립 매수 강력매수 주주현황 투자의견 목표주가 EPS PER 추정기관수 4.0 4,800 442 9.0 1 * 1=Sell, 2=U/Weight, 3=Neutral, 4=Buy, 5=S/Buy * EPS, PER 은 FY1에 대한 증권사 평균 추정실적임. 투자의견 및 목표주가 투자의견 분포 Business Summary [2025/06/05] 신규 사업 확대로 성장동력 확보 동사는 2000년 2월 주식회사 이렌텍으로 설립되어 2002년 동일하이테크렌탈을 흡수합병하고 아주렌탈로, 2013년 아주엘앤에프홀딩스와 합병하며 에이제이네트웍스로 사명을 변경함. 파렛트, IT기기, 산업안전장비 등의 렌탈 부문과 창고 및 유통 부문, 기타 부동산 관리 부문을 주요 사업으로 영위하고 있으며, 2024년 10월 3실, 3부문, 1총괄본부 체제로 조직을 개편하여 업무 효율성 향상과 자원 활용 최적화를 추진하고 있음. 2025년 1분기 전년동기 대비 연결기준 매출액은 14% 증가, 영업이익은 16.4% 감소, 당기순이익은 0.3% 감소. 파렛트 렌탈사업은 네트워크 기반의 대규모 자산투입이 필요한 과점시장으로, 농산물·전자제품 등 신규 수요 확대가 예상됨. 서빙로봇·협동로봇 렌탈 시장 진출 및 천안 지게차 전용 정비센터 오픈으로 전국 유통망 확대와 경쟁력 강화에 주력하고 있음. 글로벌 경쟁사 비교 자세히보기 주요지표 시가총액 매출액 PER ROE AJ네트웍스 1,790 억원 (100점만점기준) AJ네트웍스 10,142 억원 (100점만점기준) AJ네트웍스 8.23 배 (100점만점기준) AJ네트웍스 5.04 % (100점만점기준) Paraca 1,811 억원 (100점만점기준) Paraca 1,551 억원 (100점만점기준) Paraca 10.19 배 (100점만점기준) Paraca 9.70 % (100점만점기준) Western Carriers India 1,800 억원 (100점만점기준) Western Carriers India 2,742 억원 (100점만점기준) Western Carriers India 15.52 배 (100점만점기준) Western Carriers India 10.62 % (100점만점기준) Spirit Aviation Holdings 1,795 억원 (100점만점기준) Spirit Aviation Holdings 억원 (100점만점기준) Spirit Aviation Holdings - (100점만점기준) Spirit Aviation Holdings % (100점만점기준) 수익률 비교 3개월 1년 3년 단위 : % 업종 비교 단위 : 억원, 배, % 연결 별도 업종 비교 구분 AJ네트웍스 코스피 일반서비스 KOSPI 시가총액 1,790 510,816 24,418,993 매출액 10,142 534,745 33,575,820 영업이익 728 42,335 2,495,476 EPS (원) 481 6,431.94 7,001.69 PER 최근결산 보통주 수정가 / 최근결산 EPS PER 8.96 14.67 11.29 EV/EBITDA (시가총액+순차입금)/EBITDA EV/EBITDA 4.98 7.29 6.44 ROE 5.04 12.12 7.48 배당수익률 6.27 2.44 2.28 베타 (1년) 0.45 0.70 1.00 EPS PER EV/EBITDA ROE 배당수익률 업종 비교 구분 AJ네트웍스 코스피 일반서비스 KOSPI 시가총액 1,790 510,816 24,418,993 매출액 6,117 296,472 17,385,526 영업이익 832 30,249 1,395,305 EPS (원) 552 5,454.24 5,389.18 PER 7.79 17.30 14.67 EV/EBITDA 4.93 9.38 9.01 ROE 5.71 13.03 7.73 배당수익률 6.27 2.44 2.28 베타 (1년) 0.45 0.70 1.00 EPS PER EV/EBITDA ROE 배당수익률 * 직전 회계년도 결산 Data입니다.(단 시가총액은 전일기준임) * 영업이익은 제조업인 경우 영업이익, 금융업인 경우 영업손익입니다. Band Chart 단위 : 억원, 배, % 연결 별도 PER Band PBR Band 주가 및 수급현황 대차잔고비중 차입공매도비중 Financial Highlight 단위 : 억원...\n\nMetadata:\n- Total results: 1\n- Language: en\n- Country: us\n\nObserved output of cmd `browser_use` executed:\nSearch results for 'AJ네트웍스 095570 애널리스트 의견':\n\n1. AJ네트웍스(A095570) | Consensus | 기업정보 | Company Guide\n   URL: https://comp.fnguide.com/SVO2/ASP/SVD_Consensus.asp?pGB=1&gicode=A095570&cID=&MenuYn=Y&ReportGB=&NewMenuID=108&stkGb=701\n   Description:  AJ네트웍스 · 095570 · 12월 결산 · 실적&컨센서스 추이 · 컨센서스 시계열 추이 · 증권사별 적정주가 & 투자의견 · 리포트 요약. \n   Content: AJ네트웍스(A095570) | Consensus | 기업정보 | Company Guide 본문 바로가기 메뉴 바로가기 상장기업분석 리포트 앱 리타민, 라이트요금제 곧 출시 모든 증권사 리포트를 더 가벼운 요금으로 열기 인쇄 기업정보 Snapshot 기업개요 재무제표 재무비율 투자지표 컨센서스 지분분석 업종분석 경쟁사비교 거래소공시 금감원공시 ETF/ETN 정보 ETF Snapshot 성과 및 위험분석 ETN Snapshot 리포트 리포트동향 요약리포트 실적속보 컨센서스 스크리닝 목표주가 괴리율 컨센서스 상/하향 비율 어닝서프라이즈 턴어라운드 랭킹 분석 업종별 순위 지표별 순위 ETF 순위 캘린더 부가정보 신용등급 기업주소록 이용안내 Retamin Retamin AJ네트웍스 095570 | 12월 결산 | 홈페이지 홈페이지 http://www.ajnetworks.co.kr 전화번호 전화번호 02-6240-0800 | IR 담당자 주소 주소 서울시 송파구 정의로 8길 9 (AJ빌딩) KSE 코스피 일반서비스 코스피 일반서비스 | FICS 운송인프라 PER(Price Earning Ratio) 전일자 보통주 수정주가 / 최근 결산 EPS(주당순이익) * EPS = 당기순이익 / 수정평균발행주식수 * 최근결산은 2024/12 (연간) 기준임. PER 8.23 12M PER 전일자 보통주 수정주가 / 12개월 Forward EPS 12M PER 9.18 업종 PER 시장대표업종||SUM(구성종목 시가총액)/SUM(구성종목 당기순이익) * 전일자 보통주 시가총액 기준 * 당기순이익은 최근결산 2024/12 (연간) 기준임. 업종 PER 17.72 PBR(Price Book-value Ratio) 전일자 보통주 수정주가 / 최근 결산기 BPS(주당순자산) * BPS=(지배주주지분-자기주식) / 무상조정기말주식수(우선주 및 자사주 포함) * 최근결산은 2024/12 (연간) 기준임. PBR 0.40 배당수익률 {최근 결산기 보통주 DPS(현금, 무상조정) / 전일자 보통주 수정주가} *100 * 최근결산은 2024/12 (연간) 기준임. 배당수익률 6.83% 실적&컨센서스 추이 [연결 | 연간 | 지배주주순이익] 단위 : 억원, 배 연결 별도 연간 분기 매출액 영업이익 지배주주순이익 조회 실적&컨센서스 추이 컨센서스 시계열 추이 단위 : 억원, 배 연결 별도 연간 분기 202512 202612 202712 조회 컨센서스 시계열 추이 매출액 영업이익 지배주주순이익 EPS PER 12M PER * 직전 회계년도 결산 Data입니다.(단 시가총액은 전일기준임) * 영업이익은 제조업인 경우 영업이익, 금융업인 경우 영업손익입니다. 증권사별 적정주가 & 투자의견 단위 : 원, % 증권사별 적정주가 & 투자의견 추정기관 추정일자 적정주가 투자의견 적정주가 직전 적정주가 증감율 투자의견 직전 투자의견 리포트 요약 단위 : 원 리포트요약 일자 종목명 - 리포트 요약 투자의견 목표주가 전일종가 제공처/작성자 fnguide.com FnGuide에서 제공하는 정보는 신뢰할 만한 자료 및 정보로부터 얻어진 것이나 그 정확성이나 완전성을 보장 할 수 없으며, 시간이 경과함에 따라 변경될 수 있습니다. 따라서 정보의 오류, 누락에 대하여 FnGuide 또는FnGuide에 자료를 제공하는 회사에서는 그 결과에 대해 법적인 책임을 지지 않습니다. 모든 콘텐츠에 대한 저작권은 FnGuide에 있으며 사전 허가없이 이를 무단으로 사용하거나, 데이터 베이스화 할 경우 민형사상 책임을 물을 수 있습니다. 웹 접근성 우수사이트 인증마크(WA인증마크) 제목제목 내용내용내용내용내용내용내용내용\n\nMetadata:\n- Total results: 1\n- Language: en\n- Country: us\n\nObserved output of cmd `browser_use` executed:\nSearch results for 'AJ네트웍스 095570 경쟁사 정보':\n\n1. AJ네트웍스 - 경쟁사분석 - 기업모니터\n   URL: https://comp.wisereport.co.kr/company/c1060001.aspx?cmp_cd=095570&cn=\n   Description:  기업현황 · 기업개요 · 재무분석 · 투자지표 · 컨센서스 · 경쟁사분석 · 업종분석 · 지분현황 · 최근리포트 · 금감원공시. 경쟁사분석. 인쇄인쇄. 요약정보. AJ네트웍스 ... \n   Content: AJ네트웍스 - 경쟁사분석 - 기업모니터 CompanyWise 리포트 앱 리타민, 라이트요금제 출시 지금 구독하면 얼리버드 평생할인 검색 메인메뉴 기업모니터 ETF/ETN 어닝스모니터 랭킹정보 부가정보 리포트서머리 어닝스캘린더 서브메뉴 기업현황 기업개요 재무분석 투자지표 컨센서스 경쟁사분석 업종분석 지분현황 최근리포트 금감원공시 기업모니터 인쇄 인쇄 요약정보 AJ네트웍스 095570 홈페이지 대표전화 주소 EPS 481 BPS 9,902 PER 8.23 업종PER 8.39 PBR 0.40 현금배당수익률 6.83% 전일종가 3,955 도움말 KOSPI : 코스피 일반서비스 | WI26 : 운송 | 12월 결산 * PER : 전일자 보통주 수정주가 / 최근결산 EPS * PBR : 전일자 보통주 수정주가 / 최근결산 BPS * 현금배당수익률 : 최근 결산 수정DPS(현금) / 전일자 보통주 수정주가 * PER, PBR값이 (-)일 경우, N/A로 표기됩니다. * WI26 : WISE Industry 26 펀더멘털 비교 재무제표기준 주재무제표 K-IFRS(별도) K-IFRS(연결) K-GAAP(개별) K-GAAP(연결) 기준업종 [FG000]경쟁사 비교 [KOSPI]코스피 일반서비스 [WI26]에너지 [WI26]화학 [WI26]비철,목재등 [WI26]철강 [WI26]건설,건축관련 [WI26]기계 [WI26]조선 [WI26]상사,자본재 [WI26]운송 [WI26]자동차 [WI26]화장품,의류,완구 [WI26]호텔,레저서비스 [WI26]미디어,교육 [WI26]소매(유통) [WI26]필수소비재 [WI26]건강관리 [WI26]은행 [WI26]증권 [WI26]보험 [WI26]소프트웨어 [WI26]IT하드웨어 [WI26]반도체 [WI26]IT가전 [WI26]디스플레이 [WI26]통신서비스 [WI26]유틸리티 검색 IFRS 기준업종 연간 분기 자산총계(억원) 자료보기 차트 건너뛰기 \"데이터를 차트로 제공하고 있습니다. 차트를 건너뛰고 싶은 경우 이 링크를 선택하시기 바랍니다.\" 차트 건너뛰기 ※ 종목선택은 최대 4개까지 입니다. ※ 각 항목 입력 후 엔터키를 누르시면 분석결과를 확인하실수 있습니다. ※ 재무아이템을 클릭하시면 아래 기업의 최근 결산/분기 순액 데이터를 차트로 확인하실수 있습니다. 기업간비교자료(연간) 항목 AJ네트웍스 A095570 (IFRS연결) 종목입력2 기업검색 () 종목입력3 기업검색 () 종목입력4 기업검색 () 종목입력5 기업검색 () * 재무실적 업데이트는 검수 및 주석반영으로 공시 이후 약 일주일 정도 소요되며, 기업별로 다르게 적용됨 * IFRS 연결 기업의 당기순이익 및 자본총계는 지배주주 기준 * 영업이익 = 매출액 - 매출원가 - 판매비와관리비 주석 펼치기/접기 FnGuide에서 제공하는 정보는 신뢰할 만한 자료 및 정보로부터 얻어진 것이나 그 정확성이나 완전성을 보장 할 수 없으며, 시간이 경과함에 따라 변경될 수 있습니다. 따라서 정보의 오류, 누락에 대하여 FnGuide 또는FnGuide에 자료를 제공하는 회사에서는 그 결과에 대해 법적인 책임을 지지 않습니다. 모든 콘텐츠에 대한 저작권은 FnGuide에 있으며 사전 허가없이 이를 무단으로 사용하거나, 데이터 베이스화 할 경우 민형사상 책임을 물을 수 있습니다.\n\nMetadata:\n- Total results: 1\n- Language: en\n- Country: us\n\nObserved output of cmd `browser_use` executed:\nError: Browser action 'web_search' failed: Page.goto: net::ERR_ABORTED at https://kr.tradingview.com/symbols/KRX-095570/technicals/\nCall log:\n  - navigating to \"https://kr.tradingview.com/symbols/KRX-095570/technicals/\", waiting until \"load\"\n\n\nObserved output of cmd `browser_use` executed:\nSearch results for 'AJ네트웍스 095570 PDF 보고서':\n\n1. [PDF] AJ 네트웍스(095570. KS) - 유진투자증권\n   URL: https://www.eugenefn.com/common/files/amail//20241115_095570_jongsun.park_2256.pdf\n   Description:  Nov 15, 2024  ·  당사 추정 4 분기 예상실적(연결기준)은 매출액 2,587 억원, 영업이익 242 억원. 으로 전년동기 대비 각각 4.6%, 12.9% 증가할 것으로 예상함. 고금리 ... \n   Content: [PDF 파일 텍스트 추출 완료 - https://www.eugenefn.com/common/files/amail//20241115_095570_jongsun.park_2256.pdf]  --- 페이지 1 --- 코스닥벤처 | 렌탈 산업 | 2024.11.15 투자의견 AJ 네트웍스 (095570. KS) BUY (유지) 목표주가 6,500 원(유지) 현재주가 4,540 원(11/14) 시가총액 3Q24 Review: 로봇 사업 본격화 준비 205 (십억원) Analyst 박종선_ 02)368-6076_ jongsun.park@eugenefn.com 3Q24 Review: 매객된 자회사 실적 제거 시 전분기에 이어서 전년동기 대비 성장세 전환에 성공.  - 매출액 2,498억원, 영업이익 196억원으로 전년동기 대비 각각 4.3%, 6.6% 감소하였음. - 3분기 실적에서 긍정적인 것은 전년동기 실적에서 매각된 자회사 AJ메인터넌스파트너스의 지난해 3분 실적(매출 액 291억원, 영업이익 5억원) 등을 제외하면 전년동기 대비 매출액이 9.1% 증가하였음. 자회사였던 AJ메인터넨 스파트너스는 로봇 사업부문을 본격화 위해 본사의 사업부로 재편성하고, 자동차 사업부문은 지난 8월 매각함. - 영업외 비용이 크게 감소하면서 세전이익은 전년동기 대비 615.1% 증가하면서 크게 개선된 것은 긍정적임. 4Q24 Preview: 고금리 인하 기조 전환으로 기업의 투자 재개에 따른 실적 성장과 함께 수익성 개선 기대.  매출액 2,587억원, 영업이익 242억원으로 전년동기 대비 각각 4.6%, 12.9% 증가할 것으로 예상함.  고금리 인하기조 전환으로 기업의 투자 전환에 대한 기대감과, 로봇 렌탈 사업 및 A/S 사업 본격화 등은 긍정적임.  이미 사업 제휴를 진행해온 레인보우로보틱스, 두산로보틱스와의 사업이 점차 구체화될 것으로 예상함. 목표주가 6,500원, 투자의견 BUY 유지. 현재 주가는 2024년 예상실적 기준 PER 8.6배로 Valuation 매력 보유  주가(원, 11/14) 4,540 12월 결산(십억원) 2022A 2023A 2024E 2025E 시가총액(십억원) 205 매출액 1,193.7 1,002.0 1,032.7 1,092.7 영업이익 76.4 78.4 84.2 91.9 발행주식수 45,253천주 세전손익 26.1 29.0 42.0 70.7 52주 최고가 5,320원 당기순이익 8.7 16.5 31.0 48.8 최저가 3,980원 EPS(원) 190 365 667 1,078 52주 일간 Beta 0.55 증감률(%) -88.4 92.2 82.6 61.7 60일 일평균거래대금 5억원 PER(배) 30.1 13.6 6.8 4.2 외국인 지분율 1.3% ROE(%) 2.5 4.2 7.6 12.3 배당수익률(2024F) 5.9% PBR(배) 0.7 0.5 0.5 0.5 EV/EBITDA(배) 4.6 4.7 4.4 4.6 주주구성 자료: 유진투자증권 문덕영 (외 6인) 63.1% 자사주신탁 (외 1인) 1.1% 주가(좌,원) 6,000 130 KOSPI지수대비(우, p) 120 주가상승 (%) 1M 6M 12M 5,000 110 절대기준 -6.3 -9.0 12.5 4,000 100 상대기준 1.5 2.4 13.1 90 3,000 80 (십억원, 원) 현재 직전 변동 2,000 70 투자의견 BUY BUY - 60 목표주가 6,500 6,500 - 1,000 50 영업이익(24) 84.2 89.7 ▼ 0 40 영업이익(25) 91.9 95.0 ▼ 23.11 24.3 24.7  --- 페이지 2 --- AJ네트웍스(095570. KS) I. 3Q24 Review & 투자전략 3Q24 Review: 전일(11/14) 발표한 동사의 3 분기 실적(연결 기준)은 매출액 2,498 억원, 영업 매각된 자회사 이익 196 억원으로 전년동기 대비 각각 4.3%, 6.6% 감소하였음. 시장 기대치 실적을 제외하면, (매출액 2,731억원, 영업이익 230억원) 대비 매출액은 하회하였음. 지난 분기에 이어 3분기 실적에서 긍정적인 것은 전년동기 실적에서 매각된 자회사 AJ메인터넌스 전년동기 매출 성장 파트너스의 지난해 3분 실적(매출액 291억원, 영업이익 5억원) 등을 제외하면 달성 지속 전년동기 대비 매출액이 9.1% 증가하였음. 자회사였던 AJ 메인터넨스파트너스 는 로봇 사업부문을 본격화하기 위해 본사의 사업부로 재편성하고, 자동차 사업 부문은 효율성 제고를 목적으로 지난 8월에 매각함. 자회사 매각을 반영한 매출액이 전년동기 대비 증가함에도 불구하고, 여전히 영 업이익 개선 속도는 늦어지고 있어, 여전히 비효율적인 자회사 매각은 지속될 것 으로 예상함. 영업외 비용이 크게 감소하면서 세전이익은 전년동기 대비 615.1% 증가하면서 크게 개선된 것은 긍정적임. 4Q24 Preview: 당사 추정 4 분기 예상실적(연결기준)은 매출액 2,587 억원, 영업이익 242 억원 전년동기 대비 으로 전년동기 대비 각각 4.6%, 12.9% 증가할 것으로 예상함. 고금리 인하기 실적 성장세 조 전환으로 기업의 투자 기대감, 로봇렌탈 사업 및 A/S 사업 본격화 등은 긍정 지속 전망 적임. 레인보우로보틱스, 두산로보틱스와의 사업이 점차 구체화될 것으로 예상함. 목표주가, 투자의견 목표주가는 6,500 원을 유지하고, 투자의견 BUY 를 유지. 현재 주가는 2024 년 유지함 예상실적 기준 PER 6.8배로 유사업체 평균 PER 10.8배 대비 할인되어 거래 중. 3Q24A 4Q24E 2024E 2025E (단위: 십억원, 실적 당사 2023A (%,%p) 차이 컨센서스 차이 예상치 qoq yoy 예상치 yoy 예상치 yoy 발표 예상치 매출액 249.8 273.1 -8.5 273.1 -8.5 258.7 3.6 4.6 1,002.0 1,032.7 3.1 1,092.7 5.8 영업이익 19.6 25.0 -21.7 23.0 -14.8 24.2 23.3 12.9 78.4 84.2 7.5 91.9 9.1 세전이익 14.2 10.8 30.5 8.4 68.6 16.2 14.2 -26.8 29.0 42.0 44.9 70.7 68.2 순이익 10.9 7.5 46.0 7.5 45.7 11.2 2.1 1.6 16.5 31.0 88.2 48.8 57.4 지배 순이익 10.5 7.5 40.1 5.8 82.4 11.2 6.4 1.0 16.5 30.2 82.6 48.8 61.7 영업이익률 7.8 9.2 -1.3 8.4 -0.6 9.3 1.5 0.7 7.8 8.2 0.3 8.4 0.3 순이익률 4.4 2.7 1.6 2.7 1.6 4.3 -0.1 -0.1 1.6 3.0 1.4 4.5 1.5 EPS(원) 927 662 40.1 508 82.4 987 6.4 1.0 365 667 82.6 1,078 61.7 BPS(원) 8,100 8,039 0.7 9,439 -14.2 8,346 3.0 -9.9 9,264 8,346 -9.9 9,154 9.7 ROE(%) 11.4 8.2 3.2 5.4 6.1 11.8 0.4 1.3 4.2 7.6 3.3 12.3 4.8 PER(X) 4.9 6.9 - 8.9 - 4.6 - - 13.6 6.8 - 4.2 - PBR(X) 0.6 0.6 - 0.5 - 0.5 - - 0.5 0.5 - 0.5 - 자료: AJ네트웍스, 유진투자증권 주: EPS는 annualized 기준 2_ Eugene Research Center  --- 페이지 3 --- AJ네트웍스(095570. KS) II. 실적 추이 및 전망 도표 1. 3Q24 실적(연결 기준): 매출액 -4.3%yoy, 영업이익 -6.6%yoy 3Q24A 3Q23A 2Q24A (십억원,%) 실적 YoY(%,%p) QoQ(%,%p) 실적 실적 매출액 249.8 -4.3 -10.6 261.0 279.4 부문별 매출액 렌탈 부문 143.6 -6.3 -24.3 153.2 189.7 창고/유통 부문 91.9 1.2 -4.0 90.8 95.7 기타 부문 14.4 -15.3 -341.1 17.0 - 6.0 부문별 비중(%) 렌탈 부문 57.5 -1.3 -10.4 58.7 67.9 창고/유통 부문 36.8 2.0 2.5 34.8 34.3 기타 부문 5.7 -0.8 7.9 6.5 -2.1 수익(십억원) 영업비용 230.2 -4.1 -10.9 240.0 258.4 영업이익 19.6 -6.6 -6.7 21.0 21.0 세전이익 14.2 615.1 203.1 2.0 4.7 당기순이익 10.9 639.7 243.2 1.5 3.2 지배기업당기순이익 10.5 620.6 228.8 1.5 3.2 이익률(%) 영업비용율 92.2 0.2 -0.3 92.0 92.5 영업이익률 7.8 -0.2 0.3 8.0 7.5 세전이익률 5.7 4.9 4.0 0.8 1.7 당기순이익률 4.4 3.8 3.2 0.6 1.1 지배기업순이익률 4.2 3.6 3.1 0.6 1.1 자료: 유진투자증권 도표 2. 사업부문별 매출액 증감 현황 도표 3. 수익성 증감 현황 (십억원) (십억원) 3Q23A 3Q24A 3Q23A 3Q24A 180.0 25.0 160.0 140.0 20.0 120.0 100.0 15.0 80.0 60.0 10.0 40.0 20.0 5.0 0.0 렌탈부문 창고및유통 기타부문 0.0 부문 영업이익 세전이익 당기순이익 자료: 유진투자증권 자료: 유진투자증권 Eugene Research Center _3  --- 페이지 4 --- AJ네트웍스(095570. KS) 도표 4. 분기별 실적 추이 및 전망(연결 기준) (십억원,%) 1Q22A 2Q22A 3Q22A 4Q22A 1Q23A 2Q23A 3Q23A 4Q23A 1Q24A 2Q24A 3Q24A 4Q24F 매출액 295.8 284.2 345.1 283.3 254.0 239.8 261.0 247.2 244.8 279.4 249.8 258.7 증가율(%,YoY) 15.5 10.7 22.1 52.0 -14.1 -15.6 -24.4 -7.9 -3.6 16.5 -4.3 4.6 증가율(%,QoQ) 58.7 -3.9 21.4 -17.9 -5.4 -5.6 8.8 -5.3 -1.0 14.1 -10.6 3.6 부문별 매출액 렌탈 부문 159.5 142.3 172.3 174.7 140.0 150.2 153.2 150.1 152.6 189.7 143.6 157.6 창고/유통 부문 110.7 116.5 149.0 80.3 98.2 73.2 90.8 81.4 73.9 95.7 91.9 85.5 기타 부문 25.6 25.4 23.9 28.3 15.8 16.4 17.0 15.8 18.2 -6.0 14.4 15.7 부문별 비중(%) 렌탈 부문 53.9 50.1 49.9 61.7 55.1 62.6 58.7 60.7 62.4 67.9 57.5 60.9 창고/유통 부문 37.4 41.0 43.2 28.3 38.7 30.5 34.8 32.9 30.2 34.3 36.8 33.0 기타 부문 8.6 8.9 6.9 10.0 6.2 6.9 6.5 6.4 7.4 -2.1 5.7 6.1 수익(십억원) 영업비용 276.6 264.0 324.9 267.4 233.4 224.4 240.0 225.8 225.3 258.4 230.2 234.5 영업이익 19.2 20.2 20.2 15.8 20.6 15.4 21.0 21.4 19.5 21.0 19.6 24.2 세전이익 13.3 12.8 14.6 -13.1 5.6 -0.7 2.0 22.1 6.6 4.7 14.2 16.2 당기순이익 10.9 9.7 10.3 -22.1 4.8 -0.7 1.5 11.0 5.3 3.2 10.9 11.2 지배당기순이익 10.8 9.7 10.4 -21.9 4.7 -0.7 1.5 11.0 5.3 3.2 10.5 11.2 이익률(%) 영업비용율 93.5 92.9 94.2 94.4 91.9 93.6 92.0 91.3 92.0 92.5 92.2 90.7 영업이익률 6.5 7.1 5.8 5.6 8.1 6.4 8.0 8.7 8.0 7.5 7.8 9.3 세전이익률 4.5 4.5 4.2 -4.6 2.2 -0.3 0.8 8.9 2.7 1.7 5.7 6.3 당기순이익률 3.7 3.4 3.0 -7.8 1.9 -0.3 0.6 4.4 2.2 1.1 4.4 4.3 지배순이익률 3.7 3.4 3.0 -7.7 1.9 -0.3 0.6 4.5 2.2 1.1 4.2 4.3 자료: 유진투자증권 도표 5. 분기별 실적 추이 및 전망 도표 6. 분기별 사업 부문별 매출 추이 및 전망 400 12 350 10 300 8 250 200 6 150 4 100 2 50 0 0 자료: 유진투자증권 자료: 유진투자증권 4_ Eugene Research Center A12Q1 A12Q2 A12Q3 A12Q4 A22Q1 A22Q2 A22Q3 A22Q4 A32Q1 A32Q2 A32Q3 A32Q4 A42Q1 A42Q2 A42Q3 F42Q4 (십억원) 매출액 (%) 400 영업이익률 350 300 250 200 150 100 50 0 -50 -100 A12Q3 A12Q4 A22Q1 A22Q2 A22Q3 A22Q4 A32Q1 A32Q2 A32Q3 A32Q4 A42Q1 A42Q2 A42Q3 F42Q4 (십억원) 기타부문 창고및유통 부문 렌탈부문  --- 페이지 5 --- AJ네트웍스(095570. KS) 도표 7. 연간 실적 전망(연결 기준) (십억원,%) 2014 2015A 2016A 2017A 2018A 2019A 2020A 2021A 2022A 2023A 2024F 2025F A 매출액 1,011.2 1,055.6 1,253.9 843.9 1,045.5 1,000.3 872.0 981.9 1,208.4 1,002.0 1,032.7 1,092.7 YoY(%) 283.4 4.4 18.8 -32.7 23.9 -4.3 -12.8 12.6 23.1 -16.1 3.1 5.8 부문별 매출액 렌탈 부문 - - - - - 432.4 479.4 505.9 648.8 593.5 643.4 701.4 창고/유통 부문 - - - - - 361.3 292.7 412.5 456.5 343.5 346.9 357.0 기타 부문 - - - - - 206.5 99.8 108.4 103.1 65.0 42.3 34.3 부문별 비중(%) 렌탈 부문 - - - - - 43.2 55.0 49.3 53.7 59.2 62.3 64.2 창고/유통 부문 - - - - - 36.1 33.6 40.2 37.8 34.3 33.6 32.7 기타 부문 - - - - - 20.6 11.4 10.6 8.5 6.5 4.1 3.1 수익 영업비용 934.2 981.3 1,192.0 821.5 1,066.8 984.6 850.9 933.9 1,132.9 923.6 948.4 1,000.8 영업이익 77.0 74.3 61.9 22.4 -21.2 15.6 21.1 48.1 75.4 78.4 84.2 91.9 세전이익 36.4 38.3 28.6 0.8 -49.4 107.0 -18.5 22.3 27.6 29.0 41.6 70.7 당기순이익 28.1 29.0 17.1 20.6 37.3 42.1 -3.3 76.7 8.8 16.5 30.6 48.8 지배순이익 16.6 18.8 13.5 15.0 1.1 46.0 -3.9 76.8 9.0 16.5 30.2 48.8 이익률(%) 영업이용율 92.4 93.0 95.1 97.3 102.0 98.4 97.6 95.1 93.8 92.2 91.8 91.6 영업이익률 7.6 7.0 4.9 2.7 -2.0 1.6 2.4 4.9 6.2 7.8 8.2 8.4 세전이익률 3.6 3.6 2.3 0.1 -4.7 10.7 -2.1 2.3 2.3 2.9 4.0 6.5 당기순이익률 2.8 2.7 1.4 2.4 3.6 4.2 -0.4 7.8 0.7 1.6 3.0 4.5 지배순이익률 1.6 1.8 1.1 1.8 0.1 4.6 -0.4 7.8 0.7 1.6 2.9 4.5 자료: 유진투자증권 도표 8. 연간 실적 추이 및 전망 도표 9. 연간 사업부문별 매출 추이 및 전망 1,400 10 1,200 8 1,000 6 800 4 600 2 400 0 200 -2 0 -4 자료: 유진투자증권 자료: 유진투자증권 Eugene Research Center _5 A4102 A5102 A6102 A7102 A8102 A9102 A0202 A1202 A2202 A3202 F4202 F5202 (십억원) (%) 매출액 영업이익률 1,400 1,200 1,000 800 600 400 200 0 A9102 A0202 A1202 A2202 A3202 F4202 F5202 (십억원) 기타부문 창고및유통 부문 렌탈부문  --- 페이지 6 --- AJ네트웍스(095570. KS) III. Valuation 도표 10. 국내 동종 및 유사업체 Peer Group 비교 AJ네트웍스 평균 롯데렌탈 케이카 쏘카 유성티엔에스 주가(원) 4,540 28,500 12,140 17,580 1,916 시가총액(십억원) 205.5 1,044.1 584.9 576.9 71.0 PER(배) FY22A 30.1 10.2 10.7 18.3 - 1.5 FY23A 13.6 9.9 8.5 19.9 - 1.4 FY24F 6.8 10.8 8.5 13.1 - - FY25F 4.2 9.0 6.3 11.6 - - PBR(배) FY22A 0.7 1.5 0.8 2.3 2.9 0.2 FY23A 0.5 1.4 0.7 2.4 2.4 0.2 FY24F 0.5 2.2 0.7 2.5 3.2 - FY25F 0.5 2.2 0.7 2.6 3.2 - 매출액(십억원) FY22A 1,193.7 2,738.9 2,177.3 397.6 276.8 FY23A 1,002.0 2,752.3 2,047.6 398.5 237.3 FY24F 1,032.7 2,784.0 2,346.3 421.0 - FY25F 1,092.7 3,011.9 2,493.8 477.0 - 영업이익(십억 FY22A 76.4 308.4 50.1 9.5 2.7 FY23A 78.4 305.2 59.0 -9.7 2.1 FY24F 84.2 296.4 70.0 -15.0 - FY25F 91.9 341.8 79.2 17.0 - 영업이익률(%) FY22A 6.4 4.2 11.3 2.3 2.4 1.0 FY23A 7.8 3.1 11.1 2.9 -2.4 0.9 FY24F 8.2 3.4 10.7 3.0 -3.6 - FY25F 8.4 6.0 11.4 3.2 3.6 - 순이익(십억원) FY22A 8.7 88.3 30.4 -18.1 55.5 FY23A 16.5 115.2 28.4 -42.3 69.5 FY24F 31.0 119.8 44.6 -35.0 - FY25F 48.8 160.4 50.4 -1.0 - EV/EBITDA(배) FY22A 4.6 6.5 3.9 7.7 11.4 2.9 FY23A 4.7 6.4 3.5 7.4 13.0 1.8 FY24F 4.4 6.7 3.7 6.2 10.1 - FY25F 4.6 5.7 3.7 5.7 7.7 - ROE(%) FY22A 2.5 6.3 7.0 11.7 -9.1 15.7 FY23A 4.2 4.6 8.7 11.8 -18.4 16.4 FY24F 7.6 3.2 8.5 19.1 -18.0 - FY25F 12.3 10.7 10.6 21.9 -0.6 - 참고: 2024.11.14 종가 기준, 컨센서스 적용. AJ네트웍스는 당사 추정 자료: QuantWise, 유진투자증권 6_ Eugene Research Center  --- 페이지 7 --- AJ네트웍스(095570. KS) AJ네트웍스(095570.KS) 재무제표 대차대조표 손익계산서 (단위:십억원) 2022A 2023A 2024F 2025F 2026F (단위:십억원) 2022A 2023A 2024F 2025F 2026F 자산총계 1,483.4 1,622.2 1,715.7 \nStep 9: I have gathered a comprehensive set of information regarding AJ네트웍스 (종목코드: 095570) from various sources. Here's a summary of the findings:\n\n1. **최신 뉴스 및 이슈**:\n   - A recent search on AJ네트웍스 revealed that there are no significant new public announcements or news articles in the past month. However, the stock price has shown some fluctuations.\n\n2. **시장 동향**:\n   - AJ네트웍스 is involved in large-scale asset investments, particularly in the rental business, which is expected to expand with new demand in agriculture and electronics sectors.\n\n3. **애널리스트 의견**:\n   - Analysts have provided a consensus report indicating a positive outlook for AJ네트웍스, with a target price set at 6,500 KRW. The company is expected to see growth in sales and operating income.\n\n4. **경쟁사 정보**:\n   - Competitor analysis shows that AJ네트웍스 is compared with other companies in the rental and leasing services sector. The company is positioned well against its peers in terms of market capitalization and growth potential.\n\n5. **기술적 분석**:\n   - Unfortunately, the technical analysis page for AJ네트웍스 could not be accessed due to a network error. This would typically include chart patterns and technical indicators.\n\n6. **특별 정보**:\n   - A PDF report from Eugene Investment & Securities provides an in-depth analysis of AJ네트웍스, including financial forecasts and investment opinions. The report suggests a \"BUY\" recommendation with detailed financial projections.\n\nNext Steps:\n- For a more detailed technical analysis, I recommend accessing a reliable financial platform or tool that provides real-time charting and technical indicators.\n- The PDF report from Eugene Investment & Securities can be further analyzed for insights into the company's strategic direction and financial health.\n\nIf you need further assistance or specific details from any of these sources, please let me know!\nStep 10: Observed output of cmd `terminate` executed:\nThe interaction has been completed with status: success",
+      "primary_intent": "일반문의",
+      "analysis_focus": "종합분석",
+      "data_priority": "기본",
+      "confidence": 0.3,
+      "basic_financial_data_used": true,
+      "enhanced_dart_data_used": true,
+      "collection_purpose": "crewai_feeding",
+      "ready_for_crewai": true,
+      "pdf_analysis": {
+        "pdf_detected": true,
+        "analysis_completed": false,
+        "pdf_content": {},
+        "analysis_method": "none",
+        "pdf_dictionary_interface": null,
+        "error": "알 수 없는 오류"
+      },
+      "data_richness_score": 57.5
+    },
+    "pdf_large_analysis": {
+      "pdf_detected": true,
+      "analysis_completed": false,
+      "pdf_content": {},
+      "analysis_method": "none",
+      "pdf_dictionary_interface": null,
+      "error": "알 수 없는 오류"
+    },
+    "step4_crewai_comprehensive_analysis": {
+      "success": true,
+      "analysis_type": "comprehensive_manus_crewai_synthesis_optimized",
+      "detected_sector": "INDUSTRIALS",
+      "sector_korean_name": "산업재",
+      "gics_sector_used": "Industrials",
+      "activated_experts": [
+        "산업재 펀더멘털 분석가",
+        "산업재 기술적 분석가"
+      ],
+      "selected_experts_count": 2,
+      "expert_insights": {
+        "individual_expert_analyses": [
+          {
+            "expert_name": "산업재 펀더멘털 분석가",
+            "expertise_area": "재무제표 분석, 기업가치 평가, 수익성 분석",
+            "analysis_result": "분석 실패: 'dict' object has no attribute 'split'",
+            "error": true
+          },
+          {
+            "expert_name": "산업재 기술적 분석가",
+            "expertise_area": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+            "analysis_result": "분석 실패: 'dict' object has no attribute 'split'",
+            "error": true
+          }
+        ],
+        "expert_count": 2,
+        "successful_analyses": 0,
+        "synthesis_result": {
+          "synthesis_success": false,
+          "error": "성공한 전문가 분석이 없습니다",
+          "expert_count": 2,
+          "successful_count": 0
+        },
+        "total_analysis_time": "0.00초",
+        "data_integration_type": "comprehensive_multi_source"
+      },
+      "cost_savings": {
+        "traditional_cost": 11.0,
+        "one_hot_cost": 0.08,
+        "savings_amount": 10.92,
+        "savings_percentage": 99.27272727272727,
+        "activated_agents": 2,
+        "depth": "quick"
+      },
+      "analysis_depth": "quick",
+      "cache_key": "49771b42cd35d5a1a525a455c0bfaa3e",
+      "data_integration_quality": {
+        "overall_score": 30.0,
+        "quality_grade": "개선필요",
+        "total_possible_score": 100.0,
+        "achieved_score": 30.0,
+        "details": {
+          "financial_data_score": 10,
+          "dart_data_score": 0,
+          "manus_data_score": 20
+        },
+        "data_sources_count": 3
+      },
+      "synthesis_completeness": "완전통합_토큰최적화",
+      "token_optimization": {
+        "optimization_applied": false,
+        "original_token_estimate": 16147,
+        "optimized_token_estimate": 16147,
+        "compression_ratio": 1.0
+      }
+    }
+  },
+  "final_summary": {
+    "analyzed_stock": {
+      "name": "AJ네트웍스",
+      "code": "095570",
+      "ticker_bbg": "095570 KS Equity",
+      "gics_sector": "Industrials",
+      "market_index": "KOSPI Index",
+      "detection_method": "ai_ai_web_search_priority"
+    },
+    "data_sources": {
+      "financial_data_collected": true,
+      "data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "data_quality": "보통",
+      "manus_information_collected": true,
+      "data_richness_score": 57.5
+    },
+    "analysis_quality": {
+      "information_collection_performed": true,
+      "crewai_comprehensive_analysis_performed": true,
+      "financial_data_enhanced": true,
+      "workflow_type": "manus_first_crewai_synthesis"
+    },
+    "key_insights": {
+      "information_collection_quality": "보통",
+      "crewai_analysis_quality": "성공",
+      "overall_analysis_depth": "높음",
+      "data_integration_success": true
+    }
+  },
+  "crewai_detailed_analysis": {
+    "detected_sector": "INDUSTRIALS",
+    "sector_korean_name": "산업재",
+    "activated_experts": [
+      "산업재 펀더멘털 분석가",
+      "산업재 기술적 분석가"
+    ],
+    "expert_count": 2,
+    "individual_expert_analyses": [
+      {
+        "expert_name": "산업재 펀더멘털 분석가",
+        "expertise_area": "재무제표 분석, 기업가치 평가, 수익성 분석",
+        "analysis_result": "분석 실패: 'dict' object has no attribute 'split'",
+        "error": true
+      },
+      {
+        "expert_name": "산업재 기술적 분석가",
+        "expertise_area": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+        "analysis_result": "분석 실패: 'dict' object has no attribute 'split'",
+        "error": true
+      }
+    ],
+    "synthesis_result": {
+      "synthesis_success": false,
+      "error": "성공한 전문가 분석이 없습니다",
+      "expert_count": 2,
+      "successful_count": 0
+    },
+    "data_integration_quality": {
+      "overall_score": 30.0,
+      "quality_grade": "개선필요",
+      "total_possible_score": 100.0,
+      "achieved_score": 30.0,
+      "details": {
+        "financial_data_score": 10,
+        "dart_data_score": 0,
+        "manus_data_score": 20
+      },
+      "data_sources_count": 3
+    },
+    "cost_savings": {
+      "traditional_cost": 11.0,
+      "one_hot_cost": 0.08,
+      "savings_amount": 10.92,
+      "savings_percentage": 99.27272727272727,
+      "activated_agents": 2,
+      "depth": "quick"
+    },
+    "token_optimization": {
+      "optimization_applied": false,
+      "original_token_estimate": 16147,
+      "optimized_token_estimate": 16147,
+      "compression_ratio": 1.0
+    },
+    "analysis_depth": "quick",
+    "total_analysis_time": "0.00초",
+    "data_sources_integrated": {
+      "financial_data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "manus_web_search_performed": true,
+      "pdf_analysis_performed": false,
+      "enhanced_dart_used": true,
+      "crewai_synthesis_performed": true
+    }
+  },
+  "data_flow_tracking": {
+    "step1_stock_detection": {
+      "method": "ai_ai_web_search_priority",
+      "confidence": "high"
+    },
+    "step2_financial_data": {
+      "sources": [
+        "yfinance",
+        "DART"
+      ],
+      "quality": "보통"
+    },
+    "step3_manus_collection": {
+      "richness_score": 57.5,
+      "pdf_detected": true,
+      "ready_for_crewai": true
+    },
+    "step4_crewai_synthesis": {
+      "success": true,
+      "experts_activated": 2,
+      "data_integration_success": false
+    },
+    "overall_data_completeness": 81.5
+  }
+}
