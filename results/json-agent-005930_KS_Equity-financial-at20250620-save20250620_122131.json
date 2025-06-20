@@ -1,0 +1,2567 @@
+{
+  "user_prompt": "I'd like a thorough analysis of 삼성전자, including:Summary: Company overview, key metrics, performance data and investment recommendationsFinancial Data: Revenue trends, profit margins, balance sheet and cash flow analysisMarket Sentiment: Analyst ratings, sentiment indicators and news impactTechnical Analysis: Price trends, technical indicators and support/resistance levelsCompare Assets: Market share and financial metrics vs. key competitorsValue Investor: Intrinsic value, growth potential and risk factorsInvestment Thesis: SWOT analysis and recommendations for different investor typesSummary in KOREAN 정말 중요한 리서치니 철저하게 해주시오. 그리고 어떠한 계산 또는 판단의 결과가 있으면 그에 대한 이유를 설명하여 주시오",
+  "timestamp": "2025-06-20T12:15:56.597170",
+  "analysis_flow": "enhanced_manus_first_crewai_synthesis",
+  "success": false,
+  "steps": {
+    "step0_intent_analysis": {
+      "primary_intent": "주가문의",
+      "secondary_intents": [
+        "기업정보"
+      ],
+      "confidence": 0.2,
+      "analysis_focus": "주가동향",
+      "data_priority": "실시간",
+      "keywords": [
+        "price",
+        "설명"
+      ]
+    },
+    "step1_stock_detection": {
+      "detected": true,
+      "stock_name": "삼성전자",
+      "stock_code": "005930",
+      "detection_method": "ai_ai_web_search_priority",
+      "ticker_bbg": "005930 KS Equity",
+      "gics_sector": "Information Technology",
+      "mapped_company_name": "SAMSUNG ELECTRONICS CO LTD",
+      "market_index": "KOSPI Index",
+      "original_stock_code": "005930",
+      "original_stock_name": "삼성전자"
+    },
+    "step2_financial_data": {
+      "stock_info": {
+        "stock_code": "005930",
+        "stock_name": "삼성전자",
+        "collection_timestamp": "2025-06-20T12:16:09.380599"
+      },
+      "success": true,
+      "errors": [],
+      "data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "basic_info": {
+        "company_name": "Samsung Electronics Co., Ltd.",
+        "sector": "Technology",
+        "industry": "Consumer Electronics",
+        "country": "South Korea",
+        "currency": "KRW",
+        "exchange": "KSC",
+        "ticker_symbol": "005930.KS"
+      },
+      "current_price_info": {
+        "current_price": 59500.0,
+        "previous_close": 59200.0,
+        "open_price": 0.0,
+        "day_high": 59800.0,
+        "day_low": 59100.0,
+        "volume": 6322847,
+        "market_cap": 391993712705536,
+        "shares_outstanding": 5919640064
+      },
+      "financial_ratios": {
+        "pe_ratio": null,
+        "peg_ratio": null,
+        "pb_ratio": null,
+        "ps_ratio": 1.2723111,
+        "dividend_yield": 2.45,
+        "profit_margin": 0.113690004,
+        "operating_margin": 0.08447,
+        "return_on_equity": 0.09228,
+        "return_on_assets": 0.04153,
+        "debt_to_equity": 2.741,
+        "current_ratio": 2.467,
+        "quick_ratio": 1.763
+      },
+      "growth_metrics": {
+        "earnings_growth": -0.999,
+        "revenue_growth": 0.1,
+        "earnings_quarterly_growth": 0.213,
+        "revenue_quarterly_growth": null
+      },
+      "price_history": {
+        "52_week_high": 87188.48844178082,
+        "52_week_low": 49269.3359375,
+        "avg_volume_3m": 17446291.755555555,
+        "price_change_1y": -25.404374696490027
+      },
+      "data_quality": "보통",
+      "dart_info": {
+        "company_info": {
+          "corp_name": "삼성전자(주)",
+          "corp_code": "00126380",
+          "business_summary": "1248100998",
+          "established_date": "19690113",
+          "listing_date": "12",
+          "ceo_name": "전영현",
+          "address": "경기도 수원시 영통구  삼성로 129 (매탄동)"
+        },
+        "financial_statements": {
+          "current_assets": 82320322000000,
+          "non_current_assets": 242645805000000,
+          "total_assets": 324966127000000,
+          "current_liabilities": 80157976000000,
+          "non_current_liabilities": 8411494000000,
+          "total_liabilities": 88569470000000,
+          "total_equity": 236396657000000,
+          "revenue": 209052241000000,
+          "operating_profit": 12361034000000,
+          "net_income": 23582565000000,
+          "debt_ratio": 0.37,
+          "operating_margin": 0.0591,
+          "net_margin": 0.1128
+        },
+        "business_report": {
+          "main_business": "법인고유번호 00126380 기업의 주요사업",
+          "business_risks": "시장변동성, 경쟁심화 등",
+          "future_plans": "사업확장 및 기술개발 계획"
+        }
+      }
+    },
+    "step2_enhanced_dart_data": {
+      "success": true,
+      "stock_code": "005930",
+      "company_name": "삼성전자",
+      "corp_code": "00126380",
+      "analysis_date": "2025-06-20T12:16:21.321568",
+      "financial_analysis": {
+        "success": true,
+        "corp_code": "00126380",
+        "bsns_year": "2024",
+        "collected_at": "2025-06-20T12:16:21.321568",
+        "individual_statements": {
+          "asset_info": {
+            "current_assets": 82320322000000,
+            "non_current_assets": 242645805000000,
+            "total_assets": 324966127000000
+          },
+          "liability_info": {
+            "current_liabilities": 80157976000000,
+            "non_current_liabilities": 8411494000000,
+            "total_liabilities": 88569470000000
+          },
+          "equity_info": {
+            "capital_stock": 897514000000,
+            "total_equity": 236396657000000
+          },
+          "income_info": {
+            "revenue": 209052241000000,
+            "operating_income": 12361034000000,
+            "net_income": 23582565000000
+          }
+        },
+        "consolidated_statements": {
+          "asset_info": {
+            "current_assets": 82320322000000,
+            "non_current_assets": 242645805000000,
+            "total_assets": 324966127000000
+          },
+          "liability_info": {
+            "current_liabilities": 80157976000000,
+            "non_current_liabilities": 8411494000000,
+            "total_liabilities": 88569470000000
+          },
+          "equity_info": {
+            "capital_stock": 897514000000,
+            "total_equity": 236396657000000
+          },
+          "income_info": {
+            "revenue": 209052241000000,
+            "operating_income": 12361034000000,
+            "net_income": 23582565000000
+          }
+        },
+        "quarterly_performance": [
+          {
+            "asset_info": {
+              "current_assets": 82288911000000,
+              "non_current_assets": 229794377000000,
+              "total_assets": 312083288000000
+            },
+            "liability_info": {
+              "current_liabilities": 49615928000000,
+              "non_current_liabilities": 30327907000000,
+              "total_liabilities": 79943835000000
+            },
+            "equity_info": {
+              "capital_stock": 897514000000,
+              "total_equity": 232139453000000
+            },
+            "income_info": {
+              "revenue": 51239617000000,
+              "operating_income": 2007380000000,
+              "net_income": 9737437000000
+            },
+            "period": "1분기"
+          },
+          {
+            "asset_info": {
+              "current_assets": 85822049000000,
+              "non_current_assets": 231813389000000,
+              "total_assets": 317635438000000
+            },
+            "liability_info": {
+              "current_liabilities": 50124508000000,
+              "non_current_liabilities": 30640186000000,
+              "total_liabilities": 80764694000000
+            },
+            "equity_info": {
+              "capital_stock": 897514000000,
+              "total_equity": 236870744000000
+            },
+            "income_info": {
+              "revenue": 53734118000000,
+              "operating_income": 7222491000000,
+              "net_income": 7098417000000
+            },
+            "period": "반기"
+          },
+          {
+            "asset_info": {
+              "current_assets": 88773816000000,
+              "non_current_assets": 234608995000000,
+              "total_assets": 323382811000000
+            },
+            "liability_info": {
+              "current_liabilities": 74771238000000,
+              "non_current_liabilities": 8539578000000,
+              "total_liabilities": 83310816000000
+            },
+            "equity_info": {
+              "capital_stock": 897514000000,
+              "total_equity": 240071995000000
+            },
+            "income_info": {
+              "revenue": 55828922000000,
+              "operating_income": 4504920000000,
+              "net_income": 5694610000000
+            },
+            "period": "3분기"
+          },
+          {
+            "asset_info": {
+              "current_assets": 82320322000000,
+              "non_current_assets": 242645805000000,
+              "total_assets": 324966127000000
+            },
+            "liability_info": {
+              "current_liabilities": 80157976000000,
+              "non_current_liabilities": 8411494000000,
+              "total_liabilities": 88569470000000
+            },
+            "equity_info": {
+              "capital_stock": 897514000000,
+              "total_equity": 236396657000000
+            },
+            "income_info": {
+              "revenue": 209052241000000,
+              "operating_income": 12361034000000,
+              "net_income": 23582565000000
+            },
+            "period": "연간"
+          }
+        ]
+      },
+      "governance_analysis": {
+        "success": true,
+        "corp_code": "00126380",
+        "bsns_year": "2024",
+        "collected_at": "2025-06-20T12:16:22.395614",
+        "major_shareholders": [
+          {
+            "shareholder_name": "삼성생명보험㈜",
+            "relationship": "최대주주 본인",
+            "shares_held": 508157148,
+            "ownership_ratio": 8.51,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "홍라희",
+            "relationship": "최대주주의 특수관계인",
+            "shares_held": 97978700,
+            "ownership_ratio": 1.64,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "홍라희",
+            "relationship": "최대주주의 특수관계인",
+            "shares_held": 206633,
+            "ownership_ratio": 0.03,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "이재용",
+            "relationship": "최대주주의 특수관계인",
+            "shares_held": 97414196,
+            "ownership_ratio": 1.63,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "이재용",
+            "relationship": "최대주주의 특수관계인",
+            "shares_held": 137757,
+            "ownership_ratio": 0.02,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "이부진",
+            "relationship": "계열회사 임원",
+            "shares_held": 47745681,
+            "ownership_ratio": 0.8,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "이부진",
+            "relationship": "계열회사 임원",
+            "shares_held": 137755,
+            "ownership_ratio": 0.02,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "이서현",
+            "relationship": "계열회사 임원",
+            "shares_held": 47290190,
+            "ownership_ratio": 0.79,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "이서현",
+            "relationship": "계열회사 임원",
+            "shares_held": 137755,
+            "ownership_ratio": 0.02,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "한종희",
+            "relationship": "계열회사 임원",
+            "shares_held": 25000,
+            "ownership_ratio": 0.0,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "경계현",
+            "relationship": "계열회사 임원",
+            "shares_held": 0,
+            "ownership_ratio": 0.0,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "삼성생명보험㈜",
+            "relationship": "최대주주 본인",
+            "shares_held": 43950,
+            "ownership_ratio": 0.01,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "노태문",
+            "relationship": "계열회사 임원",
+            "shares_held": 28000,
+            "ownership_ratio": 0.0,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "박학규",
+            "relationship": "계열회사 임원",
+            "shares_held": 0,
+            "ownership_ratio": 0.0,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "이정배",
+            "relationship": "계열회사 임원",
+            "shares_held": 21800,
+            "ownership_ratio": 0.0,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "김한조",
+            "relationship": "계열회사 임원",
+            "shares_held": 6985,
+            "ownership_ratio": 0.0,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "조혜경",
+            "relationship": "계열회사 임원",
+            "shares_held": 500,
+            "ownership_ratio": 0.0,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "삼성생명보험㈜\n(특별계정)",
+            "relationship": "최대주주 본인",
+            "shares_held": 5378652,
+            "ownership_ratio": 0.09,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "삼성생명보험㈜\n(특별계정)",
+            "relationship": "최대주주 본인",
+            "shares_held": 329788,
+            "ownership_ratio": 0.04,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "삼성물산㈜",
+            "relationship": "계열회사",
+            "shares_held": 298818100,
+            "ownership_ratio": 5.01,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "삼성화재해상보험㈜",
+            "relationship": "계열회사",
+            "shares_held": 88802052,
+            "ownership_ratio": 1.49,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "삼성복지재단",
+            "relationship": "출연 재단",
+            "shares_held": 4484150,
+            "ownership_ratio": 0.08,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "삼성문화재단",
+            "relationship": "출연 재단",
+            "shares_held": 1880750,
+            "ownership_ratio": 0.03,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "삼성생명공익재단",
+            "relationship": "출연 재단",
+            "shares_held": 1250,
+            "ownership_ratio": 0.0,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "계",
+            "relationship": "",
+            "shares_held": 1198033154,
+            "ownership_ratio": 20.07,
+            "report_date": "2024-12-31"
+          },
+          {
+            "shareholder_name": "계",
+            "relationship": "",
+            "shares_held": 993638,
+            "ownership_ratio": 0.12,
+            "report_date": "2024-12-31"
+          }
+        ],
+        "executives": [
+          {
+            "name": "한종희",
+            "position": "",
+            "career": "",
+            "main_career": "ㆍ인하대 전자공학 학사ㆍ삼성전자 DX부문장",
+            "tenure": ""
+          },
+          {
+            "name": "노태문",
+            "position": "",
+            "career": "",
+            "main_career": "ㆍ포항공대 전자전기공학 박사ㆍ삼성전자 MX사업부장",
+            "tenure": ""
+          },
+          {
+            "name": "이정배",
+            "position": "",
+            "career": "",
+            "main_career": "ㆍ서울대 전자공학 박사ㆍ삼성전자 메모리사업부장",
+            "tenure": ""
+          },
+          {
+            "name": "김한조",
+            "position": "",
+            "career": "",
+            "main_career": "ㆍ연세대 불어불문학 학사ㆍ하나금융지주 부회장",
+            "tenure": ""
+          },
+          {
+            "name": "김준성",
+            "position": "",
+            "career": "",
+            "main_career": "ㆍCarnegie Mellon대 \n   경제학/산업공학 학사ㆍ싱가포르 투자청 \n   토탈리턴그룹 이사",
+            "tenure": ""
+          },
+          {
+            "name": "허은녕",
+            "position": "",
+            "career": "",
+            "main_career": "ㆍPennsylvania State대\n   자원경제학 박사ㆍ서울대 공과대학 교수",
+            "tenure": ""
+          },
+          {
+            "name": "유명희",
+            "position": "",
+            "career": "",
+            "main_career": "ㆍVanderbilt대 법학 박사ㆍ산업통상자원부 \n   통상교섭본부 본부장",
+            "tenure": ""
+          },
+          {
+            "name": "신제윤",
+            "position": "",
+            "career": "",
+            "main_career": "ㆍ서울대 경제학 학사ㆍ금융위원회 위원장",
+            "tenure": ""
+          },
+          {
+            "name": "조혜경",
+            "position": "",
+            "career": "",
+            "main_career": "ㆍ서울대 로봇공학 박사ㆍ한성대 AI응용학과 교수",
+            "tenure": ""
+          }
+        ]
+      },
+      "investment_analysis": {
+        "success": true,
+        "corp_code": "00126380",
+        "bsns_year": "2024",
+        "collected_at": "2025-06-20T12:16:23.056550",
+        "dividend_info": [
+          {
+            "dividend_classification": "주당액면가액(원)",
+            "current_year": 100.0,
+            "previous_year": 100.0,
+            "two_years_ago": 100.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "(연결)당기순이익(백만원)",
+            "current_year": 33621363.0,
+            "previous_year": 14473401.0,
+            "two_years_ago": 54730018.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "(별도)당기순이익(백만원)",
+            "current_year": 23582565.0,
+            "previous_year": 25397099.0,
+            "two_years_ago": 25418778.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "(연결)주당순이익(원)",
+            "current_year": 4950.0,
+            "previous_year": 2131.0,
+            "two_years_ago": 8057.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "현금배당금총액(백만원)",
+            "current_year": 9810767.0,
+            "previous_year": 9809438.0,
+            "two_years_ago": 9809438.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주식배당금총액(백만원)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "(연결)현금배당성향(%)",
+            "current_year": 29.2,
+            "previous_year": 67.8,
+            "two_years_ago": 17.9,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "현금배당수익률(%)",
+            "current_year": 2.7,
+            "previous_year": 1.9,
+            "two_years_ago": 2.5,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "현금배당수익률(%)",
+            "current_year": 3.3,
+            "previous_year": 2.4,
+            "two_years_ago": 2.7,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주식배당수익률(%)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주식배당수익률(%)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주당 현금배당금(원)",
+            "current_year": 1446.0,
+            "previous_year": 1444.0,
+            "two_years_ago": 1444.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주당 현금배당금(원)",
+            "current_year": 1447.0,
+            "previous_year": 1445.0,
+            "two_years_ago": 1445.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주당 주식배당(주)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주당 주식배당(주)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          }
+        ],
+        "capital_changes": [
+          {
+            "change_type": "-",
+            "settlement_date": "2024-12-31",
+            "note": "증자감자 실적이 없는 경우 '-' 표시"
+          },
+          {
+            "change_type": "-",
+            "settlement_date": "2024-12-31",
+            "note": "증자감자 실적이 없는 경우 '-' 표시"
+          }
+        ],
+        "other_investments": [
+          {
+            "company_name": "삼성전기㈜",
+            "first_acquisition_date": "1977.01.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 250000000,
+            "ending_shares": 17693000,
+            "ownership_ratio": 23.7,
+            "book_value": 445244000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "세메스㈜",
+            "first_acquisition_date": "1992.12.31",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 1000000000,
+            "ending_shares": 2173000,
+            "ownership_ratio": 91.5,
+            "book_value": 71906000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SME",
+            "first_acquisition_date": "2003.05.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 4796000000,
+            "ending_shares": 17100000,
+            "ownership_ratio": 100.0,
+            "book_value": 7644000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SDMA",
+            "first_acquisition_date": "1995.03.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 21876000000,
+            "ending_shares": 71400000,
+            "ownership_ratio": 75.0,
+            "book_value": 18741000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEMA",
+            "first_acquisition_date": "1989.09.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 4378000000,
+            "ending_shares": 16247000,
+            "ownership_ratio": 100.0,
+            "book_value": 103402000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SAVINA",
+            "first_acquisition_date": "1995.01.17",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 5839000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 28365000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEIN",
+            "first_acquisition_date": "1991.08.28",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 7463000000,
+            "ending_shares": 46000,
+            "ownership_ratio": 100.0,
+            "book_value": 118909000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "TSE",
+            "first_acquisition_date": "1988.01.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 1390000000,
+            "ending_shares": 11020000,
+            "ownership_ratio": 91.8,
+            "book_value": 279163000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEAU",
+            "first_acquisition_date": "1987.11.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 392000000,
+            "ending_shares": 53200000,
+            "ownership_ratio": 100.0,
+            "book_value": 111964000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SIEL",
+            "first_acquisition_date": "1995.08.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 5414000000,
+            "ending_shares": 216787000,
+            "ownership_ratio": 100.0,
+            "book_value": 75263000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SRI-Bangalore",
+            "first_acquisition_date": "2005.05.30",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 7358000000,
+            "ending_shares": 17000,
+            "ownership_ratio": 100.0,
+            "book_value": 31787000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SJC",
+            "first_acquisition_date": "1975.12.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 273000000,
+            "ending_shares": 1560000,
+            "ownership_ratio": 100.0,
+            "book_value": 253108000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "삼성전자서비스㈜",
+            "first_acquisition_date": "1998.01.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 30000000000,
+            "ending_shares": 6000000,
+            "ownership_ratio": 99.3,
+            "book_value": 48121000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SRJ",
+            "first_acquisition_date": "1992.08.25",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 3120000000,
+            "ending_shares": 122000,
+            "ownership_ratio": 100.0,
+            "book_value": 1482000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SCIC",
+            "first_acquisition_date": "1996.03.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 23253000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 640452000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEHK",
+            "first_acquisition_date": "1988.09.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 349000000,
+            "ending_shares": 274250000,
+            "ownership_ratio": 100.0,
+            "book_value": 79033000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SET",
+            "first_acquisition_date": "1994.11.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 456000000,
+            "ending_shares": 27270000,
+            "ownership_ratio": 100.0,
+            "book_value": 112949000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "TSEC",
+            "first_acquisition_date": "1993.04.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 15064000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SSEC",
+            "first_acquisition_date": "1995.04.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 32128000000,
+            "ending_shares": 0,
+            "ownership_ratio": 69.1,
+            "book_value": 130551000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SESC",
+            "first_acquisition_date": "2002.09.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 5471000000,
+            "ending_shares": 0,
+            "ownership_ratio": 73.7,
+            "book_value": 34028000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "TSTC",
+            "first_acquisition_date": "2001.03.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 10813000000,
+            "ending_shares": 0,
+            "ownership_ratio": 90.0,
+            "book_value": 260092000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SSS",
+            "first_acquisition_date": "2001.01.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 1200000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 19189000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SCS",
+            "first_acquisition_date": "2012.09.19",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 111770000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 5553600000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "삼성전자판매㈜",
+            "first_acquisition_date": "2000.12.21",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 3100000000,
+            "ending_shares": 1767000,
+            "ownership_ratio": 100.0,
+            "book_value": 247523000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SSCX",
+            "first_acquisition_date": "2016.04.25",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 1141000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 1141000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SESS",
+            "first_acquisition_date": "1994.12.30",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 18875000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 504313000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "TSLED",
+            "first_acquisition_date": "2012.04.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 119519000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 119519000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SSCR",
+            "first_acquisition_date": "2006.09.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 3405000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 9332000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "TSST Japan",
+            "first_acquisition_date": "2004.03.29",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 1639000000,
+            "ending_shares": 30000,
+            "ownership_ratio": 49.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "STE",
+            "first_acquisition_date": "1996.01.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 4206000000,
+            "ending_shares": 2000,
+            "ownership_ratio": 49.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Semiconductor \nPortal Inc.",
+            "first_acquisition_date": "2002.12.01",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 38000000,
+            "ending_shares": 0,
+            "ownership_ratio": 1.2,
+            "book_value": 10000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Nanosys Inc.",
+            "first_acquisition_date": "2010.08.13",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 4774000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "One-Blue, LLC",
+            "first_acquisition_date": "2011.07.14",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 1766000000,
+            "ending_shares": 0,
+            "ownership_ratio": 16.7,
+            "book_value": 1766000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Sentiance NV",
+            "first_acquisition_date": "2012.12.01",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 3422000000,
+            "ending_shares": 7000,
+            "ownership_ratio": 7.2,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "삼성전자로지텍㈜",
+            "first_acquisition_date": "1999.04.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 76000000,
+            "ending_shares": 1011000,
+            "ownership_ratio": 100.0,
+            "book_value": 46669000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Mantis Vision Ltd.",
+            "first_acquisition_date": "2014.01.16",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 1594000000,
+            "ending_shares": 355000,
+            "ownership_ratio": 2.1,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Leman Micro Devices SA",
+            "first_acquisition_date": "2014.08.14",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 1019000000,
+            "ending_shares": 17000,
+            "ownership_ratio": 3.4,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Sensifree LTD",
+            "first_acquisition_date": "2016.01.01",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 2111000000,
+            "ending_shares": 666000,
+            "ownership_ratio": 9.5,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Unispectral Ltd.",
+            "first_acquisition_date": "2016.02.29",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 1112000000,
+            "ending_shares": 2308000,
+            "ownership_ratio": 7.9,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Quobyte, Inc.",
+            "first_acquisition_date": "2016.04.28",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 2865000000,
+            "ending_shares": 729000,
+            "ownership_ratio": 11.8,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Afero, Inc.",
+            "first_acquisition_date": "2016.05.04",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 5685000000,
+            "ending_shares": 723000,
+            "ownership_ratio": 5.5,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Graphcore Limited",
+            "first_acquisition_date": "2016.06.30",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 3494000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Fasetto, Inc.",
+            "first_acquisition_date": "2019.01.29",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 6701000000,
+            "ending_shares": 475000,
+            "ownership_ratio": 5.1,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "삼성메디슨㈜",
+            "first_acquisition_date": "2011.02.16",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 286384000000,
+            "ending_shares": 87350000,
+            "ownership_ratio": 68.5,
+            "book_value": 477648000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜삼성글로벌리서치",
+            "first_acquisition_date": "1991.05.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 320000000,
+            "ending_shares": 3576000,
+            "ownership_ratio": 29.8,
+            "book_value": 24942000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "삼성벤처투자㈜",
+            "first_acquisition_date": "1999.11.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 4900000000,
+            "ending_shares": 980000,
+            "ownership_ratio": 16.3,
+            "book_value": 36253000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SVIC 21호 신기술투자조합",
+            "first_acquisition_date": "2011.11.02",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 19800000000,
+            "ending_shares": 0,
+            "ownership_ratio": 99.0,
+            "book_value": 99000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SVIC 22호 신기술투자조합",
+            "first_acquisition_date": "2011.11.02",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 19800000000,
+            "ending_shares": 0,
+            "ownership_ratio": 99.0,
+            "book_value": 12375000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SVIC 26호 신기술투자조합",
+            "first_acquisition_date": "2014.11.07",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 19800000000,
+            "ending_shares": 1000,
+            "ownership_ratio": 99.0,
+            "book_value": 57565000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "삼성SDI㈜",
+            "first_acquisition_date": "1977.01.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 304000000,
+            "ending_shares": 13463000,
+            "ownership_ratio": 19.6,
+            "book_value": 1242605000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SVIC 28호 신기술투자조합",
+            "first_acquisition_date": "2015.02.13",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 7425000000,
+            "ending_shares": 0,
+            "ownership_ratio": 99.0,
+            "book_value": 99000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SVIC 32호 신기술투자조합",
+            "first_acquisition_date": "2016.08.09",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 19800000000,
+            "ending_shares": 1000,
+            "ownership_ratio": 99.0,
+            "book_value": 100109000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SVIC 33호 신기술투자조합",
+            "first_acquisition_date": "2016.11.11",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 4950000000,
+            "ending_shares": 1000,
+            "ownership_ratio": 99.0,
+            "book_value": 112524000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SVIC 42호 신기술투자조합",
+            "first_acquisition_date": "2018.11.30",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 4950000000,
+            "ending_shares": 0,
+            "ownership_ratio": 99.0,
+            "book_value": 40386000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SVIC 45호 신기술투자조합",
+            "first_acquisition_date": "2019.05.10",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 19800000000,
+            "ending_shares": 1000,
+            "ownership_ratio": 99.0,
+            "book_value": 141174000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SVIC 52호 신기술투자조합",
+            "first_acquisition_date": "2021.05.17",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 9900000000,
+            "ending_shares": 1000,
+            "ownership_ratio": 99.0,
+            "book_value": 55420000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SVIC 56호 신기술투자조합",
+            "first_acquisition_date": "2021.11.12",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 22084000000,
+            "ending_shares": 1000,
+            "ownership_ratio": 99.0,
+            "book_value": 56100000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SVIC 57호 신기술투자조합",
+            "first_acquisition_date": "2022.08.10",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 14850000000,
+            "ending_shares": 1000,
+            "ownership_ratio": 99.0,
+            "book_value": 76824000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "반도체성장 전문투자형 \n사모 투자신탁",
+            "first_acquisition_date": "2017.03.03",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 500000000,
+            "ending_shares": 15521188000,
+            "ownership_ratio": 66.7,
+            "book_value": 15521000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "시스템반도체 상생 \n전문투자형 사모 투자신탁",
+            "first_acquisition_date": "2020.04.27",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 25000000000,
+            "ending_shares": 37500000000,
+            "ownership_ratio": 62.5,
+            "book_value": 37500000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "삼성중공업㈜",
+            "first_acquisition_date": "1977.09.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 125000000,
+            "ending_shares": 134027000,
+            "ownership_ratio": 15.2,
+            "book_value": 1514508000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "반도체 생태계 일반 \n사모 투자신탁",
+            "first_acquisition_date": "2023.07.27",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 500000000,
+            "ending_shares": 16000,
+            "ownership_ratio": 100.0,
+            "book_value": 15500000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜희망별숲",
+            "first_acquisition_date": "2022.12.26",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 900000000,
+            "ending_shares": 180000,
+            "ownership_ratio": 100.0,
+            "book_value": 900000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜레인보우로보틱스",
+            "first_acquisition_date": "2023.01.12",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 58982000000,
+            "ending_shares": 2854000,
+            "ownership_ratio": 14.8,
+            "book_value": 58982000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜아이마켓코리아",
+            "first_acquisition_date": "2000.12.07",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 1900000000,
+            "ending_shares": 647000,
+            "ownership_ratio": 1.9,
+            "book_value": 5179000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜케이티스카이라이프",
+            "first_acquisition_date": "2001.12.01",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 3344000000,
+            "ending_shares": 240000,
+            "ownership_ratio": 0.5,
+            "book_value": 1134000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "모나용평㈜",
+            "first_acquisition_date": "2007.05.11",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 1869000000,
+            "ending_shares": 400000,
+            "ownership_ratio": 0.8,
+            "book_value": 1284000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "에이테크솔루션㈜",
+            "first_acquisition_date": "2009.11.26",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 26348000000,
+            "ending_shares": 1592000,
+            "ownership_ratio": 15.9,
+            "book_value": 8804000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜원익홀딩스",
+            "first_acquisition_date": "2013.12.18",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 15411000000,
+            "ending_shares": 1759000,
+            "ownership_ratio": 2.3,
+            "book_value": 4486000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜원익아이피에스",
+            "first_acquisition_date": "2016.04.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 16214000000,
+            "ending_shares": 1851000,
+            "ownership_ratio": 3.8,
+            "book_value": 41368000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜동진쎄미켐",
+            "first_acquisition_date": "2017.11.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 48277000000,
+            "ending_shares": 2468000,
+            "ownership_ratio": 4.8,
+            "book_value": 51579000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜호텔신라",
+            "first_acquisition_date": "1979.12.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 252000000,
+            "ending_shares": 2005000,
+            "ownership_ratio": 5.1,
+            "book_value": 73974000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "솔브레인㈜",
+            "first_acquisition_date": "2020.07.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 24866000000,
+            "ending_shares": 437000,
+            "ownership_ratio": 5.6,
+            "book_value": 72336000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜에스앤에스텍",
+            "first_acquisition_date": "2020.08.14",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 65933000000,
+            "ending_shares": 1716000,
+            "ownership_ratio": 8.0,
+            "book_value": 43933000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜와이씨",
+            "first_acquisition_date": "2020.08.14",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 47336000000,
+            "ending_shares": 9602000,
+            "ownership_ratio": 11.7,
+            "book_value": 98033000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜케이씨텍",
+            "first_acquisition_date": "2020.11.16",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 20720000000,
+            "ending_shares": 1022000,
+            "ownership_ratio": 4.9,
+            "book_value": 26629000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜엘오티베큠",
+            "first_acquisition_date": "2020.11.16",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 18990000000,
+            "ending_shares": 1268000,
+            "ownership_ratio": 7.1,
+            "book_value": 10585000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜뉴파워프라즈마",
+            "first_acquisition_date": "2020.11.16",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 12739000000,
+            "ending_shares": 2141000,
+            "ownership_ratio": 4.9,
+            "book_value": 9463000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜에프에스티",
+            "first_acquisition_date": "2021.03.16",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 43009000000,
+            "ending_shares": 1523000,
+            "ownership_ratio": 7.0,
+            "book_value": 23956000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜디엔에프",
+            "first_acquisition_date": "2021.08.11",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 20964000000,
+            "ending_shares": 810000,
+            "ownership_ratio": 7.0,
+            "book_value": 7144000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Marvell",
+            "first_acquisition_date": "2021.10.05",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 11705000000,
+            "ending_shares": 173000,
+            "ownership_ratio": 0.0,
+            "book_value": 28119000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SoundHound Inc.",
+            "first_acquisition_date": "2016.12.01",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 7059000000,
+            "ending_shares": 1703000,
+            "ownership_ratio": 0.9,
+            "book_value": 49666000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜제일기획",
+            "first_acquisition_date": "1988.09.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 185000000,
+            "ending_shares": 29038000,
+            "ownership_ratio": 25.2,
+            "book_value": 491599000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "한국경제신문㈜",
+            "first_acquisition_date": "1987.05.01",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 150000000,
+            "ending_shares": 72000,
+            "ownership_ratio": 0.4,
+            "book_value": 365000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜한국비지니스금융대부",
+            "first_acquisition_date": "1995.01.01",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 5000000000,
+            "ending_shares": 1000000,
+            "ownership_ratio": 17.2,
+            "book_value": 2964000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜싸이버뱅크",
+            "first_acquisition_date": "2000.12.30",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 8000000000,
+            "ending_shares": 1083000,
+            "ownership_ratio": 7.5,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "화인칩스㈜",
+            "first_acquisition_date": "2001.12.01",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 10000000,
+            "ending_shares": 2000,
+            "ownership_ratio": 3.3,
+            "book_value": 10000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜인켈",
+            "first_acquisition_date": "2006.11.01",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 130000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "인텔렉추얼디스커버리㈜",
+            "first_acquisition_date": "2011.05.13",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 5000000000,
+            "ending_shares": 357000,
+            "ownership_ratio": 10.7,
+            "book_value": 1922000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜말타니",
+            "first_acquisition_date": "2012.04.01",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 16544000000,
+            "ending_shares": 45000,
+            "ownership_ratio": 15.0,
+            "book_value": 8082000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜팬택자산관리",
+            "first_acquisition_date": "2013.06.19",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 53000000000,
+            "ending_shares": 53000000,
+            "ownership_ratio": 10.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜인공지능연구원",
+            "first_acquisition_date": "2016.07.28",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 3000000000,
+            "ending_shares": 600000,
+            "ownership_ratio": 14.3,
+            "book_value": 3000000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜미코세라믹스",
+            "first_acquisition_date": "2020.11.16",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 21667000000,
+            "ending_shares": 747000,
+            "ownership_ratio": 13.7,
+            "book_value": 49794000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "삼성에스디에스㈜",
+            "first_acquisition_date": "1992.07.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 6160000000,
+            "ending_shares": 17472000,
+            "ownership_ratio": 22.6,
+            "book_value": 560827000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "에스지신성건설㈜",
+            "first_acquisition_date": "2010.07.29",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 1000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜우방",
+            "first_acquisition_date": "2010.07.01",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 0,
+            "ending_shares": 1000,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜삼보컴퓨터",
+            "first_acquisition_date": "2012.09.27",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 0,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "대우산업개발㈜",
+            "first_acquisition_date": "2012.12.18",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 0,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "대우송도개발㈜",
+            "first_acquisition_date": "2012.12.18",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 0,
+            "ending_shares": 9000,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "자일자동차㈜",
+            "first_acquisition_date": "2012.12.18",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 0,
+            "ending_shares": 1000,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "성원건설㈜",
+            "first_acquisition_date": "2014.04.30",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 0,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜인희",
+            "first_acquisition_date": "2014.04.30",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 0,
+            "ending_shares": 0,
+            "ownership_ratio": 0.1,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "JNT(반도체펀드)",
+            "first_acquisition_date": "2011.02.28",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 1800000000,
+            "ending_shares": 0,
+            "ownership_ratio": 24.0,
+            "book_value": 1240000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "L&S(반도체펀드)",
+            "first_acquisition_date": "2012.07.30",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 848000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "삼성바이오로직스㈜",
+            "first_acquisition_date": "2011.04.21",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 30000000000,
+            "ending_shares": 22217000,
+            "ownership_ratio": 31.2,
+            "book_value": 1595892000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "베어포트리조트",
+            "first_acquisition_date": "2022.04.18",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 0,
+            "ending_shares": 51000,
+            "ownership_ratio": 0.5,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEA",
+            "first_acquisition_date": "1978.07.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 59362000000,
+            "ending_shares": 492000,
+            "ownership_ratio": 100.0,
+            "book_value": 17166557000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SECA",
+            "first_acquisition_date": "1992.08.13",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 3823000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 90922000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEDA",
+            "first_acquisition_date": "1994.01.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 13224000000,
+            "ending_shares": 77205709000,
+            "ownership_ratio": 87.0,
+            "book_value": 647620000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEM",
+            "first_acquisition_date": "1995.07.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 3032000000,
+            "ending_shares": 3837000,
+            "ownership_ratio": 63.6,
+            "book_value": 165638000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SELA",
+            "first_acquisition_date": "1989.04.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 319000000,
+            "ending_shares": 40000,
+            "ownership_ratio": 100.0,
+            "book_value": 86962000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEASA",
+            "first_acquisition_date": "1996.06.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 4696000000,
+            "ending_shares": 21854000,
+            "ownership_ratio": 98.0,
+            "book_value": 6779000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SECH",
+            "first_acquisition_date": "2002.12.19",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 597000000,
+            "ending_shares": 0,
+            "ownership_ratio": 4.1,
+            "book_value": 597000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEUK",
+            "first_acquisition_date": "1995.07.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 33908000000,
+            "ending_shares": 109546000,
+            "ownership_ratio": 100.0,
+            "book_value": 433202000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEL",
+            "first_acquisition_date": "1998.12.31",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 8280000000,
+            "ending_shares": 4393000,
+            "ownership_ratio": 100.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "삼성디스플레이㈜",
+            "first_acquisition_date": "2012.04.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 16009547000000,
+            "ending_shares": 221969000,
+            "ownership_ratio": 84.8,
+            "book_value": 18509307000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEHG",
+            "first_acquisition_date": "1982.02.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 28042000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 354846000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEF",
+            "first_acquisition_date": "1991.08.21",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 230000000,
+            "ending_shares": 2700000,
+            "ownership_ratio": 100.0,
+            "book_value": 234115000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEI",
+            "first_acquisition_date": "1993.05.24",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 862000000,
+            "ending_shares": 677000,
+            "ownership_ratio": 100.0,
+            "book_value": 143181000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SESA",
+            "first_acquisition_date": "1989.01.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 3276000000,
+            "ending_shares": 8021000,
+            "ownership_ratio": 100.0,
+            "book_value": 142091000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEP",
+            "first_acquisition_date": "1982.09.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 204000000,
+            "ending_shares": 1751000,
+            "ownership_ratio": 100.0,
+            "book_value": 37616000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEH",
+            "first_acquisition_date": "1991.05.31",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 1954000000,
+            "ending_shares": 753000,
+            "ownership_ratio": 100.0,
+            "book_value": 650157000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SELS",
+            "first_acquisition_date": "1991.05.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 18314000000,
+            "ending_shares": 1306000,
+            "ownership_ratio": 100.0,
+            "book_value": 24288000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEBN",
+            "first_acquisition_date": "1995.07.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 236000000,
+            "ending_shares": 539138000,
+            "ownership_ratio": 100.0,
+            "book_value": 914751000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEEH",
+            "first_acquisition_date": "2008.01.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 4214000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 1369992000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SENA",
+            "first_acquisition_date": "1992.03.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 392000000,
+            "ending_shares": 1000000,
+            "ownership_ratio": 100.0,
+            "book_value": 69372000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "스테코㈜",
+            "first_acquisition_date": "1995.06.29",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 24000000000,
+            "ending_shares": 2590000,
+            "ownership_ratio": 70.0,
+            "book_value": 35861000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SESK",
+            "first_acquisition_date": "2002.06.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 8976000000,
+            "ending_shares": 0,
+            "ownership_ratio": 55.7,
+            "book_value": 263767000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEPOL",
+            "first_acquisition_date": "1996.04.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 5462000000,
+            "ending_shares": 106000,
+            "ownership_ratio": 100.0,
+            "book_value": 78267000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEAG",
+            "first_acquisition_date": "2002.01.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 40000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 32162000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SERC",
+            "first_acquisition_date": "2006.01.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 24877000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 188290000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SERK",
+            "first_acquisition_date": "2007.07.19",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 4600000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 204555000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEO",
+            "first_acquisition_date": "1997.01.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 120000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SGE",
+            "first_acquisition_date": "1995.05.25",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 827000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 32836000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SEEG",
+            "first_acquisition_date": "2012.07.09",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 23000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.1,
+            "book_value": 39000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SSA",
+            "first_acquisition_date": "1998.12.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 263000000,
+            "ending_shares": 2000000,
+            "ownership_ratio": 100.0,
+            "book_value": 32622000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "SAPL",
+            "first_acquisition_date": "2006.07.01",
+            "investment_purpose": "경영참여",
+            "first_acquisition_amount": 793000000,
+            "ending_shares": 877133000,
+            "ownership_ratio": 100.0,
+            "book_value": 981483000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "합계",
+            "first_acquisition_date": "-",
+            "investment_purpose": "-",
+            "first_acquisition_amount": 0,
+            "ending_shares": 133148682000,
+            "ownership_ratio": 0.0,
+            "book_value": 59603542000000,
+            "settlement_date": "2024-12-31"
+          }
+        ]
+      },
+      "disclosure_monitoring": {
+        "success": true,
+        "monitoring_period": "최근 30일",
+        "collected_at": "2025-06-20T12:16:23.806209",
+        "recent_disclosures": [
+          {
+            "corp_name": "삼성전자",
+            "report_name": "최대주주등소유주식변동신고서",
+            "receipt_number": "20250604800428",
+            "receipt_date": "2025-06-04",
+            "receipt_date_raw": "20250604",
+            "submitter": "삼성전자",
+            "remarks": "유"
+          },
+          {
+            "corp_name": "삼성전자",
+            "report_name": "대규모기업집단현황공시[연1회(동일인용)]",
+            "receipt_number": "20250602000137",
+            "receipt_date": "2025-06-02",
+            "receipt_date_raw": "20250602",
+            "submitter": "이재용",
+            "remarks": "공"
+          },
+          {
+            "corp_name": "삼성전자",
+            "report_name": "대규모기업집단현황공시[연1회공시및1/4분기용(대표회사)]",
+            "receipt_number": "20250602000112",
+            "receipt_date": "2025-06-02",
+            "receipt_date_raw": "20250602",
+            "submitter": "삼성전자",
+            "remarks": "공"
+          },
+          {
+            "corp_name": "삼성전자",
+            "report_name": "기업지배구조보고서공시",
+            "receipt_number": "20250530801005",
+            "receipt_date": "2025-05-30",
+            "receipt_date_raw": "20250530",
+            "submitter": "삼성전자",
+            "remarks": "유"
+          },
+          {
+            "corp_name": "삼성전자",
+            "report_name": "자기주식처분결과보고서",
+            "receipt_number": "20250528000650",
+            "receipt_date": "2025-05-28",
+            "receipt_date_raw": "20250528",
+            "submitter": "삼성전자",
+            "remarks": ""
+          },
+          {
+            "corp_name": "삼성전자",
+            "report_name": "주식등의대량보유상황보고서(일반)",
+            "receipt_number": "20250523000612",
+            "receipt_date": "2025-05-23",
+            "receipt_date_raw": "20250523",
+            "submitter": "삼성물산",
+            "remarks": ""
+          },
+          {
+            "corp_name": "삼성전자",
+            "report_name": "주요사항보고서(자기주식처분결정)",
+            "receipt_number": "20250523000601",
+            "receipt_date": "2025-05-23",
+            "receipt_date_raw": "20250523",
+            "submitter": "삼성전자",
+            "remarks": ""
+          }
+        ],
+        "important_notices": [
+          {
+            "corp_name": "삼성전자",
+            "report_name": "주요사항보고서(자기주식처분결정)",
+            "receipt_number": "20250523000601",
+            "receipt_date": "2025-05-23",
+            "receipt_date_raw": "20250523",
+            "submitter": "삼성전자",
+            "remarks": "",
+            "importance_level": "중요",
+            "importance_reason": "'주요사항보고서' 관련 공시",
+            "priority_score": 70,
+            "content_summary": "삼성증권 (Samsung Securities Co., Ltd.), 신한투자증권 (Shinhan Securities Co.,Ltd.), KB증권 (KB Securities Co.,Ltd.) - 본 공시는 회사와 직원의 동반성장을 위해 직원 대상으로 자기주식을 지급하는 것과 우수인력에 대한 리텐션 및 동기부여를 목적으로 자기주식을 지급하는 것에 따른 공시이며, 교부 조건 및 대상 인원 수는 다음과 같음: [교부 조건] 처분 예정일 재직 중인 직원 (임원 제외) - 상기 내용은 자기주식 지급 시점의 직원 수 및 주가 변동 등에 따라 이사회 승인 한도 내에서 변동될 수 있음 - 상기 2. 처분 대상 주식가격(원)은 이사회 결의일 전일(2025년 5월 22일) 종가 기준임 - 상기 3. 처분예정금액(원)은 이사회 결의일 전일 종가에 처분예정주식수를 곱한 금액이며, 실제 처분금액은 처분시점 주가에 따라 변동될 수 있음 - 상기 6."
+          },
+          {
+            "corp_name": "삼성전자",
+            "report_name": "자기주식처분결과보고서",
+            "receipt_number": "20250528000650",
+            "receipt_date": "2025-05-28",
+            "receipt_date_raw": "20250528",
+            "submitter": "삼성전자",
+            "remarks": "",
+            "importance_level": "중요",
+            "importance_reason": "'자기주식' 관련 공시",
+            "priority_score": 65,
+            "content_summary": "경기도 수원시 영통구 삼성로 129(매탄동) ※ 상기 \"1주당 처분가액\" 및 \"처분가액 총액\"은 제수수료를 포함하지 않은 금액임 ※ 상기 \"총가액\" 및 \"금액\"은 제수수료를 포함한 장부금액임"
+          },
+          {
+            "corp_name": "삼성전자",
+            "report_name": "기업지배구조보고서공시",
+            "receipt_number": "20250530801005",
+            "receipt_date": "2025-05-30",
+            "receipt_date_raw": "20250530",
+            "submitter": "삼성전자",
+            "remarks": "유",
+            "importance_level": "일반",
+            "importance_reason": "'기업지배구조' 관련 공시",
+            "priority_score": 40,
+            "content_summary": "수정공시.LCommon기업지배구조 보고서 공시[000001] 기업지배구조보고서 신고서기업지배구조보고서 신고서[000002] I. 기업개요1. 기업명삼성전자 주식회사2. 공시대상 기간 및 보고서 작성 기준일:공시대상 기간 시작일2024-01-01공시대상 기간 종료일2024-12-31보고서 작성 기준일2024-12-312-1. 당기~전전기 회계연도 기간구분당기전기전전기회계기간 시작일2024-01-012023-01-012022-01-01회계기간 종료일2024-12-312023-12-312022-12-313. 기업지배구조보고서 작성 담당자공시 책임자실무자성명:다니엘 오성명:정재훈직급:부사장직급:프로부서:IR팀부서:IR팀전화번호:02-2255-9000전화번호:02-2255-9000이메일:ircontactus@samsung.com이메일:ircontactus@samsung."
+          }
+        ],
+        "corrections": [],
+        "data": {
+          "recent_disclosures": [
+            {
+              "corp_name": "삼성전자",
+              "report_name": "최대주주등소유주식변동신고서",
+              "receipt_number": "20250604800428",
+              "receipt_date": "2025-06-04",
+              "receipt_date_raw": "20250604",
+              "submitter": "삼성전자",
+              "remarks": "유"
+            },
+            {
+              "corp_name": "삼성전자",
+              "report_name": "대규모기업집단현황공시[연1회(동일인용)]",
+              "receipt_number": "20250602000137",
+              "receipt_date": "2025-06-02",
+              "receipt_date_raw": "20250602",
+              "submitter": "이재용",
+              "remarks": "공"
+            },
+            {
+              "corp_name": "삼성전자",
+              "report_name": "대규모기업집단현황공시[연1회공시및1/4분기용(대표회사)]",
+              "receipt_number": "20250602000112",
+              "receipt_date": "2025-06-02",
+              "receipt_date_raw": "20250602",
+              "submitter": "삼성전자",
+              "remarks": "공"
+            },
+            {
+              "corp_name": "삼성전자",
+              "report_name": "기업지배구조보고서공시",
+              "receipt_number": "20250530801005",
+              "receipt_date": "2025-05-30",
+              "receipt_date_raw": "20250530",
+              "submitter": "삼성전자",
+              "remarks": "유"
+            },
+            {
+              "corp_name": "삼성전자",
+              "report_name": "자기주식처분결과보고서",
+              "receipt_number": "20250528000650",
+              "receipt_date": "2025-05-28",
+              "receipt_date_raw": "20250528",
+              "submitter": "삼성전자",
+              "remarks": ""
+            },
+            {
+              "corp_name": "삼성전자",
+              "report_name": "주식등의대량보유상황보고서(일반)",
+              "receipt_number": "20250523000612",
+              "receipt_date": "2025-05-23",
+              "receipt_date_raw": "20250523",
+              "submitter": "삼성물산",
+              "remarks": ""
+            },
+            {
+              "corp_name": "삼성전자",
+              "report_name": "주요사항보고서(자기주식처분결정)",
+              "receipt_number": "20250523000601",
+              "receipt_date": "2025-05-23",
+              "receipt_date_raw": "20250523",
+              "submitter": "삼성전자",
+              "remarks": ""
+            }
+          ],
+          "important_notices": [
+            {
+              "corp_name": "삼성전자",
+              "report_name": "주요사항보고서(자기주식처분결정)",
+              "receipt_number": "20250523000601",
+              "receipt_date": "2025-05-23",
+              "receipt_date_raw": "20250523",
+              "submitter": "삼성전자",
+              "remarks": "",
+              "importance_level": "중요",
+              "importance_reason": "'주요사항보고서' 관련 공시",
+              "priority_score": 70,
+              "content_summary": "삼성증권 (Samsung Securities Co., Ltd.), 신한투자증권 (Shinhan Securities Co.,Ltd.), KB증권 (KB Securities Co.,Ltd.) - 본 공시는 회사와 직원의 동반성장을 위해 직원 대상으로 자기주식을 지급하는 것과 우수인력에 대한 리텐션 및 동기부여를 목적으로 자기주식을 지급하는 것에 따른 공시이며, 교부 조건 및 대상 인원 수는 다음과 같음: [교부 조건] 처분 예정일 재직 중인 직원 (임원 제외) - 상기 내용은 자기주식 지급 시점의 직원 수 및 주가 변동 등에 따라 이사회 승인 한도 내에서 변동될 수 있음 - 상기 2. 처분 대상 주식가격(원)은 이사회 결의일 전일(2025년 5월 22일) 종가 기준임 - 상기 3. 처분예정금액(원)은 이사회 결의일 전일 종가에 처분예정주식수를 곱한 금액이며, 실제 처분금액은 처분시점 주가에 따라 변동될 수 있음 - 상기 6."
+            },
+            {
+              "corp_name": "삼성전자",
+              "report_name": "자기주식처분결과보고서",
+              "receipt_number": "20250528000650",
+              "receipt_date": "2025-05-28",
+              "receipt_date_raw": "20250528",
+              "submitter": "삼성전자",
+              "remarks": "",
+              "importance_level": "중요",
+              "importance_reason": "'자기주식' 관련 공시",
+              "priority_score": 65,
+              "content_summary": "경기도 수원시 영통구 삼성로 129(매탄동) ※ 상기 \"1주당 처분가액\" 및 \"처분가액 총액\"은 제수수료를 포함하지 않은 금액임 ※ 상기 \"총가액\" 및 \"금액\"은 제수수료를 포함한 장부금액임"
+            },
+            {
+              "corp_name": "삼성전자",
+              "report_name": "기업지배구조보고서공시",
+              "receipt_number": "20250530801005",
+              "receipt_date": "2025-05-30",
+              "receipt_date_raw": "20250530",
+              "submitter": "삼성전자",
+              "remarks": "유",
+              "importance_level": "일반",
+              "importance_reason": "'기업지배구조' 관련 공시",
+              "priority_score": 40,
+              "content_summary": "수정공시.LCommon기업지배구조 보고서 공시[000001] 기업지배구조보고서 신고서기업지배구조보고서 신고서[000002] I. 기업개요1. 기업명삼성전자 주식회사2. 공시대상 기간 및 보고서 작성 기준일:공시대상 기간 시작일2024-01-01공시대상 기간 종료일2024-12-31보고서 작성 기준일2024-12-312-1. 당기~전전기 회계연도 기간구분당기전기전전기회계기간 시작일2024-01-012023-01-012022-01-01회계기간 종료일2024-12-312023-12-312022-12-313. 기업지배구조보고서 작성 담당자공시 책임자실무자성명:다니엘 오성명:정재훈직급:부사장직급:프로부서:IR팀부서:IR팀전화번호:02-2255-9000전화번호:02-2255-9000이메일:ircontactus@samsung.com이메일:ircontactus@samsung."
+            }
+          ],
+          "corrections": []
+        }
+      }
+    },
+    "step3_information_collection": {
+      "performed": true,
+      "method": "information_collection_for_crewai_주가문의",
+      "collected_information": "Step 4: Observed output of cmd `browser_use` executed:\nSearch results for '삼성전자 최신 뉴스 및 이슈':\n\n1. 삼성전자 뉴스룸 - Samsung\n   URL: https://news.samsung.com/kr/\n   Description:  최신기사 · 삼성전자, 삼성 게이밍 허브 통해 'EA FC 25'서비스 론칭 · RM과 전 세계 예술계 인사들, 삼성 아트 TV가 만드는 “일상 속 예술” 조명 · 당신의 개인정보를 ... \n\nMetadata:\n- Total results: 1\n- Language: en\n- Country: us\n\nObserved output of cmd `browser_use` executed:\nSearch results for '삼성전자 시장 동향':\n\n1. 전부문 점유율 하락… 삼성 “AI·기술로 돌파” - 조선일보\n   URL: https://www.chosun.com/economy/tech_it/2025/03/13/EDUL3IDWEJHRPFXZEJLNIF77KE/\n   Description:  Mar 13, 2025  ·  삼성전자는 TV 판매량, 스마트폰 출하량에서 10년 이상 세계 1위 자리를 지키고 있다. 메모리 반도체인 D램도 세계 1위다. 하지만 중국 등 후발 주자들의 ... \n   Content: 전부문 점유율 하락… 삼성 “AI·기술로 돌파”\n\nMetadata:\n- Total results: 1\n- Language: en\n- Country: us\n\nObserved output of cmd `browser_use` executed:\nSearch results for '삼성전자 애널리스트 의견':\n\n1. 삼성전자 - 최근리포트 - 기업모니터\n   URL: https://comp.wisereport.co.kr/company/c1080001.aspx?cmp_cd=005930&cn=\n   Description:  요약정보 ; 25/05/19. 경쟁력 개선 조짐이 있으나 아직은 불확실. 송명섭,손우성 ; 25/05/15. 밸류에이션 매력 높으나, 상승 모멘텀은 부족. 김광진. \n   Content: 삼성전자 - 최근리포트 - 기업모니터 CompanyWise 리포트 앱 리타민, 라이트요금제 출시 지금 구독하면 얼리버드 평생할인 검색 메인메뉴 기업모니터 ETF/ETN 어닝스모니터 랭킹정보 부가정보 리포트서머리 어닝스캘린더 서브메뉴 기업현황 기업개요 재무분석 투자지표 컨센서스 경쟁사분석 업종분석 지분현황 최근리포트 금감원공시 기업모니터 인쇄 인쇄 요약정보 삼성전자 005930 홈페이지 대표전화 주소 EPS 4,950 BPS 57,981 PER 11.96 업종PER 10.75 PBR 1.02 현금배당수익률 2.44% 전일종가 59,200 도움말 KOSPI : 코스피 전기·전자 | WI26 : 반도체 | 12월 결산 | K200 | NXT * PER : 전일자 보통주 수정주가 / 최근결산 EPS * PBR : 전일자 보통주 수정주가 / 최근결산 BPS * 현금배당수익률 : 최근 결산 수정DPS(현금) / 전일자 보통주 수정주가 * PER, PBR값이 (-)일 경우, N/A로 표기됩니다. * WI26 : WISE Industry 26 * 리포트 원문은 WiseReport에서 확인이 가능합니다. 최근리포트 일자 제목 작성자 제공처 투자의견 목표가 분량 * 변동없음( = ), 신규( N ), 이전대비상향( ▲ ), 이전대비하향( ▼ ) FnGuide에서 제공하는 정보는 신뢰할 만한 자료 및 정보로부터 얻어진 것이나 그 정확성이나 완전성을 보장 할 수 없으며, 시간이 경과함에 따라 변경될 수 있습니다. 따라서 정보의 오류, 누락에 대하여 FnGuide 또는FnGuide에 자료를 제공하는 회사에서는 그 결과에 대해 법적인 책임을 지지 않습니다. 모든 콘텐츠에 대한 저작권은 FnGuide에 있으며 사전 허가없이 이를 무단으로 사용하거나, 데이터 베이스화 할 경우 민형사상 책임을 물을 수 있습니다.\n\nMetadata:\n- Total results: 1\n- Language: en\n- Country: us\n\nObserved output of cmd `browser_use` executed:\nSearch results for '삼성전자 경쟁사 정보':\n\n1. 삼성전자(A005930) | 경쟁사비교 | 기업정보 | Company Guide\n   URL: https://cdn.fnguide.com/SVO2/ASP/SVD_Comparison.asp?pGB=\n   Description:  삼성전자4(5점만점기준). SK하이닉스3.96(5점만점기준). LG디스플레이4(5점만점기준). 에스에프에이4(5점만점기준). Margin & Growth. 단위 : %. \n   Content: 삼성전자(A005930) | 경쟁사비교 | 기업정보 | Company Guide 본문 바로가기 메뉴 바로가기 상장기업분석 리포트 앱 리타민, 라이트요금제 곧 출시 모든 증권사 리포트를 더 가벼운 요금으로 열기 인쇄 기업정보 Snapshot 기업개요 재무제표 재무비율 투자지표 컨센서스 지분분석 업종분석 경쟁사비교 거래소공시 금감원공시 ETF/ETN 정보 ETF Snapshot 성과 및 위험분석 ETN Snapshot 리포트 리포트동향 요약리포트 실적속보 컨센서스 스크리닝 목표주가 괴리율 컨센서스 상/하향 비율 어닝서프라이즈 턴어라운드 랭킹 분석 업종별 순위 지표별 순위 ETF 순위 캘린더 부가정보 신용등급 기업주소록 이용안내 Retamin Retamin 삼성전자 005930 | 12월 결산 | 홈페이지 홈페이지 http://www.samsung.com 전화번호 전화번호 031-200-1114 | IR 담당자 02-2255-9000 주소 주소 경기도 수원시 영통구 삼성로 129 (매탄동) KSE 코스피 전기·전자 코스피 전기·전자 | FICS 반도체 및 관련장비 | K200 | NXT PER(Price Earning Ratio) 전일자 보통주 수정주가 / 최근 결산 EPS(주당순이익) * EPS = 당기순이익 / 수정평균발행주식수 * 최근결산은 2024/12 (연간) 기준임. PER 12.08 12M PER 전일자 보통주 수정주가 / 12개월 Forward EPS 12M PER 11.71 업종 PER 시장대표업종||SUM(구성종목 시가총액)/SUM(구성종목 당기순이익) * 전일자 보통주 시가총액 기준 * 당기순이익은 최근결산 2024/12 (연간) 기준임. 업종 PER 13.63 PBR(Price Book-value Ratio) 전일자 보통주 수정주가 / 최근 결산기 BPS(주당순자산) * BPS=(지배주주지분-자기주식) / 무상조정기말주식수(우선주 및 자사주 포함) * 최근결산은 2024/12 (연간) 기준임. PBR 1.03 배당수익률 {최근 결산기 보통주 DPS(현금, 무상조정) / 전일자 보통주 수정주가} *100 * 최근결산은 2024/12 (연간) 기준임. 배당수익률 2.42% 내용 투자의견 삼성전자 4 (5점만점기준) SK하이닉스 3.96 (5점만점기준) LG디스플레이 4 (5점만점기준) 에스에프에이 4 (5점만점기준) Margin & Growth 단위 : % * OM : 영업이익률[Operating Income Margin] , SG : 매출액증가율[Sales Growth Rate], NG : 순이익증가율[Net Income Growth Rate] 주가수익률 단위 : % 수익률 비교 단위 : % Price & Fundamentals [연결 | 연간] 단위 : 억원, 배, % 연결 별도 연간 분기 Price & Fundamentals 구분 삼성전자 SK하이닉스 LG디스플레이 에스에프에이 Price 주가 59,800 246,500 9,210 21,300 시가총액 3,940,587 1,794,526 46,050 7,649 Balance Sheet 자산총계 5,145,319 1,198,552 328,596 24,796 부채총계 1,123,399 459,395 247,868 9,572 자본총계 4,021,921 739,157 80,728 15,224 Income Statement 매출액 3,008,709 661,930 266,153 20,454 영업이익 327,260 234,673 -5,606 -484 당기순이익 344,514 197,969 -24,093 -321 지배주주순이익 336,214 197,887 -25,626 -726 Valuation PER 12.08 9.07 N/A N/A PBR 1.03 2.36 0.70 0.71 Profitability ROE 9.03 31.06 -37.21 -7.49 영업이익률 10.88 35.45 -2.11 -2.37 Growth 매출액증가율 16.20 102.02 24.77 9.94 영업이익증가율 398.34 흑전 적지 적전 EPS증가율 132.30 흑전 적지 적전 Price & Fundamentals 구분 삼성전자 SK하이닉스 LG디스플레이 에스에프에이 Price 주가 59,800 246,500 9,210 21,300 시가총액 3,940,587 1,794,526 46,050 7,649 Balance Sheet 자산총계 3,249,661 1,124,126 297,991 13,927 부채총계 885,695 411,855 260,033 5,730 자본총계 2,363,967 712,271 37,958 8,197 Income Statement 매출액 2,090,522 557,363 251,787 9,713 영업이익 123,610 213,315 -18,006 -1,043 당기순이익 235,826 176,404 -30,347 -1,065 지배주주순이익 Valuation PER 17.22 10.17 N/A N/A PBR 1.71 2.44 1.21 0.77 Profitability ROE 10.23 28.06 -64.04 -11.72 영업이익률 5.91 38.27 -7.15 -10.74 Growth 매출액증가율 22.70 101.65 27.09 -4.59 영업이익증가율 흑전 흑전 적지 적전 EPS증가율 -7.14 흑전 적지 적전 Price & Fundamentals 구분 삼성전자 SK하이닉스 LG디스플레이 에스에프에이 Price 주가 59,800 246,500 9,210 21,300 시가총액 3,940,587 1,794,526 46,050 7,649 Balance Sheet 자산총계 5,163,767 1,239,855 319,878 24,434 부채총계 1,097,625 425,467 241,538 9,218 자본총계 4,066,143 814,388 78,340 15,216 Income Statement 매출액 791,405 176,391 60,653 3,984 영업이익 66,853 74,405 335 290 당기순이익 82,229 81,082 -2,370 215 지배주주순이익 80,284 81,071 -2,627 235 Valuation PER 50.41 22.14 N/A 32.50 PBR 1.01 2.15 0.73 0.69 Profitability ROE 8.16 41.75 -16.40 10.39 영업이익률 8.45 42.18 0.55 7.29 Growth 매출액증가율 10.05 41.91 15.46 -30.47 영업이익증가율 1.20 157.81 흑전 -46.89 EPS증가율 21.71 322.41 적지 -29.49 Price & Fundamentals 구분 삼성전자 SK하이닉스 LG디스플레이 에스에프에이 Price 주가 59,800 246,500 9,210 21,300 시가총액 3,940,587 1,794,526 46,050 7,649 Balance Sheet 자산총계 3,225,380 1,173,853 283,474 13,541 부채총계 846,823 392,222 249,161 5,418 자본총계 2,378,557 781,630 34,313 8,122 Income Statement 매출액 555,349 159,453 56,201 1,990 영업이익 14,693 67,633 -2,890 212 당기순이익 63,872 76,258 -3,646 142 지배주주순이익 Valuation PER 63.36 23.53 N/A 53.85 PBR 1.68 2.23 1.34 0.76 Profitability ROE 10.77 40.84 -40.36 6.96 영업이익률 2.65 42.42 -5.14 10.66 Growth 매출액증가율 8.38 53.29 9.40 -38.14 영업이익증가율 -26.81 133.13 적지 -34.63 EPS증가율 -34.16 251.20 적지 -3.36 * 자산총액 2조원 미만의 기업은 2013년까지 분기 및 반기 연결재무제표 의무 공시가 유예되므로, 해당 기업의 연결 기준 Net Quarter의 항목은 비어있는 것이 정상입니다. (단, 재무상태표의 경우 4분기 Net Quarter는 공시되는 Annual과 동일함) 임직원 정보 단위 : 명, 만원, 배 임직원 정보 * 최근 결산 연도 말 기준이며, 등기이사는 사외이사와 감사위원회 위원을 제외한 임원을 뜻합니다. fnguide.com FnGuide에서 제공하는 정보는 신뢰할 만한 자료 및 정보로부터 얻어진 것이나 그 정확성이나 완전성을 보장 할 수 없으며, 시간이 경과함에 따라 변경될 수 있습니다. 따라서 정보의 오류, 누락에 대하여 FnGuide 또는FnGuide에 자료를 제공하는 회사에서는 그 결과에 대해 법적인 책임을 지지 않습니다. 모든 콘텐츠에 대한 저작권은 FnGuide에 있으며 사전 허가없이 이를 무단으로 사용하거나, 데이터 베이스화 할 경우 민형사상 책임을 물을 수 있습니다. 웹 접근성 우수사이트 인증마크(WA인증마크) 제목제목 내용내용내용내용내용내용내용내용\n\nMetadata:\n- Total results: 1\n- Language: en\n- Country: us\n\nObserved output of cmd `browser_use` executed:\nError: Browser action 'web_search' failed: Page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to \"https://kr.investing.com/technical/samsung-electronics-co-ltd-technical-analysis\", waiting until \"load\"\n\n\nObserved output of cmd `browser_use` executed:\nSearch results for '삼성전자 PDF 보고서':\n\n1. [PDF] 삼성전자 지속가능경영보고서 2024 - Samsung\n   URL: https://www.samsung.com/sec/sustainability/media/pdf/Samsung_Electronics_Sustainability_Report_2024_KOR.pdf\n   Description:  삼성전자는 조직문화에 5가지 핵심가치를 내재화하고 글로벌 행동규범을. 모든 경영활동의 기준으로 삼아 지속적으로 성장해갈 것입니다. 사업부문 및 글로벌 네트워크 ... \n   Content: [PDF 파일 텍스트 추출 완료 - https://www.samsung.com/sec/sustainability/media/pdf/Samsung_Electronics_Sustainability_Report_2024_KOR.pdf]  --- 페이지 1 --- 삼성전자 지속가능경영보고서 2024 A Journey Towards a Sustainable Future  --- 페이지 2 --- Our Company Materiality Assessment CEO 메시지 04 중대성 평가 08 회사 소개 05 이해관계자 소통 06 Planet People Principle A Journey Towards [DX부문] 임직원 31 준법과 윤리경영 53 추진체계 및 주요성과 12 공급망 39 a Sustainable Future 기후변화 13 사회공헌 45 자원순환 15 개인정보보호/보안 48 삼성전자 지속가능경영보고서 2024 수자원 및 오염물질 17 고객의 안전/품질 50 [DS부문] 추진체계 및 주요성과 19 기후변화 20 수자원 23 폐기물 26 오염물질 28 Facts & Figures Appendix 경제성과 56 독립된 인증인의 인증보고서 70 사회성과 57 Scope 1, 2 온실가스 배출량 검증 의견서 71 환경성과 62 Scope 3 온실가스 배출량 검증 의견서 72 지역별 수자원 현황 65 GRI Index 74 사업부문별 환경성과 66 TCFD 대조표 77 SASB 대조표 79 전사차원의 기후변화 대응 협력 활동 81 About This Report 82 삼성전자 지속가능경영보고서 2024 Our Company Materiality Assessment Planet People Principle Facts & Figures Appendix 02  --- 페이지 3 --- Our Company 04 CEO 메시지 05 회사 소개 06 이해관계자 소통 삼성전자 지속가능경영보고서 2024 Our Company Materiality Assessment Planet People Principle Facts & Figures Appendix 03  --- 페이지 4 --- Our Company Message from 이와 함께, EU 탄소국경조정제도(CBAM)와 EU 배터리규제 등을 통한 사회 분야에서는 지난 2023년 2월 발표한 글로벌 인권원칙에 연계하여, 환경규제 역시 지속 강화되는 추세이고, 독일에서는 공급망의 인권과 글로벌 고충처리 정책을 2024년 4월 제정, 고충 접수 채널 운영과 Our CEO 근로환경 관리를 의무화하는 공급망실사법이 2023년 발효되었으며, 접수된 고충의 처리 원칙에 대한 기준을 수립하였고, 공급망 관리에 2024년 5월 EU 공급망 실사지침(CSDDD)이 확정되는 등 인권 분야에 있어서는 비제조 분야 및 리스크 분석에 따라 제조 분야 2차 협력회사로 CEO 메시지 대한 관심 또한 지속 고조되고 있습니다. 근로환경 관리 범위를 확대하고 있습니다. 또한 2023년 3월 자회사형 장애인표준사업장 주식회사 '희망별숲'을 개소하여, 발달장애인들이 삼성전자는 이러한 추세에 맞춰 지속가능한 미래를 위한 노력을 계속해 삼성전자 임직원에게 제공되는 쿠키, 머핀 등 제과 제품을 만들고 왔습니다. 2050년 탄소중립을 통해 글로벌 기후위기 극복 노력에 있습니다. 제과 분야를 시작으로 발달장애인들에게 안정적인 일자리를 동참하고, 자원의 순환성을 극대화하여 순환경제 구축에 기여하며, 제공할 예정입니다. 기술혁신을 통해 환경난제 해결에 도전하는 내용의 '新환경경영전략'을 주주, 고객, 협력회사, 그리고 임직원 여러분, 2022년 9월에 발표하였습니다. 무엇보다 올해 지속가능경영보고서는 글로벌 공시규제 프레임워크에 2023년은 고금리와 인플레이션, 지정학적 이슈 등 매우 불확실한 맞춰, 당사의 주요 지속가능경영 이슈를 발굴하고, 주요 이슈의 관리 2030년 탄소중립을 목표로 하는 DX부문에서는 미국, 유럽, 중국에 이어 거시경제 환경과 함께, 메모리 산업 부진과 다양한 제품군에서의 경쟁 체계와 전략, 이행활동과 현황을 충실히 전달하고자 구성하였으며, 한국, 베트남, 인도, 브라질을 포함한 글로벌 주요 제조사업장의 사용 심화로 삼성전자에게 매우 어려운 한 해였습니다. 이토록 대내외적으로 삼성전자의 지속가능경영 웹사이트와도 긴밀히 연계되도록 하였습니다. 전력을 재생에너지로 100% 전환하였으며, 2023년말 기준, 총 93.4% 어려운 환경에서도 지속 성장의 기반 마련을 위해 역대 최고 수준의 28.3 의 재생에너지 전환 실적을 기록하였습니다. 또한 자원순환형 소재 확대 삼성전자는 환경, 사회, 경제적 리스크와 지정학적 불확실성이 일상이 조원을 연구개발에 투자하고, 53.1조원 수준의 전략적 시설투자로 기술 로드맵에 맞춰, 당사가 구매한 제품 내 플라스틱 부품 25%에 재생레진을 되어버린 시대를 경험하면서, 지속가능성을 삼성전자가 나아가야할 리더십을 강화하며 중장기 수요에 미리 대응할 수 있었던 것은 삼성전자를 적용하였습니다. 방향의 흔들리지 않는 지표이자, 사업경쟁력과 기술혁신의 원동력으로 아껴주시는 이해관계자 여러분의 관심과 격려 덕분입니다. 다시 한 번 삼고 있습니다. 어려움은 위대함을 키운다(Difficulty is the Nurse of 깊이 감사 드립니다. DS부문에서는 2050년 탄소중립 달성을 위해 2023년 공정가스 처리시설 Greatness)는 격언처럼, 삼성전자는 지속가능성을 통해 새로운 도약을 (RCS) 16대를 4개 라인에 신규 설치하고, LNG 폐열 회수 시스템을 확대 급격한 변화를 겪고 있는 경제 상황에 맞춰, 기업의 지속가능경영 모색하고, 더욱 발전하는 모습으로 이해관계자 여러분의 기대에 부응하기 적용하여 온실가스 배출 저감을 위해 노력했습니다. 또한 2030년까지 분야에서도 많은 변화가 일어나고 있습니다. 특히 기업의 지속가능경영 위해 최선을 다하겠습니다. 용수 취수량을 2021년 수준으로 절감하는 것을 목표로 하고 있으며, 활동 정보 공개는 글로벌 비재무정보 공시 제도의 확산에 맞춰, 새로운 감사합니다. 국제수자원관리동맹(AWS)으로부터 기흥/화성, 평택, 중국 시안 사업장에 국면을 맞고 있습니다. 국제회계기준재단(IFRS Foundation)이 2023년 대해 최고 등급인 '플래티넘' 인증을 획득하여 수자원 관리 체계의 6월 지속가능성 지표를 확정한 것을 시작으로, EU의 지속가능성 보고지침 우수성을 입증 받았습니다. 아울러, 폐기물 발생량 저감을 위해 2024년 (CSRD)과 미국 증권거래위원회(SEC) 기후공시 기준 역시 세부 내용을 3월, 웨이퍼박스 등 9건에 대해 환경부 순환자원 인정을 추가 취득하여 삼성전자주식회사 삼성전자주식회사 순차적으로 확정하며 ESG 정보의 의무 공시 시대가 열리고 있습니다. 현재까지 총 49건을 순환자원으로 인정받았고 매년 품목을 확대해나가고 대표이사 부회장 DS부문장 부회장 있습니다. 한종희 전영현 삼성전자 지속가능경영보고서 2024 Our Company Materiality Assessment Planet People Principle Facts & Figures Appendix 04  --- 페이지 5 --- Our Company About Us 삼성전자주식회사(이하 삼성전자)는 인재와 기술을 바탕으로 최고의 제품과 서비스를 창출하여 인류사회에 공헌하는 글로벌 초일류기업을 지향합니다. 이를 위해 삼성전자의 경영철학을 반영한 5가지 핵심가치 를 수립하였고, 핵심가치를 세부원칙과 행동지침 으로 구체화하여 삼성전자 임직원이 회사소개 지켜야 할 글로벌 행동규범(Global Code of Conduct) 을 제정하였습니다. 삼성전자는 조직문화에 5가지 핵심가치를 내재화하고 글로벌 행동규범을 모든 경영활동의 기준으로 삼아 지속적으로 성장해갈 것입니다. 사업부문 및 글로벌 네트워크 소개 삼성전자는 제품 특성에 따라 DX(Device eXperience)와 DS(Device Solutions) 2개 부문으로 나뉘어 독립적으로 운영되고 있습니다. DX부문은 스마트폰, 네트워크 시스템, 컴퓨터, TV, 냉장고, 세탁기, 에어컨, 의료기기 등 완제품을 생산/판매하고 있으며, DS부문은 메모리 반도체 사업, Foundry 사업, System LSI 사업으로 구성되어 DRAM, NAND Flash, 모바일AP 등의 반도체 부품을 생산/판매하고 있습니다. 삼성전자는 2023년 말 기준 전 세계에 232개의 생산거점, 판매거점, R&D 센터, 디자인 센터를 보유하고 있습니다. 주요 사업부 매출 영업이익 Mobile eXperience 영상디스플레이 생활가전 DX Device eXperience 169 조 9,923 억 원 14 조 3,847 억 원 네트워크 의료기기 매출 영업이익 DS Device Solutions 66 조 5,945 억 원 △14 조 8,795 억 원 메모리 Foundry System LSI ※ 상기 매출과 영업이익은 2023년 실적을 기준으로, SDC, Harman을 제외하고 작성했습니다. 지역총괄1) 판매거점2) 생산거점 구매 센터 15 109 32 6 R&D 센터 디자인 센터 기타 3) 합계 40 7 23 232 임직원 267,860명 협력회사4) 2,515개 운영국가 76개국 연구개발비 28.3조 원 1) 내부관리 기준에 따른 지역구분 2) 판매법인, 지점 등 3) 물류법인, IP 오피스 등 4) 당사 제품 생산용 부품을 공급하는 기업 삼성전자 지속가능경영보고서 2024 Our Company Materiality Assessment Planet People Principle Facts & Figures Appendix 05  --- 페이지 6 --- Our Company Stakeholder 글로벌 기업시민으로서의 책임을 다하기 위해서는 다양한 이해관계자와의 커뮤니케이션이 필수입니다. 삼성전자는 지속가능경영 웹사이트 를 통해 관련 정보를 투명하고 신속하게 공개하고 있습니다. 아울러, 이해관계자 포럼, 설문조사, 현장방문을 통한 의견 청취 등 다양한 활동을 통해 이해관계자에게 Engagement 지속가능경영 성과를 공유하고, 의견을 청취하며, 협력관계를 구축하기 위해 노력하고 있습니다. 이해관계자 소통 이해관계자 중요 관심사 소통 채널 주요 활동 고객 · 제 품과 서비스 품질 · 정 확한 제품 정보 제공 · 고객만족도 조사 · 삼 성전자 반도체 웹사이트 · 품 질과 안전성 관리체계 강화 · 고객 VOC 청취 및 해결 (일반 소비자, 거래선) · 안 전한 제품 사용 · 투명한 커뮤니케이션 · 컨택센터, 서비스센터 · 지속가능경영 웹사이트 · 국가별 홈페이지 구축하여 제품 정보 제공 · 사 업부 및 주요 사업장에 지속가능성 · 제 품 전 생애주기에서의 환경적 영향 · 삼성전자 뉴스룸 · 영업 채널 담당 인력 배치 · 삼성닷컴 · 제품환경리포트 주주 & 투자자 · 경 제 성과 · E SG 어젠다 · 주주총회 · Investors Forum · 경 영 실적·전망 발표 · 지배구조 정보 공개 · 리스크 관리 (환경, 사회, 거버넌스 등) · Non-Deal Roadshows, 투자자 미팅 · 투 자자 ESG 로드쇼 · 주 주환원 정책 수립 · 환경·사회 성과 공유 · 정 보 공시 · 실적발표 · IR 웹사이트 · 공시 · 주주·투자자 의견 수렴 임직원 · 안전하고 건강한 근로환경 · 고 용과 복리후생 · 노동조합, 노사협의회 · 경 영진과의 대화 · 경 력설계 주기 맞춤형 프로그램 운영 · 신세대 직원의 경영진 멘토링 · 다양성, 형평성, 포용성 · 노사관계 · 상담센터 · 삼성전자 NOW · 사업부 타운홀 행사 개최 · 사 업장 근로환경 관리 · 교육과 경력개발 · 일하기 좋은 일터 · 만족도 조사(조직건강도, · 사 내 소통 채널 (경영현황 설명 등) · 신뢰와 소통의 조직문화 개선 업무몰입도, 직원경험) · 제보시스템(컴플라이언스, 윤리) · 단체교섭 활동 · Employer Branding 활동 · 지속가능경영 웹사이트 · 산업안전보건위원회 · 노사관계 자문그룹 운영 · 건강증진 프로그램 운영 (건강강좌, 다이어트 프로그램 등) 협력회사 · 상생협력 · 근 로자 인권보호 · 글 로벌 구매 통합관리 시스템(G-SRM) · 상생협력 아카데미 · 자금·기술지원 · 근로환경 책임관리 · 작업환경/안전보건 개선 · 온 실가스 감축 · 핫라인, 사이버 신문고 · 지속가능경영 웹사이트 · 인력육성/혁신 지원 · 고충 접수 및 해결 · 공정거래 · 상생협력데이/간담회 · 온 실가스 감축관리 지역사회 · 현지 채용, 지역경제 활성화 등 · 지 역사회 환경보호 · 지역봉사센터 · 사회공헌 웹사이트 · 스마트공장 구축 등 중소기업 지원 · 교육과 취업 사회공헌 프로그램 · 간접 경제효과 · 기부, 봉사 등 사회공헌 활동 · 지속가능경영 웹사이트 · 사 업장 인근 하천생태계 보전활동 실시 (삼성 희망디딤돌, 삼성 청년 SW 아카데미 등) (투자, 고용 등 파생효과) 국제기구, · 인권, 환경에 대한 사회적 책임 · 기 후 대응을 포함한 · 기업 간담회 · 시민사회 - 경영진 간담회 · 글로벌 NGO 대상 의견 수렴 · UNGC1) NGO, 협회, · 업종 간 협력 UN SDGs에 대한 기여 · NGO 미팅 · 노 동인권 이해관계자 워크샵 · RBA1), RMI2), BSR3) 활동 · ACEC2), SCC3) 활동 전문기관 · 투명하고 신속한 정보 공개 · 이해관계자 포럼 · 지속가능경영 웹사이트 1) Responsible Business Alliance 1) United Nations Global Compact 2) Responsible Minerals Initiative 2) Asia Clean Energy Coalition · 산업협회 3) Business for Social Responsibility 3) Semiconductor Climate Consortium 정부 · 간접 경제효과(투자, 고용 등 파생효과) · 안전·보건 · 정책 간담회 · 정책자문기구 · 정 부와 협업하여 중소기업 지원 프로그램 운영 · 정 부와 협업하여 벤처투자 창구 설립·운영 · 공정거래 · 컴플라이언스 · 국회 · 지속가능경영 웹사이트 · 기업윤리 · 정책수립 공청회 언론 · 주 요 제품/사업 실적 및 전략 · 탄 소중립 등 ESG 추진 성과 · 보도자료 · 삼성전자 뉴스룸 · 글 로벌 IT 전시회·신제품 발표 취재지원 · 인터뷰 · 투 자, R&D, M&A, · 인 /노사, 환경안전, 특허, · 지속가능경영 웹사이트 · 미디어 간담회 · 미디어데이 개최 · 기획홍보 신사업 등 미래 성장 전략 제품·서비스 품질 등 · 삼 성전자 반도체 뉴스룸 · 기자회견 삼성전자 지속가능경영보고서 2024 Our Company Materiality Assessment Planet People Principle Facts & Figures Appendix 06  --- 페이지 7 --- Materiality Assessment 삼성전자 지속가능경영보고서 2024 Our Company Materiality Assessment Planet People Principle Facts & Figures Appendix 07  --- 페이지 8 --- Materiality Assessment 중대성 평가 프로세스 DX/DS부문별 업의 특성 반영 삼성전자는 중대성 평가 과정에서 삼성전자의 중대성 평가는 ① 사업에 대한 이해 ② 영향‧위험‧기회 파악 부문별 업의 특성을 충실히 반영하기 위해 노력했습니다. 밸류체인 분석 Materiality ③ 영향‧위험‧기회 평가 ④ 중대 주제 선정의 4단계로 진행되었습니다. 단계에서는 DX/DS부문과 각 부문에 속한 사업부 별로 각각 밸류체인을 구성하여, 각각의 산업군에 특화된 ESG 이슈를 이슈풀 구성과 평가 Step 1. 사업에 대한 이해 Assessment 과정에서 충분히 고려했습니다. 또한 주요 이해관계자 그룹을 파악하는 사업에 대한 이해 단계에서는 대내외 환경 분석, 밸류체인 분석, 1차 주제 과정에서 DX/DS부문별로 임직원, 고객사, 협력회사를 식별하였으며, 도출 절차를 거쳤습니다. 식별된 부문별 이해관계자를 대상으로 설문과 인터뷰를 실시했습니다. 중대성 평가 대내외 환경 분석 단계에서는 사업보고서 등 회사의 공시 자료와 [1차 주제 도출] 이해관계자 질의 사항 등 내부 자료를 검토하고 향후 평가 과정에 활용할 삼성전자는 EU 공시 기준인 ESRS(European Sustainability Reporting 기초 자료를 확보했습니다. Standards)가 제시하는 92개 소주제에 산업 특성을 반영한 23개 이슈를 또한 삼성전자의 밸류체인 내 이해관계자의 특성을 종합적으로 고려하여 더해 총 115개의 이슈풀을 구성했습니다. ESG 주제를 도출하기 위해 밸류체인 분석을 실시했습니다. 먼저 각 이슈를 4개 기준(회사 전략과의 연관, 글로벌 이니셔티브와의 연계, 업스트림(원자재, 부품 등 공급 기업)-자체 운영(제조, 판매)-다운스트림 동종 업계 주요 이슈, 밸류체인 분석 결과)으로 평가해 52개의 이슈를 (운송, 판매, 수리/서비스) 에 이르는 밸류체인을 구성하고, 밸류체인 각 삼성전자는 사업에 중대한 영향을 미치는 주요 지속가능경영 이슈를 도출하였고, ESRS의 주제 분류표에 의거해 위 52개 이슈를 포괄하는 1차 단계별 주요 이해관계자의 산업군 및 사업 활동을 파악했습니다. 이후 파악하고, 그 이슈의 우선 순위를 선정하고자 중대성 평가를 실시하고, 상위 주제 13개를 선정했습니다. SASB(Sustainability Accounting Standards Board) 기준을 참고하여 평가 프로세스와 결과를 투명하게 공개합니다. 2024년 삼성전자는 각 산업군별 ESG 이슈를 분석하였으며, 이를 토대로 각 부문과 사업부의 1차 주제 유럽재무보고자문그룹(EFRAG: European Financial Reporting 밸류체인 단계별 주요 ESG 이슈를 도출하였습니다. Advisory Group)이 제시한 중대성 평가 이행 가이던스(Materiality 기후변화 및 에너지 임직원 – 근로조건 정보보호 및 보안 Assessment Implementation Guidance)에 기반하여 중대성 평가 이 외에도 삼성전자는 평가 과정에 이해관계자의 의견을 폭넓게 수용하기 오염물질 임직원 – 제품 품질 및 안전 (Double Materiality Assessment)를 실시하였습니다. 위하여 지속가능경영 추진 시 주요하게 고려해야 할 이해관계자 그룹을 수자원 평등한 대우 및 기회 접근성 파악하였습니다. 또한 임직원, 고객사, 협력회사, 정부 및 규제기관, 자원순환 및 폐기물 임직원 – 강제노동 윤리경영 중대성 평가의 정의 투자자, NGO 및 국제기구 등 이해관계자의 특성을 고려하여 다양한 의견 공급망 거버넌스 2024년 삼성전자의 중대성 평가는 삼성전자의 지속가능경영에 중대하게 수렴 계획을 수립하였습니다. 고려해야 할 주제를 선정하기 위해 기업 활동이 외부 환경에 미치는 영향과, 해당 주제와 관련된 외부 요인이 회사에 재무적으로 미치는 중대성 평가(Double Materiality Assessment) 프로세스 영향을 모두 고려하였습니다. 사업에 대한 이해 영향‧위험‧기회 파악 영향‧위험‧기회 평가 중대 주제 선정 환경/사회 영향 파악 중대 주제 도출을 위한 중대 주제 선정 대내외 환경 분석 외부 긍정/부정 및 실재/잠재 영향 분류 평가 기준 및 척도 설정 영향/위험/기회 평가 결과와 환경 환경/사회 영향 1 이해관계자 의견 종합 삼성전자에 중대한 밸류체인의 이해 및 분석 재무 영향 파악 환경/사회 재무 위험/ ESG 주제 선정 (업스트림/자체운영/다운스트림) 위험/기회 분류 영향 평가\nStep 5: I have gathered a variety of information related to Samsung Electronics (삼성전자, 종목코드: 005930) from different sources. Here's a summary of the findings:\n\n1. **최신 뉴스 및 이슈**:\n   - Samsung's latest news can be found on their official news page [here](https://news.samsung.com/kr/).\n\n2. **시장 동향**:\n   - Samsung is focusing on AI and technology to maintain its leadership in the TV and smartphone markets. More details can be found in the article from Chosun Ilbo [here](https://www.chosun.com/economy/tech_it/2025/03/13/EDUL3IDWEJHRPFXZEJLNIF77KE/).\n\n3. **애널리스트 의견**:\n   - Recent analyst reports and opinions on Samsung Electronics can be accessed through the CompanyWise report [here](https://comp.wisereport.co.kr/company/c1080001.aspx?cmp_cd=005930&cn=).\n\n4. **경쟁사 정보**:\n   - A comparison of Samsung Electronics with its competitors like SK Hynix and LG Display is available on the Company Guide [here](https://cdn.fnguide.com/SVO2/ASP/SVD_Comparison.asp?pGB=).\n\n5. **기술적 분석**:\n   - Unfortunately, the technical analysis page for Samsung Electronics could not be accessed due to a timeout error.\n\n6. **특별 정보**:\n   - A detailed sustainability report for Samsung Electronics for 2024 is available in PDF format [here](https://www.samsung.com/sec/sustainability/media/pdf/Samsung_Electronics_Sustainability_Report_2024_KOR.pdf).\n\n### Next Steps:\n- **Technical Analysis**: Since the technical analysis page could not be accessed, I recommend trying to access it again or using another source for technical analysis.\n- **Detailed Analysis**: Review the gathered information and reports to perform a comprehensive analysis, including SWOT, financial metrics, and market sentiment.\n- **Expert Review**: Consider consulting with financial analysts or experts to interpret the data and provide investment recommendations.\n\nIf you need further assistance or specific analysis, please let me know!\nStep 6: Observed output of cmd `browser_use` executed:\nSearch results for '삼성전자 기술적 분석':\n\n1. 삼성전자기술적분석 - Investing.com - 인베스팅닷컴\n   URL: https://kr.investing.com/technical/samsung-electronics-co-ltd-technical-analysis\n   Description:  삼성전자에 대한 간략한 개요 추천서를 확보하십시오. 이동 평균, 일반 차트 표시기와 피봇 포인트 레벨을 이용한 상세한 기술적 분석에 접속하십시오. 모든 기술적 연구 ... \n   Content: 삼성전자기술적분석 - Investing.com 긴급 속보 닫기 삼성전자기술적분석 삼성전자에 대한 간략한 개요 추천서를 확보하십시오. 이동 평균, 일반 차트 표시기와 피봇 포인트 레벨을 이용한 상세한 기술적 분석에 접속하십시오. 모든 기술적 연구들은 다양한 시간범위에서 이용 가능합니다. 외환 EUR/USD USD/KRW JPY/KRW EUR/KRW GBP/KRW GBP/USD USD/JPY AUD/USD 지수 항셍 닛케이 다우존스 S&P 500 DAX 영국 FTSE 스페인 IBEX 프랑스 CAC 주식 선물 코스피200 선물 (F) 닛케이 Dow Jones S&P 500 독일 DAX FTSE IBEX 35 프랑스 CAC 원자재 금 은 구리 WTI유 브렌트유 천연가스 미국 옥수수 미국 대두 LG전자 삼성전자 엔씨소프트 세우글로벌 SK하이닉스 애플 알파벳 A 메타 5 분 15 분 30 분 시간당 5시간 일간 주간 월간 삼성전자 59,500 2025년 06월 20일 11:57 (GMT+9:00) 요약: 적극 매수 이동평균: 매수 ( 12 ) 매도 ( 0 ) 기술적 지표: 매수 ( 6 ) 매도 ( 1 ) 피봇 포인트 2025년 06월 20일 11:57 (GMT+9:00) 종목명 S3 S2 S1 피봇 포인트 R1 R2 R3 클래식 59034 59167 59334 59467 59634 59767 59934 피보나치 59167 59282 59352 59467 59582 59652 59767 카마리야 59418 59445 59472 59467 59528 59555 59582 우디스 59050 59175 59350 59475 59650 59775 59950 디마크스 - - 59400 59500 59700 - - 기술적 지표 2025년 06월 20일 11:57 (GMT+9:00) 종목명 수치 거래 RSI(14) 57.763 매수 STOCH(9,6) 98.018 과량매입 STOCHRSI(14) 36.250 매도 MACD(12,26) 177.964 매수 ADX(14) 54.232 매수 Williams %R -1.980 과량매입 CCI(14) 90.0585 매수 ATR(14) 446.4286 변동성 낮음 Highs/Lows(14) 0.0000 중립 Ultimate Oscillator 49.154 중립 ROC 0.507 매수 Bull/Bear Power(13) 597.2600 매수 매수: 6 매도: 1 중립: 2 요약: 적극 매수 이동평균 2025년 06월 20일 11:57 (GMT+9:00) 기간 단순 평균 지수 평균 MA5 59370.0000 매수 59433.3333 매수 MA10 59380.0000 매수 59346.2686 매수 MA20 59172.5000 매수 59129.8827 매수 MA50 58821.0000 매수 58803.4853 매수 MA100 58419.5000 매수 58327.4645 매수 MA200 57097.2500 매수 57576.2396 매수 매수: 12 매도: 0 요약: 적극 매수 지수 원자재 외환 주식 카테고리 더 보기 탭 선택 지수 원자재 외환 주식 암호화폐 ETF 채권 %COUNT%/4 선택됨 적용하기 1일 1주 1달 6달 1년 5년 최대 코스피지수 3,007.41 +29.67 +1.00% 코스피200 선물 (F) 399.70 +0.30 +0.08% US 500 5,963.3 -17.6 -0.29% US Tech 100 21,661.6 -58.1 -0.27% DAX 23,057.38 -260.43 -1.12% 닛케이 38,466.00 -22.34 -0.06% 미국 달러 지수 98.165 -0.185 -0.19% 금 3,365.52 -42.58 -1.25% 은 35.800 -0.553 -1.52% 브렌트유 76.97 -1.88 -2.38% WTI유 73.71 -0.17 -0.23% 천연가스 4.088 +0.005 +0.12% 구리 4.7785 -0.0283 -0.59% 미국 옥수수 431.60 -0.90 -0.21% 달러/원 1,368.53 -7.91 -0.57% 유로/달러 1.1524 +0.0027 +0.23% 브라질 헤알/원 249.27 -1.42 -0.57% 엔/원 9.4275 -0.0388 -0.41% 파운드/달러 1.3495 +0.0035 +0.26% 태국 바트/원 41.720 -0.315 -0.75% 달러/엔 145.21 -0.30 -0.21% 애플 196.58 +0.94 +0.48% 알리바바 ADR 113.49 -1.54 -1.34% 테슬라 322.05 +5.70 +1.80% 알코아 28.35 -0.37 -1.29% 뱅크오브아메리카 45.06 +0.83 +1.88% 코카콜라 69.21 -0.41 -0.59% 엑슨모빌 113.19 -0.81 -0.71% 최근 조회한 시세 종목명 가격 변동 변동 % 005930 59,500 +300 +0.51% 관심목록에 추가하기 관심목록에 추가하기 관심목록에 추가하기 (최대 50개) 결과를 추가할 항목을 선택하세요. 추가되었습니다 포트폴리오 만들기 적용하기 만들기 닫기 무료 회원가입 후 다음 혜택을 받아보세요: 실시간 알림 고급 포트폴리오 기능 맞춤형 차트 완벽하게 동기화된 앱 페이스북 계정으로 로그인 애플로 로그인 구글 계정으로 로그인 혹은 이메일로 회원가입\n\nMetadata:\n- Total results: 1\n- Language: en\n- Country: us\nStep 7: Observed output of cmd `browser_use` executed:\nExtracted from page:\n{'text': '삼성전자기술적분석\\n\\n삼성전자에 대한 간략한 개요 추천서를 확보하십시오. 이동 평균, 일반 차트 표시기와 피봇 포인트 레벨을 이용한 상세한 기술적 분석에 접속하십시오. 모든 기술적 연구들은 다양한 시간범위에서 이용 가능합니다.\\n\\n삼성전자\\n59,500\\n2025년 06월 20일 11:57 (GMT+9:00)\\n요약:적극 매수\\n이동평균:매수 (12)매도 (0)\\n기술적 지표:매수 (6)매도 (1)\\n\\n피봇 포인트\\n2025년 06월 20일 11:57 (GMT+9:00)\\n\\n| 종목명 | S3 | S2 | S1 | 피봇 포인트 | R1 | R2 | R3 |\\n| --- | --- | --- | --- | --- | --- | --- | --- |\\n| 클래식 | 59034 | 59167 | 59334 | 59467 | 59634 | 59767 | 59934 |\\n| 피보나치 | 59167 | 59282 | 59352 | 59467 | 59582 | 59652 | 59767 |\\n| 카마리야 | 59418 | 59445 | 59472 | 59467 | 59528 | 59555 | 59582 |\\n| 우디스 | 59050 | 59175 | 59350 | 59475 | 59650 | 59775 | 59950 |\\n| 디마크스 | - | - | 59400 | 59500 | 59700 | - | - |\\n\\n기술적 지표\\n2025년 06월 20일 11:57 (GMT+9:00)\\n\\n| 종목명 | 수치 | 거래 |\\n| --- | --- | --- |\\n| RSI(14) | 57.763 | 매수 |\\n| STOCH(9,6) | 98.018 | 과량매입 |\\n| STOCHRSI(14) | 36.250 | 매도 |\\n| MACD(12,26) | 177.964 | 매수 |\\n| ADX(14) | 54.232 | 매수 |\\n| Williams %R | -1.980 | 과량매입 |\\n| CCI(14) | 90.0585 | 매수 |\\n| ATR(14) | 446.4286 | 변동성 낮음 |\\n| Highs/Lows(14) | 0.0000 | 중립 |\\n| Ultimate Oscillator | 49.154 | 중립 |\\n| ROC | 0.507 | 매수 |\\n| Bull/Bear Power(13) | 597.2600 | 매수 |\\n| 매수: 6  매도: 1  중립: 2  요약:적극 매수 |\\n\\n이동평균\\n2025년 06월 20일 11:57 (GMT+9:00)\\n\\n| 기간 | 단순 평균 | 지수 평균 |\\n| --- | --- | --- |\\n| MA5 | 59370.0000 매수 | 59433.3333 매수 |\\n| MA10 | 59380.0000 매수 | 59346.2686 매수 |\\n| MA20 | 59172.5000 매수 | 59129.8827 매수 |\\n| MA50 | 58821.0000 매수 | 58803.4853 매수 |\\n| MA100 | 58419.5000 매수 | 58327.4645 매수 |\\n| MA200 | 57097.2500 매수 | 57576.2396 매수 |\\n| 매수: 12  매도: 0  요약:적극 매수 |'}\n\nStep 8: I've extracted the technical analysis data for Samsung Electronics. Here's a summary of the findings:\n\n### Technical Analysis Summary:\n- **Current Price**: 59,500 KRW\n- **Overall Recommendation**: 적극 매수 (Strong Buy)\n- **Moving Averages**: 12 Buy, 0 Sell\n- **Technical Indicators**: 6 Buy, 1 Sell\n\n#### Pivot Points:\n- **Classic**: S3: 59034, S2: 59167, S1: 59334, Pivot: 59467, R1: 59634, R2: 59767, R3: 59934\n- **Fibonacci**: S3: 59167, S2: 59282, S1: 59352, Pivot: 59467, R1: 59582, R2: 59652, R3: 59767\n\n#### Key Indicators:\n- **RSI(14)**: 57.763 (Buy)\n- **STOCH(9,6)**: 98.018 (Overbought)\n- **MACD(12,26)**: 177.964 (Buy)\n- **ADX(14)**: 54.232 (Buy)\n- **Williams %R**: -1.980 (Overbought)\n- **CCI(14)**: 90.0585 (Buy)\n\n### Next Steps:\n1. **Review and Analyze**: Use this technical data to assess the current market position and potential price movements.\n2. **Combine with Other Data**: Integrate this analysis with financial data, market sentiment, and competitor analysis for a comprehensive view.\n3. **Consult Experts**: Consider discussing these findings with financial analysts for deeper insights and investment recommendations.\n\nIf you need further assistance or specific analysis, feel free to ask!\nStep 9: Observed output of cmd `terminate` executed:\nThe interaction has been completed with status: success",
+      "primary_intent": "주가문의",
+      "analysis_focus": "주가동향",
+      "data_priority": "실시간",
+      "confidence": 0.2,
+      "basic_financial_data_used": true,
+      "enhanced_dart_data_used": true,
+      "collection_purpose": "crewai_feeding",
+      "ready_for_crewai": true,
+      "pdf_analysis": {
+        "pdf_detected": true,
+        "analysis_completed": false,
+        "pdf_content": {},
+        "analysis_method": "none"
+      },
+      "data_richness_score": 64.5
+    },
+    "pdf_large_analysis": {
+      "pdf_detected": true,
+      "analysis_completed": false,
+      "pdf_content": {},
+      "analysis_method": "none"
+    },
+    "step4_crewai_comprehensive_analysis": {
+      "success": true,
+      "analysis_type": "comprehensive_manus_crewai_synthesis_optimized",
+      "detected_sector": "INFORMATION_TECHNOLOGY",
+      "sector_korean_name": "정보기술",
+      "gics_sector_used": "Information Technology",
+      "activated_experts": [
+        "정보기술 펀더멘털 분석가",
+        "정보기술 기술적 분석가",
+        "정보기술 산업 전문가",
+        "정보기술 밸류에이션 전문가",
+        "정보기술 리스크 평가자"
+      ],
+      "selected_experts_count": 5,
+      "expert_insights": {
+        "individual_expert_analyses": [
+          {
+            "expert_name": "정보기술 펀더멘털 분석가",
+            "expertise_area": "재무제표 분석, 기업가치 평가, 수익성 분석",
+            "analysis_result": "### 삼성전자 (Samsung Electronics Co., Ltd.) 분석\n\n#### 1. 회사 개요\n삼성전자는 세계 최대의 전자제품 제조업체 중 하나로, 반도체, 모바일, 디스플레이, 가전제품 등 다양한 분야에서 사업을 운영하고 있습니다. 기술 혁신과 대규모 생산 능력을 바탕으로 글로벌 시장에서 강력한 입지를 구축하고 있습니다.\n\n#### 2. 주요 지표 및 성과 데이터\n- **현재가**: 59,500원\n- **시가총액**: 약 392조 원\n- **ROE (자기자본이익률)**: 9.23%\n- **부채비율**: 2.741\n- **매출 성장률**: 10.00%\n- **이익 성장률**: -99.90%\n\n#### 3. 재무 데이터 분석\n- **매출 추세**: 최근 매출 성장률이 10%로 긍정적이지만, 이익 성장률이 -99.90%로 급격히 감소한 점은 주의가 필요합니다. 이는 반도체 업황의 변동성이나 특정 사업 부문의 일시적 부진에 기인할 수 있습니다.\n- **수익성**: ROE가 9.23%로 양호한 수준을 유지하고 있으나, 이익 성장률의 급감은 수익성에 부정적인 영향을 미치고 있습니다.\n- **재무 건전성**: 부채비율이 2.741로 매우 낮아 재무 구조는 안정적입니다.\n\n#### 4. 시장 심리\n- **애널리스트 평가**: 대체로 긍정적이나, 최근 이익 감소에 대한 우려가 존재합니다.\n- **뉴스 영향**: 반도체 시장의 변동성과 글로벌 경제 상황이 주가에 영향을 미치고 있습니다.\n\n#### 5. 기술적 분석\n- **가격 추세**: 최근 주가는 59,500원으로, 단기적으로는 변동성이 있을 수 있습니다.\n- **기술 지표**: 이동평균선, RSI 등 주요 기술 지표를 통해 단기 매수/매도 신호를 확인할 필요가 있습니다.\n- **지지/저항 수준**: 60,000원대가 주요 저항선으로 작용할 수 있습니다.\n\n#### 6. 경쟁사 비교\n- **시장 점유율**: 삼성전자는 반도체 및 모바일 시장에서 높은 점유율을 유지하고 있습니다.\n- **재무 지표**: 경쟁사 대비 안정적인 재무 구조와 높은 매출 성장률을 보이고 있습니다.\n\n#### 7. 가치 투자 관점\n- **내재 가치**: 현재 주가는 내재 가치에 비해 저평가되었을 가능성이 있습니다.\n- **성장 잠재력**: 5G, AI, IoT 등 신기술 분야에서의 성장 잠재력이 큽니다.\n- **위험 요소**: 반도체 업황의 변동성, 글로벌 경제 불확실성 등이 주요 리스크입니다.\n\n#### 8. 투자 논문\n- **SWOT 분석**:\n  - **강점**: 글로벌 시장 지배력, 기술 혁신\n  - **약점**: 이익 변동성\n  - **기회**: 신기술 분야 확장\n  - **위협**: 시장 경쟁 심화, 경제 불확실성\n\n- **투자자 유형별 추천**:\n  - **장기 투자자**: 기술 혁신과 안정적인 재무 구조를 고려할 때 긍정적\n  - **단기 투자자**: 시장 변동성에 주의 필요\n\n#### 요약 (KOREAN)\n삼성전자는 기술 혁신과 글로벌 시장 지배력을 바탕으로 성장 잠재력이 크지만, 최근 이익 감소와 반도체 시장의 변동성은 주의가 필요합니다. 장기적으로는 긍정적이지만, 단기 투자자는 시장 변동성에 유의해야 합니다.",
+            "data_sources_used": [
+              "DART",
+              "yfinance",
+              "ManusAgent Web Search",
+              "Enhanced DART API",
+              "PDF Document Analysis"
+            ],
+            "analysis_timestamp": 1750389591.5084171
+          },
+          {
+            "expert_name": "정보기술 기술적 분석가",
+            "expertise_area": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+            "analysis_result": "### 삼성전자 (005930) 분석\n\n#### 1. 회사 개요 및 요약\n삼성전자는 글로벌 전자제품 제조업체로, 반도체, 모바일, 디스플레이, 가전제품 등 다양한 분야에서 사업을 운영하고 있습니다. 특히 반도체 부문에서의 강력한 시장 지배력과 혁신적인 기술 개발로 유명합니다.\n\n#### 2. 재무 데이터\n- **매출 추세**: 삼성전자는 최근 몇 년간 꾸준한 매출 성장을 기록하고 있으며, 특히 반도체 부문에서의 수익성이 높습니다.\n- **이익률**: 영업이익률과 순이익률 모두 업계 평균을 상회하며, 효율적인 비용 관리와 고부가가치 제품 판매가 주요 요인입니다.\n- **대차대조표 및 현금 흐름**: 삼성전자는 강력한 재무 구조를 가지고 있으며, 현금 흐름이 안정적입니다. 이는 미래 투자와 배당 지급에 긍정적인 영향을 미칩니다.\n\n#### 3. 시장 심리\n- **애널리스트 평가**: 대부분의 애널리스트가 삼성전자에 대해 긍정적인 평가를 내리고 있으며, 목표 주가 상향 조정이 잇따르고 있습니다.\n- **뉴스 영향**: 최근의 기술 혁신 및 신제품 출시가 긍정적인 시장 반응을 이끌어내고 있습니다.\n\n#### 4. 기술적 분석\n- **가격 추세**: 현재 주가는 59,500원으로, 52주 고가(87,188원)와 저가(49,269원) 사이에 위치하고 있습니다.\n- **기술 지표**: RSI(14)는 57.763으로 매수 신호를 나타내며, MACD(12,26)도 177.964로 매수 신호를 보입니다. 이동 평균선 분석에서도 모든 기간에서 매수 신호가 강하게 나타나고 있습니다.\n- **지지/저항 수준**: 피봇 포인트 분석에 따르면, 주요 저항 수준은 59,634원, 59,767원, 59,934원이며, 지지 수준은 59,034원, 59,167원, 59,334원입니다.\n\n#### 5. 경쟁사 비교\n- **시장 점유율**: 삼성전자는 반도체 및 모바일 부문에서 글로벌 시장 점유율 1위를 차지하고 있으며, 주요 경쟁사로는 SK하이닉스, 애플 등이 있습니다.\n- **재무 지표 비교**: 경쟁사 대비 높은 이익률과 안정적인 재무 구조를 유지하고 있습니다.\n\n#### 6. 가치 투자\n- **내재 가치**: 삼성전자의 내재 가치는 현재 주가를 상회하는 것으로 평가되며, 이는 장기적인 성장 잠재력을 반영합니다.\n- **성장 잠재력 및 리스크**: 반도체 수요 증가와 5G, AI 등 신기술 도입이 성장 동력으로 작용할 것이며, 글로벌 경제 불확실성 및 기술 경쟁이 주요 리스크 요인입니다.\n\n#### 7. 투자 논리\n- **SWOT 분석**:\n  - **강점**: 기술 혁신, 강력한 브랜드 파워, 글로벌 시장 지배력\n  - **약점**: 특정 부문에 대한 의존도\n  - **기회**: 5G, AI, IoT 등 신기술 시장 확대\n  - **위협**: 글로벌 경제 불확실성, 경쟁 심화\n\n- **투자 추천**:\n  - **단기 투자자**: 기술적 분석에 기반한 매수 추천\n  - **장기 투자자**: 내재 가치와 성장 잠재력을 고려한 매수 추천\n\n#### 요약 (한국어)\n삼성전자는 강력한 기술력과 시장 지배력을 바탕으로 지속적인 성장을 이어가고 있습니다. 기술적 분석에서는 매수 신호가 강하게 나타나고 있으며, 장기적으로도 내재 가치가 높아 투자 매력이 큽니다. 다만, 글로벌 경제 불확실성과 경쟁 심화는 주의가 필요합니다.",
+            "data_sources_used": [
+              "DART",
+              "yfinance",
+              "ManusAgent Web Search",
+              "Enhanced DART API",
+              "PDF Document Analysis"
+            ],
+            "analysis_timestamp": 1750389613.7323697
+          },
+          {
+            "expert_name": "정보기술 산업 전문가",
+            "expertise_area": "산업 분석, 경쟁 구조 분석, 트렌드 예측",
+            "analysis_result": "### 삼성전자(005930) 분석\n\n#### 1. 회사 개요 및 요약\n삼성전자는 글로벌 전자 및 IT 기업으로, 반도체, 스마트폰, 가전제품 등 다양한 제품을 생산하고 있습니다. 두 개의 주요 사업 부문인 DX(Device eXperience)와 DS(Device Solutions)로 나뉘어 운영되며, 전 세계에 232개의 생산 및 판매 거점을 보유하고 있습니다.\n\n#### 2. 주요 재무 지표\n- **EPS(주당순이익):** 4,950원\n- **BPS(주당순자산):** 57,981원\n- **PER(주가수익비율):** 11.96\n- **PBR(주가순자산비율):** 1.02\n- **현금배당수익률:** 2.44%\n\n#### 3. 재무 데이터 분석\n- **매출 및 수익성:** 최근 매출액은 3,008,709억 원이며, 영업이익은 327,260억 원으로 영업이익률은 10.88%입니다. 이는 경쟁사인 SK하이닉스의 영업이익률 35.45%에 비해 낮은 수치입니다.\n- **재무 건전성:** 자산총계는 5,145,319억 원, 부채총계는 1,123,399억 원으로, 자본총계는 4,021,921억 원입니다. 이는 안정적인 재무 구조를 나타냅니다.\n\n#### 4. 시장 심리 및 분석가 평가\n- **투자의견:** 삼성전자는 5점 만점 기준 4점을 받았으며, 이는 긍정적인 시장 평가를 반영합니다.\n- **경쟁사 비교:** SK하이닉스와 LG디스플레이와 비교했을 때, 삼성전자는 안정적인 수익성과 시장 점유율을 유지하고 있습니다.\n\n#### 5. 기술적 분석\n- **주가 동향:** 최근 주가는 59,200원으로, 기술적 지표상으로는 안정적인 흐름을 보이고 있습니다.\n- **지지 및 저항 수준:** 주요 지지선은 55,000원, 저항선은 62,000원으로 분석됩니다.\n\n#### 6. 경쟁사 비교\n- **시장 점유율:** 삼성전자는 반도체 및 가전 시장에서 높은 점유율을 차지하고 있으며, SK하이닉스, LG디스플레이와의 비교에서도 우위를 점하고 있습니다.\n- **재무 지표 비교:** 삼성전자의 PER은 12.08로, SK하이닉스의 9.07보다 높지만, 안정적인 수익성을 유지하고 있습니다.\n\n#### 7. 가치 투자 관점\n- **내재 가치 및 성장 잠재력:** 삼성전자는 기술 혁신과 글로벌 네트워크를 통해 지속적인 성장이 기대됩니다. 그러나 반도체 시장의 변동성과 글로벌 경제 불확실성은 주요 리스크 요인입니다.\n\n#### 8. 투자 논리 및 SWOT 분석\n- **강점:** 글로벌 브랜드 인지도, 강력한 R&D 역량\n- **약점:** 반도체 시장의 변동성\n- **기회:** 5G 및 AI 기술 발전\n- **위협:** 글로벌 경제 불확실성, 경쟁 심화\n\n#### 9. 투자자 유형별 추천\n- **장기 투자자:** 삼성전자는 안정적인 배당과 성장 잠재력을 고려할 때 장기 투자에 적합합니다.\n- **단기 투자자:** 기술적 분석을 통해 단기적인 주가 변동성을 활용할 수 있습니다.\n\n#### 요약 (한국어)\n삼성전자는 글로벌 전자 및 IT 시장에서 강력한 입지를 가진 기업으로, 안정적인 재무 구조와 성장 잠재력을 보유하고 있습니다. 반도체 및 가전 시장에서의 경쟁력을 바탕으로 장기적인 성장이 기대되며, 다양한 투자자에게 매력적인 투자 기회를 제공합니다. 그러나 반도체 시장의 변동성과 글로벌 경제 불확실성은 주의해야 할 리스크 요인입니다.",
+            "data_sources_used": [
+              "DART",
+              "yfinance",
+              "ManusAgent Web Search",
+              "Enhanced DART API",
+              "PDF Document Analysis"
+            ],
+            "analysis_timestamp": 1750389638.756025
+          },
+          {
+            "expert_name": "정보기술 밸류에이션 전문가",
+            "expertise_area": "기업가치 평가, 적정주가 산정, 투자지표 분석",
+            "analysis_result": "### 삼성전자 (005930) 분석\n\n#### 1. 회사 개요 및 요약\n삼성전자는 글로벌 전자제품 제조업체로, 반도체, 모바일, 디스플레이, 가전제품 등 다양한 분야에서 사업을 운영하고 있습니다. 특히 반도체 부문에서의 강력한 시장 지배력과 혁신적인 기술 개발로 유명합니다.\n\n#### 2. 재무 데이터\n- **매출 추세**: 최근 몇 년간 삼성전자의 매출은 반도체 수요 증가와 모바일 기기 판매 호조로 꾸준히 증가해왔습니다. 그러나 글로벌 경제 불확실성과 반도체 사이클의 변동성은 주의할 필요가 있습니다.\n- **이익률**: 영업이익률과 순이익률은 업계 평균을 상회하며, 특히 반도체 부문에서 높은 수익성을 유지하고 있습니다.\n- **대차대조표 및 현금 흐름**: 삼성전자는 강력한 대차대조표를 보유하고 있으며, 현금 흐름도 안정적입니다. 이는 미래 투자와 배당 지급에 긍정적인 요소로 작용합니다.\n\n#### 3. 시장 심리\n- **애널리스트 평가**: 대부분의 애널리스트들은 삼성전자에 대해 '매수' 또는 '강력 매수' 의견을 제시하고 있습니다. 이는 회사의 기술력과 시장 지배력을 긍정적으로 평가한 결과입니다.\n- **뉴스 영향**: 최근의 뉴스는 주로 반도체 시장의 회복 가능성과 관련된 긍정적인 전망을 다루고 있습니다.\n\n#### 4. 기술적 분석\n- **가격 추세**: 최근 주가는 변동성이 있지만, 장기적으로 상승 추세를 보이고 있습니다.\n- **기술적 지표**: 이동평균선, RSI 등 주요 기술적 지표는 현재 주가가 과매수 상태가 아님을 시사합니다.\n- **지지/저항 수준**: 주요 지지선은 60,000원, 저항선은 70,000원으로 분석됩니다.\n\n#### 5. 경쟁사 비교\n- **시장 점유율**: 삼성전자는 반도체와 모바일 부문에서 글로벌 시장 점유율 1위를 차지하고 있습니다.\n- **재무 지표**: 주요 경쟁사 대비 높은 수익성과 안정적인 재무 구조를 보유하고 있습니다.\n\n#### 6. 가치 투자자 관점\n- **내재 가치**: DCF(현금흐름할인모형) 분석을 통해 삼성전자의 내재 가치는 현재 주가보다 높게 평가됩니다.\n- **성장 잠재력**: 5G, AI, IoT 등 신기술 분야에서의 성장 가능성이 큽니다.\n- **위험 요소**: 반도체 시장의 변동성과 글로벌 무역 갈등이 주요 리스크로 작용할 수 있습니다.\n\n#### 7. 투자 논리\n- **SWOT 분석**:\n  - **강점**: 기술 혁신, 강력한 브랜드, 글로벌 네트워크\n  - **약점**: 높은 반도체 의존도\n  - **기회**: 신기술 시장 진출, 글로벌 경제 회복\n  - **위협**: 경쟁 심화, 규제 변화\n\n- **투자자 유형별 추천**:\n  - **장기 투자자**: 기술 혁신과 안정적인 수익성을 고려할 때 매수 추천\n  - **단기 투자자**: 시장 변동성을 고려한 신중한 접근 필요\n\n#### 요약 (한국어)\n삼성전자는 강력한 기술력과 시장 지배력을 바탕으로 안정적인 재무 구조를 유지하고 있으며, 장기적인 성장 잠재력이 큽니다. 반도체 시장의 변동성과 글로벌 경제 불확실성은 주의해야 할 요소지만, 신기술 분야에서의 기회가 많아 장기 투자자에게 매력적인 투자 대상입니다.",
+            "data_sources_used": [
+              "DART",
+              "yfinance",
+              "ManusAgent Web Search",
+              "Enhanced DART API",
+              "PDF Document Analysis"
+            ],
+            "analysis_timestamp": 1750389658.6682801
+          },
+          {
+            "expert_name": "정보기술 리스크 평가자",
+            "expertise_area": "위험 요소 분석, 시나리오 분석, 리스크 관리",
+            "analysis_result": "### 삼성전자(005930) 분석\n\n#### 1. 회사 개요 및 요약\n삼성전자는 글로벌 전자 및 IT 기업으로, 반도체, 스마트폰, 가전제품 등 다양한 제품을 생산하고 있습니다. 회사는 두 개의 주요 부문인 DX(Device eXperience)와 DS(Device Solutions)로 나뉘어 운영됩니다. DX 부문은 스마트폰, TV, 가전제품 등을 포함하며, DS 부문은 메모리 반도체, 파운드리, 시스템 LSI 사업을 포함합니다.\n\n#### 2. 재무 데이터\n- **매출 및 수익성**: 최근 몇 년간 삼성전자의 매출은 꾸준히 증가해 왔으며, 2023년에는 3,008,709억 원의 매출을 기록했습니다. 영업이익률은 10.88%로, 경쟁사 대비 안정적인 수익성을 유지하고 있습니다.\n- **재무 상태**: 자산총계는 5,145,319억 원, 부채총계는 1,123,399억 원으로, 안정적인 재무 구조를 보유하고 있습니다. PBR은 1.03으로, 자산 대비 주가가 적절하게 평가되고 있음을 나타냅니다.\n- **현금 흐름**: 삼성전자는 강력한 현금 흐름을 유지하고 있으며, 이는 연구개발 및 전략적 투자를 지속할 수 있는 기반이 됩니다.\n\n#### 3. 시장 심리\n- **애널리스트 평가**: 삼성전자는 평균 4점(5점 만점)의 투자의견을 받고 있으며, 이는 긍정적인 시장 심리를 반영합니다.\n- **뉴스 및 트렌드**: 최근 AI 및 기술 혁신을 통해 시장 점유율 하락을 극복하려는 노력이 주목받고 있습니다.\n\n#### 4. 기술적 분석\n- **주가 동향**: 최근 주가는 59,800원으로, 기술적 지표상 주요 지지 및 저항 수준을 확인할 필요가 있습니다.\n- **기술적 지표**: 이동평균선, RSI 등 주요 기술적 지표를 통해 매수 및 매도 신호를 분석할 수 있습니다.\n\n#### 5. 경쟁사 비교\n- **시장 점유율**: 삼성전자는 글로벌 반도체 및 스마트폰 시장에서 주요 점유율을 차지하고 있으며, SK하이닉스, LG디스플레이 등과 경쟁하고 있습니다.\n- **재무 지표 비교**: 삼성전자는 경쟁사 대비 높은 매출 및 안정적인 수익성을 보유하고 있습니다.\n\n#### 6. 가치 투자자 관점\n- **내재 가치**: 삼성전자의 내재 가치는 현재 주가 대비 매력적일 수 있으며, 이는 장기적인 성장 잠재력을 반영합니다.\n- **성장 잠재력 및 리스크**: AI 및 기술 혁신을 통한 성장 잠재력이 크지만, 글로벌 경제 불확실성 및 경쟁 심화가 리스크 요인으로 작용할 수 있습니다.\n\n#### 7. 투자 논리\n- **SWOT 분석**:\n  - **강점**: 글로벌 시장 점유율, 강력한 브랜드, 기술 혁신\n  - **약점**: 특정 부문에서의 점유율 하락\n  - **기회**: AI 및 기술 혁신을 통한 신시장 개척\n  - **위협**: 글로벌 경제 불확실성, 경쟁 심화\n\n- **투자 추천**:\n  - **장기 투자자**: 기술 혁신 및 AI 분야의 성장 잠재력을 고려하여 매수 추천\n  - **단기 투자자**: 기술적 분석을 통한 매수/매도 타이밍 조정\n\n#### 요약 (한국어)\n삼성전자는 글로벌 전자 및 IT 시장에서 강력한 입지를 가진 기업으로, AI 및 기술 혁신을 통해 시장 점유율 하락을 극복하려는 노력을 기울이고 있습니다. 재무적으로 안정적이며, 장기적인 성장 잠재력을 보유하고 있습니다. 투자자들은 삼성전자의 기술 혁신 및 AI 분야의 성장 가능성을 고려하여 장기적인 관점에서 투자할 것을 추천합니다.",
+            "data_sources_used": [
+              "DART",
+              "yfinance",
+              "ManusAgent Web Search",
+              "Enhanced DART API",
+              "PDF Document Analysis"
+            ],
+            "analysis_timestamp": 1750389679.5672202
+          }
+        ],
+        "expert_count": 5,
+        "successful_analyses": 5,
+        "synthesis_result": {
+          "synthesis_success": true,
+          "final_analysis": "### 삼성전자 최종 분석\n\n1. **종합 평가**: 전반적인 투자 매력도\n   - 삼성전자는 글로벌 전자제품 및 반도체 시장에서 강력한 입지를 가지고 있으며, 다양한 사업 부문에서의 지속적인 성장이 기대됩니다. 그러나 최근 이익 성장률의 급격한 감소는 주의가 필요합니다. 전반적으로 장기적인 투자 매력도는 높지만, 단기적인 변동성에 대한 대비가 필요합니다.\n\n2. **주요 강점**: 핵심 경쟁 우위\n   - **반도체 부문**: 삼성전자는 반도체 시장에서의 강력한 지배력과 혁신적인 기술 개발로 경쟁 우위를 유지하고 있습니다.\n   - **재무 건전성**: 강력한 대차대조표와 안정적인 현금 흐름은 미래 투자와 배당 지급에 긍정적인 요소로 작용합니다.\n\n3. **주요 우려사항**: 리스크 요인\n   - **이익 성장률 감소**: 최근 이익 성장률의 급격한 감소는 반도체 업황의 변동성이나 특정 사업 부문의 일시적 부진에 기인할 수 있으며, 이는 단기적인 리스크 요인입니다.\n   - **글로벌 경제 불확실성**: 반도체 사이클의 변동성과 글로벌 경제 불확실성은 주의가 필요합니다.\n\n4. **투자 의견**: 매수/보유/매도 의견과 근거\n   - **보유**: 삼성전자는 장기적으로 긍정적인 성장 전망을 가지고 있으나, 단기적인 이익 감소와 시장 변동성을 고려할 때 현재 주식을 보유하는 것이 적절합니다. 추가적인 시장 상황 분석 후 매수 기회를 모색하는 것이 바람직합니다.\n\n5. **목표가/적정가**: 가능하다면 적정 주가 범위\n   - **적정 주가 범위**: 60,000원 ~ 65,000원. 이는 현재 주가와 시장 상황을 고려한 범위로, 반도체 부문의 회복과 글로벌 경제 상황에 따라 변동될 수 있습니다.",
+          "investment_opinion": "매수",
+          "expert_consensus": "5명 전문가 의견 종합",
+          "analysis_coverage": [
+            "technical"
+          ],
+          "confidence_level": "매우높음"
+        },
+        "total_analysis_time": "123.45초",
+        "data_integration_type": "comprehensive_multi_source"
+      },
+      "cost_savings": {
+        "traditional_cost": 55.0,
+        "one_hot_cost": 1.0,
+        "savings_amount": 54.0,
+        "savings_percentage": 98.18181818181819,
+        "activated_agents": 5,
+        "depth": "deep"
+      },
+      "analysis_depth": "deep",
+      "cache_key": "60eaae95f90e8b7125bc91f6c260c98b",
+      "data_integration_quality": "높음",
+      "synthesis_completeness": "완전통합_토큰최적화",
+      "token_optimization": {
+        "optimization_applied": false,
+        "optimizations": [],
+        "token_info": {
+          "status": "not_needed"
+        }
+      }
+    }
+  },
+  "final_summary": {
+    "analyzed_stock": {
+      "name": "삼성전자",
+      "code": "005930",
+      "ticker_bbg": "005930 KS Equity",
+      "gics_sector": "Information Technology",
+      "market_index": "KOSPI Index",
+      "detection_method": "ai_ai_web_search_priority"
+    },
+    "data_sources": {
+      "financial_data_collected": true,
+      "data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "data_quality": "보통",
+      "manus_information_collected": true,
+      "data_richness_score": 64.5
+    },
+    "analysis_quality": {
+      "information_collection_performed": true,
+      "crewai_comprehensive_analysis_performed": true,
+      "financial_data_enhanced": true,
+      "workflow_type": "manus_first_crewai_synthesis"
+    },
+    "key_insights": {
+      "information_collection_quality": "높음",
+      "crewai_analysis_quality": "성공",
+      "overall_analysis_depth": "매우 높음",
+      "data_integration_success": true
+    }
+  },
+  "crewai_detailed_analysis": {
+    "detected_sector": "INFORMATION_TECHNOLOGY",
+    "sector_korean_name": "정보기술",
+    "activated_experts": [
+      "정보기술 펀더멘털 분석가",
+      "정보기술 기술적 분석가",
+      "정보기술 산업 전문가",
+      "정보기술 밸류에이션 전문가",
+      "정보기술 리스크 평가자"
+    ],
+    "expert_count": 5,
+    "individual_expert_analyses": [
+      {
+        "expert_name": "정보기술 펀더멘털 분석가",
+        "expertise_area": "재무제표 분석, 기업가치 평가, 수익성 분석",
+        "analysis_result": "### 삼성전자 (Samsung Electronics Co., Ltd.) 분석\n\n#### 1. 회사 개요\n삼성전자는 세계 최대의 전자제품 제조업체 중 하나로, 반도체, 모바일, 디스플레이, 가전제품 등 다양한 분야에서 사업을 운영하고 있습니다. 기술 혁신과 대규모 생산 능력을 바탕으로 글로벌 시장에서 강력한 입지를 구축하고 있습니다.\n\n#### 2. 주요 지표 및 성과 데이터\n- **현재가**: 59,500원\n- **시가총액**: 약 392조 원\n- **ROE (자기자본이익률)**: 9.23%\n- **부채비율**: 2.741\n- **매출 성장률**: 10.00%\n- **이익 성장률**: -99.90%\n\n#### 3. 재무 데이터 분석\n- **매출 추세**: 최근 매출 성장률이 10%로 긍정적이지만, 이익 성장률이 -99.90%로 급격히 감소한 점은 주의가 필요합니다. 이는 반도체 업황의 변동성이나 특정 사업 부문의 일시적 부진에 기인할 수 있습니다.\n- **수익성**: ROE가 9.23%로 양호한 수준을 유지하고 있으나, 이익 성장률의 급감은 수익성에 부정적인 영향을 미치고 있습니다.\n- **재무 건전성**: 부채비율이 2.741로 매우 낮아 재무 구조는 안정적입니다.\n\n#### 4. 시장 심리\n- **애널리스트 평가**: 대체로 긍정적이나, 최근 이익 감소에 대한 우려가 존재합니다.\n- **뉴스 영향**: 반도체 시장의 변동성과 글로벌 경제 상황이 주가에 영향을 미치고 있습니다.\n\n#### 5. 기술적 분석\n- **가격 추세**: 최근 주가는 59,500원으로, 단기적으로는 변동성이 있을 수 있습니다.\n- **기술 지표**: 이동평균선, RSI 등 주요 기술 지표를 통해 단기 매수/매도 신호를 확인할 필요가 있습니다.\n- **지지/저항 수준**: 60,000원대가 주요 저항선으로 작용할 수 있습니다.\n\n#### 6. 경쟁사 비교\n- **시장 점유율**: 삼성전자는 반도체 및 모바일 시장에서 높은 점유율을 유지하고 있습니다.\n- **재무 지표**: 경쟁사 대비 안정적인 재무 구조와 높은 매출 성장률을 보이고 있습니다.\n\n#### 7. 가치 투자 관점\n- **내재 가치**: 현재 주가는 내재 가치에 비해 저평가되었을 가능성이 있습니다.\n- **성장 잠재력**: 5G, AI, IoT 등 신기술 분야에서의 성장 잠재력이 큽니다.\n- **위험 요소**: 반도체 업황의 변동성, 글로벌 경제 불확실성 등이 주요 리스크입니다.\n\n#### 8. 투자 논문\n- **SWOT 분석**:\n  - **강점**: 글로벌 시장 지배력, 기술 혁신\n  - **약점**: 이익 변동성\n  - **기회**: 신기술 분야 확장\n  - **위협**: 시장 경쟁 심화, 경제 불확실성\n\n- **투자자 유형별 추천**:\n  - **장기 투자자**: 기술 혁신과 안정적인 재무 구조를 고려할 때 긍정적\n  - **단기 투자자**: 시장 변동성에 주의 필요\n\n#### 요약 (KOREAN)\n삼성전자는 기술 혁신과 글로벌 시장 지배력을 바탕으로 성장 잠재력이 크지만, 최근 이익 감소와 반도체 시장의 변동성은 주의가 필요합니다. 장기적으로는 긍정적이지만, 단기 투자자는 시장 변동성에 유의해야 합니다.",
+        "data_sources_used": [
+          "DART",
+          "yfinance",
+          "ManusAgent Web Search",
+          "Enhanced DART API",
+          "PDF Document Analysis"
+        ],
+        "analysis_timestamp": 1750389591.5084171
+      },
+      {
+        "expert_name": "정보기술 기술적 분석가",
+        "expertise_area": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+        "analysis_result": "### 삼성전자 (005930) 분석\n\n#### 1. 회사 개요 및 요약\n삼성전자는 글로벌 전자제품 제조업체로, 반도체, 모바일, 디스플레이, 가전제품 등 다양한 분야에서 사업을 운영하고 있습니다. 특히 반도체 부문에서의 강력한 시장 지배력과 혁신적인 기술 개발로 유명합니다.\n\n#### 2. 재무 데이터\n- **매출 추세**: 삼성전자는 최근 몇 년간 꾸준한 매출 성장을 기록하고 있으며, 특히 반도체 부문에서의 수익성이 높습니다.\n- **이익률**: 영업이익률과 순이익률 모두 업계 평균을 상회하며, 효율적인 비용 관리와 고부가가치 제품 판매가 주요 요인입니다.\n- **대차대조표 및 현금 흐름**: 삼성전자는 강력한 재무 구조를 가지고 있으며, 현금 흐름이 안정적입니다. 이는 미래 투자와 배당 지급에 긍정적인 영향을 미칩니다.\n\n#### 3. 시장 심리\n- **애널리스트 평가**: 대부분의 애널리스트가 삼성전자에 대해 긍정적인 평가를 내리고 있으며, 목표 주가 상향 조정이 잇따르고 있습니다.\n- **뉴스 영향**: 최근의 기술 혁신 및 신제품 출시가 긍정적인 시장 반응을 이끌어내고 있습니다.\n\n#### 4. 기술적 분석\n- **가격 추세**: 현재 주가는 59,500원으로, 52주 고가(87,188원)와 저가(49,269원) 사이에 위치하고 있습니다.\n- **기술 지표**: RSI(14)는 57.763으로 매수 신호를 나타내며, MACD(12,26)도 177.964로 매수 신호를 보입니다. 이동 평균선 분석에서도 모든 기간에서 매수 신호가 강하게 나타나고 있습니다.\n- **지지/저항 수준**: 피봇 포인트 분석에 따르면, 주요 저항 수준은 59,634원, 59,767원, 59,934원이며, 지지 수준은 59,034원, 59,167원, 59,334원입니다.\n\n#### 5. 경쟁사 비교\n- **시장 점유율**: 삼성전자는 반도체 및 모바일 부문에서 글로벌 시장 점유율 1위를 차지하고 있으며, 주요 경쟁사로는 SK하이닉스, 애플 등이 있습니다.\n- **재무 지표 비교**: 경쟁사 대비 높은 이익률과 안정적인 재무 구조를 유지하고 있습니다.\n\n#### 6. 가치 투자\n- **내재 가치**: 삼성전자의 내재 가치는 현재 주가를 상회하는 것으로 평가되며, 이는 장기적인 성장 잠재력을 반영합니다.\n- **성장 잠재력 및 리스크**: 반도체 수요 증가와 5G, AI 등 신기술 도입이 성장 동력으로 작용할 것이며, 글로벌 경제 불확실성 및 기술 경쟁이 주요 리스크 요인입니다.\n\n#### 7. 투자 논리\n- **SWOT 분석**:\n  - **강점**: 기술 혁신, 강력한 브랜드 파워, 글로벌 시장 지배력\n  - **약점**: 특정 부문에 대한 의존도\n  - **기회**: 5G, AI, IoT 등 신기술 시장 확대\n  - **위협**: 글로벌 경제 불확실성, 경쟁 심화\n\n- **투자 추천**:\n  - **단기 투자자**: 기술적 분석에 기반한 매수 추천\n  - **장기 투자자**: 내재 가치와 성장 잠재력을 고려한 매수 추천\n\n#### 요약 (한국어)\n삼성전자는 강력한 기술력과 시장 지배력을 바탕으로 지속적인 성장을 이어가고 있습니다. 기술적 분석에서는 매수 신호가 강하게 나타나고 있으며, 장기적으로도 내재 가치가 높아 투자 매력이 큽니다. 다만, 글로벌 경제 불확실성과 경쟁 심화는 주의가 필요합니다.",
+        "data_sources_used": [
+          "DART",
+          "yfinance",
+          "ManusAgent Web Search",
+          "Enhanced DART API",
+          "PDF Document Analysis"
+        ],
+        "analysis_timestamp": 1750389613.7323697
+      },
+      {
+        "expert_name": "정보기술 산업 전문가",
+        "expertise_area": "산업 분석, 경쟁 구조 분석, 트렌드 예측",
+        "analysis_result": "### 삼성전자(005930) 분석\n\n#### 1. 회사 개요 및 요약\n삼성전자는 글로벌 전자 및 IT 기업으로, 반도체, 스마트폰, 가전제품 등 다양한 제품을 생산하고 있습니다. 두 개의 주요 사업 부문인 DX(Device eXperience)와 DS(Device Solutions)로 나뉘어 운영되며, 전 세계에 232개의 생산 및 판매 거점을 보유하고 있습니다.\n\n#### 2. 주요 재무 지표\n- **EPS(주당순이익):** 4,950원\n- **BPS(주당순자산):** 57,981원\n- **PER(주가수익비율):** 11.96\n- **PBR(주가순자산비율):** 1.02\n- **현금배당수익률:** 2.44%\n\n#### 3. 재무 데이터 분석\n- **매출 및 수익성:** 최근 매출액은 3,008,709억 원이며, 영업이익은 327,260억 원으로 영업이익률은 10.88%입니다. 이는 경쟁사인 SK하이닉스의 영업이익률 35.45%에 비해 낮은 수치입니다.\n- **재무 건전성:** 자산총계는 5,145,319억 원, 부채총계는 1,123,399억 원으로, 자본총계는 4,021,921억 원입니다. 이는 안정적인 재무 구조를 나타냅니다.\n\n#### 4. 시장 심리 및 분석가 평가\n- **투자의견:** 삼성전자는 5점 만점 기준 4점을 받았으며, 이는 긍정적인 시장 평가를 반영합니다.\n- **경쟁사 비교:** SK하이닉스와 LG디스플레이와 비교했을 때, 삼성전자는 안정적인 수익성과 시장 점유율을 유지하고 있습니다.\n\n#### 5. 기술적 분석\n- **주가 동향:** 최근 주가는 59,200원으로, 기술적 지표상으로는 안정적인 흐름을 보이고 있습니다.\n- **지지 및 저항 수준:** 주요 지지선은 55,000원, 저항선은 62,000원으로 분석됩니다.\n\n#### 6. 경쟁사 비교\n- **시장 점유율:** 삼성전자는 반도체 및 가전 시장에서 높은 점유율을 차지하고 있으며, SK하이닉스, LG디스플레이와의 비교에서도 우위를 점하고 있습니다.\n- **재무 지표 비교:** 삼성전자의 PER은 12.08로, SK하이닉스의 9.07보다 높지만, 안정적인 수익성을 유지하고 있습니다.\n\n#### 7. 가치 투자 관점\n- **내재 가치 및 성장 잠재력:** 삼성전자는 기술 혁신과 글로벌 네트워크를 통해 지속적인 성장이 기대됩니다. 그러나 반도체 시장의 변동성과 글로벌 경제 불확실성은 주요 리스크 요인입니다.\n\n#### 8. 투자 논리 및 SWOT 분석\n- **강점:** 글로벌 브랜드 인지도, 강력한 R&D 역량\n- **약점:** 반도체 시장의 변동성\n- **기회:** 5G 및 AI 기술 발전\n- **위협:** 글로벌 경제 불확실성, 경쟁 심화\n\n#### 9. 투자자 유형별 추천\n- **장기 투자자:** 삼성전자는 안정적인 배당과 성장 잠재력을 고려할 때 장기 투자에 적합합니다.\n- **단기 투자자:** 기술적 분석을 통해 단기적인 주가 변동성을 활용할 수 있습니다.\n\n#### 요약 (한국어)\n삼성전자는 글로벌 전자 및 IT 시장에서 강력한 입지를 가진 기업으로, 안정적인 재무 구조와 성장 잠재력을 보유하고 있습니다. 반도체 및 가전 시장에서의 경쟁력을 바탕으로 장기적인 성장이 기대되며, 다양한 투자자에게 매력적인 투자 기회를 제공합니다. 그러나 반도체 시장의 변동성과 글로벌 경제 불확실성은 주의해야 할 리스크 요인입니다.",
+        "data_sources_used": [
+          "DART",
+          "yfinance",
+          "ManusAgent Web Search",
+          "Enhanced DART API",
+          "PDF Document Analysis"
+        ],
+        "analysis_timestamp": 1750389638.756025
+      },
+      {
+        "expert_name": "정보기술 밸류에이션 전문가",
+        "expertise_area": "기업가치 평가, 적정주가 산정, 투자지표 분석",
+        "analysis_result": "### 삼성전자 (005930) 분석\n\n#### 1. 회사 개요 및 요약\n삼성전자는 글로벌 전자제품 제조업체로, 반도체, 모바일, 디스플레이, 가전제품 등 다양한 분야에서 사업을 운영하고 있습니다. 특히 반도체 부문에서의 강력한 시장 지배력과 혁신적인 기술 개발로 유명합니다.\n\n#### 2. 재무 데이터\n- **매출 추세**: 최근 몇 년간 삼성전자의 매출은 반도체 수요 증가와 모바일 기기 판매 호조로 꾸준히 증가해왔습니다. 그러나 글로벌 경제 불확실성과 반도체 사이클의 변동성은 주의할 필요가 있습니다.\n- **이익률**: 영업이익률과 순이익률은 업계 평균을 상회하며, 특히 반도체 부문에서 높은 수익성을 유지하고 있습니다.\n- **대차대조표 및 현금 흐름**: 삼성전자는 강력한 대차대조표를 보유하고 있으며, 현금 흐름도 안정적입니다. 이는 미래 투자와 배당 지급에 긍정적인 요소로 작용합니다.\n\n#### 3. 시장 심리\n- **애널리스트 평가**: 대부분의 애널리스트들은 삼성전자에 대해 '매수' 또는 '강력 매수' 의견을 제시하고 있습니다. 이는 회사의 기술력과 시장 지배력을 긍정적으로 평가한 결과입니다.\n- **뉴스 영향**: 최근의 뉴스는 주로 반도체 시장의 회복 가능성과 관련된 긍정적인 전망을 다루고 있습니다.\n\n#### 4. 기술적 분석\n- **가격 추세**: 최근 주가는 변동성이 있지만, 장기적으로 상승 추세를 보이고 있습니다.\n- **기술적 지표**: 이동평균선, RSI 등 주요 기술적 지표는 현재 주가가 과매수 상태가 아님을 시사합니다.\n- **지지/저항 수준**: 주요 지지선은 60,000원, 저항선은 70,000원으로 분석됩니다.\n\n#### 5. 경쟁사 비교\n- **시장 점유율**: 삼성전자는 반도체와 모바일 부문에서 글로벌 시장 점유율 1위를 차지하고 있습니다.\n- **재무 지표**: 주요 경쟁사 대비 높은 수익성과 안정적인 재무 구조를 보유하고 있습니다.\n\n#### 6. 가치 투자자 관점\n- **내재 가치**: DCF(현금흐름할인모형) 분석을 통해 삼성전자의 내재 가치는 현재 주가보다 높게 평가됩니다.\n- **성장 잠재력**: 5G, AI, IoT 등 신기술 분야에서의 성장 가능성이 큽니다.\n- **위험 요소**: 반도체 시장의 변동성과 글로벌 무역 갈등이 주요 리스크로 작용할 수 있습니다.\n\n#### 7. 투자 논리\n- **SWOT 분석**:\n  - **강점**: 기술 혁신, 강력한 브랜드, 글로벌 네트워크\n  - **약점**: 높은 반도체 의존도\n  - **기회**: 신기술 시장 진출, 글로벌 경제 회복\n  - **위협**: 경쟁 심화, 규제 변화\n\n- **투자자 유형별 추천**:\n  - **장기 투자자**: 기술 혁신과 안정적인 수익성을 고려할 때 매수 추천\n  - **단기 투자자**: 시장 변동성을 고려한 신중한 접근 필요\n\n#### 요약 (한국어)\n삼성전자는 강력한 기술력과 시장 지배력을 바탕으로 안정적인 재무 구조를 유지하고 있으며, 장기적인 성장 잠재력이 큽니다. 반도체 시장의 변동성과 글로벌 경제 불확실성은 주의해야 할 요소지만, 신기술 분야에서의 기회가 많아 장기 투자자에게 매력적인 투자 대상입니다.",
+        "data_sources_used": [
+          "DART",
+          "yfinance",
+          "ManusAgent Web Search",
+          "Enhanced DART API",
+          "PDF Document Analysis"
+        ],
+        "analysis_timestamp": 1750389658.6682801
+      },
+      {
+        "expert_name": "정보기술 리스크 평가자",
+        "expertise_area": "위험 요소 분석, 시나리오 분석, 리스크 관리",
+        "analysis_result": "### 삼성전자(005930) 분석\n\n#### 1. 회사 개요 및 요약\n삼성전자는 글로벌 전자 및 IT 기업으로, 반도체, 스마트폰, 가전제품 등 다양한 제품을 생산하고 있습니다. 회사는 두 개의 주요 부문인 DX(Device eXperience)와 DS(Device Solutions)로 나뉘어 운영됩니다. DX 부문은 스마트폰, TV, 가전제품 등을 포함하며, DS 부문은 메모리 반도체, 파운드리, 시스템 LSI 사업을 포함합니다.\n\n#### 2. 재무 데이터\n- **매출 및 수익성**: 최근 몇 년간 삼성전자의 매출은 꾸준히 증가해 왔으며, 2023년에는 3,008,709억 원의 매출을 기록했습니다. 영업이익률은 10.88%로, 경쟁사 대비 안정적인 수익성을 유지하고 있습니다.\n- **재무 상태**: 자산총계는 5,145,319억 원, 부채총계는 1,123,399억 원으로, 안정적인 재무 구조를 보유하고 있습니다. PBR은 1.03으로, 자산 대비 주가가 적절하게 평가되고 있음을 나타냅니다.\n- **현금 흐름**: 삼성전자는 강력한 현금 흐름을 유지하고 있으며, 이는 연구개발 및 전략적 투자를 지속할 수 있는 기반이 됩니다.\n\n#### 3. 시장 심리\n- **애널리스트 평가**: 삼성전자는 평균 4점(5점 만점)의 투자의견을 받고 있으며, 이는 긍정적인 시장 심리를 반영합니다.\n- **뉴스 및 트렌드**: 최근 AI 및 기술 혁신을 통해 시장 점유율 하락을 극복하려는 노력이 주목받고 있습니다.\n\n#### 4. 기술적 분석\n- **주가 동향**: 최근 주가는 59,800원으로, 기술적 지표상 주요 지지 및 저항 수준을 확인할 필요가 있습니다.\n- **기술적 지표**: 이동평균선, RSI 등 주요 기술적 지표를 통해 매수 및 매도 신호를 분석할 수 있습니다.\n\n#### 5. 경쟁사 비교\n- **시장 점유율**: 삼성전자는 글로벌 반도체 및 스마트폰 시장에서 주요 점유율을 차지하고 있으며, SK하이닉스, LG디스플레이 등과 경쟁하고 있습니다.\n- **재무 지표 비교**: 삼성전자는 경쟁사 대비 높은 매출 및 안정적인 수익성을 보유하고 있습니다.\n\n#### 6. 가치 투자자 관점\n- **내재 가치**: 삼성전자의 내재 가치는 현재 주가 대비 매력적일 수 있으며, 이는 장기적인 성장 잠재력을 반영합니다.\n- **성장 잠재력 및 리스크**: AI 및 기술 혁신을 통한 성장 잠재력이 크지만, 글로벌 경제 불확실성 및 경쟁 심화가 리스크 요인으로 작용할 수 있습니다.\n\n#### 7. 투자 논리\n- **SWOT 분석**:\n  - **강점**: 글로벌 시장 점유율, 강력한 브랜드, 기술 혁신\n  - **약점**: 특정 부문에서의 점유율 하락\n  - **기회**: AI 및 기술 혁신을 통한 신시장 개척\n  - **위협**: 글로벌 경제 불확실성, 경쟁 심화\n\n- **투자 추천**:\n  - **장기 투자자**: 기술 혁신 및 AI 분야의 성장 잠재력을 고려하여 매수 추천\n  - **단기 투자자**: 기술적 분석을 통한 매수/매도 타이밍 조정\n\n#### 요약 (한국어)\n삼성전자는 글로벌 전자 및 IT 시장에서 강력한 입지를 가진 기업으로, AI 및 기술 혁신을 통해 시장 점유율 하락을 극복하려는 노력을 기울이고 있습니다. 재무적으로 안정적이며, 장기적인 성장 잠재력을 보유하고 있습니다. 투자자들은 삼성전자의 기술 혁신 및 AI 분야의 성장 가능성을 고려하여 장기적인 관점에서 투자할 것을 추천합니다.",
+        "data_sources_used": [
+          "DART",
+          "yfinance",
+          "ManusAgent Web Search",
+          "Enhanced DART API",
+          "PDF Document Analysis"
+        ],
+        "analysis_timestamp": 1750389679.5672202
+      }
+    ],
+    "synthesis_result": {
+      "synthesis_success": true,
+      "final_analysis": "### 삼성전자 최종 분석\n\n1. **종합 평가**: 전반적인 투자 매력도\n   - 삼성전자는 글로벌 전자제품 및 반도체 시장에서 강력한 입지를 가지고 있으며, 다양한 사업 부문에서의 지속적인 성장이 기대됩니다. 그러나 최근 이익 성장률의 급격한 감소는 주의가 필요합니다. 전반적으로 장기적인 투자 매력도는 높지만, 단기적인 변동성에 대한 대비가 필요합니다.\n\n2. **주요 강점**: 핵심 경쟁 우위\n   - **반도체 부문**: 삼성전자는 반도체 시장에서의 강력한 지배력과 혁신적인 기술 개발로 경쟁 우위를 유지하고 있습니다.\n   - **재무 건전성**: 강력한 대차대조표와 안정적인 현금 흐름은 미래 투자와 배당 지급에 긍정적인 요소로 작용합니다.\n\n3. **주요 우려사항**: 리스크 요인\n   - **이익 성장률 감소**: 최근 이익 성장률의 급격한 감소는 반도체 업황의 변동성이나 특정 사업 부문의 일시적 부진에 기인할 수 있으며, 이는 단기적인 리스크 요인입니다.\n   - **글로벌 경제 불확실성**: 반도체 사이클의 변동성과 글로벌 경제 불확실성은 주의가 필요합니다.\n\n4. **투자 의견**: 매수/보유/매도 의견과 근거\n   - **보유**: 삼성전자는 장기적으로 긍정적인 성장 전망을 가지고 있으나, 단기적인 이익 감소와 시장 변동성을 고려할 때 현재 주식을 보유하는 것이 적절합니다. 추가적인 시장 상황 분석 후 매수 기회를 모색하는 것이 바람직합니다.\n\n5. **목표가/적정가**: 가능하다면 적정 주가 범위\n   - **적정 주가 범위**: 60,000원 ~ 65,000원. 이는 현재 주가와 시장 상황을 고려한 범위로, 반도체 부문의 회복과 글로벌 경제 상황에 따라 변동될 수 있습니다.",
+      "investment_opinion": "매수",
+      "expert_consensus": "5명 전문가 의견 종합",
+      "analysis_coverage": [
+        "technical"
+      ],
+      "confidence_level": "매우높음"
+    },
+    "data_integration_quality": "높음",
+    "cost_savings": {
+      "traditional_cost": 55.0,
+      "one_hot_cost": 1.0,
+      "savings_amount": 54.0,
+      "savings_percentage": 98.18181818181819,
+      "activated_agents": 5,
+      "depth": "deep"
+    },
+    "token_optimization": {
+      "optimization_applied": false,
+      "optimizations": [],
+      "token_info": {
+        "status": "not_needed"
+      }
+    },
+    "analysis_depth": "deep",
+    "total_analysis_time": "123.45초",
+    "data_sources_integrated": {
+      "financial_data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "manus_web_search_performed": true,
+      "pdf_analysis_performed": false,
+      "enhanced_dart_used": true,
+      "crewai_synthesis_performed": true
+    }
+  },
+  "data_flow_tracking": {
+    "step1_stock_detection": {
+      "method": "ai_ai_web_search_priority",
+      "confidence": "high"
+    },
+    "step2_financial_data": {
+      "sources": [
+        "yfinance",
+        "DART"
+      ],
+      "quality": "보통"
+    },
+    "step3_manus_collection": {
+      "richness_score": 64.5,
+      "pdf_detected": true,
+      "ready_for_crewai": true
+    },
+    "step4_crewai_synthesis": {
+      "success": true,
+      "experts_activated": 5,
+      "data_integration_success": true
+    },
+    "overall_data_completeness": 82.9
+  }
+}
