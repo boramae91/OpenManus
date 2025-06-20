@@ -246,10 +246,9 @@ class SmartSectorManager:
                 f"🎯 CrewAI 종합 분석 시작: {stock_name} (수정된 워크플로우 + 토큰 최적화)"
             )
 
-            # 🔢 0. 토큰 최적화 수행 (가장 먼저!)
+            # 🔢 토큰 최적화 (새로운 기능!)
             logger.info("🔢 토큰 최적화 시작...")
             optimization_result = self._optimize_data_for_token_limit(
-                user_prompt=user_prompt,
                 financial_data=financial_data,
                 enhanced_dart_data=enhanced_dart_data,
                 manus_collected_data=manus_collected_data,

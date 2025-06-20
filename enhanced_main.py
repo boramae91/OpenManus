@@ -1758,34 +1758,42 @@ class EnhancedStockAnalysisSystem:
                     if analysis_result and analysis_result.get("success"):
                         pdf_result["analysis_completed"] = True
 
+                        # extract_raw_text_only 결과 구조에 맞춰 수정
+                        raw_content = analysis_result.get("raw_content", {})
+                        metadata = analysis_result.get("metadata", {})
+
                         # 기존 구조 유지
                         pdf_content = {
                             "pdf_url": pdf_url,
-                            "text_length": len(analysis_result.get("raw_text", "")),
-                            "raw_text": analysis_result.get("raw_text", ""),
-                            "extraction_method": analysis_result.get(
-                                "extraction_method", "large_pdf_analyzer"
+                            "text_length": raw_content.get("text_length", 0),
+                            "raw_text": raw_content.get("full_text", ""),
+                            "extraction_method": metadata.get(
+                                "extraction_method_detail", "large_pdf_analyzer"
                             ),
-                            "analysis_timestamp": analysis_result.get(
-                                "analysis_timestamp"
-                            ),
-                            "chunking_applied": analysis_result.get(
+                            "analysis_timestamp": metadata.get("extraction_start_time"),
+                            "chunking_applied": raw_content.get(
                                 "chunking_applied", False
                             ),
-                            "total_chunks": analysis_result.get("total_chunks", 0),
-                            "chunk_types": analysis_result.get("chunk_types", []),
-                            "toc_based_chunks": analysis_result.get(
-                                "toc_based_chunks", {}
+                            "total_chunks": raw_content.get("total_chunks", 0),
+                            "chunk_types": raw_content.get("chunk_types", []),
+                            "toc_based_chunks": raw_content.get(
+                                "contextual_chunks", []
                             ),
-                            "keyword_based_chunks": analysis_result.get(
-                                "keyword_based_chunks", {}
-                            ),
-                            "ai_detected_structure": analysis_result.get(
-                                "ai_detected_structure", {}
-                            ),
-                            "chunking_metadata": analysis_result.get(
-                                "chunking_metadata", {}
-                            ),
+                            "keyword_based_chunks": {},  # 빈 딕셔너리로 호환성 유지
+                            "ai_detected_structure": {
+                                "chunking_method": raw_content.get(
+                                    "chunking_method", "none"
+                                )
+                            },
+                            "chunking_metadata": {
+                                "toc_available": raw_content.get(
+                                    "toc_available", False
+                                ),
+                                "chunking_method": raw_content.get(
+                                    "chunking_method", "none"
+                                ),
+                                "total_chunks": raw_content.get("total_chunks", 0),
+                            },
                         }
 
                         pdf_result["pdf_content"] = pdf_content
@@ -1793,8 +1801,11 @@ class EnhancedStockAnalysisSystem:
                     else:
                         error_msg = "분석 결과 없음"
                         if analysis_result:
-                            error_msg = analysis_result.get("error", "알 수 없는 오류")
+                            error_msg = analysis_result.get("metadata", {}).get(
+                                "error", "알 수 없는 오류"
+                            )
                         logger.warning(f"⚠️ 기존 PDF 분석도 실패: {error_msg}")
+                        pdf_result["error"] = error_msg
 
         except Exception as e:
             logger.error(f"PDF 감지/분석 중 오류: {e}")

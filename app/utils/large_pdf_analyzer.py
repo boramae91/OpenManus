@@ -254,6 +254,165 @@ class IndependentChunkProcessor:
             logger.error(f"❌ PDF 목차 추출 실패: {e}")
             return []
 
+    def chunk_by_table_of_contents(
+        self, text: str, table_of_contents: List[Dict]
+    ) -> List[Dict[str, Any]]:
+        """
+        🔖 목차를 기반으로 텍스트를 청킹합니다
+
+        목차 구조에 따라 텍스트를 논리적 섹션으로 나누어서
+        각 섹션별로 청크를 생성해요!
+
+        Args:
+            text: 전체 PDF 텍스트
+            table_of_contents: 목차 구조 리스트
+
+        Returns:
+            List[Dict]: 목차 기반 청크 리스트
+        """
+        if not table_of_contents:
+            logger.warning("⚠️ 목차가 없어서 기본 청킹으로 대체합니다")
+            return self.smart_chunk_text(text, preserve_sections=True)
+
+        chunks = []
+
+        try:
+            logger.info(f"🔖 목차 기반 청킹 시작: {len(table_of_contents)}개 목차 항목")
+
+            for i, toc_item in enumerate(table_of_contents):
+                section_title = toc_item.get("title", f"섹션_{i+1}")
+
+                # 텍스트에서 해당 섹션 찾기
+                title_pos = text.find(section_title)
+
+                if title_pos == -1:
+                    # 제목 변형으로 다시 시도
+                    title_variations = [
+                        section_title.replace(" ", ""),
+                        section_title.replace(".", ""),
+                        section_title.upper(),
+                        section_title.lower(),
+                    ]
+
+                    for variation in title_variations:
+                        title_pos = text.find(variation)
+                        if title_pos != -1:
+                            break
+
+                if title_pos == -1:
+                    logger.warning(
+                        f"⚠️ 섹션 '{section_title}'을 텍스트에서 찾을 수 없습니다"
+                    )
+                    continue
+
+                # 다음 섹션까지의 텍스트 추출
+                next_pos = len(text)
+                for j in range(i + 1, len(table_of_contents)):
+                    next_title = table_of_contents[j].get("title", "")
+                    next_title_pos = text.find(next_title, title_pos + 1)
+                    if next_title_pos != -1:
+                        next_pos = next_title_pos
+                        break
+
+                section_text = text[title_pos:next_pos].strip()
+
+                # 섹션이 너무 크면 서브청킹
+                if len(section_text) > self.chunk_size:
+                    # 큰 섹션을 여러 청크로 분할
+                    sub_chunks = self._split_large_section(section_text, section_title)
+                    chunks.extend(sub_chunks)
+                else:
+                    # 작은 섹션은 하나의 청크로
+                    if len(section_text) >= 100:  # 최소 길이 필터
+                        chunks.append(
+                            {
+                                "chunk_id": len(chunks) + 1,
+                                "section_title": section_title,
+                                "section_type": "toc_based",
+                                "chunk_type": "toc_based",
+                                "analysis_priority": "high",
+                                "content": section_text,
+                                "content_length": len(section_text),
+                                "metadata": {
+                                    "toc_level": toc_item.get("level", 1),
+                                    "page": toc_item.get("page", "unknown"),
+                                    "source": "table_of_contents",
+                                },
+                            }
+                        )
+
+            logger.info(f"✅ 목차 기반 청킹 완료: {len(chunks)}개 청크 생성")
+
+        except Exception as e:
+            logger.error(f"❌ 목차 기반 청킹 실패: {e}")
+            # 실패시 기본 청킹으로 폴백
+            return self.smart_chunk_text(text, preserve_sections=True)
+
+        return chunks
+
+    def _split_large_section(
+        self, section_text: str, section_title: str
+    ) -> List[Dict[str, Any]]:
+        """
+        큰 섹션을 여러 청크로 분할
+
+        Args:
+            section_text: 섹션 텍스트
+            section_title: 섹션 제목
+
+        Returns:
+            List[Dict]: 분할된 청크 리스트
+        """
+        chunks = []
+        current_pos = 0
+        chunk_num = 1
+
+        while current_pos < len(section_text):
+            # 청크 크기만큼 자르기
+            end_pos = min(current_pos + self.chunk_size, len(section_text))
+
+            # 단어 경계에서 자르기 (더 자연스러운 분할)
+            if end_pos < len(section_text):
+                # 마지막 공백이나 줄바꿈 찾기
+                last_space = section_text.rfind(" ", current_pos, end_pos)
+                last_newline = section_text.rfind("\n", current_pos, end_pos)
+
+                # 더 나은 분할점 선택
+                better_end = max(last_space, last_newline)
+                if better_end > current_pos + (
+                    self.chunk_size * 0.7
+                ):  # 70% 이상이면 사용
+                    end_pos = better_end
+
+            chunk_text = section_text[current_pos:end_pos].strip()
+
+            if len(chunk_text) >= 100:  # 최소 길이 필터
+                chunks.append(
+                    {
+                        "chunk_id": len(chunks) + 1,
+                        "section_title": f"{section_title}_Part{chunk_num}",
+                        "section_type": "toc_based_split",
+                        "chunk_type": "toc_based",
+                        "analysis_priority": "high",
+                        "content": chunk_text,
+                        "content_length": len(chunk_text),
+                        "metadata": {
+                            "original_section": section_title,
+                            "part_number": chunk_num,
+                            "is_split_chunk": True,
+                            "source": "large_section_split",
+                        },
+                    }
+                )
+                chunk_num += 1
+
+            # 다음 청크로 이동 (겹침 고려)
+            current_pos = max(end_pos - self.overlap_size, end_pos)
+            if current_pos >= end_pos:  # 무한루프 방지
+                break
+
+        return chunks
+
 
 class LargePDFAnalyzer:
     """
@@ -372,21 +531,33 @@ class LargePDFAnalyzer:
             if len(full_text) > 1000:  # 최소 길이 체크
                 try:
                     logger.info("🔖 PDF 목차 기반 청킹 시도...")
-                    # 목차 기반 청킹 우선 시도 (URL 지원)
-                    contextual_chunks = (
-                        await self.chunk_processor.chunk_by_table_of_contents(
-                            pdf_path=actual_pdf_path,
-                            text=full_text,
-                            min_chunk_size=1000,
-                            max_chunk_size=50000,
+                    # 먼저 목차 추출
+                    table_of_contents = (
+                        await self.chunk_processor.extract_pdf_table_of_contents(
+                            actual_pdf_path
                         )
                     )
 
+                    if table_of_contents:
+                        # 목차 기반 청킹 수행
+                        contextual_chunks = (
+                            self.chunk_processor.chunk_by_table_of_contents(
+                                text=full_text, table_of_contents=table_of_contents
+                            )
+                        )
+                    else:
+                        # 목차가 없으면 기본 청킹
+                        contextual_chunks = self.chunk_processor.smart_chunk_text(
+                            text=full_text, preserve_sections=True
+                        )
+
                     if contextual_chunks:
                         logger.info(
-                            f"✅ 목차 기반 청킹 성공: {len(contextual_chunks)}개 청크 생성"
+                            f"✅ 청킹 성공: {len(contextual_chunks)}개 청크 생성"
                         )
-                        chunking_method = "table_of_contents"
+                        chunking_method = (
+                            "table_of_contents" if table_of_contents else "smart_chunk"
+                        )
 
                         # 목차 구조 로그 출력
                         toc_chunks = [
@@ -397,8 +568,8 @@ class LargePDFAnalyzer:
                         if toc_chunks:
                             logger.info("📑 목차 구조:")
                             for chunk in toc_chunks[:5]:  # 처음 5개만 출력
-                                level = chunk.get("toc_level", 1)
-                                title = chunk.get("toc_title", "제목없음")
+                                level = chunk.get("metadata", {}).get("toc_level", 1)
+                                title = chunk.get("section_title", "제목없음")
                                 length = chunk.get("content_length", 0)
                                 indent = "  " * (level - 1)
                                 logger.info(f"  {indent}📄 {title} ({length:,}자)")
@@ -1687,6 +1858,100 @@ class LargePDFAnalyzer:
 
         return footnote_sections
 
+    async def _create_dictionary_without_toc(
+        self, pdf_path: str, company_name: str, max_section_size: int
+    ) -> Dict[str, Any]:
+        """
+        목차가 없는 PDF를 위한 딕셔너리 생성
+
+        텍스트 패턴 분석으로 논리적 섹션을 나누어 딕셔너리를 만들어요!
+
+        Args:
+            pdf_path: PDF 파일 경로 또는 URL
+            company_name: 회사명
+            max_section_size: 각 섹션의 최대 크기
+
+        Returns:
+            Dict: PDF 딕셔너리 생성 결과
+        """
+        try:
+            logger.info("📝 목차 없는 PDF - 텍스트 기반 섹션 분할 시작...")
+
+            # 전체 텍스트 추출
+            full_text_result = await self.extract_raw_text_only(
+                pdf_path=pdf_path, company_name=company_name, save_to_json=False
+            )
+
+            if not full_text_result.get("success"):
+                raise Exception(
+                    f"PDF 텍스트 추출 실패: {full_text_result.get('error')}"
+                )
+
+            full_text = full_text_result.get("raw_text", "")
+
+            # 논리적 섹션으로 분할
+            pdf_dictionary = self._split_text_into_logical_sections(
+                full_text, max_section_size
+            )
+
+            # 주석 섹션 별도 추가
+            footnote_sections = self._extract_footnote_sections(
+                full_text, max_section_size
+            )
+
+            for footnote_title, footnote_content in footnote_sections.items():
+                pdf_dictionary[f"[주석] {footnote_title}"] = footnote_content
+
+            # 메타데이터 생성
+            metadata = {
+                "company_name": company_name,
+                "pdf_source": pdf_path,
+                "creation_timestamp": datetime.now().isoformat(),
+                "total_sections": len(pdf_dictionary),
+                "toc_based_sections": 0,  # 목차 기반 아님
+                "footnote_sections": len(footnote_sections),
+                "text_based_sections": len(pdf_dictionary) - len(footnote_sections),
+                "total_text_length": sum(
+                    len(content) for content in pdf_dictionary.values()
+                ),
+                "avg_section_length": (
+                    sum(len(content) for content in pdf_dictionary.values())
+                    // len(pdf_dictionary)
+                    if pdf_dictionary
+                    else 0
+                ),
+                "max_section_size_limit": max_section_size,
+                "creation_method": "text_pattern_based",
+            }
+
+            # PDFDictionaryInterface 생성
+            pdf_interface = PDFDictionaryInterface(
+                pdf_dictionary=pdf_dictionary, metadata=metadata
+            )
+
+            logger.info(
+                f"✅ 텍스트 기반 PDF 딕셔너리 생성 완료 - {len(pdf_dictionary)}개 섹션"
+            )
+
+            return {
+                "success": True,
+                "pdf_dictionary": pdf_dictionary,
+                "interface": pdf_interface,
+                "metadata": metadata,
+            }
+
+        except Exception as e:
+            error_msg = f"텍스트 기반 PDF 딕셔너리 생성 실패: {str(e)}"
+            logger.error(f"❌ {error_msg}")
+
+            return {
+                "success": False,
+                "pdf_dictionary": {},
+                "interface": None,
+                "metadata": {"error": error_msg},
+                "error": error_msg,
+            }
+
     def _split_text_into_logical_sections(
         self, text: str, max_section_size: int
     ) -> Dict[str, str]:
@@ -1730,7 +1995,7 @@ class LargePDFAnalyzer:
                 else:
                     section_title = f"섹션_{i+1}"
 
-                # 🚀 60만자 제한 적용 (기존보다 12배 확장!)
+                # 🚀 60만자 제한 적용
                 if len(section_text) > max_section_size:
                     section_text = (
                         section_text[:max_section_size]
@@ -1738,6 +2003,10 @@ class LargePDFAnalyzer:
                     )
 
                 sections[section_title] = section_text
+
+        # 텍스트가 너무 짧거나 섹션 분할이 제대로 안된 경우 전체를 하나의 섹션으로
+        if not sections and len(text) >= 100:
+            sections["전체_문서"] = text[:max_section_size]
 
         logger.info(f"🤖 논리적 섹션 분할 완료 - {len(sections)}개 섹션 (60만자 지원)")
         return sections
