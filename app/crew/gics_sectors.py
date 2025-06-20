@@ -117,6 +117,48 @@ class GICSSectorManager:
         """
         return self.sector_contexts.get(sector, {})
 
+    def get_sector_analysis_points(self, sector: GICSSector) -> str:
+        """
+        특정 섹터의 중점 분석 포인트를 가져와요
+        투자 분석 시 반드시 확인해야 할 핵심 요소들이에요!
+
+        Args:
+            sector: GICS 섹터
+
+        Returns:
+            str: 섹터별 중점 분석 포인트
+        """
+        context = self.sector_contexts.get(sector, {})
+        return context.get("key_analysis_points", "중점 분석 포인트 정보가 없습니다.")
+
+    def get_sector_risk_factors(self, sector: GICSSector) -> str:
+        """
+        특정 섹터의 주요 위험 요소를 가져와요
+        분석할 때 주의해서 봐야 할 함정들이에요!
+
+        Args:
+            sector: GICS 섹터
+
+        Returns:
+            str: 섹터별 주요 위험 요소
+        """
+        context = self.sector_contexts.get(sector, {})
+        return context.get("key_risks", "주요 위험 요소 정보가 없습니다.")
+
+    def get_sector_critical_metrics(self, sector: GICSSector) -> str:
+        """
+        특정 섹터의 핵심 지표를 가져와요
+        이 지표들을 통해 기업의 경쟁력을 평가할 수 있어요!
+
+        Args:
+            sector: GICS 섹터
+
+        Returns:
+            str: 섹터별 핵심 지표
+        """
+        context = self.sector_contexts.get(sector, {})
+        return context.get("critical_metrics", "핵심 지표 정보가 없습니다.")
+
     def get_sector_key_metrics(self, sector: GICSSector) -> List[str]:
         """
         특정 섹터의 핵심 분석 지표를 가져와요
@@ -164,88 +206,166 @@ class GICSSectorManager:
         }
         return korean_names.get(sector, sector.name)
 
+    def get_comprehensive_sector_guide(self, sector: GICSSector) -> Dict[str, str]:
+        """
+        특정 섹터의 종합 분석 가이드를 제공해요
+        중점 분석 포인트, 위험 요소, 핵심 지표를 모두 포함한 완전한 가이드에요!
+
+        Args:
+            sector: GICS 섹터
+
+        Returns:
+            Dict: 섹터별 종합 분석 가이드
+        """
+        korean_name = self.get_sector_korean_name(sector)
+        context = self.sector_contexts.get(sector, {})
+
+        return {
+            "sector_name": korean_name,
+            "sector_code": sector.value,
+            "industry_focus": context.get("industry_focus", "업종 정보 없음"),
+            "key_analysis_points": context.get(
+                "key_analysis_points", "중점 분석 포인트 정보 없음"
+            ),
+            "key_risks": context.get("key_risks", "주요 위험 요소 정보 없음"),
+            "valuation_approach": context.get(
+                "valuation_approach", "밸류에이션 방법 정보 없음"
+            ),
+            "cyclical_nature": context.get("cyclical_nature", "경기 민감성 정보 없음"),
+            "critical_metrics": context.get("critical_metrics", "핵심 지표 정보 없음"),
+        }
+
+    def print_sector_analysis_guide(self, sector: GICSSector) -> None:
+        """
+        특정 섹터의 분석 가이드를 보기 좋게 출력해요
+        실제 분석 작업 시 참고용으로 활용하세요!
+
+        Args:
+            sector: GICS 섹터
+        """
+        guide = self.get_comprehensive_sector_guide(sector)
+
+        print(
+            f"\n🏢 【{guide['sector_name']} 섹터 ({guide['sector_code']})】 분석 가이드"
+        )
+        print("=" * 60)
+
+        print(f"\n📋 주요 업종:")
+        print(f"   {guide['industry_focus']}")
+
+        print(f"\n🎯 중점 분석 포인트:")
+        print(f"   {guide['key_analysis_points']}")
+
+        print(f"\n⚠️  주의할 위험 요소:")
+        print(f"   {guide['key_risks']}")
+
+        print(f"\n💰 밸류에이션 방법:")
+        print(f"   {guide['valuation_approach']}")
+
+        print(f"\n📊 경기 민감성:")
+        print(f"   {guide['cyclical_nature']}")
+
+        print(f"\n📈 핵심 체크 지표:")
+        print(f"   {guide['critical_metrics']}")
+
+        print("=" * 60)
+
     def _initialize_sector_contexts(self) -> Dict[GICSSector, Dict[str, str]]:
         """
         섹터별 전문 컨텍스트를 초기화해요
         각 섹터의 특성과 분석 관점을 정의해요!
+
+        각 섹터별로 중점 분석 포인트와 주의할 점을 상세히 제공해요
+        이 정보는 실제 투자 분석에서 놓치기 쉬운 부분들을 포함하고 있어요!
         """
         return {
             GICSSector.ENERGY: {
                 "industry_focus": "석유, 가스, 신재생에너지, 에너지 장비 및 서비스",
-                "key_drivers": "유가 변동, 글로벌 에너지 수급, 탄소중립 정책, 지정학적 리스크",
-                "valuation_approach": "자산 기반 평가, DCF, 유가 시나리오 분석",
-                "cyclical_nature": "고도의 경기순환성, 유가 민감성",
-                "esg_focus": "환경 규제, 탄소 배출, 에너지 전환",
+                "key_analysis_points": "유가 및 가스 가격 민감도, 원가 구조(생산단가 vs 판매단가), 자원 매장량 및 수명, Capex(탐사/시추/인프라 투자), ESG 요인(탄소배출, 규제 리스크)",
+                "key_risks": "유가 상승 시 이익 급증으로 인한 일시적 착시 가능성, 자원 고갈 또는 탈탄소 정책 변화에 따른 구조적 리스크",
+                "valuation_approach": "자산 기반 평가, DCF, 유가 시나리오 분석, 매장량 기반 평가",
+                "cyclical_nature": "고도의 경기순환성, 유가 민감성, 에너지 정책 변화에 따른 구조적 변화",
+                "critical_metrics": "유가 민감도 분석, 생산단가 대비 판매단가 스프레드, 매장량 대비 생산량, 탄소 배출량 및 ESG 등급",
             },
             GICSSector.MATERIALS: {
                 "industry_focus": "화학, 건설자재, 용기포장재, 금속광업, 제지임산",
-                "key_drivers": "글로벌 경기, 인프라 투자, 원자재 가격, 중국 경기",
-                "valuation_approach": "P/B, EV/EBITDA, 원자재 가격 기반 평가",
-                "cyclical_nature": "강한 경기순환성, 수요 변동성",
-                "esg_focus": "환경 오염, 재활용, 지속가능한 원자재",
+                "key_analysis_points": "제품 가격 vs 원재료 가격 스프레드, 재고자산 및 가격 변동성, 사이클 민감도(경기민감 업종), 생산설비/원가구조 분석",
+                "key_risks": "원자재 가격 하락기에 실적 급감 가능성, 환경 규제 강화에 따른 비용 상승 가능성",
+                "valuation_approach": "P/B, EV/EBITDA, 원자재 가격 기반 평가, 사이클 조정 밸류에이션",
+                "cyclical_nature": "강한 경기순환성, 수요 변동성, 중국 경기와 높은 연관성",
+                "critical_metrics": "원자재 가격 연동성, 제품-원료 가격 스프레드, 재고자산 회전율, 환경 투자비용 및 재활용률",
             },
             GICSSector.INDUSTRIALS: {
                 "industry_focus": "자본재, 상업서비스, 운송, 항공우주국방",
-                "key_drivers": "설비투자, 글로벌 무역, 인프라 투자, 자동화 트렌드",
-                "valuation_approach": "P/E, EV/EBITDA, 주문잔고 분석",
-                "cyclical_nature": "중간 수준의 경기순환성",
-                "esg_focus": "스마트팩토리, 친환경 운송, 안전성",
+                "key_analysis_points": "수주잔고(Backlog) 및 수주 트렌드, 고객 다변화 여부, 운영 레버리지, 글로벌 공급망 의존도",
+                "key_risks": "단기 실적 변동에 대한 과잉 해석 위험, 공공 프로젝트 중심 기업의 정치 리스크",
+                "valuation_approach": "P/E, EV/EBITDA, 주문잔고 분석, 장기 계약 가치 평가",
+                "cyclical_nature": "중간 수준의 경기순환성, 설비투자 사이클과 연관성",
+                "critical_metrics": "수주잔고 변화율, 매출 가시성, 고객 집중도, 운영 레버리지 및 자유현금흐름",
             },
             GICSSector.CONSUMER_DISCRETIONARY: {
                 "industry_focus": "자동차, 가전, 의류, 호텔레스토랑, 미디어엔터테인먼트",
-                "key_drivers": "소비자 심리, 가처분소득, 트렌드 변화, 전기차 전환",
-                "valuation_approach": "P/E, P/S, 브랜드 가치 평가",
-                "cyclical_nature": "높은 경기 민감성",
-                "esg_focus": "친환경 제품, 근로자 권익, 공급망 투명성",
+                "key_analysis_points": "소비자 트렌드(브랜드력, 시장점유율), 매출성장률과 이익률 추이, e-Commerce 대응 전략, 원가 인상 시 가격전가 능력",
+                "key_risks": "일시적 유행(패션, 전자기기 등)의 매출 과대평가, 소비 위축기 수요 급감 가능성",
+                "valuation_approach": "P/E, P/S, 브랜드 가치 평가, 동일매장 매출성장률 기반 평가",
+                "cyclical_nature": "높은 경기 민감성, 소비자 심리와 가처분소득에 의존",
+                "critical_metrics": "동일매장 매출성장률, 브랜드 가치 및 시장점유율, 재고회전율, 소비자 충성도",
             },
             GICSSector.CONSUMER_STAPLES: {
                 "industry_focus": "식음료, 생활용품, 소매업체, 담배",
-                "key_drivers": "인구 변화, 건강 트렌드, 원자재 가격, 유통 혁신",
-                "valuation_approach": "P/E, 배당수익률, 브랜드 프리미엄",
-                "cyclical_nature": "낮은 경기 민감성, 방어적 특성",
-                "esg_focus": "건강한 제품, 지속가능한 포장, 공정무역",
+                "key_analysis_points": "안정적인 수요 기반 확인, 마진 유지력(원가 상승 전가력), 유통 채널과 점유율, 브랜드 충성도",
+                "key_risks": "방어주로 과대평가되는 경우 존재, 인플레이션 시 원가부담 증가 리스크",
+                "valuation_approach": "P/E, 배당수익률, 브랜드 프리미엄, 안정성 기반 평가",
+                "cyclical_nature": "낮은 경기 민감성, 방어적 특성, 인플레이션 헤지 능력",
+                "critical_metrics": "매출 안정성, 마진 방어력, 브랜드 충성도, 유통망 강도 및 원자재 헤지 비율",
             },
             GICSSector.HEALTH_CARE: {
                 "industry_focus": "제약, 바이오테크, 의료기기, 헬스케어 서비스",
-                "key_drivers": "고령화, 신약 승인, 의료 접근성, 바이오 혁신",
-                "valuation_approach": "DCF, rNPV(위험조정순현재가치), P/E",
-                "cyclical_nature": "낮은 경기 민감성, 방어적 특성",
-                "esg_focus": "의료 접근성, 약물 안전성, 연구 윤리",
+                "key_analysis_points": "파이프라인(신약개발 단계), FDA 승인 및 특허만료 이슈, 보험 수가 및 정부 규제 정책, R&D 비중 및 성공률",
+                "key_risks": "신약 승인 실패 시 가치 급락 가능성, 특허만료로 인한 제네릭 약물 위협",
+                "valuation_approach": "DCF, rNPV(위험조정순현재가치), 파이프라인 가치 평가",
+                "cyclical_nature": "낮은 경기 민감성, 방어적 특성, 고령화 수혜",
+                "critical_metrics": "신약 파이프라인 단계별 분석, 특허 만료일정, 임상시험 성공률, FDA 승인 현황",
             },
             GICSSector.FINANCIALS: {
                 "industry_focus": "은행, 증권, 보험, 부동산금융",
-                "key_drivers": "금리 변동, 신용 리스크, 규제 변화, 핀테크 혁신",
-                "valuation_approach": "P/B, ROE, 순이자마진 분석",
-                "cyclical_nature": "강한 경기순환성, 금리 민감성",
-                "esg_focus": "ESG 금융, 금융 포용성, 리스크 관리",
+                "key_analysis_points": "이자이익(NIM)과 비이자이익 구분, 자산건전성(NPL, 대손충당금), 자본비율(BIS), 금리 민감도 및 레버리지 수준",
+                "key_risks": "장단기 금리 역전 시 수익성 악화, 부실자산 증가 시 급격한 손실 가능성",
+                "valuation_approach": "P/B, ROE, 순이자마진 분석, 자산건전성 기반 평가",
+                "cyclical_nature": "강한 경기순환성, 금리 민감성, 신용 사이클과 밀접한 관련",
+                "critical_metrics": "순이자마진(NIM), 비이자수익, 신용비용률, BIS 비율, 대손충당금 적정성",
             },
             GICSSector.INFORMATION_TECHNOLOGY: {
                 "industry_focus": "소프트웨어, 반도체, IT서비스, 전자장비",
-                "key_drivers": "디지털 전환, AI/클라우드, 반도체 사이클, 기술 혁신",
-                "valuation_approach": "P/E, P/S, EV/Sales, 성장률 기반 평가",
-                "cyclical_nature": "기술 사이클, 반도체 업황",
-                "esg_focus": "데이터 프라이버시, 디지털 격차, 에너지 효율",
+                "key_analysis_points": "기술력(특허, 플랫폼 점유율), 매출성장률/고객 락인효과, R&D 투자 vs 수익화 성공률, 경쟁 환경 및 M&A 전략",
+                "key_risks": "과도한 밸류에이션으로 인한 조정 위험, 기술 변화(디스럽션) 리스크에 취약",
+                "valuation_approach": "P/E, P/S, EV/Sales, 성장률 기반 평가, 플랫폼 가치 평가",
+                "cyclical_nature": "기술 사이클, 반도체 업황, 디지털 전환 수요",
+                "critical_metrics": "매출 성장률, 기술 혁신력, 시장점유율, 클라우드 전환율, AI 역량",
             },
             GICSSector.COMMUNICATION_SERVICES: {
                 "industry_focus": "통신서비스, 미디어엔터테인먼트, 인터랙티브미디어",
-                "key_drivers": "5G 확산, 스트리밍 서비스, 광고 시장, 콘텐츠 경쟁",
-                "valuation_approach": "EV/EBITDA, P/E, 구독자 기반 평가",
-                "cyclical_nature": "중간 수준의 경기 민감성",
-                "esg_focus": "정보 보안, 콘텐츠 윤리, 디지털 웰빙",
+                "key_analysis_points": "가입자 수 및 ARPU(가입자당 매출), 콘텐츠 경쟁력(미디어/플랫폼), CAPEX(5G, 광케이블 등 인프라 투자), 규제 및 주파수 정책",
+                "key_risks": "설비투자 과다로 인한 현금흐름 악화, OTT/미디어 경쟁 심화로 수익성 저하 가능성",
+                "valuation_approach": "EV/EBITDA, P/E, 구독자 기반 평가, 콘텐츠 가치 평가",
+                "cyclical_nature": "중간 수준의 경기 민감성, 기술 전환 사이클",
+                "critical_metrics": "구독자 수 및 ARPU, 콘텐츠 투자 대비 수익률, 5G 인프라 구축 현황, 시장점유율",
             },
             GICSSector.UTILITIES: {
                 "industry_focus": "전력, 가스, 수도, 신재생에너지",
-                "key_drivers": "전력 수요, 규제 환경, 에너지 전환, ESG 투자",
-                "valuation_approach": "배당수익률, P/B, 규제자산 기준 평가",
-                "cyclical_nature": "매우 낮은 경기 민감성, 안정적",
-                "esg_focus": "친환경 에너지, 에너지 효율, 안정적 공급",
+                "key_analysis_points": "고정 수익 기반(요금제 구조), 규제 기관의 요금 인가 정책, 장기 투자 계획(발전소, 인프라), 배당 안정성",
+                "key_risks": "금리 상승 시 가치 하락 위험(채권 대체성), 친환경/신재생 전환 비용 부담",
+                "valuation_approach": "배당수익률, P/B, 규제자산 기준 평가, 현금흐름 할인법",
+                "cyclical_nature": "매우 낮은 경기 민감성, 금리 민감성, 규제 환경 의존",
+                "critical_metrics": "전력 판매량, 요금 인상률, 신재생 에너지 비율, 규제 자산 가치, 배당 지속성",
             },
             GICSSector.REAL_ESTATE: {
                 "industry_focus": "부동산투자신탁, 부동산관리개발",
-                "key_drivers": "금리 변동, 부동산 시장, 임대료 동향, 도시화",
-                "valuation_approach": "P/B, 배당수익률, NAV 기준 평가",
-                "cyclical_nature": "강한 금리 민감성",
-                "esg_focus": "친환경 건물, 지속가능한 개발, 임차인 만족",
+                "key_analysis_points": "자산가치(보유 부동산 NAV), 임대 수익률 및 공실률, 이자비용 및 LTV, 섹터별 포트폴리오(오피스, 리테일, 물류 등)",
+                "key_risks": "금리 변화에 따른 민감도가 매우 높음, 상업용 부동산의 구조적 수요 감소 가능성(리테일, 오피스 등)",
+                "valuation_approach": "P/B, 배당수익률, NAV 기준 평가, 부동산 가치 평가",
+                "cyclical_nature": "강한 금리 민감성, 부동산 시장 사이클",
+                "critical_metrics": "임대료 상승률, 공실률, NOI 마진, NAV 할인율, LTV 및 이자보상배율",
             },
         }
 
