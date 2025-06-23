@@ -219,6 +219,7 @@ class SmartSectorManager:
         financial_data: Dict[str, Any],
         enhanced_dart_data: Dict[str, Any] = None,
         manus_collected_data: Dict[str, Any] = None,
+        technical_analysis_data: Dict[str, Any] = None,  # 🎯 기술적 분석 데이터 추가!
         analysis_depth: AnalysisDepth = AnalysisDepth.STANDARD,
         pre_detected_gics_sector: str = None,  # 🎯 사전 감지된 GICS 섹터 추가
     ) -> Dict[str, Any]:
@@ -270,13 +271,14 @@ class SmartSectorManager:
             else:
                 logger.info("✅ 토큰 수가 목표 범위 내 - 최적화 불필요")
 
-            # 1. 종합 캐시 키 생성 (최적화된 Manus 데이터 포함)
+            # 1. 종합 캐시 키 생성 (최적화된 Manus 데이터 + 기술적 분석 데이터 포함)
             comprehensive_cache_key = self._generate_comprehensive_cache_key(
                 user_prompt,
                 stock_name,
                 stock_code,
                 analysis_depth,
                 optimized_manus,  # 최적화된 데이터 사용
+                technical_analysis_data,  # 🎯 기술적 분석 데이터 추가
             )
             cached_result = self.cache_manager.get_cache(comprehensive_cache_key)
             if cached_result:
@@ -322,6 +324,7 @@ class SmartSectorManager:
                 optimized_financial,  # 🔢 최적화된 재무데이터
                 optimized_dart,  # 🔢 최적화된 DART 데이터
                 optimized_manus,  # 🔢 최적화된 Manus 데이터
+                technical_analysis_data,  # 🎯 기술적 분석 데이터 추가!
             )
 
             # 6. 비용 절감 계산
@@ -653,6 +656,7 @@ class SmartSectorManager:
         stock_code: str,
         depth: AnalysisDepth,
         manus_data: Dict = None,
+        technical_analysis_data: Dict = None,  # 🎯 기술적 분석 데이터 추가!
     ) -> str:
         """
         종합 분석용 캐시 키 생성
@@ -687,6 +691,37 @@ class SmartSectorManager:
             if collected_info:
                 info_hash = hashlib.md5(collected_info[:500].encode()).hexdigest()[:8]
                 content_parts.append(f"info_{info_hash}")
+
+        # 🎯 기술적 분석 데이터 핵심 정보 추가 (캐시 정확도 향상)
+        if technical_analysis_data and technical_analysis_data.get("success"):
+            # 기술적 지표 데이터 존재 여부
+            content_parts.append("tech_indicators_available")
+
+            # 현재 주요 지표 값들로 캐시 키 생성 (값이 바뀌면 새로운 분석)
+            indicators = technical_analysis_data.get("technical_indicators", {})
+
+            # RSI 값
+            rsi_data = indicators.get("RSI", {})
+            if rsi_data.get("current_value") is not None:
+                rsi_rounded = int(rsi_data["current_value"] / 5) * 5  # 5단위로 반올림
+                content_parts.append(f"rsi_{rsi_rounded}")
+
+            # MACD 신호
+            macd_data = indicators.get("MACD", {})
+            if macd_data.get("signal_interpretation"):
+                macd_signal = macd_data["signal_interpretation"][:10]  # 처음 10글자만
+                content_parts.append(f"macd_{macd_signal}")
+
+            # 종합 매매 신호
+            trading_signals = technical_analysis_data.get("trading_signals", {})
+            if trading_signals.get("overall_signal"):
+                signal = trading_signals["overall_signal"][:10]  # 처음 10글자만
+                content_parts.append(f"signal_{signal}")
+
+            # 데이터 기간 (1년 vs 6개월 등으로 구분)
+            total_days = technical_analysis_data.get("total_days", 0)
+            period_category = "short" if total_days < 180 else "long"
+            content_parts.append(f"period_{period_category}")
 
         # 전체 내용을 결합하여 캐시 키 생성
         full_content = "_".join(str(part) for part in content_parts)
@@ -738,6 +773,7 @@ class SmartSectorManager:
         financial_data: Dict,
         enhanced_dart_data: Dict = None,
         manus_collected_data: Dict = None,
+        technical_analysis_data: Dict = None,  # 🎯 기술적 분석 데이터 추가!
     ) -> Dict[str, Any]:
         """
         🚀 모든 데이터를 통합한 전문가 분석 수행
@@ -782,6 +818,7 @@ class SmartSectorManager:
                         if manus_collected_data
                         else None
                     ),  # 🚀 PDF 인터페이스 전달
+                    technical_analysis_data,  # 🎯 기술적 분석 데이터 추가!
                 )
 
                 # 전문가별 분석 수행
@@ -795,7 +832,10 @@ class SmartSectorManager:
                         "expertise_area": expert.expertise,
                         "analysis_result": analysis_result,
                         "data_sources_used": self._identify_used_data_sources(
-                            financial_data, enhanced_dart_data, manus_collected_data
+                            financial_data,
+                            enhanced_dart_data,
+                            manus_collected_data,
+                            technical_analysis_data,
                         ),
                         "analysis_timestamp": time.time(),
                     }
@@ -837,6 +877,7 @@ class SmartSectorManager:
         financial_data: Dict,
         enhanced_dart_data: Dict = None,
         manus_collected_data: Dict = None,
+        technical_analysis_data: Dict = None,  # 🎯 기술적 분석 데이터 추가!
     ) -> List[str]:
         """
         분석에 사용된 데이터 소스들을 식별합니다.
@@ -867,6 +908,10 @@ class SmartSectorManager:
         # PDF 분석 여부 확인
         if manus_collected_data.get("pdf_analysis", {}).get("pdf_detected"):
             used_sources.append("PDF_Analysis")
+
+        # 🎯 기술적 분석 데이터 확인
+        if technical_analysis_data and technical_analysis_data.get("success"):
+            used_sources.append("Technical_Analysis_Calculated")
 
         return list(set(used_sources))  # 중복 제거
 
@@ -1011,6 +1056,7 @@ class SmartSectorManager:
         enhanced_dart_data: Dict = None,
         manus_collected_data: Dict = None,
         pdf_interface=None,
+        technical_analysis_data: Dict = None,  # 🎯 기술적 분석 데이터 추가!
     ) -> str:
         """
         🎯 전문가별 맞춤형 컨텍스트 구성 (PDF 딕셔너리 통합)
@@ -1244,56 +1290,122 @@ class SmartSectorManager:
             context_parts.append("- 연결재무제표 기준으로 분석 (별도 재무제표 참고)")
 
         elif "기술" in expert.expertise or "Technical" in expert.role:
-            # 기술 분석 전문가 - 🎯 시니어 애널리스트 수준 지침 추가
+            # 기술 분석 전문가 - 🎯 실제 계산된 지표 데이터 우선 제공!
+
+            # 🚀 1단계: 계산된 기술적 지표 데이터 (최우선!)
+            if technical_analysis_data and technical_analysis_data.get("success"):
+                context_parts.append("🎯 **계산된 기술적 지표 (실제 수치)**:")
+                context_parts.append(
+                    self._format_technical_indicators_for_expert(
+                        technical_analysis_data
+                    )
+                )
+                context_parts.append("")
+                logger.info(f"✅ {expert.name}: 계산된 기술적 지표 데이터 제공 완료")
+            else:
+                logger.warning(
+                    f"⚠️ {expert.name}: 계산된 기술적 지표 데이터 없음 - 기본 데이터로 대체"
+                )
+
+            # 🔧 2단계: 기본 가격 데이터 (백업)
             if financial_data and financial_data.get("success"):
                 price_data = self._extract_price_data_only(financial_data)
                 if price_data:
-                    context_parts.append("📈 가격/차트 데이터:")
+                    context_parts.append("📈 기본 가격/차트 데이터:")
                     context_parts.append(price_data)
 
+            # 🔍 3단계: Manus 웹검색 기술분석 정보 (보조)
             if manus_collected_data and manus_collected_data.get("performed"):
                 technical_info = self._extract_technical_analysis_info(
                     manus_collected_data
                 )
                 if technical_info:
-                    context_parts.append("🔍 기술분석 관련 정보:")
+                    context_parts.append("🔍 추가 기술분석 관련 정보:")
                     context_parts.append(technical_info)
 
-            # 🎯 시니어 기술적 애널리스트 분석 지침 (구체적 계산식 포함)
-            context_parts.append("\n🎯 기술적 분석 필수 수행사항:")
-            context_parts.append("1. 주요 이동평균선 분석:")
-            context_parts.append("   - 5일선 vs 20일선 Golden/Dead Cross 여부와 시점")
-            context_parts.append("   - 20일선 vs 60일선 중기 추세 전환 신호")
-            context_parts.append("   - 60일선 vs 120일선 장기 추세 방향성")
-            context_parts.append("   - 현재가의 이평선 배열 상태 (정배열/역배열/혼재)")
-            context_parts.append("")
-            context_parts.append("2. 모멘텀 지표 정밀분석:")
-            context_parts.append(
-                "   - MACD(12,26,9): Signal Line 교차와 히스토그램 변화율"
-            )
-            context_parts.append(
-                "   - RSI(14): 과매수(70이상)/과매도(30이하) 구간과 Divergence"
-            )
-            context_parts.append("   - Stochastic(%K,%D): 80이상 과매수, 20이하 과매도")
-            context_parts.append("   - Williams %R: -20이상 과매수, -80이하 과매도")
-            context_parts.append("")
-            context_parts.append("3. 지지저항 및 목표가 산출:")
-            context_parts.append("   - 주요 지지선/저항선 레벨 식별 (최근 6개월 기준)")
-            context_parts.append("   - Fibonacci Retracement: 38.2%, 50%, 61.8% 되돌림")
-            context_parts.append(
-                "   - 돌파시 목표가 = 저항선 + (저항선-지지선) [측정이론]"
-            )
-            context_parts.append("   - 하락시 목표가 = 지지선 - (저항선-지지선)")
-            context_parts.append("")
-            context_parts.append("4. 거래량 및 섹터 분석:")
-            context_parts.append(
-                "   - 거래량 동반 여부 (20일 평균 대비 150% 이상시 유의미)"
-            )
-            context_parts.append("   - OBV (On Balance Volume) 추세와 주가 Divergence")
-            context_parts.append(
-                "   - 섹터 상대강도 = (개별주/섹터지수) / (전일 개별주/전일 섹터지수)"
-            )
-            context_parts.append("   - 시장 대비 Beta 계수와 변동성 비교")
+            # 🎯 시니어 기술적 애널리스트 분석 지침 (실제 계산된 지표 활용!)
+            if technical_analysis_data and technical_analysis_data.get("success"):
+                context_parts.append(
+                    "\n🎯 **기술적 분석 필수 수행사항 (계산된 지표 활용)**:"
+                )
+                context_parts.append(
+                    "✅ 위에 제공된 실제 계산된 지표 값들을 반드시 활용하세요!"
+                )
+                context_parts.append(
+                    "❌ 지표 정의나 일반론 설명은 생략하고, 구체적 수치 기반 분석에 집중하세요!"
+                )
+                context_parts.append("")
+                context_parts.append("1. **현재 시점 정밀 분석**:")
+                context_parts.append(
+                    "   - 제공된 RSI, MACD, 볼린저밴드 실제 값으로 현재 상태 진단"
+                )
+                context_parts.append("   - 이동평균선 배열과 현재가 위치 관계 분석")
+                context_parts.append("   - 종합 매매 신호의 신뢰도와 근거 평가")
+                context_parts.append("")
+                context_parts.append("2. **지지/저항선 활용 전략**:")
+                context_parts.append("   - 계산된 지지/저항선 레벨에서의 매매 전략")
+                context_parts.append("   - 돌파/이탈 시나리오별 목표가 제시")
+                context_parts.append("   - 리스크 관리를 위한 손절매 레벨 설정")
+                context_parts.append("")
+                context_parts.append("3. **거래량 분석과 확인**:")
+                context_parts.append("   - OBV 추세와 주가 Divergence 여부")
+                context_parts.append("   - 현재 거래량의 20일 평균 대비 비율 해석")
+                context_parts.append("   - 신호 확인을 위한 거래량 조건 제시")
+                context_parts.append("")
+                context_parts.append("4. **투자 시나리오 및 목표가**:")
+                context_parts.append("   - 단기(1-3개월), 중기(3-6개월) 목표가 제시")
+                context_parts.append("   - 상승/하락/횡보 시나리오별 대응 전략")
+                context_parts.append("   - 진입/청산 타이밍과 구체적 가격대")
+            else:
+                context_parts.append("\n🎯 기술적 분석 필수 수행사항:")
+                context_parts.append("⚠️ 계산된 기술적 지표가 제공되지 않았습니다.")
+                context_parts.append("📊 기본 가격 데이터를 활용한 분석을 수행하세요:")
+                context_parts.append("1. 주요 이동평균선 분석:")
+                context_parts.append(
+                    "   - 5일선 vs 20일선 Golden/Dead Cross 여부와 시점"
+                )
+                context_parts.append("   - 20일선 vs 60일선 중기 추세 전환 신호")
+                context_parts.append("   - 60일선 vs 120일선 장기 추세 방향성")
+                context_parts.append(
+                    "   - 현재가의 이평선 배열 상태 (정배열/역배열/혼재)"
+                )
+                context_parts.append("")
+                context_parts.append("2. 모멘텀 지표 정밀분석:")
+                context_parts.append(
+                    "   - MACD(12,26,9): Signal Line 교차와 히스토그램 변화율"
+                )
+                context_parts.append(
+                    "   - RSI(14): 과매수(70이상)/과매도(30이하) 구간과 Divergence"
+                )
+                context_parts.append(
+                    "   - Stochastic(%K,%D): 80이상 과매수, 20이하 과매도"
+                )
+                context_parts.append("   - Williams %R: -20이상 과매수, -80이하 과매도")
+                context_parts.append("")
+                context_parts.append("3. 지지저항 및 목표가 산출:")
+                context_parts.append(
+                    "   - 주요 지지선/저항선 레벨 식별 (최근 6개월 기준)"
+                )
+                context_parts.append(
+                    "   - Fibonacci Retracement: 38.2%, 50%, 61.8% 되돌림"
+                )
+                context_parts.append(
+                    "   - 돌파시 목표가 = 저항선 + (저항선-지지선) [측정이론]"
+                )
+                context_parts.append("   - 하락시 목표가 = 지지선 - (저항선-지지선)")
+                context_parts.append("")
+                context_parts.append("4. 거래량 및 섹터 분석:")
+                context_parts.append(
+                    "   - 거래량 동반 여부 (20일 평균 대비 150% 이상시 유의미)"
+                )
+                context_parts.append(
+                    "   - OBV (On Balance Volume) 추세와 주가 Divergence"
+                )
+                context_parts.append(
+                    "   - 섹터 상대강도 = (개별주/섹터지수) / (전일 개별주/전일 섹터지수)"
+                )
+                context_parts.append("   - 시장 대비 Beta 계수와 변동성 비교")
+
             context_parts.append("")
             context_parts.append("⚠️ 기술적 분석 주의사항:")
             context_parts.append("- 모든 신호는 거래량 동반 여부 필수 확인")

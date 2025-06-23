@@ -4,8 +4,9 @@
 import logging
 import time
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
+import numpy as np
 import pandas as pd
 import requests
 import yfinance as yf
@@ -846,3 +847,622 @@ class FinancialDataCollector:
 """
 
         return summary.strip()
+
+    def get_technical_analysis_data(
+        self, stock_code: str, period: str = "1y"
+    ) -> Dict[str, Any]:
+        """
+        🎯 기술적 분석을 위한 상세 주가 데이터와 계산된 지표들을 제공합니다.
+
+        이 함수는 기술적 분석가가 실제 수치 기반의 구체적인 분석을 할 수 있도록
+        1년치 일일 거래 데이터와 모든 주요 기술적 지표를 계산해서 제공해요.
+
+        Args:
+            stock_code: 종목코드 (예: "005930" 또는 "AAPL")
+            period: 데이터 수집 기간 (기본값: "1y")
+
+        Returns:
+            Dict: 기술적 분석용 완전한 데이터셋
+        """
+        logger.info(f"📊 {stock_code} 기술적 분석용 데이터 수집 및 지표 계산 시작...")
+
+        try:
+            # 한국 주식과 해외 주식 구분해서 티커 설정
+            if self._is_korean_stock(stock_code):
+                ticker_symbol = f"{stock_code}.KS"
+                if stock_code.startswith(("0", "1", "2")):
+                    # KOSPI
+                    ticker_symbol = f"{stock_code}.KS"
+                else:
+                    # KOSDAQ
+                    ticker_symbol = f"{stock_code}.KQ"
+            else:
+                ticker_symbol = stock_code
+
+            # yfinance로 상세 데이터 수집
+            ticker = yf.Ticker(ticker_symbol)
+
+            # 📈 1년치 일일 데이터 수집 (OHLCV)
+            hist_data = ticker.history(period=period)
+
+            if hist_data.empty:
+                logger.warning(f"⚠️ {stock_code} 주가 데이터를 찾을 수 없습니다")
+                return {"success": False, "error": "주가 데이터 없음"}
+
+            logger.info(f"✅ {len(hist_data)}일치 주가 데이터 수집 완료")
+
+            # 🧮 기술적 지표 계산
+            technical_indicators = self._calculate_technical_indicators(hist_data)
+
+            # 📊 지지/저항선 계산
+            support_resistance = self._calculate_support_resistance(hist_data)
+
+            # 🎯 매매 신호 분석
+            trading_signals = self._analyze_trading_signals(
+                hist_data, technical_indicators
+            )
+
+            # 📈 차트 패턴 분석
+            chart_patterns = self._analyze_chart_patterns(hist_data)
+
+            # 현재 시점의 주요 값들
+            current_price = float(hist_data["Close"].iloc[-1])
+            current_volume = int(hist_data["Volume"].iloc[-1])
+
+            return {
+                "success": True,
+                "stock_code": stock_code,
+                "ticker_symbol": ticker_symbol,
+                "data_period": period,
+                "total_days": len(hist_data),
+                "last_update": hist_data.index[-1].strftime("%Y-%m-%d"),
+                # 🎯 현재 시점 핵심 정보
+                "current_snapshot": {
+                    "price": current_price,
+                    "volume": current_volume,
+                    "date": hist_data.index[-1].strftime("%Y-%m-%d"),
+                },
+                # 📊 계산된 기술적 지표들 (실제 값!)
+                "technical_indicators": technical_indicators,
+                # 🎯 지지/저항선
+                "support_resistance": support_resistance,
+                # 📈 매매 신호
+                "trading_signals": trading_signals,
+                # 📊 차트 패턴
+                "chart_patterns": chart_patterns,
+                # 📈 원본 데이터 (필요시 추가 분석용)
+                "raw_data_summary": {
+                    "start_date": hist_data.index[0].strftime("%Y-%m-%d"),
+                    "end_date": hist_data.index[-1].strftime("%Y-%m-%d"),
+                    "price_range": {
+                        "high": float(hist_data["High"].max()),
+                        "low": float(hist_data["Low"].min()),
+                        "volatility": float(
+                            hist_data["Close"].pct_change().std() * 100
+                        ),
+                    },
+                },
+            }
+
+        except Exception as e:
+            logger.error(f"❌ 기술적 분석 데이터 수집 실패: {e}")
+            return {"success": False, "error": str(e)}
+
+    def _calculate_technical_indicators(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """
+        📊 주요 기술적 지표들을 실제로 계산합니다.
+
+        모든 지표의 현재 값과 최근 추세를 제공해요!
+        """
+        try:
+            indicators = {}
+
+            # 🔢 이동평균선 계산 (5일, 20일, 60일, 120일, 200일)
+            indicators["moving_averages"] = {
+                "MA_5": (
+                    float(df["Close"].rolling(window=5).mean().iloc[-1])
+                    if len(df) >= 5
+                    else None
+                ),
+                "MA_20": (
+                    float(df["Close"].rolling(window=20).mean().iloc[-1])
+                    if len(df) >= 20
+                    else None
+                ),
+                "MA_60": (
+                    float(df["Close"].rolling(window=60).mean().iloc[-1])
+                    if len(df) >= 60
+                    else None
+                ),
+                "MA_120": (
+                    float(df["Close"].rolling(window=120).mean().iloc[-1])
+                    if len(df) >= 120
+                    else None
+                ),
+                "MA_200": (
+                    float(df["Close"].rolling(window=200).mean().iloc[-1])
+                    if len(df) >= 200
+                    else None
+                ),
+            }
+
+            # 📈 RSI 계산 (14일)
+            indicators["RSI"] = self._calculate_rsi(df["Close"], period=14)
+
+            # 📊 MACD 계산 (12, 26, 9)
+            indicators["MACD"] = self._calculate_macd(df["Close"])
+
+            # 📈 볼린저 밴드 계산 (20일, 2표준편차)
+            indicators["bollinger_bands"] = self._calculate_bollinger_bands(df["Close"])
+
+            # 📊 스토캐스틱 계산 (14, 3, 3)
+            indicators["stochastic"] = self._calculate_stochastic(df)
+
+            # 📈 Williams %R 계산 (14일)
+            indicators["williams_r"] = self._calculate_williams_r(df)
+
+            # 📊 거래량 지표
+            indicators["volume_indicators"] = {
+                "OBV": self._calculate_obv(df),
+                "volume_MA_20": (
+                    float(df["Volume"].rolling(window=20).mean().iloc[-1])
+                    if len(df) >= 20
+                    else None
+                ),
+                "volume_ratio": (
+                    float(
+                        df["Volume"].iloc[-1]
+                        / df["Volume"].rolling(window=20).mean().iloc[-1]
+                    )
+                    if len(df) >= 20
+                    else None
+                ),
+            }
+
+            logger.info("✅ 모든 기술적 지표 계산 완료")
+            return indicators
+
+        except Exception as e:
+            logger.error(f"❌ 기술적 지표 계산 실패: {e}")
+            return {}
+
+    def _calculate_rsi(self, prices: pd.Series, period: int = 14) -> Dict[str, float]:
+        """RSI(상대강도지수) 계산 - 실제 수치 제공!"""
+        try:
+            delta = prices.diff()
+            gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
+            loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
+
+            rs = gain / loss
+            rsi = 100 - (100 / (1 + rs))
+
+            current_rsi = float(rsi.iloc[-1])
+
+            # RSI 해석
+            if current_rsi >= 70:
+                interpretation = "과매수"
+                signal = "매도 고려"
+            elif current_rsi <= 30:
+                interpretation = "과매도"
+                signal = "매수 고려"
+            else:
+                interpretation = "중립"
+                signal = "관망"
+
+            return {
+                "current_value": current_rsi,
+                "interpretation": interpretation,
+                "signal": signal,
+                "period": period,
+            }
+        except Exception as e:
+            logger.error(f"RSI 계산 실패: {e}")
+            return {"current_value": None, "interpretation": "계산 실패"}
+
+    def _calculate_macd(
+        self, prices: pd.Series, fast: int = 12, slow: int = 26, signal: int = 9
+    ) -> Dict[str, Any]:
+        """MACD 계산 - 실제 수치와 신호 제공!"""
+        try:
+            # EMA 계산
+            ema_fast = prices.ewm(span=fast).mean()
+            ema_slow = prices.ewm(span=slow).mean()
+
+            # MACD 라인
+            macd_line = ema_fast - ema_slow
+
+            # 시그널 라인
+            signal_line = macd_line.ewm(span=signal).mean()
+
+            # 히스토그램
+            histogram = macd_line - signal_line
+
+            # 현재 값들
+            current_macd = float(macd_line.iloc[-1])
+            current_signal = float(signal_line.iloc[-1])
+            current_histogram = float(histogram.iloc[-1])
+
+            # 매매 신호 판단
+            if current_macd > current_signal and histogram.iloc[-2] <= 0:
+                signal_interpretation = "매수 신호 (상향 돌파)"
+            elif current_macd < current_signal and histogram.iloc[-2] >= 0:
+                signal_interpretation = "매도 신호 (하향 돌파)"
+            elif current_macd > current_signal:
+                signal_interpretation = "상승 추세 지속"
+            else:
+                signal_interpretation = "하락 추세 지속"
+
+            return {
+                "MACD_line": current_macd,
+                "signal_line": current_signal,
+                "histogram": current_histogram,
+                "signal_interpretation": signal_interpretation,
+                "parameters": f"({fast}, {slow}, {signal})",
+            }
+        except Exception as e:
+            logger.error(f"MACD 계산 실패: {e}")
+            return {"MACD_line": None, "signal_interpretation": "계산 실패"}
+
+    def _calculate_bollinger_bands(
+        self, prices: pd.Series, period: int = 20, std_dev: int = 2
+    ) -> Dict[str, Any]:
+        """볼린저 밴드 계산 - 실제 수치와 위치 분석!"""
+        try:
+            # 중간선 (20일 이동평균)
+            middle_band = prices.rolling(window=period).mean()
+
+            # 표준편차
+            std = prices.rolling(window=period).std()
+
+            # 상단/하단 밴드
+            upper_band = middle_band + (std * std_dev)
+            lower_band = middle_band - (std * std_dev)
+
+            # 현재 값들
+            current_price = float(prices.iloc[-1])
+            current_upper = float(upper_band.iloc[-1])
+            current_middle = float(middle_band.iloc[-1])
+            current_lower = float(lower_band.iloc[-1])
+
+            # 밴드 폭 (변동성 지표)
+            band_width = ((current_upper - current_lower) / current_middle) * 100
+
+            # 현재 위치 분석
+            if current_price >= current_upper:
+                position = "상단 밴드 근처 (과매수 가능)"
+                signal = "매도 고려"
+            elif current_price <= current_lower:
+                position = "하단 밴드 근처 (과매도 가능)"
+                signal = "매수 고려"
+            else:
+                position = "밴드 내부 (정상 범위)"
+                signal = "관망"
+
+            return {
+                "upper_band": current_upper,
+                "middle_band": current_middle,
+                "lower_band": current_lower,
+                "current_price": current_price,
+                "band_width_percent": band_width,
+                "position_analysis": position,
+                "signal": signal,
+                "parameters": f"({period}일, {std_dev}σ)",
+            }
+        except Exception as e:
+            logger.error(f"볼린저 밴드 계산 실패: {e}")
+            return {"upper_band": None, "position_analysis": "계산 실패"}
+
+    def _calculate_stochastic(
+        self, df: pd.DataFrame, k_period: int = 14, d_period: int = 3
+    ) -> Dict[str, Any]:
+        """스토캐스틱 오실레이터 계산"""
+        try:
+            # %K 계산
+            lowest_low = df["Low"].rolling(window=k_period).min()
+            highest_high = df["High"].rolling(window=k_period).max()
+            k_percent = 100 * ((df["Close"] - lowest_low) / (highest_high - lowest_low))
+
+            # %D 계산 (smoothed %K)
+            d_percent = k_percent.rolling(window=d_period).mean()
+
+            current_k = float(k_percent.iloc[-1])
+            current_d = float(d_percent.iloc[-1])
+
+            # 신호 해석
+            if current_k >= 80 and current_d >= 80:
+                interpretation = "과매수"
+                signal = "매도 고려"
+            elif current_k <= 20 and current_d <= 20:
+                interpretation = "과매도"
+                signal = "매수 고려"
+            elif current_k > current_d:
+                interpretation = "상승 모멘텀"
+                signal = "매수 신호"
+            else:
+                interpretation = "하락 모멘텀"
+                signal = "매도 신호"
+
+            return {
+                "K_percent": current_k,
+                "D_percent": current_d,
+                "interpretation": interpretation,
+                "signal": signal,
+                "parameters": f"({k_period}, {d_period})",
+            }
+        except Exception as e:
+            logger.error(f"스토캐스틱 계산 실패: {e}")
+            return {"K_percent": None, "interpretation": "계산 실패"}
+
+    def _calculate_williams_r(
+        self, df: pd.DataFrame, period: int = 14
+    ) -> Dict[str, Any]:
+        """Williams %R 계산"""
+        try:
+            highest_high = df["High"].rolling(window=period).max()
+            lowest_low = df["Low"].rolling(window=period).min()
+
+            williams_r = -100 * (
+                (highest_high - df["Close"]) / (highest_high - lowest_low)
+            )
+            current_wr = float(williams_r.iloc[-1])
+
+            # 신호 해석
+            if current_wr >= -20:
+                interpretation = "과매수"
+                signal = "매도 고려"
+            elif current_wr <= -80:
+                interpretation = "과매도"
+                signal = "매수 고려"
+            else:
+                interpretation = "중립"
+                signal = "관망"
+
+            return {
+                "current_value": current_wr,
+                "interpretation": interpretation,
+                "signal": signal,
+                "period": period,
+            }
+        except Exception as e:
+            logger.error(f"Williams %R 계산 실패: {e}")
+            return {"current_value": None, "interpretation": "계산 실패"}
+
+    def _calculate_obv(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """OBV (On Balance Volume) 계산"""
+        try:
+            obv = []
+            obv_value = 0
+
+            for i in range(len(df)):
+                if i == 0:
+                    obv.append(df["Volume"].iloc[i])
+                    obv_value = df["Volume"].iloc[i]
+                else:
+                    if df["Close"].iloc[i] > df["Close"].iloc[i - 1]:
+                        obv_value += df["Volume"].iloc[i]
+                    elif df["Close"].iloc[i] < df["Close"].iloc[i - 1]:
+                        obv_value -= df["Volume"].iloc[i]
+                    # 가격이 같으면 OBV 변화 없음
+                    obv.append(obv_value)
+
+            current_obv = obv[-1]
+
+            # OBV 추세 분석 (최근 20일)
+            if len(obv) >= 20:
+                recent_obv_trend = obv[-1] - obv[-20]
+                if recent_obv_trend > 0:
+                    trend = "상승 (매수세 우세)"
+                elif recent_obv_trend < 0:
+                    trend = "하락 (매도세 우세)"
+                else:
+                    trend = "횡보 (균형)"
+            else:
+                trend = "데이터 부족"
+
+            return {
+                "current_value": int(current_obv),
+                "trend_analysis": trend,
+                "description": "거래량 누적 지표",
+            }
+        except Exception as e:
+            logger.error(f"OBV 계산 실패: {e}")
+            return {"current_value": None, "trend_analysis": "계산 실패"}
+
+    def _calculate_support_resistance(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """지지선과 저항선 자동 계산"""
+        try:
+            # 최근 3개월 데이터로 지지/저항선 계산
+            recent_data = df.tail(90) if len(df) >= 90 else df
+
+            # 고점과 저점 찾기
+            highs = recent_data["High"]
+            lows = recent_data["Low"]
+
+            # 저항선 후보 (상위 고점들)
+            resistance_candidates = []
+            for i in range(2, len(highs) - 2):
+                if (
+                    highs.iloc[i] > highs.iloc[i - 1]
+                    and highs.iloc[i] > highs.iloc[i - 2]
+                    and highs.iloc[i] > highs.iloc[i + 1]
+                    and highs.iloc[i] > highs.iloc[i + 2]
+                ):
+                    resistance_candidates.append(float(highs.iloc[i]))
+
+            # 지지선 후보 (하위 저점들)
+            support_candidates = []
+            for i in range(2, len(lows) - 2):
+                if (
+                    lows.iloc[i] < lows.iloc[i - 1]
+                    and lows.iloc[i] < lows.iloc[i - 2]
+                    and lows.iloc[i] < lows.iloc[i + 1]
+                    and lows.iloc[i] < lows.iloc[i + 2]
+                ):
+                    support_candidates.append(float(lows.iloc[i]))
+
+            # 주요 지지/저항선 선별 (빈도 기준)
+            current_price = float(df["Close"].iloc[-1])
+
+            # 현재가 위의 저항선들
+            resistance_levels = [r for r in resistance_candidates if r > current_price]
+            resistance_levels = sorted(list(set(resistance_levels)))[:3]  # 상위 3개
+
+            # 현재가 아래의 지지선들
+            support_levels = [s for s in support_candidates if s < current_price]
+            support_levels = sorted(list(set(support_levels)), reverse=True)[
+                :3
+            ]  # 상위 3개
+
+            return {
+                "support_levels": support_levels,
+                "resistance_levels": resistance_levels,
+                "current_price": current_price,
+                "analysis_period": f"최근 {len(recent_data)}일",
+                "nearest_support": support_levels[0] if support_levels else None,
+                "nearest_resistance": (
+                    resistance_levels[0] if resistance_levels else None
+                ),
+            }
+        except Exception as e:
+            logger.error(f"지지/저항선 계산 실패: {e}")
+            return {"support_levels": [], "resistance_levels": []}
+
+    def _analyze_trading_signals(
+        self, df: pd.DataFrame, indicators: Dict
+    ) -> Dict[str, Any]:
+        """종합적인 매매 신호 분석"""
+        try:
+            signals = []
+            signal_strength = 0  # -5 (강한 매도) ~ +5 (강한 매수)
+
+            # RSI 신호
+            rsi_data = indicators.get("RSI", {})
+            if rsi_data.get("current_value"):
+                rsi_val = rsi_data["current_value"]
+                if rsi_val <= 30:
+                    signals.append("RSI 과매도 (매수 신호)")
+                    signal_strength += 2
+                elif rsi_val >= 70:
+                    signals.append("RSI 과매수 (매도 신호)")
+                    signal_strength -= 2
+
+            # MACD 신호
+            macd_data = indicators.get("MACD", {})
+            if "매수" in macd_data.get("signal_interpretation", ""):
+                signals.append("MACD 매수 신호")
+                signal_strength += 2
+            elif "매도" in macd_data.get("signal_interpretation", ""):
+                signals.append("MACD 매도 신호")
+                signal_strength -= 2
+
+            # 이동평균선 배열
+            ma_data = indicators.get("moving_averages", {})
+            current_price = float(df["Close"].iloc[-1])
+
+            if ma_data.get("MA_20") and ma_data.get("MA_60"):
+                if (
+                    ma_data["MA_20"] > ma_data["MA_60"]
+                    and current_price > ma_data["MA_20"]
+                ):
+                    signals.append("이동평균선 정배열 (상승 추세)")
+                    signal_strength += 1
+                elif (
+                    ma_data["MA_20"] < ma_data["MA_60"]
+                    and current_price < ma_data["MA_20"]
+                ):
+                    signals.append("이동평균선 역배열 (하락 추세)")
+                    signal_strength -= 1
+
+            # 볼린저 밴드 신호
+            bb_data = indicators.get("bollinger_bands", {})
+            if "매수" in bb_data.get("signal", ""):
+                signals.append("볼린저 밴드 매수 신호")
+                signal_strength += 1
+            elif "매도" in bb_data.get("signal", ""):
+                signals.append("볼린저 밴드 매도 신호")
+                signal_strength -= 1
+
+            # 종합 신호 판단
+            if signal_strength >= 3:
+                overall_signal = "강한 매수"
+            elif signal_strength >= 1:
+                overall_signal = "매수"
+            elif signal_strength <= -3:
+                overall_signal = "강한 매도"
+            elif signal_strength <= -1:
+                overall_signal = "매도"
+            else:
+                overall_signal = "중립"
+
+            return {
+                "individual_signals": signals,
+                "signal_strength_score": signal_strength,
+                "overall_signal": overall_signal,
+                "confidence": min(abs(signal_strength) * 20, 100),  # 0-100%
+                "recommendation": self._get_trading_recommendation(
+                    overall_signal, signal_strength
+                ),
+            }
+        except Exception as e:
+            logger.error(f"매매 신호 분석 실패: {e}")
+            return {"overall_signal": "분석 실패", "individual_signals": []}
+
+    def _analyze_chart_patterns(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """기본적인 차트 패턴 분석"""
+        try:
+            patterns = []
+
+            # 최근 20일 데이터로 패턴 분석
+            recent_data = df.tail(20)
+            closes = recent_data["Close"]
+
+            # 상승/하락 추세 분석
+            if len(closes) >= 10:
+                first_half_avg = closes.iloc[:10].mean()
+                second_half_avg = closes.iloc[10:].mean()
+
+                change_percent = (
+                    (second_half_avg - first_half_avg) / first_half_avg
+                ) * 100
+
+                if change_percent > 5:
+                    patterns.append("상승 추세 (최근 20일)")
+                elif change_percent < -5:
+                    patterns.append("하락 추세 (최근 20일)")
+                else:
+                    patterns.append("횡보 추세 (최근 20일)")
+
+            # 변동성 분석
+            volatility = closes.pct_change().std() * 100
+            if volatility > 3:
+                patterns.append("고변동성")
+            elif volatility < 1:
+                patterns.append("저변동성")
+            else:
+                patterns.append("보통 변동성")
+
+            return {
+                "detected_patterns": patterns,
+                "trend_analysis": (
+                    f"최근 20일 변동률: {change_percent:.2f}%"
+                    if "change_percent" in locals()
+                    else "데이터 부족"
+                ),
+                "volatility_level": (
+                    f"{volatility:.2f}%" if "volatility" in locals() else "계산 불가"
+                ),
+            }
+        except Exception as e:
+            logger.error(f"차트 패턴 분석 실패: {e}")
+            return {"detected_patterns": [], "trend_analysis": "분석 실패"}
+
+    def _get_trading_recommendation(self, signal: str, strength: int) -> str:
+        """매매 신호에 따른 구체적인 추천사항"""
+        recommendations = {
+            "강한 매수": "적극적인 매수 포지션 고려. 단, 리스크 관리 필수.",
+            "매수": "분할 매수 전략 권장. 점진적 포지션 확대.",
+            "중립": "관망 또는 기존 포지션 유지. 추가 신호 대기.",
+            "매도": "일부 매도 또는 수익 실현 고려.",
+            "강한 매도": "포지션 정리 검토. 손절매 고려.",
+        }
+        return recommendations.get(signal, "신중한 접근 필요")

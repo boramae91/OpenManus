@@ -209,8 +209,8 @@ class EnhancedStockAnalysisSystem:
             # 분석 결과에 매핑 정보 업데이트
             results["steps"]["step1_stock_detection"] = stock_info
 
-            # Step 2: 재무데이터 수집 (기본 + Enhanced DART)
-            logger.info("📊 Step 2: 실제 재무데이터 수집")
+            # Step 2: 재무데이터 수집 (기본 + 기술적 분석 + Enhanced DART)
+            logger.info("📊 Step 2: 실제 재무데이터 및 기술적 분석 데이터 수집")
 
             # 2-1: 기본 재무데이터 수집 (yfinance + 기본 DART)
             financial_data = self.financial_collector.collect_stock_data(
@@ -224,6 +224,31 @@ class EnhancedStockAnalysisSystem:
                 logger.info(
                     f"✅ 기본 재무데이터 수집 완료 (출처: {', '.join(financial_data['data_sources'])})"
                 )
+
+            # 🎯 2-1.5: 기술적 분석용 데이터 수집 (1년치 데이터프레임 + 계산된 지표들)
+            logger.info("📈 기술적 분석용 상세 데이터 수집 시작...")
+            technical_analysis_data = (
+                self.financial_collector.get_technical_analysis_data(
+                    stock_code=stock_info["stock_code"], period="1y"
+                )
+            )
+            results["steps"]["step2_technical_analysis_data"] = technical_analysis_data
+
+            if technical_analysis_data.get("success"):
+                logger.info(
+                    f"✅ 기술적 분석 데이터 수집 완료: {technical_analysis_data['total_days']}일치 데이터"
+                )
+                logger.info(
+                    f"📊 계산된 지표: RSI, MACD, 볼린저밴드, 이동평균선, 스토캐스틱, Williams %R, OBV"
+                )
+                logger.info(
+                    f"🎯 매매신호: {technical_analysis_data.get('trading_signals', {}).get('overall_signal', '알 수 없음')}"
+                )
+            else:
+                logger.warning(
+                    f"⚠️ 기술적 분석 데이터 수집 실패: {technical_analysis_data.get('error', '알 수 없는 오류')}"
+                )
+                logger.info("ℹ️ 기술적 분석가는 기본 데이터만으로 분석을 진행합니다")
 
             # 2-2: 🚀 Enhanced DART API 데이터 수집 (새로운 기능들)
             enhanced_dart_data = None
@@ -302,6 +327,7 @@ class EnhancedStockAnalysisSystem:
                         financial_data=financial_data,
                         enhanced_dart_data=enhanced_dart_data,
                         manus_collected_data=manus_collection_result,  # 🚀 Manus 수집 데이터 추가
+                        technical_analysis_data=technical_analysis_data,  # 🎯 기술적 분석 데이터 추가!
                         analysis_depth=analysis_depth,
                         pre_detected_gics_sector=stock_info.get(
                             "gics_sector"
@@ -559,6 +585,9 @@ class EnhancedStockAnalysisSystem:
         """수정된 워크플로우용 종합 요약 생성"""
         stock_info = results["steps"].get("step1_stock_detection", {})
         financial_data = results["steps"].get("step2_financial_data", {})
+        technical_analysis_data = results["steps"].get(
+            "step2_technical_analysis_data", {}
+        )  # 🎯 기술적 분석 데이터 추가
         manus_collection = results["steps"].get("step3_information_collection", {})
         crewai_analysis = results["steps"].get(
             "step4_crewai_comprehensive_analysis", {}
@@ -581,6 +610,12 @@ class EnhancedStockAnalysisSystem:
                 "financial_data_collected": financial_data.get("success", False),
                 "data_sources": financial_data.get("data_sources", []),
                 "data_quality": financial_data.get("data_quality", "없음"),
+                "technical_analysis_collected": technical_analysis_data.get(
+                    "success", False
+                ),  # 🎯 기술적 분석 데이터 수집 여부
+                "technical_indicators_count": len(
+                    technical_analysis_data.get("technical_indicators", {})
+                ),  # 🎯 계산된 지표 개수
                 "manus_information_collected": manus_collection.get("performed", False),
                 "data_richness_score": manus_collection.get("data_richness_score", 0.0),
             },
