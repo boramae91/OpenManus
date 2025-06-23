@@ -1748,180 +1748,253 @@ class SmartSectorManager:
             formatted_lines.append("")
 
             # 현재 주가 정보
-            current_price = technical_analysis_data.get("current_price")
-            if current_price:
-                formatted_lines.append(f"💰 현재가: {current_price:,.0f}원")
+            current_snapshot = technical_analysis_data.get("current_snapshot", {})
+            if current_snapshot:
+                current_price = current_snapshot.get("price")
+                current_volume = current_snapshot.get("volume")
+                current_date = current_snapshot.get("date", "알 수 없음")
+
+                if current_price:
+                    formatted_lines.append(
+                        f"**현재 주가**: {current_price:,.0f}원 ({current_date})"
+                    )
+                if current_volume:
+                    formatted_lines.append(f"**현재 거래량**: {current_volume:,}주")
                 formatted_lines.append("")
 
-            # 기술적 지표들
+            # 기술적 지표 추출
             indicators = technical_analysis_data.get("technical_indicators", {})
 
-            # 1. 이동평균선
-            if "moving_averages" in indicators:
-                ma_data = indicators["moving_averages"]
-                formatted_lines.append("📈 **이동평균선 (실제 계산값)**:")
-                for period, value in ma_data.items():
-                    if value:
-                        formatted_lines.append(f"   - {period}: {value:,.0f}원")
+            # 🔧 강력한 디버깅: 실제 데이터 구조 로깅
+            logger.info(f"🔍 technical_indicators 타입: {type(indicators)}")
+            logger.info(f"🔍 technical_indicators 내용: {str(indicators)[:500]}...")
+
+            if isinstance(indicators, dict):
+                logger.info(f"🔍 indicators 키 목록: {list(indicators.keys())}")
+                for key, value in indicators.items():
+                    logger.info(
+                        f"🔍 {key} → 타입: {type(value)}, 내용: {str(value)[:100]}..."
+                    )
+
+            if not isinstance(indicators, dict):
+                logger.error(
+                    f"❌ technical_indicators가 딕셔너리가 아님: {type(indicators)}"
+                )
+                return "기술적 지표 데이터 형식 오류"
+
+            # 1. 이동평균선 데이터 처리
+            ma_data = indicators.get("moving_averages", {})
+            logger.info(f"🔍 moving_averages 타입: {type(ma_data)}")
+
+            if isinstance(ma_data, dict) and ma_data:
+                formatted_lines.append("**📈 이동평균선**:")
+                try:
+                    for period, value in ma_data.items():
+                        if value is not None:
+                            formatted_lines.append(f"  • {period}: {value:,.0f}원")
+                        else:
+                            formatted_lines.append(f"  • {period}: 계산 불가")
+                except Exception as ma_error:
+                    logger.error(f"❌ 이동평균선 처리 오류: {ma_error}")
+                    formatted_lines.append("  • 이동평균선 데이터 처리 중 오류")
                 formatted_lines.append("")
 
-            # 2. RSI
-            if "rsi" in indicators:
-                rsi_data = indicators["rsi"]
-                current_rsi = rsi_data.get("current_value")
-                if current_rsi:
-                    formatted_lines.append(f"🎯 **RSI(14)**: {current_rsi:.1f}")
-                    if current_rsi >= 70:
-                        formatted_lines.append("   → 과매수 구간 (매도 신호)")
-                    elif current_rsi <= 30:
-                        formatted_lines.append("   → 과매도 구간 (매수 신호)")
+            # 2. RSI 지표 처리
+            rsi_data = indicators.get("rsi", {})
+            if isinstance(rsi_data, dict) and rsi_data:
+                formatted_lines.append("**📊 RSI (상대강도지수)**:")
+                try:
+                    current_rsi = rsi_data.get("current_value")
+                    interpretation = rsi_data.get("interpretation", "알 수 없음")
+                    signal = rsi_data.get("signal", "알 수 없음")
+
+                    if current_rsi is not None:
+                        formatted_lines.append(f"  • 현재 RSI: {current_rsi:.2f}")
+                        formatted_lines.append(f"  • 해석: {interpretation}")
+                        formatted_lines.append(f"  • 신호: {signal}")
                     else:
-                        formatted_lines.append("   → 중립 구간")
-                    formatted_lines.append("")
+                        formatted_lines.append("  • RSI 계산 불가")
+                except Exception as rsi_error:
+                    logger.error(f"❌ RSI 처리 오류: {rsi_error}")
+                    formatted_lines.append("  • RSI 데이터 처리 중 오류")
+                formatted_lines.append("")
 
-            # 3. MACD
-            if "macd" in indicators:
-                macd_data = indicators["macd"]
-                macd_line = macd_data.get("macd_line")
-                signal_line = macd_data.get("signal_line")
-                histogram = macd_data.get("histogram")
-
-                if macd_line and signal_line:
-                    formatted_lines.append("📊 **MACD(12,26,9)**:")
-                    formatted_lines.append(f"   - MACD Line: {macd_line:.2f}")
-                    formatted_lines.append(f"   - Signal Line: {signal_line:.2f}")
-                    if histogram:
-                        formatted_lines.append(f"   - Histogram: {histogram:.2f}")
-
-                    if macd_line > signal_line:
-                        formatted_lines.append("   → 상승 모멘텀 (Golden Cross)")
-                    else:
-                        formatted_lines.append("   → 하락 모멘텀 (Dead Cross)")
-                    formatted_lines.append("")
-
-            # 4. 볼린저 밴드
-            if "bollinger_bands" in indicators:
-                bb_data = indicators["bollinger_bands"]
-                upper = bb_data.get("upper_band")
-                middle = bb_data.get("middle_band")
-                lower = bb_data.get("lower_band")
-
-                if upper and middle and lower and current_price:
-                    formatted_lines.append("📏 **볼린저 밴드(20,2)**:")
-                    formatted_lines.append(f"   - 상단: {upper:,.0f}원")
-                    formatted_lines.append(f"   - 중간: {middle:,.0f}원")
-                    formatted_lines.append(f"   - 하단: {lower:,.0f}원")
-
-                    if current_price >= upper:
-                        formatted_lines.append("   → 상단 접촉 (과매수 주의)")
-                    elif current_price <= lower:
-                        formatted_lines.append("   → 하단 접촉 (과매도 반등 기대)")
-                    else:
-                        formatted_lines.append("   → 밴드 내 정상 거래")
-                    formatted_lines.append("")
-
-            # 5. 스토캐스틱
-            if "stochastic" in indicators:
-                stoch_data = indicators["stochastic"]
-                k_percent = stoch_data.get("k_percent")
-                d_percent = stoch_data.get("d_percent")
-
-                if k_percent and d_percent:
-                    formatted_lines.append(
-                        f"⚡ **스토캐스틱(%K,%D)**: %K={k_percent:.1f}, %D={d_percent:.1f}"
+            # 3. MACD 지표 처리
+            macd_data = indicators.get("macd", {})
+            if isinstance(macd_data, dict) and macd_data:
+                formatted_lines.append("**📈 MACD**:")
+                try:
+                    # MACD_line과 macd_line 모두 지원 (호환성)
+                    macd_line = macd_data.get("MACD_line") or macd_data.get("macd_line")
+                    signal_line = macd_data.get("signal_line")
+                    histogram = macd_data.get("histogram")
+                    signal_interpretation = macd_data.get(
+                        "signal_interpretation", "알 수 없음"
                     )
-                    if k_percent >= 80 and d_percent >= 80:
-                        formatted_lines.append("   → 과매수 구간 (매도 고려)")
-                    elif k_percent <= 20 and d_percent <= 20:
-                        formatted_lines.append("   → 과매도 구간 (매수 고려)")
+
+                    if macd_line is not None:
+                        formatted_lines.append(f"  • MACD Line: {macd_line:.4f}")
+                    if signal_line is not None:
+                        formatted_lines.append(f"  • Signal Line: {signal_line:.4f}")
+                    if histogram is not None:
+                        formatted_lines.append(f"  • Histogram: {histogram:.4f}")
+                    formatted_lines.append(f"  • 신호: {signal_interpretation}")
+                except Exception as macd_error:
+                    logger.error(f"❌ MACD 처리 오류: {macd_error}")
+                    formatted_lines.append("  • MACD 데이터 처리 중 오류")
+                formatted_lines.append("")
+
+            # 4. 볼린저 밴드 처리
+            bb_data = indicators.get("bollinger_bands", {})
+            if isinstance(bb_data, dict) and bb_data:
+                formatted_lines.append("**📊 볼린저 밴드**:")
+                try:
+                    upper_band = bb_data.get("upper_band")
+                    middle_band = bb_data.get("middle_band")
+                    lower_band = bb_data.get("lower_band")
+                    position_analysis = bb_data.get("position_analysis", "알 수 없음")
+                    bb_signal = bb_data.get("signal", "알 수 없음")
+
+                    if all(
+                        v is not None for v in [upper_band, middle_band, lower_band]
+                    ):
+                        formatted_lines.append(f"  • 상단 밴드: {upper_band:,.0f}원")
+                        formatted_lines.append(f"  • 중간 밴드: {middle_band:,.0f}원")
+                        formatted_lines.append(f"  • 하단 밴드: {lower_band:,.0f}원")
+                        formatted_lines.append(f"  • 위치 분석: {position_analysis}")
+                        formatted_lines.append(f"  • 신호: {bb_signal}")
                     else:
-                        formatted_lines.append("   → 중립 구간")
-                    formatted_lines.append("")
+                        formatted_lines.append("  • 볼린저 밴드 계산 불가")
+                except Exception as bb_error:
+                    logger.error(f"❌ 볼린저 밴드 처리 오류: {bb_error}")
+                    formatted_lines.append("  • 볼린저 밴드 데이터 처리 중 오류")
+                formatted_lines.append("")
 
-            # 6. Williams %R
-            if "williams_r" in indicators:
-                williams_r = indicators["williams_r"].get("current_value")
-                if williams_r:
-                    formatted_lines.append(f"📉 **Williams %R**: {williams_r:.1f}")
-                    if williams_r >= -20:
-                        formatted_lines.append("   → 과매수 구간")
-                    elif williams_r <= -80:
-                        formatted_lines.append("   → 과매도 구간")
-                    else:
-                        formatted_lines.append("   → 중립 구간")
-                    formatted_lines.append("")
-
-            # 7. OBV (On Balance Volume)
-            if "obv" in indicators:
-                obv_data = indicators["obv"]
-                current_obv = obv_data.get("current_value")
-                obv_trend = obv_data.get("trend")
-
-                if current_obv:
-                    formatted_lines.append(
-                        f"📊 **OBV (거래량 지표)**: {current_obv:,.0f}"
+            # 5. 스토캐스틱 처리
+            stoch_data = indicators.get("stochastic", {})
+            if isinstance(stoch_data, dict) and stoch_data:
+                formatted_lines.append("**📈 스토캐스틱**:")
+                try:
+                    k_percent = stoch_data.get("K_percent") or stoch_data.get(
+                        "k_percent"
                     )
-                    if obv_trend:
-                        formatted_lines.append(f"   → 추세: {obv_trend}")
-                    formatted_lines.append("")
+                    d_percent = stoch_data.get("D_percent") or stoch_data.get(
+                        "d_percent"
+                    )
+                    stoch_interpretation = stoch_data.get(
+                        "interpretation", "알 수 없음"
+                    )
+                    stoch_signal = stoch_data.get("signal", "알 수 없음")
 
-            # 8. 지지/저항선
-            support_resistance = technical_analysis_data.get("support_resistance", {})
-            if support_resistance:
-                support_levels = support_resistance.get("support_levels", [])
-                resistance_levels = support_resistance.get("resistance_levels", [])
+                    if k_percent is not None:
+                        formatted_lines.append(f"  • %K: {k_percent:.2f}")
+                    if d_percent is not None:
+                        formatted_lines.append(f"  • %D: {d_percent:.2f}")
+                    formatted_lines.append(f"  • 해석: {stoch_interpretation}")
+                    formatted_lines.append(f"  • 신호: {stoch_signal}")
+                except Exception as stoch_error:
+                    logger.error(f"❌ 스토캐스틱 처리 오류: {stoch_error}")
+                    formatted_lines.append("  • 스토캐스틱 데이터 처리 중 오류")
+                formatted_lines.append("")
 
-                if support_levels or resistance_levels:
-                    formatted_lines.append("🎯 **주요 지지/저항선**:")
+            # 6. Williams %R 처리
+            wr_data = indicators.get("williams_r", {})
+            if isinstance(wr_data, dict) and wr_data:
+                formatted_lines.append("**📊 Williams %R**:")
+                try:
+                    wr_value = wr_data.get("current_value")
+                    wr_interpretation = wr_data.get("interpretation", "알 수 없음")
+                    wr_signal = wr_data.get("signal", "알 수 없음")
 
-                    if resistance_levels:
-                        formatted_lines.append("   저항선:")
-                        for level in resistance_levels[:3]:  # 상위 3개만
-                            formatted_lines.append(f"     - {level:,.0f}원")
+                    if wr_value is not None:
+                        formatted_lines.append(f"  • 현재 값: {wr_value:.2f}")
+                        formatted_lines.append(f"  • 해석: {wr_interpretation}")
+                        formatted_lines.append(f"  • 신호: {wr_signal}")
+                    else:
+                        formatted_lines.append("  • Williams %R 계산 불가")
+                except Exception as wr_error:
+                    logger.error(f"❌ Williams %R 처리 오류: {wr_error}")
+                    formatted_lines.append("  • Williams %R 데이터 처리 중 오류")
+                formatted_lines.append("")
 
-                    if support_levels:
-                        formatted_lines.append("   지지선:")
-                        for level in support_levels[:3]:  # 상위 3개만
-                            formatted_lines.append(f"     - {level:,.0f}원")
-                    formatted_lines.append("")
+            # 7. 거래량 지표 처리
+            vol_data = indicators.get("volume_indicators", {})
+            if isinstance(vol_data, dict) and vol_data:
+                formatted_lines.append("**📊 거래량 지표**:")
+                try:
+                    volume_ma_20 = vol_data.get("volume_MA_20")
+                    volume_ratio = vol_data.get("volume_ratio")
 
-            # 9. 매매 신호
+                    if volume_ma_20 is not None:
+                        formatted_lines.append(
+                            f"  • 20일 평균 거래량: {volume_ma_20:,.0f}주"
+                        )
+                    if volume_ratio is not None:
+                        formatted_lines.append(f"  • 거래량 비율: {volume_ratio:.2f}배")
+                except Exception as vol_error:
+                    logger.error(f"❌ 거래량 지표 처리 오류: {vol_error}")
+                    formatted_lines.append("  • 거래량 지표 처리 중 오류")
+                formatted_lines.append("")
+
+            # 8. OBV 지표 처리
+            obv_data = indicators.get("obv", {})
+            if isinstance(obv_data, dict) and obv_data:
+                formatted_lines.append("**📈 OBV (On Balance Volume)**:")
+                try:
+                    obv_value = obv_data.get("current_value")
+                    obv_trend = obv_data.get("trend", "알 수 없음")
+
+                    if obv_value is not None:
+                        formatted_lines.append(f"  • 현재 OBV: {obv_value:,.0f}")
+                        formatted_lines.append(f"  • 추세: {obv_trend}")
+                    else:
+                        formatted_lines.append("  • OBV 계산 불가")
+                except Exception as obv_error:
+                    logger.error(f"❌ OBV 처리 오류: {obv_error}")
+                    formatted_lines.append("  • OBV 데이터 처리 중 오류")
+                formatted_lines.append("")
+
+            # 9. 매매 신호 종합
             trading_signals = technical_analysis_data.get("trading_signals", {})
-            if trading_signals:
-                overall_signal = trading_signals.get("overall_signal")
-                signal_strength = trading_signals.get("signal_strength", 0)
+            if isinstance(trading_signals, dict) and trading_signals:
+                formatted_lines.append("**🎯 종합 매매 신호**:")
+                try:
+                    overall_signal = trading_signals.get("overall_signal", "알 수 없음")
+                    signal_strength = trading_signals.get(
+                        "signal_strength", "알 수 없음"
+                    )
+                    recommendation = trading_signals.get("recommendation", "알 수 없음")
 
-                if overall_signal:
-                    formatted_lines.append(f"🚦 **종합 매매신호**: {overall_signal}")
-                    formatted_lines.append(f"   신호 강도: {signal_strength}/10")
+                    formatted_lines.append(f"  • 종합 신호: {overall_signal}")
+                    formatted_lines.append(f"  • 신호 강도: {signal_strength}")
+                    formatted_lines.append(f"  • 추천: {recommendation}")
+                except Exception as signal_error:
+                    logger.error(f"❌ 매매 신호 처리 오류: {signal_error}")
+                    formatted_lines.append("  • 매매 신호 처리 중 오류")
+                formatted_lines.append("")
 
-                    # 개별 신호들
-                    individual_signals = trading_signals.get("individual_signals", {})
-                    if individual_signals:
-                        formatted_lines.append("   개별 신호:")
-                        for signal_name, signal_value in individual_signals.items():
-                            formatted_lines.append(
-                                f"     - {signal_name}: {signal_value}"
-                            )
-                    formatted_lines.append("")
-
-            # 10. 데이터 품질 정보
-            data_quality = technical_analysis_data.get("data_quality", {})
-            if data_quality:
-                total_days = data_quality.get("total_days")
-                if total_days:
-                    formatted_lines.append(f"📅 **분석 기간**: {total_days}일 데이터")
-                    formatted_lines.append("")
-
-            formatted_lines.append("⚠️ **중요**: 위의 모든 값은 실제 계산된 지표입니다.")
-            formatted_lines.append(
-                "지표 정의를 설명하지 말고, 이 수치들을 활용한 구체적인 분석과 투자 의견을 제시하세요."
-            )
+            # 데이터 수집 정보
+            total_days = technical_analysis_data.get("total_days", 0)
+            last_update = technical_analysis_data.get("last_update", "알 수 없음")
+            if total_days > 0:
+                formatted_lines.append(
+                    f"**📊 데이터 정보**: {total_days}일치 데이터 (최종 업데이트: {last_update})"
+                )
 
             return "\n".join(formatted_lines)
 
         except Exception as e:
             logger.error(f"❌ 기술적 지표 포맷팅 실패: {e}")
+            logger.error(
+                f"🔍 technical_analysis_data 타입: {type(technical_analysis_data)}"
+            )
+            if isinstance(technical_analysis_data, dict):
+                indicators = technical_analysis_data.get("technical_indicators", {})
+                logger.error(f"🔍 indicators 타입: {type(indicators)}")
+                if isinstance(indicators, dict):
+                    for key, value in indicators.items():
+                        logger.error(f"🔍 {key} 타입: {type(value)}")
+
             return f"기술적 지표 포맷팅 중 오류 발생: {str(e)}"
 
     def _summarize_financial_data(self, financial_data) -> str:
