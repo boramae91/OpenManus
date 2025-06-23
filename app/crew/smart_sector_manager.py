@@ -1292,16 +1292,36 @@ class SmartSectorManager:
         elif "기술" in expert.expertise or "Technical" in expert.role:
             # 기술 분석 전문가 - 🎯 실제 계산된 지표 데이터 우선 제공!
 
-            # 🚀 1단계: 계산된 기술적 지표 데이터 (최우선!)
+            # 🚀 1단계: 계산된 기술적 지표 데이터 (최우선!) - 안전한 방식
             if technical_analysis_data and technical_analysis_data.get("success"):
-                context_parts.append("🎯 **계산된 기술적 지표 (실제 수치)**:")
-                context_parts.append(
-                    self._format_technical_indicators_for_expert(
-                        technical_analysis_data
+                try:
+                    context_parts.append("🎯 **계산된 기술적 지표 (실제 수치)**:")
+                    if hasattr(self, "_format_technical_indicators_for_expert"):
+                        formatted_indicators = (
+                            self._format_technical_indicators_for_expert(
+                                technical_analysis_data
+                            )
+                        )
+                        context_parts.append(formatted_indicators)
+                    else:
+                        # 메서드가 없는 경우 기본 포맷팅
+                        context_parts.append(
+                            "기술적 지표 데이터가 수집되었지만 포맷팅 중 오류가 발생했습니다."
+                        )
+                        context_parts.append(
+                            f"원본 데이터: {str(technical_analysis_data)[:500]}..."
+                        )
+                    context_parts.append("")
+                    logger.info(
+                        f"✅ {expert.name}: 계산된 기술적 지표 데이터 제공 완료"
                     )
-                )
-                context_parts.append("")
-                logger.info(f"✅ {expert.name}: 계산된 기술적 지표 데이터 제공 완료")
+                except Exception as format_error:
+                    logger.error(f"❌ 기술적 지표 포맷팅 실패: {format_error}")
+                    context_parts.append("🎯 **기술적 지표 데이터**:")
+                    context_parts.append(
+                        "기술적 지표 포맷팅 중 오류가 발생했습니다. 기본 데이터를 참조하세요."
+                    )
+                    context_parts.append("")
             else:
                 logger.warning(
                     f"⚠️ {expert.name}: 계산된 기술적 지표 데이터 없음 - 기본 데이터로 대체"

@@ -986,38 +986,84 @@ class FinancialDataCollector:
                 ),
             }
 
-            # 📈 RSI 계산 (14일)
-            indicators["RSI"] = self._calculate_rsi(df["Close"], period=14)
+            # 📈 RSI 계산 (14일) - 안전한 방식
+            try:
+                indicators["rsi"] = self._calculate_rsi(df["Close"], period=14)
+            except Exception as rsi_error:
+                logger.warning(f"⚠️ RSI 계산 실패: {rsi_error}")
+                indicators["rsi"] = {
+                    "current_value": None,
+                    "interpretation": "계산 실패",
+                }
 
-            # 📊 MACD 계산 (12, 26, 9)
-            indicators["MACD"] = self._calculate_macd(df["Close"])
+            # 📊 MACD 계산 (12, 26, 9) - 안전한 방식
+            try:
+                indicators["macd"] = self._calculate_macd(df["Close"])
+            except Exception as macd_error:
+                logger.warning(f"⚠️ MACD 계산 실패: {macd_error}")
+                indicators["macd"] = {
+                    "macd_line": None,
+                    "signal_line": None,
+                    "histogram": None,
+                }
 
-            # 📈 볼린저 밴드 계산 (20일, 2표준편차)
-            indicators["bollinger_bands"] = self._calculate_bollinger_bands(df["Close"])
+            # 📈 볼린저 밴드 계산 (20일, 2표준편차) - 안전한 방식
+            try:
+                indicators["bollinger_bands"] = self._calculate_bollinger_bands(
+                    df["Close"]
+                )
+            except Exception as bb_error:
+                logger.warning(f"⚠️ 볼린저 밴드 계산 실패: {bb_error}")
+                indicators["bollinger_bands"] = {
+                    "upper_band": None,
+                    "middle_band": None,
+                    "lower_band": None,
+                }
 
-            # 📊 스토캐스틱 계산 (14, 3, 3)
-            indicators["stochastic"] = self._calculate_stochastic(df)
+            # 📊 스토캐스틱 계산 (14, 3, 3) - 안전한 방식
+            try:
+                indicators["stochastic"] = self._calculate_stochastic(df)
+            except Exception as stoch_error:
+                logger.warning(f"⚠️ 스토캐스틱 계산 실패: {stoch_error}")
+                indicators["stochastic"] = {"k_percent": None, "d_percent": None}
 
-            # 📈 Williams %R 계산 (14일)
-            indicators["williams_r"] = self._calculate_williams_r(df)
+            # 📈 Williams %R 계산 (14일) - 안전한 방식
+            try:
+                indicators["williams_r"] = self._calculate_williams_r(df)
+            except Exception as wr_error:
+                logger.warning(f"⚠️ Williams %R 계산 실패: {wr_error}")
+                indicators["williams_r"] = {"current_value": None}
 
-            # 📊 거래량 지표
-            indicators["volume_indicators"] = {
-                "OBV": self._calculate_obv(df),
-                "volume_MA_20": (
-                    float(df["Volume"].rolling(window=20).mean().iloc[-1])
-                    if len(df) >= 20
-                    else None
-                ),
-                "volume_ratio": (
-                    float(
-                        df["Volume"].iloc[-1]
-                        / df["Volume"].rolling(window=20).mean().iloc[-1]
-                    )
-                    if len(df) >= 20
-                    else None
-                ),
-            }
+            # 📊 거래량 지표 - 안전한 방식
+            try:
+                obv_result = self._calculate_obv(df)
+                indicators["obv"] = obv_result
+            except Exception as obv_error:
+                logger.warning(f"⚠️ OBV 계산 실패: {obv_error}")
+                indicators["obv"] = {"current_value": None, "trend": "알 수 없음"}
+
+            try:
+                indicators["volume_indicators"] = {
+                    "volume_MA_20": (
+                        float(df["Volume"].rolling(window=20).mean().iloc[-1])
+                        if len(df) >= 20
+                        else None
+                    ),
+                    "volume_ratio": (
+                        float(
+                            df["Volume"].iloc[-1]
+                            / df["Volume"].rolling(window=20).mean().iloc[-1]
+                        )
+                        if len(df) >= 20
+                        else None
+                    ),
+                }
+            except Exception as vol_error:
+                logger.warning(f"⚠️ 거래량 지표 계산 실패: {vol_error}")
+                indicators["volume_indicators"] = {
+                    "volume_MA_20": None,
+                    "volume_ratio": None,
+                }
 
             logger.info("✅ 모든 기술적 지표 계산 완료")
             return indicators

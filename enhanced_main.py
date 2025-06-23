@@ -225,30 +225,48 @@ class EnhancedStockAnalysisSystem:
                     f"✅ 기본 재무데이터 수집 완료 (출처: {', '.join(financial_data['data_sources'])})"
                 )
 
-            # 🎯 2-1.5: 기술적 분석용 데이터 수집 (1년치 데이터프레임 + 계산된 지표들)
+            # 🎯 2-1.5: 기술적 분석용 데이터 수집 (1년치 데이터프레임 + 계산된 지표들) - 안전한 방식
             logger.info("📈 기술적 분석용 상세 데이터 수집 시작...")
-            technical_analysis_data = (
-                self.financial_collector.get_technical_analysis_data(
-                    stock_code=stock_info["stock_code"], period="1y"
+            try:
+                technical_analysis_data = (
+                    self.financial_collector.get_technical_analysis_data(
+                        stock_code=stock_info["stock_code"], period="1y"
+                    )
                 )
-            )
-            results["steps"]["step2_technical_analysis_data"] = technical_analysis_data
+                results["steps"][
+                    "step2_technical_analysis_data"
+                ] = technical_analysis_data
 
-            if technical_analysis_data.get("success"):
-                logger.info(
-                    f"✅ 기술적 분석 데이터 수집 완료: {technical_analysis_data['total_days']}일치 데이터"
-                )
-                logger.info(
-                    f"📊 계산된 지표: RSI, MACD, 볼린저밴드, 이동평균선, 스토캐스틱, Williams %R, OBV"
-                )
-                logger.info(
-                    f"🎯 매매신호: {technical_analysis_data.get('trading_signals', {}).get('overall_signal', '알 수 없음')}"
-                )
-            else:
-                logger.warning(
-                    f"⚠️ 기술적 분석 데이터 수집 실패: {technical_analysis_data.get('error', '알 수 없는 오류')}"
-                )
-                logger.info("ℹ️ 기술적 분석가는 기본 데이터만으로 분석을 진행합니다")
+                if technical_analysis_data.get("success"):
+                    logger.info(
+                        f"✅ 기술적 분석 데이터 수집 완료: {technical_analysis_data.get('total_days', 0)}일치 데이터"
+                    )
+                    logger.info(
+                        f"📊 계산된 지표: RSI, MACD, 볼린저밴드, 이동평균선, 스토캐스틱, Williams %R, OBV"
+                    )
+                    trading_signals = technical_analysis_data.get("trading_signals", {})
+                    overall_signal = (
+                        trading_signals.get("overall_signal", "알 수 없음")
+                        if trading_signals
+                        else "알 수 없음"
+                    )
+                    logger.info(f"🎯 매매신호: {overall_signal}")
+                else:
+                    logger.warning(
+                        f"⚠️ 기술적 분석 데이터 수집 실패: {technical_analysis_data.get('error', '알 수 없는 오류')}"
+                    )
+                    logger.info("ℹ️ 기술적 분석가는 기본 데이터만으로 분석을 진행합니다")
+            except Exception as tech_error:
+                logger.error(f"❌ 기술적 분석 데이터 수집 중 예외 발생: {tech_error}")
+                technical_analysis_data = {
+                    "success": False,
+                    "error": f"기술적 분석 수집 예외: {str(tech_error)}",
+                    "fallback_mode": True,
+                }
+                results["steps"][
+                    "step2_technical_analysis_data"
+                ] = technical_analysis_data
+                logger.info("ℹ️ 기술적 분석 실패로 인해 폴백 모드로 진행합니다")
 
             # 2-2: 🚀 Enhanced DART API 데이터 수집 (새로운 기능들)
             enhanced_dart_data = None
@@ -468,18 +486,39 @@ class EnhancedStockAnalysisSystem:
 
             logger.info(f"🎯 정보 수집 프롬프트 생성 완료 - 의도: {primary_intent}")
 
-            # Manus 에이전트 실행
-            self.manus_agent.memory.clear()
-            self.manus_agent.update_memory("user", collection_prompt)
+            # Manus 에이전트 실행 (안전한 방식)
+            try:
+                if (
+                    hasattr(self.manus_agent, "memory")
+                    and self.manus_agent.memory is not None
+                ):
+                    self.manus_agent.memory.clear()
+                else:
+                    logger.warning("⚠️ Manus Agent 메모리가 초기화되지 않음")
+
+                if hasattr(self.manus_agent, "update_memory"):
+                    self.manus_agent.update_memory("user", collection_prompt)
+                else:
+                    logger.warning("⚠️ Manus Agent update_memory 메서드 없음")
+            except Exception as memory_error:
+                logger.error(f"❌ Manus Agent 메모리 처리 오류: {memory_error}")
+                # 메모리 오류가 있어도 계속 진행
 
             collection_response = ""
-            run_result = await self.manus_agent.run()
+            try:
+                run_result = await self.manus_agent.run()
 
-            if hasattr(run_result, "__aiter__"):
-                async for response in run_result:
-                    collection_response += response + "\n"
-            else:
-                collection_response = str(run_result)
+                if run_result is not None:
+                    if hasattr(run_result, "__aiter__"):
+                        async for response in run_result:
+                            collection_response += response + "\n"
+                    else:
+                        collection_response = str(run_result)
+                else:
+                    collection_response = "정보 수집 에이전트 실행 실패"
+            except Exception as collection_error:
+                logger.error(f"❌ 정보 수집 중 오류: {collection_error}")
+                collection_response = f"정보 수집 중 오류 발생: {str(collection_error)}"
 
             # 📄 PDF 감지 및 자동 분석
             pdf_analysis_result = await self._detect_and_analyze_pdf_from_response(
@@ -738,20 +777,46 @@ class EnhancedStockAnalysisSystem:
 종목코드: AAPL
 """
 
-            # 메모리 초기화
-            self.manus_agent.memory.clear()
-            self.manus_agent.update_memory("user", search_prompt)
+            # 메모리 초기화 (안전한 방식)
+            try:
+                if (
+                    hasattr(self.manus_agent, "memory")
+                    and self.manus_agent.memory is not None
+                ):
+                    self.manus_agent.memory.clear()
+                else:
+                    logger.warning("⚠️ Manus Agent 메모리가 초기화되지 않음")
 
-            # AI 에이전트 실행
-            search_result = await self.manus_agent.run()
+                if hasattr(self.manus_agent, "update_memory"):
+                    self.manus_agent.update_memory("user", search_prompt)
+                else:
+                    logger.warning("⚠️ Manus Agent update_memory 메서드 없음")
+            except Exception as memory_error:
+                logger.error(f"❌ Manus Agent 메모리 처리 오류: {memory_error}")
+                # 메모리 오류가 있어도 계속 진행
 
-            # 결과 처리
-            if hasattr(search_result, "__aiter__"):
-                ai_response = ""
-                async for response in search_result:
-                    ai_response += response + "\n"
+            # AI 에이전트 실행 (안전한 방식)
+            try:
+                search_result = await self.manus_agent.run()
+            except Exception as run_error:
+                logger.error(f"❌ Manus Agent 실행 오류: {run_error}")
+                # 에이전트 실행 실패 시 폴백 처리
+                search_result = None
+
+            # 결과 처리 (안전한 방식)
+            ai_response = ""
+            if search_result is not None:
+                try:
+                    if hasattr(search_result, "__aiter__"):
+                        async for response in search_result:
+                            ai_response += response + "\n"
+                    else:
+                        ai_response = str(search_result)
+                except Exception as process_error:
+                    logger.error(f"❌ 검색 결과 처리 오류: {process_error}")
+                    ai_response = "AI 에이전트 응답 처리 중 오류 발생"
             else:
-                ai_response = str(search_result)
+                ai_response = "AI 에이전트 실행 실패"
 
             # AI 응답에서 종목 정보 추출
             extracted_info = self._parse_ai_stock_response(
