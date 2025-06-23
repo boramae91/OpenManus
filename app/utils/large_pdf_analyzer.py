@@ -539,12 +539,12 @@ class LargePDFAnalyzer:
             extraction_method = "unknown"
 
             try:
-                # URL과 로컬 파일 구분하여 처리
-                pdf_result = await self._handle_pdf_source(pdf_path)
+                # 🔧 URL과 로컬 파일 구분하여 처리 - _direct_pdf_extraction 직접 호출
+                pdf_result = await self._direct_pdf_extraction(pdf_path)
 
                 if pdf_result.get("success"):
                     full_text = pdf_result.get("full_text", "")
-                    extraction_method = pdf_result.get("method", "unknown")
+                    extraction_method = pdf_result.get("extraction_method", "unknown")
                     logger.info(f"✅ PDF 추출 성공 (방법: {extraction_method})")
                 else:
                     error_msg = pdf_result.get("error", "PDF 추출 실패")
@@ -2161,3 +2161,195 @@ class PDFDictionaryInterface:
             "footnote_specialist": [],  # 주석 전문가
             "general": [],  # 일반 (여러 전문가 공통)
         }
+
+        # 🎯 섹션 제목을 보고 카테고리 자동 분류
+        for section_title in self.pdf_dictionary.keys():
+            title_lower = section_title.lower()
+
+            # 주석 관련
+            if any(
+                keyword in title_lower
+                for keyword in ["주석", "footnote", "note", "부록"]
+            ):
+                categories["footnote_specialist"].append(section_title)
+            # 재무/펀더멘털 관련
+            elif any(
+                keyword in title_lower
+                for keyword in [
+                    "재무",
+                    "손익",
+                    "대차대조표",
+                    "현금흐름",
+                    "매출",
+                    "이익",
+                    "financial",
+                    "revenue",
+                    "profit",
+                ]
+            ):
+                categories["fundamental_analyst"].append(section_title)
+            # 리스크 관련
+            elif any(
+                keyword in title_lower
+                for keyword in ["리스크", "위험", "risk", "위기", "불확실성"]
+            ):
+                categories["risk_assessor"].append(section_title)
+            # 밸류에이션 관련
+            elif any(
+                keyword in title_lower
+                for keyword in [
+                    "가치",
+                    "평가",
+                    "valuation",
+                    "dcf",
+                    "per",
+                    "pbr",
+                    "목표가",
+                ]
+            ):
+                categories["valuation_expert"].append(section_title)
+            # 산업/시장 관련
+            elif any(
+                keyword in title_lower
+                for keyword in [
+                    "시장",
+                    "산업",
+                    "경쟁",
+                    "업계",
+                    "market",
+                    "industry",
+                    "competitive",
+                ]
+            ):
+                categories["industry_analyst"].append(section_title)
+            # 기술적 분석 관련
+            elif any(
+                keyword in title_lower
+                for keyword in ["차트", "기술적", "technical", "pattern", "trend"]
+            ):
+                categories["technical_analyst"].append(section_title)
+            else:
+                # 일반 카테고리에 추가
+                categories["general"].append(section_title)
+
+        return categories
+
+    def get_sections_by_expert_type(
+        self, expert_type: str, max_sections: int = 5
+    ) -> Dict[str, str]:
+        """
+        🎯 전문가 유형에 맞는 섹션들을 반환합니다.
+
+        Args:
+            expert_type: 전문가 유형 (fundamental_analyst, technical_analyst 등)
+            max_sections: 최대 반환할 섹션 수
+
+        Returns:
+            Dict[str, str]: {섹션_제목: 섹션_내용} 형태의 딕셔너리
+        """
+        # 전문가 타입 매핑 (다양한 형태의 전문가명 지원)
+        expert_mapping = {
+            "fundamental": "fundamental_analyst",
+            "fundamental_analyst": "fundamental_analyst",
+            "펀더멘털": "fundamental_analyst",
+            "재무": "fundamental_analyst",
+            "technical": "technical_analyst",
+            "technical_analyst": "technical_analyst",
+            "기술적": "technical_analyst",
+            "차트": "technical_analyst",
+            "industry": "industry_analyst",
+            "industry_analyst": "industry_analyst",
+            "산업": "industry_analyst",
+            "시장": "industry_analyst",
+            "valuation": "valuation_expert",
+            "valuation_expert": "valuation_expert",
+            "밸류에이션": "valuation_expert",
+            "가치평가": "valuation_expert",
+            "risk": "risk_assessor",
+            "risk_assessor": "risk_assessor",
+            "리스크": "risk_assessor",
+            "위험": "risk_assessor",
+            "footnote": "footnote_specialist",
+            "footnote_specialist": "footnote_specialist",
+            "주석": "footnote_specialist",
+            "부록": "footnote_specialist",
+        }
+
+        # 전문가 타입 정규화
+        normalized_expert_type = expert_mapping.get(expert_type.lower(), "general")
+
+        # 해당 전문가에게 적합한 섹션들 가져오기
+        relevant_sections = self.section_categories.get(normalized_expert_type, [])
+
+        # 일반 섹션도 포함 (모든 전문가가 참고할 수 있는 내용)
+        if normalized_expert_type != "general":
+            relevant_sections.extend(
+                self.section_categories.get("general", [])[:2]
+            )  # 일반 섹션 최대 2개만
+
+        # 최대 섹션 수 제한
+        selected_sections = relevant_sections[:max_sections]
+
+        # 실제 섹션 내용 반환
+        result = {}
+        for section_title in selected_sections:
+            if section_title in self.pdf_dictionary:
+                result[section_title] = self.pdf_dictionary[section_title]
+
+        logger.info(f"🎯 {expert_type} 전문가용 섹션 {len(result)}개 반환")
+        return result
+
+    def get_all_sections(self) -> Dict[str, str]:
+        """모든 섹션을 반환합니다."""
+        return self.pdf_dictionary.copy()
+
+    def get_section_by_title(self, title: str) -> str:
+        """특정 제목의 섹션을 반환합니다."""
+        return self.pdf_dictionary.get(title, "")
+
+    def search_sections(self, keyword: str, max_results: int = 3) -> Dict[str, str]:
+        """키워드로 섹션을 검색합니다."""
+        results = {}
+        for title, content in self.pdf_dictionary.items():
+            if keyword.lower() in title.lower() or keyword.lower() in content.lower():
+                results[title] = content
+                if len(results) >= max_results:
+                    break
+        return results
+
+    def get_metadata(self) -> Dict[str, Any]:
+        """메타데이터를 반환합니다."""
+        return self.metadata.copy()
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        🔧 JSON 직렬화를 위한 딕셔너리 변환
+
+        PDFDictionaryInterface 객체를 JSON으로 저장할 수 있도록
+        순수 딕셔너리 형태로 변환합니다.
+        """
+        return {
+            "pdf_dictionary": self.pdf_dictionary,
+            "metadata": self.metadata,
+            "section_categories": self.section_categories,
+            "interface_type": "PDFDictionaryInterface",
+            "total_sections": len(self.pdf_dictionary),
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "PDFDictionaryInterface":
+        """
+        🔧 딕셔너리에서 PDFDictionaryInterface 객체 복원
+        """
+        return cls(
+            pdf_dictionary=data.get("pdf_dictionary", {}),
+            metadata=data.get("metadata", {}),
+        )
+
+    def __str__(self) -> str:
+        """문자열 표현"""
+        return f"PDFDictionaryInterface(sections={len(self.pdf_dictionary)}, company={self.metadata.get('company_name', 'Unknown')})"
+
+    def __repr__(self) -> str:
+        """개발자용 문자열 표현"""
+        return self.__str__()

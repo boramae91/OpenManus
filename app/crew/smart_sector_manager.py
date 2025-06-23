@@ -1046,65 +1046,148 @@ class SmartSectorManager:
 
         # 🚀 PDF 딕셔너리 우선 활용 (섹션 제한 없음!)
         if pdf_interface:
-            # 주석 전문가 특별 처리
-            if "주석" in expert.name or "Footnote" in expert.role:
-                footnote_sections = pdf_interface.get_sections_by_expert_type(
-                    "footnote_specialist"
-                )
-                if footnote_sections:
-                    context_parts.append("📄 **재무제표 주석 섹션 (PDF 완전 분석)**:")
+            # 🔧 pdf_interface가 딕셔너리 형태인지 확인 (JSON 직렬화된 경우)
+            if isinstance(pdf_interface, dict):
+                # 딕셔너리에서 필요한 정보 추출
+                pdf_dictionary = pdf_interface.get("pdf_dictionary", {})
+                section_categories = pdf_interface.get("section_categories", {})
+
+                logger.info("🔧 PDF 인터페이스가 딕셔너리 형태로 전달됨 - 직접 처리")
+
+                # 전문가 타입에 맞는 섹션 추출 (수동 구현)
+                expert_type_mapping = {
+                    "fundamental": "fundamental_analyst",
+                    "펀더멘털": "fundamental_analyst",
+                    "재무": "fundamental_analyst",
+                    "technical": "technical_analyst",
+                    "기술적": "technical_analyst",
+                    "industry": "industry_analyst",
+                    "산업": "industry_analyst",
+                    "valuation": "valuation_expert",
+                    "밸류에이션": "valuation_expert",
+                    "risk": "risk_assessor",
+                    "리스크": "risk_assessor",
+                    "footnote": "footnote_specialist",
+                    "주석": "footnote_specialist",
+                }
+
+                # 전문가 타입 결정
+                expert_key = None
+                for key, value in expert_type_mapping.items():
+                    if key in expert.name.lower() or key in expert.role.lower():
+                        expert_key = value
+                        break
+
+                if not expert_key:
+                    expert_key = "general"
+
+                # 해당 전문가에게 적합한 섹션 가져오기
+                relevant_sections = section_categories.get(expert_key, [])
+                if expert_key != "general":
+                    relevant_sections.extend(section_categories.get("general", [])[:2])
+
+                # 실제 섹션 내용 추가
+                if relevant_sections and pdf_dictionary:
+                    context_parts.append(
+                        f"📄 **{expert.name} 관련 PDF 섹션 (딕셔너리 처리)**:"
+                    )
                     section_count = 0
                     total_content_length = 0
 
-                    for section_title, content in footnote_sections.items():
-                        # 🚀 주석 전문가는 섹션 제한 없음! 모든 주석 섹션 완전 분석
-                        if len(content) > 600000:  # 개별 섹션 60만자 제한으로 확대
-                            content = (
-                                content[:600000]
-                                + "\n...[주석 내용 일부 생략 - 매우 긴 섹션]..."
-                            )
+                    for section_title in relevant_sections[:5]:  # 최대 5개 섹션
+                        if section_title in pdf_dictionary:
+                            content = pdf_dictionary[section_title]
 
-                        context_parts.append(f"### {section_title}")
-                        context_parts.append(content)
-                        context_parts.append("")
-                        section_count += 1
-                        total_content_length += len(content)
+                            # 60만자 제한
+                            if len(content) > 600000:
+                                content = (
+                                    content[:600000]
+                                    + "\n...[내용 일부 생략 - 매우 긴 섹션]..."
+                                )
+
+                            context_parts.append(f"### {section_title}")
+                            context_parts.append(content)
+                            context_parts.append("")
+                            section_count += 1
+                            total_content_length += len(content)
 
                     logger.info(
-                        f"📝 주석 전문가: {section_count}개 섹션, 총 {total_content_length:,}자 (제한 없음)"
+                        f"📄 {expert.name}: {section_count}개 섹션, 총 {total_content_length:,}자 (딕셔너리 처리)"
                     )
                 else:
-                    logger.info("📝 PDF에서 주석 섹션을 찾지 못했습니다")
-
-            # 다른 전문가들 처리
-            else:
-                expert_sections = pdf_interface.get_sections_by_expert_type(
-                    expert.role.lower().replace(" ", "_")
-                )
-                if expert_sections:
-                    context_parts.append(
-                        f"📄 **{expert.name} 관련 PDF 섹션 (완전 활용)**:"
+                    logger.info(
+                        f"📄 {expert.name}: 관련 PDF 섹션을 찾지 못했습니다 (딕셔너리)"
                     )
-                    section_count = 0
-                    total_content_length = 0
 
-                    for section_title, content in expert_sections.items():
-                        # 🚀 모든 전문가 섹션 제한 제거! 필요한 모든 섹션 활용
-                        if len(content) > 600000:  # 개별 섹션 60만자 제한으로 확대
-                            content = (
-                                content[:600000]
-                                + "\n...[내용 일부 생략 - 매우 긴 섹션]..."
-                            )
+            # 🔧 PDFDictionaryInterface 객체인 경우 (기존 로직)
+            elif hasattr(pdf_interface, "get_sections_by_expert_type"):
+                # 주석 전문가 특별 처리
+                if "주석" in expert.name or "Footnote" in expert.role:
+                    footnote_sections = pdf_interface.get_sections_by_expert_type(
+                        "footnote_specialist"
+                    )
+                    if footnote_sections:
+                        context_parts.append(
+                            "📄 **재무제표 주석 섹션 (PDF 완전 분석)**:"
+                        )
+                        section_count = 0
+                        total_content_length = 0
 
-                        context_parts.append(f"### {section_title}")
-                        context_parts.append(content)
-                        context_parts.append("")
-                        section_count += 1
-                        total_content_length += len(content)
+                        for section_title, content in footnote_sections.items():
+                            # 🚀 주석 전문가는 섹션 제한 없음! 모든 주석 섹션 완전 분석
+                            if len(content) > 600000:  # 개별 섹션 60만자 제한으로 확대
+                                content = (
+                                    content[:600000]
+                                    + "\n...[주석 내용 일부 생략 - 매우 긴 섹션]..."
+                                )
 
-                logger.info(
-                    f"📄 {expert.name}: {section_count}개 섹션, 총 {total_content_length:,}자 (제한 없음)"
+                            context_parts.append(f"### {section_title}")
+                            context_parts.append(content)
+                            context_parts.append("")
+                            section_count += 1
+                            total_content_length += len(content)
+
+                        logger.info(
+                            f"📝 주석 전문가: {section_count}개 섹션, 총 {total_content_length:,}자 (제한 없음)"
+                        )
+                    else:
+                        logger.info("📝 PDF에서 주석 섹션을 찾지 못했습니다")
+
+                # 다른 전문가들 처리
+                else:
+                    expert_sections = pdf_interface.get_sections_by_expert_type(
+                        expert.role.lower().replace(" ", "_")
+                    )
+                    if expert_sections:
+                        context_parts.append(
+                            f"📄 **{expert.name} 관련 PDF 섹션 (완전 활용)**:"
+                        )
+                        section_count = 0
+                        total_content_length = 0
+
+                        for section_title, content in expert_sections.items():
+                            # 🚀 모든 전문가 섹션 제한 제거! 필요한 모든 섹션 활용
+                            if len(content) > 600000:  # 개별 섹션 60만자 제한으로 확대
+                                content = (
+                                    content[:600000]
+                                    + "\n...[내용 일부 생략 - 매우 긴 섹션]..."
+                                )
+
+                            context_parts.append(f"### {section_title}")
+                            context_parts.append(content)
+                            context_parts.append("")
+                            section_count += 1
+                            total_content_length += len(content)
+
+                    logger.info(
+                        f"📄 {expert.name}: {section_count}개 섹션, 총 {total_content_length:,}자 (제한 없음)"
+                    )
+            else:
+                logger.warning(
+                    f"⚠️ PDF 인터페이스가 예상과 다른 형태입니다: {type(pdf_interface)}"
                 )
+        else:
+            logger.info("📄 PDF 딕셔너리 인터페이스가 제공되지 않았습니다")
 
         # 전문가별 추가 데이터 선별 (기존 로직 유지)
         if "재무" in expert.expertise or "Fundamental" in expert.role:

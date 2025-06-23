@@ -1678,10 +1678,20 @@ class EnhancedStockAnalysisSystem:
                 if pdf_dictionary_result.get("success"):
                     logger.info("✅ PDF 딕셔너리 생성 성공!")
 
+                    # 🔧 PDF 딕셔너리 인터페이스를 JSON 직렬화 가능한 형태로 변환
+                    pdf_interface = pdf_dictionary_result["interface"]
+                    if pdf_interface and hasattr(pdf_interface, "to_dict"):
+                        # PDFDictionaryInterface 객체를 딕셔너리로 변환
+                        pdf_interface_dict = pdf_interface.to_dict()
+                        logger.info(
+                            "🔧 PDFDictionaryInterface를 JSON 직렬화 가능한 형태로 변환 완료"
+                        )
+                    else:
+                        pdf_interface_dict = None
+                        logger.warning("⚠️ PDFDictionaryInterface 변환 실패")
+
                     # PDF 딕셔너리 인터페이스 저장 (CrewAI가 활용할 수 있도록)
-                    pdf_result["pdf_dictionary_interface"] = pdf_dictionary_result[
-                        "interface"
-                    ]
+                    pdf_result["pdf_dictionary_interface"] = pdf_interface_dict
 
                     # 기존 PDF 내용 구조에 딕셔너리 정보 추가
                     pdf_content = {
