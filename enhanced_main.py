@@ -1864,10 +1864,21 @@ class EnhancedStockAnalysisSystem:
 
             filepath = os.path.join(results_dir, filename)
 
-            # 🚀 PDF 딕셔너리 내용을 별도 섹션으로 추가
-            enhanced_results = results.copy()
+            # 🚀 Enhanced 결과 구성 - response 필드 추가
+            enhanced_results = {
+                "user_prompt": results.get("user_prompt", ""),
+                "timestamp": results.get("timestamp", ""),
+                # 🎯 새로운 response 필드 - CrewAI 생성 자료를 체계적으로 저장
+                "response": self._create_crewai_response_structure(results),
+                # 기존 구조는 그대로 유지
+                **{
+                    k: v
+                    for k, v in results.items()
+                    if k not in ["user_prompt", "timestamp"]
+                },
+            }
 
-            # PDF 분석 결과에서 상세 내용 추출
+            # 🚀 PDF 딕셔너리 내용을 별도 섹션으로 추가
             pdf_analysis = results.get("steps", {}).get("pdf_large_analysis", {})
             if pdf_analysis.get("pdf_detected") and pdf_analysis.get(
                 "analysis_completed"
@@ -1881,9 +1892,7 @@ class EnhancedStockAnalysisSystem:
                     "chunking_applied": pdf_content.get("chunking_applied", False),
                     "total_chunks": pdf_content.get("total_chunks", 0),
                     "chunk_types": pdf_content.get("chunk_types", []),
-                    "toc_based_chunks": pdf_content.get(
-                        "toc_based_chunks", {}
-                    ),  # 🎯 목차별 딕셔너리
+                    "toc_based_chunks": pdf_content.get("toc_based_chunks", {}),
                     "keyword_based_chunks": pdf_content.get("keyword_based_chunks", {}),
                     "raw_text_sample": (
                         pdf_content.get("raw_text", "")[:1000] + "..."
@@ -1925,7 +1934,7 @@ class EnhancedStockAnalysisSystem:
                     "total_analysis_time": expert_insights.get("total_analysis_time"),
                     "data_sources_integrated": self._extract_integrated_data_sources(
                         results
-                    ),  # 🔗 데이터 연결고리
+                    ),
                 }
 
                 logger.info(
@@ -1986,13 +1995,390 @@ class EnhancedStockAnalysisSystem:
 
             logger.info(f"💾 개선된 결과 저장 완료: {filepath}")
             logger.info(
-                f"📊 추가된 섹션: pdf_detailed_content, crewai_detailed_analysis, data_flow_tracking"
+                f"📊 추가된 섹션: response (CrewAI 생성 자료), pdf_detailed_content, crewai_detailed_analysis, data_flow_tracking"
             )
             return filepath
 
         except Exception as e:
             logger.error(f"❌ 결과 저장 실패: {e}")
             return f"저장 실패: {e}"
+
+    def _create_crewai_response_structure(
+        self, results: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        🎯 CrewAI가 생성한 자료를 체계적으로 구성합니다.
+
+        구성 순서:
+        1. 종합요약 (CrewAI 종합 분석 결과)
+        2. 각 전문가별 분석 자료
+
+        Args:
+            results: 전체 분석 결과
+
+        Returns:
+            Dict: 체계적으로 구성된 CrewAI 응답 구조
+        """
+        try:
+            # CrewAI 분석 결과 추출
+            crewai_analysis = results.get("steps", {}).get(
+                "step4_crewai_comprehensive_analysis", {}
+            )
+
+            if not crewai_analysis.get("success"):
+                return {
+                    "summary": "CrewAI 분석이 수행되지 않았거나 실패했습니다.",
+                    "individual_expert_analyses": [],
+                    "analysis_status": "failed",
+                    "error_message": crewai_analysis.get("error", "알 수 없는 오류"),
+                }
+
+            expert_insights = crewai_analysis.get("expert_insights", {})
+            synthesis_result = expert_insights.get("synthesis_result", {})
+            individual_analyses = expert_insights.get("individual_expert_analyses", [])
+
+            # 🎯 1. 종합요약 구성 (CrewAI 종합 분석 결과)
+            comprehensive_summary = {
+                "analysis_overview": {
+                    "analyzed_stock": {
+                        "name": results.get("steps", {})
+                        .get("step1_stock_detection", {})
+                        .get("stock_name", ""),
+                        "code": results.get("steps", {})
+                        .get("step1_stock_detection", {})
+                        .get("stock_code", ""),
+                        "sector": crewai_analysis.get(
+                            "sector_korean_name", "알 수 없음"
+                        ),
+                    },
+                    "expert_team": {
+                        "activated_experts": crewai_analysis.get(
+                            "activated_experts", []
+                        ),
+                        "expert_count": len(
+                            crewai_analysis.get("activated_experts", [])
+                        ),
+                        "analysis_depth": crewai_analysis.get(
+                            "analysis_depth", "standard"
+                        ),
+                    },
+                    "analysis_quality": {
+                        "data_integration_success": synthesis_result.get(
+                            "synthesis_success", False
+                        ),
+                        "total_analysis_time": expert_insights.get(
+                            "total_analysis_time", "알 수 없음"
+                        ),
+                        "data_sources_count": len(
+                            crewai_analysis.get("data_integration_quality", {}).get(
+                                "integrated_sources", []
+                            )
+                        ),
+                    },
+                },
+                "key_findings": {
+                    "investment_highlights": self._extract_investment_highlights(
+                        synthesis_result
+                    ),
+                    "risk_factors": self._extract_risk_factors_from_synthesis(
+                        synthesis_result
+                    ),
+                    "investment_recommendation": self._extract_investment_recommendation(
+                        synthesis_result
+                    ),
+                    "target_price_analysis": self._extract_target_price_analysis(
+                        synthesis_result
+                    ),
+                },
+                "expert_consensus": {
+                    "agreement_level": synthesis_result.get("expert_consensus", {}).get(
+                        "agreement_level", "알 수 없음"
+                    ),
+                    "consensus_points": synthesis_result.get(
+                        "expert_consensus", {}
+                    ).get("consensus_points", []),
+                    "divergent_views": synthesis_result.get("expert_consensus", {}).get(
+                        "divergent_views", []
+                    ),
+                },
+            }
+
+            # 🎯 2. 각 전문가별 분석 자료 구성
+            expert_detailed_analyses = []
+            for analysis in individual_analyses:
+                if not analysis.get("error", False):
+                    expert_analysis = {
+                        "expert_profile": {
+                            "name": analysis.get("expert_name", "알 수 없음"),
+                            "expertise_area": analysis.get("expertise_area", "일반"),
+                            "analysis_timestamp": analysis.get(
+                                "analysis_timestamp", ""
+                            ),
+                        },
+                        "analysis_content": {
+                            "full_analysis": analysis.get("analysis_result", ""),
+                            "data_sources_used": analysis.get("data_sources_used", []),
+                            "key_insights": self._extract_key_insights_from_expert_analysis(
+                                analysis.get("analysis_result", "")
+                            ),
+                            "quantitative_metrics": self._extract_quantitative_metrics(
+                                analysis.get("analysis_result", "")
+                            ),
+                        },
+                    }
+                    expert_detailed_analyses.append(expert_analysis)
+
+            # 🎯 최종 응답 구조 구성
+            response_structure = {
+                "comprehensive_summary": comprehensive_summary,
+                "individual_expert_analyses": expert_detailed_analyses,
+                "analysis_metadata": {
+                    "generation_timestamp": datetime.now().isoformat(),
+                    "analysis_type": "crewai_comprehensive_analysis",
+                    "successful_expert_count": len(expert_detailed_analyses),
+                    "total_expert_count": len(individual_analyses),
+                    "data_integration_quality": crewai_analysis.get(
+                        "data_integration_quality", {}
+                    ),
+                    "cost_optimization": crewai_analysis.get("cost_savings", {}),
+                    "token_optimization": crewai_analysis.get("token_optimization", {}),
+                },
+            }
+
+            logger.info(
+                f"✅ CrewAI 응답 구조 생성 완료: 종합요약 + {len(expert_detailed_analyses)}명 전문가 분석"
+            )
+            return response_structure
+
+        except Exception as e:
+            logger.error(f"❌ CrewAI 응답 구조 생성 실패: {e}")
+            return {
+                "summary": f"응답 구조 생성 중 오류 발생: {str(e)}",
+                "individual_expert_analyses": [],
+                "analysis_status": "error",
+                "error_message": str(e),
+            }
+
+    def _extract_investment_highlights(self, synthesis_result: Dict) -> List[str]:
+        """종합 분석에서 투자 포인트를 추출합니다."""
+        try:
+            # synthesis_result에서 투자 포인트 관련 내용 추출
+            synthesis_content = synthesis_result.get("synthesis_content", "")
+            if "투자 포인트" in synthesis_content or "핵심 투자" in synthesis_content:
+                # 간단한 텍스트 파싱으로 투자 포인트 추출
+                lines = synthesis_content.split("\n")
+                highlights = []
+                in_highlights_section = False
+
+                for line in lines:
+                    if "투자 포인트" in line or "핵심 투자" in line:
+                        in_highlights_section = True
+                        continue
+                    elif in_highlights_section and line.strip():
+                        if line.startswith(("1.", "2.", "3.", "4.", "5.", "-", "•")):
+                            highlights.append(line.strip())
+                        elif any(
+                            keyword in line for keyword in ["리스크", "위험", "주의"]
+                        ):
+                            break
+
+                return highlights[:5]  # 최대 5개
+
+            return ["투자 포인트 정보를 추출할 수 없습니다."]
+
+        except Exception as e:
+            logger.error(f"투자 포인트 추출 실패: {e}")
+            return ["투자 포인트 추출 중 오류가 발생했습니다."]
+
+    def _extract_risk_factors_from_synthesis(self, synthesis_result: Dict) -> List[str]:
+        """종합 분석에서 리스크 요인을 추출합니다."""
+        try:
+            synthesis_content = synthesis_result.get("synthesis_content", "")
+            if "리스크" in synthesis_content or "위험" in synthesis_content:
+                lines = synthesis_content.split("\n")
+                risks = []
+                in_risk_section = False
+
+                for line in lines:
+                    if any(keyword in line for keyword in ["리스크", "위험", "주의"]):
+                        in_risk_section = True
+                        continue
+                    elif in_risk_section and line.strip():
+                        if line.startswith(("1.", "2.", "3.", "4.", "5.", "-", "•")):
+                            risks.append(line.strip())
+                        elif any(
+                            keyword in line for keyword in ["결론", "종합", "의견"]
+                        ):
+                            break
+
+                return risks[:5]  # 최대 5개
+
+            return ["리스크 요인 정보를 추출할 수 없습니다."]
+
+        except Exception as e:
+            logger.error(f"리스크 요인 추출 실패: {e}")
+            return ["리스크 요인 추출 중 오류가 발생했습니다."]
+
+    def _extract_investment_recommendation(
+        self, synthesis_result: Dict
+    ) -> Dict[str, str]:
+        """종합 분석에서 투자 의견을 추출합니다."""
+        try:
+            synthesis_content = synthesis_result.get("synthesis_content", "")
+
+            # 투자 의견 관련 키워드 검색
+            recommendation = "보유"  # 기본값
+            confidence = "보통"
+            reasoning = "투자 의견을 명확히 추출할 수 없습니다."
+
+            if "매수" in synthesis_content:
+                recommendation = "매수"
+            elif "매도" in synthesis_content:
+                recommendation = "매도"
+            elif "보유" in synthesis_content:
+                recommendation = "보유"
+
+            # 신뢰도 추출
+            if "강력" in synthesis_content or "적극" in synthesis_content:
+                confidence = "높음"
+            elif "신중" in synthesis_content or "주의" in synthesis_content:
+                confidence = "낮음"
+
+            return {
+                "recommendation": recommendation,
+                "confidence_level": confidence,
+                "reasoning": reasoning,
+            }
+
+        except Exception as e:
+            logger.error(f"투자 의견 추출 실패: {e}")
+            return {
+                "recommendation": "알 수 없음",
+                "confidence_level": "알 수 없음",
+                "reasoning": "투자 의견 추출 중 오류가 발생했습니다.",
+            }
+
+    def _extract_target_price_analysis(self, synthesis_result: Dict) -> Dict[str, str]:
+        """종합 분석에서 목표가 분석을 추출합니다."""
+        try:
+            synthesis_content = synthesis_result.get("synthesis_content", "")
+
+            # 목표가 관련 정보 추출
+            target_price = "제시되지 않음"
+            valuation_method = "알 수 없음"
+
+            # 간단한 패턴 매칭으로 목표가 추출
+            import re
+
+            price_patterns = [
+                r"목표가[:\s]*([0-9,]+)원",
+                r"적정가[:\s]*([0-9,]+)원",
+                r"([0-9,]+)원.*목표",
+            ]
+
+            for pattern in price_patterns:
+                match = re.search(pattern, synthesis_content)
+                if match:
+                    target_price = match.group(1) + "원"
+                    break
+
+            return {
+                "target_price": target_price,
+                "valuation_method": valuation_method,
+                "analysis_basis": "전문가 종합 의견",
+            }
+
+        except Exception as e:
+            logger.error(f"목표가 분석 추출 실패: {e}")
+            return {
+                "target_price": "추출 실패",
+                "valuation_method": "알 수 없음",
+                "analysis_basis": "목표가 분석 추출 중 오류 발생",
+            }
+
+    def _extract_key_insights_from_expert_analysis(
+        self, analysis_content: str
+    ) -> List[str]:
+        """전문가 분석에서 핵심 인사이트를 추출합니다."""
+        try:
+            if not analysis_content:
+                return ["분석 내용이 없습니다."]
+
+            # 문장 단위로 분할하고 중요한 인사이트 추출
+            sentences = analysis_content.split(".")
+            insights = []
+
+            # 중요한 키워드가 포함된 문장들을 인사이트로 추출
+            important_keywords = [
+                "핵심",
+                "중요",
+                "주목",
+                "특징",
+                "강점",
+                "약점",
+                "기회",
+                "위험",
+                "전망",
+                "예상",
+                "판단",
+                "평가",
+            ]
+
+            for sentence in sentences:
+                sentence = sentence.strip()
+                if len(sentence) > 20 and any(
+                    keyword in sentence for keyword in important_keywords
+                ):
+                    insights.append(sentence + ".")
+                    if len(insights) >= 3:  # 최대 3개
+                        break
+
+            return insights if insights else ["핵심 인사이트를 추출할 수 없습니다."]
+
+        except Exception as e:
+            logger.error(f"핵심 인사이트 추출 실패: {e}")
+            return ["인사이트 추출 중 오류가 발생했습니다."]
+
+    def _extract_quantitative_metrics(self, analysis_content: str) -> Dict[str, str]:
+        """전문가 분석에서 정량적 지표를 추출합니다."""
+        try:
+            if not analysis_content:
+                return {"metrics_available": "false", "reason": "분석 내용이 없습니다."}
+
+            # 숫자가 포함된 중요한 지표들 추출
+            import re
+
+            metrics = {}
+
+            # PER, PBR 등 일반적인 지표 추출
+            per_match = re.search(r"PER[:\s]*([0-9.]+)", analysis_content)
+            if per_match:
+                metrics["PER"] = per_match.group(1)
+
+            pbr_match = re.search(r"PBR[:\s]*([0-9.]+)", analysis_content)
+            if pbr_match:
+                metrics["PBR"] = pbr_match.group(1)
+
+            # 성장률 관련
+            growth_match = re.search(r"성장률[:\s]*([0-9.]+)%", analysis_content)
+            if growth_match:
+                metrics["예상성장률"] = growth_match.group(1) + "%"
+
+            return (
+                metrics
+                if metrics
+                else {
+                    "metrics_available": "false",
+                    "reason": "정량적 지표를 찾을 수 없습니다.",
+                }
+            )
+
+        except Exception as e:
+            logger.error(f"정량적 지표 추출 실패: {e}")
+            return {
+                "metrics_available": "false",
+                "reason": "지표 추출 중 오류가 발생했습니다.",
+            }
 
     def _extract_integrated_data_sources(self, results: Dict) -> Dict[str, Any]:
         """통합된 데이터 소스 정보를 추출합니다."""
