@@ -1317,10 +1317,29 @@ class SmartSectorManager:
                     )
                 except Exception as format_error:
                     logger.error(f"❌ 기술적 지표 포맷팅 실패: {format_error}")
+                    # 🔧 더 상세한 디버깅 정보
+                    logger.error(
+                        f"🔍 technical_analysis_data 타입: {type(technical_analysis_data)}"
+                    )
+                    if isinstance(technical_analysis_data, dict):
+                        indicators = technical_analysis_data.get(
+                            "technical_indicators", {}
+                        )
+                        logger.error(f"🔍 indicators 타입: {type(indicators)}")
+                        if isinstance(indicators, dict):
+                            logger.error(
+                                f"🔍 indicators 키들: {list(indicators.keys())}"
+                            )
+                        else:
+                            logger.error(
+                                f"🔍 indicators 내용 (처음 200자): {str(indicators)[:200]}"
+                            )
+
                     context_parts.append("🎯 **기술적 지표 데이터**:")
                     context_parts.append(
                         "기술적 지표 포맷팅 중 오류가 발생했습니다. 기본 데이터를 참조하세요."
                     )
+                    context_parts.append(f"오류 내용: {str(format_error)}")
                     context_parts.append("")
             else:
                 logger.warning(
