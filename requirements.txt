@@ -1,4 +1,4 @@
-pydantic~=2.10.6
+gpydantic~=2.10.6
 openai~=1.66.3
 tenacity~=9.0.0
 pyyaml~=6.0.2
@@ -41,8 +41,8 @@ beautifulsoup4~=4.13.3
 huggingface-hub~=0.29.2
 setuptools~=75.8.0
 
-PyPDF2~=3.0.1
-pdfplumber~=0.11.0
-pymupdf~=1.24.0
-pdfminer.six~=20231228
-pypdf~=4.2.0
+PyPDF2>=3.0.1
+pdfplumber>=0.11.4
+pymupdf>=1.24.0
+pdfminer-six>=20231228
+pypdf>=4.2.0

@@ -29,19 +29,52 @@ import time
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
-import fitz  # PyMuPDF
-import pdfplumber
-import PyPDF2
+# PyMuPDF 안전 가져오기 - 라이브러리가 없어도 프로그램이 멈추지 않아요!
+try:
+    import fitz  # PyMuPDF - PDF 문서를 읽고 분석하는 강력한 도구예요
+
+    PYMUPDF_AVAILABLE = True
+    print("✅ PyMuPDF(fitz) 라이브러리를 성공적으로 불러왔습니다!")
+except ImportError as e:
+    print(f"⚠️ PyMuPDF(fitz) 라이브러리를 찾을 수 없습니다: {e}")
+    print("💡 해결방법: 터미널에서 'pip install pymupdf' 명령어를 실행하세요")
+    PYMUPDF_AVAILABLE = False
+
+    # 가짜 fitz 모듈을 만들어서 나머지 코드가 동작하도록 해요
+    class MockFitz:
+        def open(self, *args, **kwargs):
+            raise RuntimeError("PyMuPDF가 설치되지 않아서 PDF 처리가 불가능합니다")
+
+    fitz = MockFitz()
+
+# 다른 PDF 처리 라이브러리들도 안전하게 가져와요
+try:
+    import pdfplumber
+
+    PDFPLUMBER_AVAILABLE = True
+except ImportError:
+    print("⚠️ pdfplumber 라이브러리를 찾을 수 없습니다")
+    PDFPLUMBER_AVAILABLE = False
+
+try:
+    import PyPDF2
+
+    PYPDF2_AVAILABLE = True
+except ImportError:
+    print("⚠️ PyPDF2 라이브러리를 찾을 수 없습니다")
+    PYPDF2_AVAILABLE = False
+
 from loguru import logger
 
 from app.llm import LLM
 
 # 🔖 목차 기반 청킹을 위한 PyMuPDF 가용성 확인
-try:
-    PYMUPDF_AVAILABLE = True
-except ImportError:
-    PYMUPDF_AVAILABLE = False
-    logger.warning("⚠️ PyMuPDF를 찾을 수 없습니다. 목차 기반 청킹이 비활성화됩니다.")
+# 이 부분은 이미 위에서 처리했으니 주석처리해요
+# try:
+#     PYMUPDF_AVAILABLE = True
+# except ImportError:
+#     PYMUPDF_AVAILABLE = False
+#     logger.warning("⚠️ PyMuPDF를 찾을 수 없습니다. 목차 기반 청킹이 비활성화됩니다.")
 
 
 class IndependentChunkProcessor:

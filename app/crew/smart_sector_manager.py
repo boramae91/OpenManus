@@ -968,6 +968,39 @@ class SmartSectorManager:
 
         return len(all_sources)
 
+    async def _call_llm_for_analysis(self, prompt: str) -> str:
+        """
+        LLM을 호출하여 분석을 수행합니다.
+
+        Args:
+            prompt: 분석용 프롬프트
+
+        Returns:
+            str: LLM 분석 결과
+        """
+        try:
+            # LLM 인스턴스를 통해 분석 수행
+            if hasattr(self, "llm") and self.llm:
+                # 🔧 중요: LLM.ask 메서드는 메시지 리스트를 받아야 해요!
+                # 문자열을 올바른 메시지 형식으로 변환해서 전달합니다
+                messages = [{"role": "user", "content": prompt}]
+                response = await self.llm.ask(messages)
+                return response
+            else:
+                # 기본 LLM 인스턴스 생성
+                from app.llm import LLM
+
+                llm = LLM()
+                # 마찬가지로 메시지 형식으로 변환
+                messages = [{"role": "user", "content": prompt}]
+                response = await llm.ask(messages)
+                return response
+
+        except Exception as e:
+            logger.error(f"❌ LLM 분석 호출 실패: {e}")
+            # 에러가 발생해도 빈 문자열 대신 기본 응답 반환
+            return f"분석 중 오류가 발생했습니다: {str(e)}"
+
     async def _create_expert_specific_context(
         self,
         expert,
