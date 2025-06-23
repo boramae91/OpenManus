@@ -405,11 +405,15 @@ class EnhancedStockAnalysisSystem:
                 f"🎯 정보 수집 - 의도: {primary_intent}, 포커스: {analysis_focus}, 신뢰도: {confidence:.2f}"
             )
 
+            # 🔧 안전한 프롬프트 구성 (None 값 처리)
+            stock_name = stock_info.get("stock_name") or "정보없음"
+            stock_code = stock_info.get("stock_code") or "정보없음"
+
             # 🎯 정보 수집용 프롬프트 구성 (CrewAI 피딩을 위한 포괄적 수집)
             collection_prompt = f"""
 사용자의 핵심 질문: {user_prompt}
 
-분석 대상: {stock_info.get('stock_name', '정보없음')} ({stock_info.get('stock_code', '정보없음')})
+분석 대상: {stock_name} ({stock_code})
 감지된 의도: {primary_intent}
 분석 포커스: {analysis_focus}
 

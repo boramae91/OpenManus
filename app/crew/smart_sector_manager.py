@@ -1685,6 +1685,206 @@ class SmartSectorManager:
 
         return full_context
 
+    def _format_technical_indicators_for_expert(
+        self, technical_analysis_data: Dict
+    ) -> str:
+        """
+        🎯 기술적 분석 데이터를 전문가용으로 포맷팅합니다.
+
+        실제 계산된 지표 값들을 구조화된 형태로 제공하여
+        기술적 분석가가 정의 나열이 아닌 실제 분석을 수행할 수 있도록 합니다.
+
+        Args:
+            technical_analysis_data: 기술적 분석 데이터 딕셔너리
+
+        Returns:
+            str: 전문가용 포맷팅된 기술적 지표 문자열
+        """
+        if not technical_analysis_data or not technical_analysis_data.get("success"):
+            return "기술적 분석 데이터가 제공되지 않았습니다."
+
+        try:
+            formatted_lines = []
+            formatted_lines.append("📊 **실제 계산된 기술적 지표 (최신 값)**:")
+            formatted_lines.append("")
+
+            # 현재 주가 정보
+            current_price = technical_analysis_data.get("current_price")
+            if current_price:
+                formatted_lines.append(f"💰 현재가: {current_price:,.0f}원")
+                formatted_lines.append("")
+
+            # 기술적 지표들
+            indicators = technical_analysis_data.get("technical_indicators", {})
+
+            # 1. 이동평균선
+            if "moving_averages" in indicators:
+                ma_data = indicators["moving_averages"]
+                formatted_lines.append("📈 **이동평균선 (실제 계산값)**:")
+                for period, value in ma_data.items():
+                    if value:
+                        formatted_lines.append(f"   - {period}: {value:,.0f}원")
+                formatted_lines.append("")
+
+            # 2. RSI
+            if "rsi" in indicators:
+                rsi_data = indicators["rsi"]
+                current_rsi = rsi_data.get("current_value")
+                if current_rsi:
+                    formatted_lines.append(f"🎯 **RSI(14)**: {current_rsi:.1f}")
+                    if current_rsi >= 70:
+                        formatted_lines.append("   → 과매수 구간 (매도 신호)")
+                    elif current_rsi <= 30:
+                        formatted_lines.append("   → 과매도 구간 (매수 신호)")
+                    else:
+                        formatted_lines.append("   → 중립 구간")
+                    formatted_lines.append("")
+
+            # 3. MACD
+            if "macd" in indicators:
+                macd_data = indicators["macd"]
+                macd_line = macd_data.get("macd_line")
+                signal_line = macd_data.get("signal_line")
+                histogram = macd_data.get("histogram")
+
+                if macd_line and signal_line:
+                    formatted_lines.append("📊 **MACD(12,26,9)**:")
+                    formatted_lines.append(f"   - MACD Line: {macd_line:.2f}")
+                    formatted_lines.append(f"   - Signal Line: {signal_line:.2f}")
+                    if histogram:
+                        formatted_lines.append(f"   - Histogram: {histogram:.2f}")
+
+                    if macd_line > signal_line:
+                        formatted_lines.append("   → 상승 모멘텀 (Golden Cross)")
+                    else:
+                        formatted_lines.append("   → 하락 모멘텀 (Dead Cross)")
+                    formatted_lines.append("")
+
+            # 4. 볼린저 밴드
+            if "bollinger_bands" in indicators:
+                bb_data = indicators["bollinger_bands"]
+                upper = bb_data.get("upper_band")
+                middle = bb_data.get("middle_band")
+                lower = bb_data.get("lower_band")
+
+                if upper and middle and lower and current_price:
+                    formatted_lines.append("📏 **볼린저 밴드(20,2)**:")
+                    formatted_lines.append(f"   - 상단: {upper:,.0f}원")
+                    formatted_lines.append(f"   - 중간: {middle:,.0f}원")
+                    formatted_lines.append(f"   - 하단: {lower:,.0f}원")
+
+                    if current_price >= upper:
+                        formatted_lines.append("   → 상단 접촉 (과매수 주의)")
+                    elif current_price <= lower:
+                        formatted_lines.append("   → 하단 접촉 (과매도 반등 기대)")
+                    else:
+                        formatted_lines.append("   → 밴드 내 정상 거래")
+                    formatted_lines.append("")
+
+            # 5. 스토캐스틱
+            if "stochastic" in indicators:
+                stoch_data = indicators["stochastic"]
+                k_percent = stoch_data.get("k_percent")
+                d_percent = stoch_data.get("d_percent")
+
+                if k_percent and d_percent:
+                    formatted_lines.append(
+                        f"⚡ **스토캐스틱(%K,%D)**: %K={k_percent:.1f}, %D={d_percent:.1f}"
+                    )
+                    if k_percent >= 80 and d_percent >= 80:
+                        formatted_lines.append("   → 과매수 구간 (매도 고려)")
+                    elif k_percent <= 20 and d_percent <= 20:
+                        formatted_lines.append("   → 과매도 구간 (매수 고려)")
+                    else:
+                        formatted_lines.append("   → 중립 구간")
+                    formatted_lines.append("")
+
+            # 6. Williams %R
+            if "williams_r" in indicators:
+                williams_r = indicators["williams_r"].get("current_value")
+                if williams_r:
+                    formatted_lines.append(f"📉 **Williams %R**: {williams_r:.1f}")
+                    if williams_r >= -20:
+                        formatted_lines.append("   → 과매수 구간")
+                    elif williams_r <= -80:
+                        formatted_lines.append("   → 과매도 구간")
+                    else:
+                        formatted_lines.append("   → 중립 구간")
+                    formatted_lines.append("")
+
+            # 7. OBV (On Balance Volume)
+            if "obv" in indicators:
+                obv_data = indicators["obv"]
+                current_obv = obv_data.get("current_value")
+                obv_trend = obv_data.get("trend")
+
+                if current_obv:
+                    formatted_lines.append(
+                        f"📊 **OBV (거래량 지표)**: {current_obv:,.0f}"
+                    )
+                    if obv_trend:
+                        formatted_lines.append(f"   → 추세: {obv_trend}")
+                    formatted_lines.append("")
+
+            # 8. 지지/저항선
+            support_resistance = technical_analysis_data.get("support_resistance", {})
+            if support_resistance:
+                support_levels = support_resistance.get("support_levels", [])
+                resistance_levels = support_resistance.get("resistance_levels", [])
+
+                if support_levels or resistance_levels:
+                    formatted_lines.append("🎯 **주요 지지/저항선**:")
+
+                    if resistance_levels:
+                        formatted_lines.append("   저항선:")
+                        for level in resistance_levels[:3]:  # 상위 3개만
+                            formatted_lines.append(f"     - {level:,.0f}원")
+
+                    if support_levels:
+                        formatted_lines.append("   지지선:")
+                        for level in support_levels[:3]:  # 상위 3개만
+                            formatted_lines.append(f"     - {level:,.0f}원")
+                    formatted_lines.append("")
+
+            # 9. 매매 신호
+            trading_signals = technical_analysis_data.get("trading_signals", {})
+            if trading_signals:
+                overall_signal = trading_signals.get("overall_signal")
+                signal_strength = trading_signals.get("signal_strength", 0)
+
+                if overall_signal:
+                    formatted_lines.append(f"🚦 **종합 매매신호**: {overall_signal}")
+                    formatted_lines.append(f"   신호 강도: {signal_strength}/10")
+
+                    # 개별 신호들
+                    individual_signals = trading_signals.get("individual_signals", {})
+                    if individual_signals:
+                        formatted_lines.append("   개별 신호:")
+                        for signal_name, signal_value in individual_signals.items():
+                            formatted_lines.append(
+                                f"     - {signal_name}: {signal_value}"
+                            )
+                    formatted_lines.append("")
+
+            # 10. 데이터 품질 정보
+            data_quality = technical_analysis_data.get("data_quality", {})
+            if data_quality:
+                total_days = data_quality.get("total_days")
+                if total_days:
+                    formatted_lines.append(f"📅 **분석 기간**: {total_days}일 데이터")
+                    formatted_lines.append("")
+
+            formatted_lines.append("⚠️ **중요**: 위의 모든 값은 실제 계산된 지표입니다.")
+            formatted_lines.append(
+                "지표 정의를 설명하지 말고, 이 수치들을 활용한 구체적인 분석과 투자 의견을 제시하세요."
+            )
+
+            return "\n".join(formatted_lines)
+
+        except Exception as e:
+            logger.error(f"❌ 기술적 지표 포맷팅 실패: {e}")
+            return f"기술적 지표 포맷팅 중 오류 발생: {str(e)}"
+
     def _summarize_financial_data(self, financial_data) -> str:
         """재무데이터를 요약합니다."""
         if not financial_data:
