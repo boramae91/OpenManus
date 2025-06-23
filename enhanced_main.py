@@ -293,6 +293,69 @@ class EnhancedStockAnalysisSystem:
                     "ℹ️ Enhanced DART 데이터 수집 생략 (API 키 없음 또는 해외 종목)"
                 )
 
+            # 🚀 2-3: DART 사업보고서/분기보고서 목차별 딕셔너리 생성 (NEW!)
+            dart_reports_dictionary = None
+            if self.enhanced_dart_collector.is_available() and self._is_korean_stock(
+                stock_info["stock_code"]
+            ):
+                logger.info(
+                    "📋 DART 사업보고서/분기보고서 목차별 딕셔너리 생성 시작..."
+                )
+
+                # 종목코드에서 기업고유코드 찾기
+                corp_code = self.enhanced_dart_collector.get_corp_code_from_stock_code(
+                    stock_code=stock_info["stock_code"],
+                    company_name=stock_info.get("stock_name"),
+                )
+
+                if corp_code:
+                    logger.info(f"🎯 기업고유코드 발견: {corp_code}")
+
+                    dart_reports_dictionary = await self.enhanced_dart_collector.get_business_reports_with_dictionary(
+                        corp_code=corp_code,
+                        company_name=stock_info.get("stock_name", "분석대상회사"),
+                    )
+
+                    if dart_reports_dictionary.get("success"):
+                        results["steps"][
+                            "step2_dart_reports_dictionary"
+                        ] = dart_reports_dictionary
+
+                        # 상세 로그
+                        business_sections = len(
+                            dart_reports_dictionary.get(
+                                "business_report_dictionary", {}
+                            )
+                        )
+                        quarterly_sections = len(
+                            dart_reports_dictionary.get(
+                                "quarterly_report_dictionary", {}
+                            )
+                        )
+                        total_sections = len(
+                            dart_reports_dictionary.get("combined_pdf_dictionary", {})
+                        )
+
+                        logger.info("🎉 DART 보고서 딕셔너리 생성 완료!")
+                        logger.info(f"   📄 사업보고서: {business_sections}개 섹션")
+                        logger.info(f"   📈 분기보고서: {quarterly_sections}개 섹션")
+                        logger.info(f"   🎯 총 섹션: {total_sections}개")
+                        logger.info("   ✅ CrewAI 전문가별 선택적 접근 준비 완료!")
+                    else:
+                        logger.warning(
+                            f"⚠️ DART 보고서 딕셔너리 생성 실패: {dart_reports_dictionary.get('error')}"
+                        )
+                        dart_reports_dictionary = None
+                else:
+                    logger.warning(
+                        f"⚠️ 기업고유코드를 찾을 수 없음: {stock_info['stock_code']}"
+                    )
+                    dart_reports_dictionary = None
+            else:
+                logger.info(
+                    "ℹ️ DART 보고서 딕셔너리 생성 생략 (API 키 없음 또는 해외 종목)"
+                )
+
             # 🚀 Step 3: 의도 맞춤형 정보 수집 (Manus Agent 먼저 실행!)
             logger.info("📈 Step 3: 의도 맞춤형 정보 수집 (Manus Agent 웹검색 우선)")
             classification_result = {"performed": False, "reason": "분류 기능 제거됨"}
@@ -346,6 +409,7 @@ class EnhancedStockAnalysisSystem:
                         enhanced_dart_data=enhanced_dart_data,
                         manus_collected_data=manus_collection_result,  # 🚀 Manus 수집 데이터 추가
                         technical_analysis_data=technical_analysis_data,  # 🎯 기술적 분석 데이터 추가!
+                        dart_reports_dictionary=dart_reports_dictionary,  # 🚀 DART 보고서 딕셔너리 추가!
                         analysis_depth=analysis_depth,
                         pre_detected_gics_sector=stock_info.get(
                             "gics_sector"

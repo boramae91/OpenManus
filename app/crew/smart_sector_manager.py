@@ -216,32 +216,34 @@ class SmartSectorManager:
         user_prompt: str,
         stock_name: str,
         stock_code: str,
-        financial_data: Dict[str, Any],
-        enhanced_dart_data: Dict[str, Any] = None,
-        manus_collected_data: Dict[str, Any] = None,
-        technical_analysis_data: Dict[str, Any] = None,  # 🎯 기술적 분석 데이터 추가!
+        financial_data: Dict,
+        enhanced_dart_data: Dict = None,
+        manus_collected_data: Dict = None,
+        technical_analysis_data: Dict = None,
+        dart_reports_dictionary: Dict = None,  # 🚀 DART 보고서 딕셔너리 추가!
         analysis_depth: AnalysisDepth = AnalysisDepth.STANDARD,
-        pre_detected_gics_sector: str = None,  # 🎯 사전 감지된 GICS 섹터 추가
+        pre_detected_gics_sector: str = None,
     ) -> Dict[str, Any]:
         """
-        🚀 종합 데이터 기반 CrewAI 분석 (수정된 워크플로우 + 토큰 최적화)
+        🚀 종합 데이터 기반 CrewAI 분석 (통합 개선)
 
-        재무데이터 + Enhanced DART + Manus Agent 수집 정보를 모두 통합해서
-        CrewAI 전문가들이 종합적인 분석을 수행합니다.
-        토큰 한계를 고려한 스마트 데이터 최적화가 자동으로 적용됩니다.
+        모든 수집된 데이터를 통합하여 각 전문가에게 최적화된 정보를 제공하고
+        종합 분석을 수행합니다.
 
         Args:
             user_prompt: 사용자 질문
             stock_name: 종목명
             stock_code: 종목코드
-            financial_data: 재무 데이터
+            financial_data: 재무데이터
             enhanced_dart_data: Enhanced DART 데이터
-            manus_collected_data: Manus Agent가 수집한 정보
+            manus_collected_data: Manus Agent 수집 데이터
+            technical_analysis_data: 기술적 분석 데이터
+            dart_reports_dictionary: 🚀 DART 사업보고서/분기보고서 딕셔너리 (NEW!)
             analysis_depth: 분석 깊이
             pre_detected_gics_sector: 사전 감지된 GICS 섹터
 
         Returns:
-            Dict: 종합 분석 결과 (토큰 최적화 정보 포함)
+            Dict: CrewAI 종합 분석 결과
         """
         try:
             logger.info(
@@ -325,6 +327,7 @@ class SmartSectorManager:
                 optimized_dart,  # 🔢 최적화된 DART 데이터
                 optimized_manus,  # 🔢 최적화된 Manus 데이터
                 technical_analysis_data,  # 🎯 기술적 분석 데이터 추가!
+                dart_reports_dictionary,  # 🚀 DART 보고서 딕셔너리 추가!
             )
 
             # 6. 비용 절감 계산
@@ -774,11 +777,12 @@ class SmartSectorManager:
         enhanced_dart_data: Dict = None,
         manus_collected_data: Dict = None,
         technical_analysis_data: Dict = None,  # 🎯 기술적 분석 데이터 추가!
+        dart_reports_dictionary: Dict = None,  # 🚀 DART 보고서 딕셔너리 추가!
     ) -> Dict[str, Any]:
         """
         🚀 모든 데이터를 통합한 전문가 분석 수행
 
-        재무데이터 + Enhanced DART + Manus 수집 정보를 모두 활용해서
+        재무데이터 + Enhanced DART + Manus 수집 정보 + DART 보고서 딕셔너리를 모두 활용해서
         각 전문가가 종합적인 분석을 수행해요.
 
         Args:
@@ -789,6 +793,8 @@ class SmartSectorManager:
             financial_data: 재무데이터
             enhanced_dart_data: Enhanced DART 데이터
             manus_collected_data: Manus Agent 수집 정보
+            technical_analysis_data: 기술적 분석 데이터
+            dart_reports_dictionary: 🚀 DART 사업보고서/분기보고서 딕셔너리
 
         Returns:
             Dict: 전문가별 종합 분석 결과
@@ -819,6 +825,7 @@ class SmartSectorManager:
                         else None
                     ),  # 🚀 PDF 인터페이스 전달
                     technical_analysis_data,  # 🎯 기술적 분석 데이터 추가!
+                    dart_reports_dictionary,  # 🚀 DART 보고서 딕셔너리 추가!
                 )
 
                 # 전문가별 분석 수행
@@ -836,6 +843,7 @@ class SmartSectorManager:
                             enhanced_dart_data,
                             manus_collected_data,
                             technical_analysis_data,
+                            dart_reports_dictionary,
                         ),
                         "analysis_timestamp": time.time(),
                     }
@@ -878,6 +886,7 @@ class SmartSectorManager:
         enhanced_dart_data: Dict = None,
         manus_collected_data: Dict = None,
         technical_analysis_data: Dict = None,  # 🎯 기술적 분석 데이터 추가!
+        dart_reports_dictionary: Dict = None,  # 🚀 DART 보고서 딕셔너리 추가!
     ) -> List[str]:
         """
         분석에 사용된 데이터 소스들을 식별합니다.
@@ -912,6 +921,10 @@ class SmartSectorManager:
         # 🎯 기술적 분석 데이터 확인
         if technical_analysis_data and technical_analysis_data.get("success"):
             used_sources.append("Technical_Analysis_Calculated")
+
+        # 🚀 DART 보고서 딕셔너리 확인
+        if dart_reports_dictionary and dart_reports_dictionary.get("success"):
+            used_sources.append("DART_Business_Quarterly_Reports")
 
         return list(set(used_sources))  # 중복 제거
 
@@ -1057,6 +1070,7 @@ class SmartSectorManager:
         manus_collected_data: Dict = None,
         pdf_interface=None,
         technical_analysis_data: Dict = None,  # 🎯 기술적 분석 데이터 추가!
+        dart_reports_dictionary: Dict = None,  # 🚀 DART 보고서 딕셔너리 추가!
     ) -> str:
         """
         🎯 전문가별 맞춤형 컨텍스트 구성 (PDF 딕셔너리 통합)
@@ -1234,6 +1248,154 @@ class SmartSectorManager:
                 )
         else:
             logger.info("📄 PDF 딕셔너리 인터페이스가 제공되지 않았습니다")
+
+        # 🚀 DART 보고서 딕셔너리 처리 (NEW!)
+        if dart_reports_dictionary and dart_reports_dictionary.get("success"):
+            logger.info("📋 DART 보고서 딕셔너리 처리 시작...")
+
+            # 통합된 딕셔너리 가져오기
+            combined_dictionary = dart_reports_dictionary.get(
+                "combined_pdf_dictionary", {}
+            )
+
+            if combined_dictionary:
+                # 전문가별 키워드 매핑
+                expert_keywords = {
+                    "fundamental_analyst": [
+                        "재무",
+                        "손익",
+                        "매출",
+                        "순이익",
+                        "자산",
+                        "부채",
+                        "자본",
+                        "현금흐름",
+                        "수익성",
+                        "안정성",
+                    ],
+                    "industry_analyst": [
+                        "사업",
+                        "업종",
+                        "시장",
+                        "경쟁",
+                        "산업",
+                        "업계",
+                        "매출구성",
+                        "사업현황",
+                        "영업현황",
+                    ],
+                    "valuation_expert": [
+                        "가치",
+                        "평가",
+                        "적정가",
+                        "목표가",
+                        "DCF",
+                        "밸류에이션",
+                        "투자",
+                        "배당",
+                    ],
+                    "technical_analyst": [
+                        "기술적",
+                        "차트",
+                        "지표",
+                        "추세",
+                        "거래량",
+                        "변동성",
+                    ],
+                    "risk_assessor": [
+                        "위험",
+                        "리스크",
+                        "부채",
+                        "유동성",
+                        "신용",
+                        "경영진",
+                        "지배구조",
+                    ],
+                }
+
+                # 전문가 타입 결정
+                expert_type = "fundamental_analyst"  # 기본값
+                for expert_role, keywords in expert_keywords.items():
+                    if any(
+                        keyword in expert.name.lower() or keyword in expert.role.lower()
+                        for keyword in ["fundamental", "재무"]
+                    ):
+                        expert_type = "fundamental_analyst"
+                        break
+                    elif any(
+                        keyword in expert.name.lower() or keyword in expert.role.lower()
+                        for keyword in ["industry", "산업"]
+                    ):
+                        expert_type = "industry_analyst"
+                        break
+                    elif any(
+                        keyword in expert.name.lower() or keyword in expert.role.lower()
+                        for keyword in ["valuation", "밸류에이션"]
+                    ):
+                        expert_type = "valuation_expert"
+                        break
+                    elif any(
+                        keyword in expert.name.lower() or keyword in expert.role.lower()
+                        for keyword in ["risk", "리스크"]
+                    ):
+                        expert_type = "risk_assessor"
+                        break
+
+                # 해당 전문가에게 관련된 섹션 찾기
+                relevant_sections = []
+                keywords = expert_keywords.get(
+                    expert_type, expert_keywords["fundamental_analyst"]
+                )
+
+                for section_title, content in combined_dictionary.items():
+                    score = 0
+                    # 제목에서 키워드 매칭 (가중치 3)
+                    for keyword in keywords:
+                        if keyword in section_title:
+                            score += 3
+
+                    # 내용에서 키워드 매칭 (가중치 1, 처음 1000자만 검사)
+                    content_sample = content[:1000]
+                    for keyword in keywords:
+                        if keyword in content_sample:
+                            score += 1
+
+                    # 임계값 이상이면 관련 섹션으로 분류
+                    if score >= 2:
+                        relevant_sections.append((section_title, content, score))
+
+                # 점수 순으로 정렬하고 상위 3개 섹션만 선택
+                relevant_sections.sort(key=lambda x: x[2], reverse=True)
+                relevant_sections = relevant_sections[:3]
+
+                if relevant_sections:
+                    context_parts.append(f"📋 **{expert.name} 관련 DART 보고서 섹션**:")
+                    total_dart_content_length = 0
+
+                    for section_title, content, score in relevant_sections:
+                        # 60만자 제한 적용
+                        if len(content) > 600000:
+                            content = (
+                                content[:600000]
+                                + "\n...[내용 일부 생략 - 매우 긴 섹션]..."
+                            )
+
+                        context_parts.append(f"### {section_title} (관련도: {score}점)")
+                        context_parts.append(content)
+                        context_parts.append("")
+                        total_dart_content_length += len(content)
+
+                    logger.info(
+                        f"📋 {expert.name}: {len(relevant_sections)}개 DART 섹션 선택, 총 {total_dart_content_length:,}자"
+                    )
+                else:
+                    logger.info(
+                        f"📋 {expert.name}: 관련 DART 보고서 섹션을 찾지 못했습니다"
+                    )
+            else:
+                logger.warning("⚠️ DART 보고서 딕셔너리가 비어있습니다")
+        else:
+            logger.info("📋 DART 보고서 딕셔너리가 제공되지 않았습니다")
 
         # 전문가별 추가 데이터 선별 (기존 로직 유지)
         if "재무" in expert.expertise or "Fundamental" in expert.role:

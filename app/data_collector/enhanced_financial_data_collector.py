@@ -8,6 +8,7 @@ Enhanced DART API 재무데이터 수집기
 2. 기업 지배구조 정보 (임원, 주주, 보수 등)
 3. 투자정보 (배당, 증자감자, 자기주식 등)
 4. 실시간 공시 모니터링 (최신 공시, 중요 공시 등)
+5. 🚀 사업보고서/분기보고서 원문 다운로드 및 목차별 딕셔너리 생성 (NEW!)
 """
 
 import io
@@ -28,6 +29,7 @@ class EnhancedDartDataCollector:
     """
     DART API를 활용한 확장 재무데이터 수집기
     실제 DART 엔드포인트들을 호출해서 상세한 기업 정보를 수집해요!
+    + 🚀 사업보고서/분기보고서 원문 다운로드 및 목차별 딕셔너리 생성 기능 추가!
     """
 
     def __init__(self, dart_api_key: Optional[str] = None):
@@ -60,13 +62,487 @@ class EnhancedDartDataCollector:
             # 공시정보
             "disclosures": "/list.json",  # 공시검색
             "corp_code": "/corpCode.xml",  # 고유번호
+            # 🚀 보고서 원문 관련 (NEW!)
+            "document": "/document.json",  # 보고서 원문
         }
+
+        # 🚀 대용량 PDF 분석기 지연 로딩을 위한 참조
+        self._large_pdf_analyzer = None
 
         logger.info("📊 Enhanced DART API 수집기가 초기화되었습니다")
 
     def is_available(self) -> bool:
         """DART API 사용 가능 여부 확인"""
         return self.dart_api_key is not None
+
+    @property
+    def large_pdf_analyzer(self):
+        """🚀 LargePDFAnalyzer 지연 로딩 - 필요할 때만 import하여 순환 참조 방지"""
+        if self._large_pdf_analyzer is None:
+            try:
+                from app.llm import LLM
+                from app.utils.large_pdf_analyzer import LargePDFAnalyzer
+
+                llm = LLM()
+                self._large_pdf_analyzer = LargePDFAnalyzer(llm=llm)
+                logger.info("✅ LargePDFAnalyzer 지연 로딩 완료")
+            except Exception as e:
+                logger.warning(f"⚠️ LargePDFAnalyzer 로딩 실패: {e}")
+                self._large_pdf_analyzer = None
+        return self._large_pdf_analyzer
+
+    # ==================== 🚀 사업보고서/분기보고서 원문 다운로드 ====================
+
+    async def get_business_reports_with_dictionary(
+        self, corp_code: str, company_name: str = "분석대상회사", bsns_year: str = None
+    ) -> Dict[str, Any]:
+        """
+        🚀 사업보고서와 분기보고서를 다운로드해서 목차별 딕셔너리로 변환!
+
+        기존의 Manus Agent가 웹에서 PDF를 찾지 못하는 문제를 해결하기 위해
+        DART API에서 직접 사업보고서 원문을 가져와서 LargePDFAnalyzer로 처리해요!
+
+        Args:
+            corp_code: 기업 고유코드 (8자리)
+            company_name: 회사명
+            bsns_year: 사업연도 (기본값: 작년)
+
+        Returns:
+            Dict: {
+                "success": bool,
+                "business_report_dictionary": Dict[str, str],  # 사업보고서 목차별 딕셔너리
+                "quarterly_report_dictionary": Dict[str, str],  # 최신 분기보고서 목차별 딕셔너리
+                "pdf_dictionary_interface": Dict,  # CrewAI용 인터페이스 (JSON 직렬화됨)
+                "metadata": Dict,
+                "error": str (실패 시)
+            }
+        """
+        if not self.is_available():
+            return {"success": False, "error": "DART API 키가 설정되지 않았습니다"}
+
+        if not bsns_year:
+            bsns_year = str(datetime.now().year - 1)
+
+        logger.info(
+            f"🚀 {company_name}({corp_code}) 사업보고서/분기보고서 목차별 딕셔너리 생성 시작..."
+        )
+
+        try:
+            result = {
+                "success": True,
+                "corp_code": corp_code,
+                "company_name": company_name,
+                "bsns_year": bsns_year,
+                "collected_at": datetime.now().isoformat(),
+                "business_report_dictionary": {},
+                "quarterly_report_dictionary": {},
+                "combined_pdf_dictionary": {},
+                "pdf_dictionary_interface": None,
+                "metadata": {},
+            }
+
+            # 1️⃣ 사업보고서 다운로드 및 딕셔너리 변환
+            logger.info("📋 1단계: 사업보고서 다운로드 및 딕셔너리 변환...")
+            business_report_result = await self._download_and_process_report(
+                corp_code=corp_code,
+                company_name=company_name,
+                bsns_year=bsns_year,
+                report_type="business_report",  # 사업보고서
+            )
+
+            if business_report_result.get("success"):
+                result["business_report_dictionary"] = business_report_result.get(
+                    "pdf_dictionary", {}
+                )
+                logger.info(
+                    f"✅ 사업보고서 딕셔너리 생성 완료: {len(result['business_report_dictionary'])}개 섹션"
+                )
+            else:
+                logger.warning(
+                    f"⚠️ 사업보고서 처리 실패: {business_report_result.get('error')}"
+                )
+
+            # 2️⃣ 최신 분기보고서 다운로드 및 딕셔너리 변환
+            logger.info("📋 2단계: 최신 분기보고서 다운로드 및 딕셔너리 변환...")
+            quarterly_report_result = await self._download_and_process_report(
+                corp_code=corp_code,
+                company_name=company_name,
+                bsns_year=bsns_year,
+                report_type="quarterly_report",  # 분기보고서
+            )
+
+            if quarterly_report_result.get("success"):
+                result["quarterly_report_dictionary"] = quarterly_report_result.get(
+                    "pdf_dictionary", {}
+                )
+                logger.info(
+                    f"✅ 분기보고서 딕셔너리 생성 완료: {len(result['quarterly_report_dictionary'])}개 섹션"
+                )
+            else:
+                logger.warning(
+                    f"⚠️ 분기보고서 처리 실패: {quarterly_report_result.get('error')}"
+                )
+
+            # 3️⃣ 두 보고서 딕셔너리 통합
+            logger.info("🔗 3단계: 사업보고서 + 분기보고서 딕셔너리 통합...")
+            combined_dictionary = {}
+
+            # 사업보고서 섹션 추가 (접두사로 구분)
+            for title, content in result["business_report_dictionary"].items():
+                combined_dictionary[f"[사업보고서] {title}"] = content
+
+            # 분기보고서 섹션 추가 (접두사로 구분)
+            for title, content in result["quarterly_report_dictionary"].items():
+                combined_dictionary[f"[분기보고서] {title}"] = content
+
+            result["combined_pdf_dictionary"] = combined_dictionary
+
+            # 4️⃣ CrewAI용 PDF 딕셔너리 인터페이스 생성
+            if combined_dictionary:
+                logger.info("🎯 4단계: CrewAI용 PDF 딕셔너리 인터페이스 생성...")
+
+                # PDFDictionaryInterface 객체 생성
+                metadata = {
+                    "company_name": company_name,
+                    "corp_code": corp_code,
+                    "bsns_year": bsns_year,
+                    "creation_timestamp": datetime.now().isoformat(),
+                    "total_sections": len(combined_dictionary),
+                    "business_report_sections": len(
+                        result["business_report_dictionary"]
+                    ),
+                    "quarterly_report_sections": len(
+                        result["quarterly_report_dictionary"]
+                    ),
+                    "total_text_length": sum(
+                        len(content) for content in combined_dictionary.values()
+                    ),
+                    "avg_section_length": (
+                        sum(len(content) for content in combined_dictionary.values())
+                        // len(combined_dictionary)
+                        if combined_dictionary
+                        else 0
+                    ),
+                    "source": "dart_api_business_quarterly_reports",
+                    "processing_method": "enhanced_dart_collector_with_large_pdf_analyzer",
+                }
+
+                # PDFDictionaryInterface 생성
+                try:
+                    from app.utils.large_pdf_analyzer import PDFDictionaryInterface
+
+                    pdf_interface = PDFDictionaryInterface(
+                        pdf_dictionary=combined_dictionary, metadata=metadata
+                    )
+
+                    # JSON 직렬화 가능한 형태로 변환
+                    result["pdf_dictionary_interface"] = pdf_interface.to_dict()
+                    result["metadata"] = metadata
+
+                    logger.info(f"🎯 CrewAI용 인터페이스 생성 완료!")
+                    logger.info(f"   📊 총 섹션: {len(combined_dictionary)}개")
+                    logger.info(
+                        f"   📄 사업보고서: {len(result['business_report_dictionary'])}개 섹션"
+                    )
+                    logger.info(
+                        f"   📈 분기보고서: {len(result['quarterly_report_dictionary'])}개 섹션"
+                    )
+
+                except Exception as interface_error:
+                    logger.error(
+                        f"❌ PDFDictionaryInterface 생성 실패: {interface_error}"
+                    )
+                    result["pdf_dictionary_interface"] = None
+
+            # 5️⃣ 성공 여부 최종 판단
+            if (
+                result["business_report_dictionary"]
+                or result["quarterly_report_dictionary"]
+            ):
+                logger.info(f"🎉 {company_name} DART 보고서 딕셔너리 생성 완료!")
+                return result
+            else:
+                result["success"] = False
+                result["error"] = "사업보고서와 분기보고서 모두 처리에 실패했습니다"
+                return result
+
+        except Exception as e:
+            logger.error(f"❌ DART 보고서 딕셔너리 생성 실패: {e}")
+            return {
+                "success": False,
+                "error": str(e),
+                "corp_code": corp_code,
+                "company_name": company_name,
+            }
+
+    async def _download_and_process_report(
+        self,
+        corp_code: str,
+        company_name: str,
+        bsns_year: str,
+        report_type: str = "business_report",
+    ) -> Dict[str, Any]:
+        """
+        🚀 특정 보고서를 다운로드하고 목차별 딕셔너리로 처리
+
+        Args:
+            corp_code: 기업 고유코드
+            company_name: 회사명
+            bsns_year: 사업연도
+            report_type: "business_report" 또는 "quarterly_report"
+
+        Returns:
+            Dict: 처리 결과
+        """
+        try:
+            # 1️⃣ 보고서 종류에 따른 설정
+            if report_type == "business_report":
+                report_code = "11011"  # 사업보고서
+                report_name = "사업보고서"
+            elif report_type == "quarterly_report":
+                # 최신 분기보고서 찾기 (3분기 → 반기 → 1분기 순으로 시도)
+                quarterly_codes = ["11014", "11012", "11013"]  # 3분기, 반기, 1분기
+                quarterly_names = ["3분기보고서", "반기보고서", "1분기보고서"]
+
+                for report_code, quarter_name in zip(quarterly_codes, quarterly_names):
+                    logger.info(f"🔍 {quarter_name} 검색 중...")
+                    if await self._check_report_exists(
+                        corp_code, bsns_year, report_code
+                    ):
+                        report_name = quarter_name
+                        logger.info(f"✅ {quarter_name} 발견!")
+                        break
+                else:
+                    return {"success": False, "error": "분기보고서를 찾을 수 없습니다"}
+            else:
+                return {
+                    "success": False,
+                    "error": f"알 수 없는 보고서 타입: {report_type}",
+                }
+
+            # 2️⃣ 보고서 목록 조회
+            logger.info(f"📋 {report_name} 목록 조회 중...")
+            time.sleep(self.api_delay)
+
+            params = {
+                "crtfc_key": self.dart_api_key,
+                "corp_code": corp_code,
+                "bsns_year": bsns_year,
+                "reprt_code": report_code,
+            }
+
+            response = requests.get(
+                self.base_url + self.endpoints["disclosures"], params=params
+            )
+
+            if response.status_code != 200:
+                return {"success": False, "error": f"HTTP 오류: {response.status_code}"}
+
+            data = response.json()
+
+            if data.get("status") != "000":
+                return {"success": False, "error": f"API 오류: {data.get('message')}"}
+
+            # 가장 최신 보고서 선택
+            report_list = data.get("list", [])
+            if not report_list:
+                return {"success": False, "error": f"{report_name}을 찾을 수 없습니다"}
+
+            latest_report = report_list[0]  # 가장 최신 보고서
+            rcept_no = latest_report.get("rcept_no")
+
+            if not rcept_no:
+                return {
+                    "success": False,
+                    "error": f"{report_name} 접수번호를 찾을 수 없습니다",
+                }
+
+            logger.info(
+                f"📄 {report_name} 발견: {latest_report.get('report_nm')} (접수번호: {rcept_no})"
+            )
+
+            # 3️⃣ 보고서 원문 다운로드
+            logger.info(f"⬇️ {report_name} 원문 다운로드 중...")
+            document_content = await self._download_document_content(rcept_no)
+
+            if not document_content:
+                return {"success": False, "error": f"{report_name} 원문 다운로드 실패"}
+
+            # 4️⃣ 텍스트를 임시 파일로 저장하고 LargePDFAnalyzer로 처리
+            logger.info(f"🧩 {report_name} 목차별 딕셔너리 변환 중...")
+
+            # LargePDFAnalyzer가 텍스트도 처리할 수 있도록 임시 파일 생성
+            import os
+            import tempfile
+
+            with tempfile.NamedTemporaryFile(
+                mode="w", suffix=".txt", delete=False, encoding="utf-8"
+            ) as temp_file:
+                temp_file.write(document_content)
+                temp_file_path = temp_file.name
+
+            try:
+                # LargePDFAnalyzer로 텍스트 기반 딕셔너리 생성
+                if self.large_pdf_analyzer:
+                    dictionary_result = (
+                        await self.large_pdf_analyzer._create_dictionary_without_toc(
+                            pdf_path=temp_file_path,  # 텍스트 파일 경로
+                            company_name=company_name,
+                            max_section_size=600000,  # 60만자 제한
+                        )
+                    )
+
+                    if dictionary_result.get("success"):
+                        logger.info(
+                            f"✅ {report_name} 딕셔너리 변환 완료: {len(dictionary_result.get('pdf_dictionary', {}))}개 섹션"
+                        )
+                        return {
+                            "success": True,
+                            "pdf_dictionary": dictionary_result.get(
+                                "pdf_dictionary", {}
+                            ),
+                            "metadata": dictionary_result.get("metadata", {}),
+                            "report_info": {
+                                "report_name": report_name,
+                                "rcept_no": rcept_no,
+                                "corp_code": corp_code,
+                                "bsns_year": bsns_year,
+                            },
+                        }
+                    else:
+                        return {
+                            "success": False,
+                            "error": f"LargePDFAnalyzer 처리 실패: {dictionary_result.get('error')}",
+                        }
+                else:
+                    return {
+                        "success": False,
+                        "error": "LargePDFAnalyzer를 사용할 수 없습니다",
+                    }
+
+            finally:
+                # 임시 파일 정리
+                try:
+                    os.unlink(temp_file_path)
+                except:
+                    pass
+
+        except Exception as e:
+            logger.error(f"❌ {report_type} 처리 중 오류: {e}")
+            return {"success": False, "error": str(e)}
+
+    async def _check_report_exists(
+        self, corp_code: str, bsns_year: str, report_code: str
+    ) -> bool:
+        """보고서 존재 여부 확인"""
+        try:
+            time.sleep(self.api_delay)
+
+            params = {
+                "crtfc_key": self.dart_api_key,
+                "corp_code": corp_code,
+                "bsns_year": bsns_year,
+                "reprt_code": report_code,
+                "page_count": "1",  # 1개만 확인
+            }
+
+            response = requests.get(
+                self.base_url + self.endpoints["disclosures"], params=params
+            )
+
+            if response.status_code == 200:
+                data = response.json()
+                return data.get("status") == "000" and len(data.get("list", [])) > 0
+
+            return False
+
+        except Exception as e:
+            logger.warning(f"⚠️ 보고서 존재 확인 중 오류: {e}")
+            return False
+
+    async def _download_document_content(self, rcept_no: str) -> Optional[str]:
+        """
+        🚀 DART API에서 보고서 원문 내용 다운로드
+
+        Args:
+            rcept_no: 접수번호
+
+        Returns:
+            str: 보고서 원문 텍스트 (실패시 None)
+        """
+        try:
+            time.sleep(self.api_delay)
+
+            params = {
+                "crtfc_key": self.dart_api_key,
+                "rcept_no": rcept_no,
+            }
+
+            response = requests.get(
+                self.base_url + self.endpoints["document"], params=params
+            )
+
+            if response.status_code != 200:
+                logger.error(
+                    f"❌ 보고서 원문 다운로드 HTTP 오류: {response.status_code}"
+                )
+                return None
+
+            # 응답이 JSON인 경우 (오류 응답)
+            try:
+                json_data = response.json()
+                if json_data.get("status") != "000":
+                    logger.error(
+                        f"❌ 보고서 원문 다운로드 API 오류: {json_data.get('message')}"
+                    )
+                    return None
+            except:
+                # JSON이 아니면 원문 내용으로 간주
+                pass
+
+            # 원문 내용 추출 및 정제
+            content = response.text
+
+            # HTML 태그 제거 (BeautifulSoup 사용)
+            try:
+                soup = BeautifulSoup(content, "html.parser")
+
+                # 스크립트와 스타일 태그 제거
+                for script in soup(["script", "style"]):
+                    script.decompose()
+
+                # 텍스트만 추출
+                clean_text = soup.get_text()
+
+                # 과도한 공백 및 줄바꿈 정리
+                import re
+
+                clean_text = re.sub(r"\n\s*\n", "\n\n", clean_text)  # 연속된 빈 줄 정리
+                clean_text = re.sub(r" +", " ", clean_text)  # 연속된 공백 정리
+                clean_text = clean_text.strip()
+
+                if len(clean_text) < 1000:
+                    logger.warning(
+                        f"⚠️ 추출된 텍스트가 너무 짧습니다: {len(clean_text)}자"
+                    )
+                    return None
+
+                logger.info(f"✅ 보고서 원문 다운로드 완료: {len(clean_text):,}자")
+                return clean_text
+
+            except Exception as parsing_error:
+                logger.error(f"❌ HTML 파싱 실패: {parsing_error}")
+
+                # HTML 파싱 실패시 원본 텍스트 반환 (태그 포함)
+                if len(content) > 1000:
+                    logger.info("⚠️ HTML 파싱 실패, 원본 내용 반환")
+                    return content
+                else:
+                    return None
+
+        except Exception as e:
+            logger.error(f"❌ 보고서 원문 다운로드 실패: {e}")
+            return None
 
     # ==================== 1️⃣ 상세한 재무정보 ====================
 
