@@ -321,7 +321,7 @@ class EnhancedStockAnalysisSystem:
                             "step2_dart_reports_dictionary"
                         ] = dart_reports_dictionary
 
-                        # 상세 로그
+                        # 상세 로그 (분리된 딕셔너리 방식)
                         business_sections = len(
                             dart_reports_dictionary.get(
                                 "business_report_dictionary", {}
@@ -332,15 +332,18 @@ class EnhancedStockAnalysisSystem:
                                 "quarterly_report_dictionary", {}
                             )
                         )
-                        total_sections = len(
-                            dart_reports_dictionary.get("combined_pdf_dictionary", {})
-                        )
+                        total_sections = business_sections + quarterly_sections
 
-                        logger.info("🎉 DART 보고서 딕셔너리 생성 완료!")
-                        logger.info(f"   📄 사업보고서: {business_sections}개 섹션")
-                        logger.info(f"   📈 분기보고서: {quarterly_sections}개 섹션")
+                        logger.info("🎉 분리된 DART 보고서 딕셔너리 생성 완료!")
+                        logger.info(
+                            f"   📄 사업보고서: {business_sections}개 섹션 (연간 종합정보)"
+                        )
+                        logger.info(
+                            f"   📈 분기보고서: {quarterly_sections}개 섹션 (최신 분기정보)"
+                        )
                         logger.info(f"   🎯 총 섹션: {total_sections}개")
-                        logger.info("   ✅ CrewAI 전문가별 선택적 접근 준비 완료!")
+                        logger.info("   🚀 CrewAI 전문가별 독립 접근 준비 완료!")
+                        logger.info("   💡 시기별 정보를 구분하여 더 정확한 분석 가능!")
                     else:
                         logger.warning(
                             f"⚠️ DART 보고서 딕셔너리 생성 실패: {dart_reports_dictionary.get('error')}"

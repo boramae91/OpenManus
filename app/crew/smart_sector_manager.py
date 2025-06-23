@@ -922,9 +922,19 @@ class SmartSectorManager:
         if technical_analysis_data and technical_analysis_data.get("success"):
             used_sources.append("Technical_Analysis_Calculated")
 
-        # 🚀 DART 보고서 딕셔너리 확인
+        # 🚀 분리된 DART 보고서 딕셔너리 확인
         if dart_reports_dictionary and dart_reports_dictionary.get("success"):
-            used_sources.append("DART_Business_Quarterly_Reports")
+            business_dict = dart_reports_dictionary.get(
+                "business_report_dictionary", {}
+            )
+            quarterly_dict = dart_reports_dictionary.get(
+                "quarterly_report_dictionary", {}
+            )
+
+            if business_dict:
+                used_sources.append("DART_Business_Report")
+            if quarterly_dict:
+                used_sources.append("DART_Quarterly_Report")
 
         return list(set(used_sources))  # 중복 제거
 
@@ -1249,16 +1259,19 @@ class SmartSectorManager:
         else:
             logger.info("📄 PDF 딕셔너리 인터페이스가 제공되지 않았습니다")
 
-        # 🚀 DART 보고서 딕셔너리 처리 (NEW!)
+        # 🚀 분리된 DART 보고서 딕셔너리 처리 (NEW!)
         if dart_reports_dictionary and dart_reports_dictionary.get("success"):
-            logger.info("📋 DART 보고서 딕셔너리 처리 시작...")
+            logger.info("📋 분리된 DART 보고서 딕셔너리 처리 시작...")
 
-            # 통합된 딕셔너리 가져오기
-            combined_dictionary = dart_reports_dictionary.get(
-                "combined_pdf_dictionary", {}
+            # 분리된 딕셔너리들 가져오기
+            business_report_dict = dart_reports_dictionary.get(
+                "business_report_dictionary", {}
+            )
+            quarterly_report_dict = dart_reports_dictionary.get(
+                "quarterly_report_dictionary", {}
             )
 
-            if combined_dictionary:
+            if business_report_dict or quarterly_report_dict:
                 # 전문가별 키워드 매핑
                 expert_keywords = {
                     "fundamental_analyst": [
@@ -1313,81 +1326,127 @@ class SmartSectorManager:
                     ],
                 }
 
-                # 전문가 타입 결정
+                # 전문가 타입 결정 (더 정확한 매칭)
                 expert_type = "fundamental_analyst"  # 기본값
-                for expert_role, keywords in expert_keywords.items():
-                    if any(
-                        keyword in expert.name.lower() or keyword in expert.role.lower()
-                        for keyword in ["fundamental", "재무"]
-                    ):
-                        expert_type = "fundamental_analyst"
-                        break
-                    elif any(
-                        keyword in expert.name.lower() or keyword in expert.role.lower()
-                        for keyword in ["industry", "산업"]
-                    ):
-                        expert_type = "industry_analyst"
-                        break
-                    elif any(
-                        keyword in expert.name.lower() or keyword in expert.role.lower()
-                        for keyword in ["valuation", "밸류에이션"]
-                    ):
-                        expert_type = "valuation_expert"
-                        break
-                    elif any(
-                        keyword in expert.name.lower() or keyword in expert.role.lower()
-                        for keyword in ["risk", "리스크"]
-                    ):
-                        expert_type = "risk_assessor"
-                        break
+                if any(
+                    keyword in expert.name.lower() or keyword in expert.role.lower()
+                    for keyword in ["fundamental", "재무", "펀더멘털"]
+                ):
+                    expert_type = "fundamental_analyst"
+                elif any(
+                    keyword in expert.name.lower() or keyword in expert.role.lower()
+                    for keyword in ["industry", "산업", "업계"]
+                ):
+                    expert_type = "industry_analyst"
+                elif any(
+                    keyword in expert.name.lower() or keyword in expert.role.lower()
+                    for keyword in ["valuation", "밸류에이션", "가치"]
+                ):
+                    expert_type = "valuation_expert"
+                elif any(
+                    keyword in expert.name.lower() or keyword in expert.role.lower()
+                    for keyword in ["risk", "리스크", "위험"]
+                ):
+                    expert_type = "risk_assessor"
+                elif any(
+                    keyword in expert.name.lower() or keyword in expert.role.lower()
+                    for keyword in ["technical", "기술적"]
+                ):
+                    expert_type = "technical_analyst"
 
-                # 해당 전문가에게 관련된 섹션 찾기
-                relevant_sections = []
                 keywords = expert_keywords.get(
                     expert_type, expert_keywords["fundamental_analyst"]
                 )
 
-                for section_title, content in combined_dictionary.items():
-                    score = 0
-                    # 제목에서 키워드 매칭 (가중치 3)
-                    for keyword in keywords:
-                        if keyword in section_title:
-                            score += 3
+                # 🎯 사업보고서에서 관련 섹션 찾기
+                business_sections = []
+                if business_report_dict:
+                    logger.info(f"📄 사업보고서에서 {expert.name} 관련 섹션 검색...")
+                    for section_title, content in business_report_dict.items():
+                        score = 0
+                        # 제목에서 키워드 매칭 (가중치 3)
+                        for keyword in keywords:
+                            if keyword in section_title:
+                                score += 3
+                        # 내용에서 키워드 매칭 (가중치 1, 처음 1000자만 검사)
+                        content_sample = content[:1000]
+                        for keyword in keywords:
+                            if keyword in content_sample:
+                                score += 1
+                        if score >= 2:
+                            business_sections.append((section_title, content, score))
 
-                    # 내용에서 키워드 매칭 (가중치 1, 처음 1000자만 검사)
-                    content_sample = content[:1000]
-                    for keyword in keywords:
-                        if keyword in content_sample:
-                            score += 1
+                    business_sections.sort(key=lambda x: x[2], reverse=True)
+                    # 섹션 제한 없음 - 관련도 높은 모든 섹션 사용
 
-                    # 임계값 이상이면 관련 섹션으로 분류
-                    if score >= 2:
-                        relevant_sections.append((section_title, content, score))
+                # 🎯 분기보고서에서 관련 섹션 찾기
+                quarterly_sections = []
+                if quarterly_report_dict:
+                    logger.info(f"📈 분기보고서에서 {expert.name} 관련 섹션 검색...")
+                    for section_title, content in quarterly_report_dict.items():
+                        score = 0
+                        # 제목에서 키워드 매칭 (가중치 3)
+                        for keyword in keywords:
+                            if keyword in section_title:
+                                score += 3
+                        # 내용에서 키워드 매칭 (가중치 1, 처음 1000자만 검사)
+                        content_sample = content[:1000]
+                        for keyword in keywords:
+                            if keyword in content_sample:
+                                score += 1
+                        if score >= 2:
+                            quarterly_sections.append((section_title, content, score))
 
-                # 점수 순으로 정렬하고 상위 3개 섹션만 선택
-                relevant_sections.sort(key=lambda x: x[2], reverse=True)
-                relevant_sections = relevant_sections[:3]
+                    quarterly_sections.sort(key=lambda x: x[2], reverse=True)
+                    # 섹션 제한 없음 - 관련도 높은 모든 섹션 사용
 
-                if relevant_sections:
-                    context_parts.append(f"📋 **{expert.name} 관련 DART 보고서 섹션**:")
-                    total_dart_content_length = 0
+                # 🚀 분리된 섹션들을 컨텍스트에 추가
+                total_dart_content_length = 0
 
-                    for section_title, content, score in relevant_sections:
-                        # 60만자 제한 적용
-                        if len(content) > 600000:
+                if business_sections:
+                    context_parts.append(
+                        f"📄 **{expert.name} 관련 사업보고서 섹션 (연간 종합정보)**:"
+                    )
+                    for section_title, content, score in business_sections:
+                        if len(content) > 600000:  # 사업보고서는 60만자 제한
                             content = (
-                                content[:600000]
-                                + "\n...[내용 일부 생략 - 매우 긴 섹션]..."
+                                content[:600000] + "\n...[사업보고서 내용 일부 생략]..."
                             )
-
                         context_parts.append(f"### {section_title} (관련도: {score}점)")
                         context_parts.append(content)
                         context_parts.append("")
                         total_dart_content_length += len(content)
 
                     logger.info(
-                        f"📋 {expert.name}: {len(relevant_sections)}개 DART 섹션 선택, 총 {total_dart_content_length:,}자"
+                        f"📄 {expert.name}: 사업보고서 {len(business_sections)}개 섹션 선택"
                     )
+
+                if quarterly_sections:
+                    context_parts.append(
+                        f"📈 **{expert.name} 관련 분기보고서 섹션 (최신 분기정보)**:"
+                    )
+                    for section_title, content, score in quarterly_sections:
+                        if len(content) > 600000:  # 분기보고서도 60만자 제한
+                            content = (
+                                content[:600000] + "\n...[분기보고서 내용 일부 생략]..."
+                            )
+                        context_parts.append(f"### {section_title} (관련도: {score}점)")
+                        context_parts.append(content)
+                        context_parts.append("")
+                        total_dart_content_length += len(content)
+
+                    logger.info(
+                        f"📈 {expert.name}: 분기보고서 {len(quarterly_sections)}개 섹션 선택"
+                    )
+
+                if business_sections or quarterly_sections:
+                    logger.info(
+                        f"📋 {expert.name}: 총 {len(business_sections) + len(quarterly_sections)}개 DART 섹션, {total_dart_content_length:,}자"
+                    )
+                    context_parts.append(
+                        "🔍 **분석 지침**: 사업보고서는 연간 종합정보이고, 분기보고서는 최신 분기 실적입니다. 시기적 차이를 고려하여 분석해주세요."
+                    )
+                    context_parts.append("")
                 else:
                     logger.info(
                         f"📋 {expert.name}: 관련 DART 보고서 섹션을 찾지 못했습니다"

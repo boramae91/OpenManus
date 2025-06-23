@@ -183,76 +183,116 @@ class EnhancedDartDataCollector:
                     f"⚠️ 분기보고서 처리 실패: {quarterly_report_result.get('error')}"
                 )
 
-            # 3️⃣ 두 보고서 딕셔너리 통합
-            logger.info("🔗 3단계: 사업보고서 + 분기보고서 딕셔너리 통합...")
-            combined_dictionary = {}
+            # 3️⃣ 사업보고서와 분기보고서 분리된 메타데이터 생성
+            logger.info("🔗 3단계: 분리된 사업보고서/분기보고서 메타데이터 생성...")
 
-            # 사업보고서 섹션 추가 (접두사로 구분)
-            for title, content in result["business_report_dictionary"].items():
-                combined_dictionary[f"[사업보고서] {title}"] = content
+            # 🚀 분리된 딕셔너리 방식으로 개선!
+            business_total_text = sum(
+                len(content)
+                for content in result["business_report_dictionary"].values()
+            )
+            quarterly_total_text = sum(
+                len(content)
+                for content in result["quarterly_report_dictionary"].values()
+            )
 
-            # 분기보고서 섹션 추가 (접두사로 구분)
-            for title, content in result["quarterly_report_dictionary"].items():
-                combined_dictionary[f"[분기보고서] {title}"] = content
+            # 사업보고서 메타데이터
+            business_metadata = {
+                "company_name": company_name,
+                "corp_code": corp_code,
+                "bsns_year": bsns_year,
+                "report_type": "business_report",
+                "creation_timestamp": datetime.now().isoformat(),
+                "total_sections": len(result["business_report_dictionary"]),
+                "total_text_length": business_total_text,
+                "avg_section_length": (
+                    business_total_text // len(result["business_report_dictionary"])
+                    if result["business_report_dictionary"]
+                    else 0
+                ),
+                "source": "dart_api_business_report",
+                "processing_method": "enhanced_dart_collector_with_large_pdf_analyzer",
+            }
 
-            result["combined_pdf_dictionary"] = combined_dictionary
+            # 분기보고서 메타데이터
+            quarterly_metadata = {
+                "company_name": company_name,
+                "corp_code": corp_code,
+                "bsns_year": bsns_year,
+                "report_type": "quarterly_report",
+                "creation_timestamp": datetime.now().isoformat(),
+                "total_sections": len(result["quarterly_report_dictionary"]),
+                "total_text_length": quarterly_total_text,
+                "avg_section_length": (
+                    quarterly_total_text // len(result["quarterly_report_dictionary"])
+                    if result["quarterly_report_dictionary"]
+                    else 0
+                ),
+                "source": "dart_api_quarterly_report",
+                "processing_method": "enhanced_dart_collector_with_large_pdf_analyzer",
+            }
 
-            # 4️⃣ CrewAI용 PDF 딕셔너리 인터페이스 생성
-            if combined_dictionary:
-                logger.info("🎯 4단계: CrewAI용 PDF 딕셔너리 인터페이스 생성...")
+            # 4️⃣ CrewAI용 분리된 PDF 딕셔너리 인터페이스 생성
+            logger.info("🎯 4단계: CrewAI용 분리된 PDF 딕셔너리 인터페이스 생성...")
 
-                # PDFDictionaryInterface 객체 생성
-                metadata = {
-                    "company_name": company_name,
-                    "corp_code": corp_code,
-                    "bsns_year": bsns_year,
-                    "creation_timestamp": datetime.now().isoformat(),
-                    "total_sections": len(combined_dictionary),
-                    "business_report_sections": len(
-                        result["business_report_dictionary"]
-                    ),
-                    "quarterly_report_sections": len(
-                        result["quarterly_report_dictionary"]
-                    ),
-                    "total_text_length": sum(
-                        len(content) for content in combined_dictionary.values()
-                    ),
-                    "avg_section_length": (
-                        sum(len(content) for content in combined_dictionary.values())
-                        // len(combined_dictionary)
-                        if combined_dictionary
-                        else 0
-                    ),
-                    "source": "dart_api_business_quarterly_reports",
-                    "processing_method": "enhanced_dart_collector_with_large_pdf_analyzer",
-                }
+            business_interface = None
+            quarterly_interface = None
 
-                # PDFDictionaryInterface 생성
+            # 사업보고서 인터페이스 생성
+            if result["business_report_dictionary"]:
                 try:
                     from app.utils.large_pdf_analyzer import PDFDictionaryInterface
 
-                    pdf_interface = PDFDictionaryInterface(
-                        pdf_dictionary=combined_dictionary, metadata=metadata
-                    )
-
-                    # JSON 직렬화 가능한 형태로 변환
-                    result["pdf_dictionary_interface"] = pdf_interface.to_dict()
-                    result["metadata"] = metadata
-
-                    logger.info(f"🎯 CrewAI용 인터페이스 생성 완료!")
-                    logger.info(f"   📊 총 섹션: {len(combined_dictionary)}개")
-                    logger.info(
-                        f"   📄 사업보고서: {len(result['business_report_dictionary'])}개 섹션"
+                    business_interface = PDFDictionaryInterface(
+                        pdf_dictionary=result["business_report_dictionary"],
+                        metadata=business_metadata,
                     )
                     logger.info(
-                        f"   📈 분기보고서: {len(result['quarterly_report_dictionary'])}개 섹션"
+                        f"✅ 사업보고서 인터페이스 생성 완료: {len(result['business_report_dictionary'])}개 섹션"
                     )
 
                 except Exception as interface_error:
                     logger.error(
-                        f"❌ PDFDictionaryInterface 생성 실패: {interface_error}"
+                        f"❌ 사업보고서 인터페이스 생성 실패: {interface_error}"
                     )
-                    result["pdf_dictionary_interface"] = None
+
+            # 분기보고서 인터페이스 생성
+            if result["quarterly_report_dictionary"]:
+                try:
+                    from app.utils.large_pdf_analyzer import PDFDictionaryInterface
+
+                    quarterly_interface = PDFDictionaryInterface(
+                        pdf_dictionary=result["quarterly_report_dictionary"],
+                        metadata=quarterly_metadata,
+                    )
+                    logger.info(
+                        f"✅ 분기보고서 인터페이스 생성 완료: {len(result['quarterly_report_dictionary'])}개 섹션"
+                    )
+
+                except Exception as interface_error:
+                    logger.error(
+                        f"❌ 분기보고서 인터페이스 생성 실패: {interface_error}"
+                    )
+
+            # JSON 직렬화 가능한 형태로 저장
+            result["business_report_interface"] = (
+                business_interface.to_dict() if business_interface else None
+            )
+            result["quarterly_report_interface"] = (
+                quarterly_interface.to_dict() if quarterly_interface else None
+            )
+            result["business_metadata"] = business_metadata
+            result["quarterly_metadata"] = quarterly_metadata
+
+            # 🎯 분리된 딕셔너리 방식 요약 로그
+            logger.info(f"🎯 분리된 딕셔너리 방식 완료!")
+            logger.info(
+                f"   📄 사업보고서: {len(result['business_report_dictionary'])}개 섹션 ({business_total_text:,}자)"
+            )
+            logger.info(
+                f"   📈 분기보고서: {len(result['quarterly_report_dictionary'])}개 섹션 ({quarterly_total_text:,}자)"
+            )
+            logger.info(f"   🚀 CrewAI 전문가별 독립 접근 준비 완료!")
 
             # 5️⃣ 성공 여부 최종 판단
             if (
