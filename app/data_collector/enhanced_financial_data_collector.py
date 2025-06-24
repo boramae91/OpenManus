@@ -340,20 +340,100 @@ class EnhancedDartDataCollector:
                 report_code = "11011"  # 사업보고서
                 report_name = "사업보고서"
             elif report_type == "quarterly_report":
-                # 최신 분기보고서 찾기 (3분기 → 반기 → 1분기 순으로 시도)
-                quarterly_codes = ["11014", "11012", "11013"]  # 3분기, 반기, 1분기
-                quarterly_names = ["3분기보고서", "반기보고서", "1분기보고서"]
+                # 🔍 개선된 분기보고서 검색 로직 (시기와 연도 고려)
+                # 사용자에게 쉽게 설명하면, 현재 시점에 맞는 분기보고서를 똑똑하게 찾는 과정이에요
+                import datetime
 
-                for report_code, quarter_name in zip(quarterly_codes, quarterly_names):
-                    logger.info(f"🔍 {quarter_name} 검색 중...")
-                    if await self._check_report_exists(
-                        corp_code, bsns_year, report_code
-                    ):
-                        report_name = quarter_name
-                        logger.info(f"✅ {quarter_name} 발견!")
+                current_month = datetime.datetime.now().month
+                current_year = datetime.datetime.now().year
+
+                # 현재 시점에 따른 검색 우선순위 결정 (실제 공시 일정 고려)
+                if current_month <= 5:  # 1~5월: 전년도 기준
+                    search_years = [str(int(bsns_year) - 1), bsns_year]
+                    quarterly_codes = [
+                        "11014",
+                        "11012",
+                        "11013",
+                    ]  # 3분기 → 반기 → 1분기
+                    quarterly_names = ["3분기보고서", "반기보고서", "1분기보고서"]
+                elif current_month <= 8:  # 6~8월: 1분기보고서 위주
+                    search_years = [bsns_year, str(int(bsns_year) - 1)]
+                    quarterly_codes = [
+                        "11013",
+                        "11014",
+                        "11012",
+                    ]  # 1분기 → 3분기 → 반기
+                    quarterly_names = ["1분기보고서", "3분기보고서", "반기보고서"]
+                elif current_month <= 11:  # 9~11월: 반기보고서 위주
+                    search_years = [bsns_year, str(int(bsns_year) - 1)]
+                    quarterly_codes = [
+                        "11012",
+                        "11013",
+                        "11014",
+                    ]  # 반기 → 1분기 → 3분기
+                    quarterly_names = ["반기보고서", "1분기보고서", "3분기보고서"]
+                else:  # 12월: 3분기보고서 위주
+                    search_years = [bsns_year, str(int(bsns_year) - 1)]
+                    quarterly_codes = [
+                        "11014",
+                        "11012",
+                        "11013",
+                    ]  # 3분기 → 반기 → 1분기
+                    quarterly_names = ["3분기보고서", "반기보고서", "1분기보고서"]
+
+                logger.info(f"🗓️ 분기보고서 검색 전략: 현재 {current_month}월 기준")
+                logger.info(f"   - 검색 연도 순서: {', '.join(search_years)}")
+                logger.info(f"   - 검색 분기 순서: {', '.join(quarterly_names)}")
+
+                found_report = False
+                for search_year in search_years:
+                    if found_report:
                         break
-                else:
-                    return {"success": False, "error": "분기보고서를 찾을 수 없습니다"}
+                    logger.info(f"📅 {search_year}년도 분기보고서 검색 중...")
+
+                    for report_code, quarter_name in zip(
+                        quarterly_codes, quarterly_names
+                    ):
+                        logger.info(f"🔍 {search_year}년 {quarter_name} 검색 중...")
+                        if await self._check_report_exists(
+                            corp_code, search_year, report_code
+                        ):
+                            report_name = f"{search_year}년 {quarter_name}"
+                            bsns_year = search_year  # 찾은 연도로 업데이트
+                            logger.info(f"✅ {report_name} 발견!")
+                            found_report = True
+                            break
+
+                    if not found_report:
+                        logger.info(f"⚠️ {search_year}년도 분기보고서 없음")
+
+                if not found_report:
+                    # 📋 추가 시도: 최근 3년간 모든 분기보고서 검색
+                    logger.info("🔄 최근 3년간 추가 검색 시도 중...")
+                    for year_offset in range(2, 5):  # 2~4년 전까지
+                        fallback_year = str(int(bsns_year) - year_offset)
+                        logger.info(f"📅 {fallback_year}년도 추가 검색...")
+
+                        for report_code, quarter_name in zip(
+                            quarterly_codes, quarterly_names
+                        ):
+                            if await self._check_report_exists(
+                                corp_code, fallback_year, report_code
+                            ):
+                                report_name = f"{fallback_year}년 {quarter_name}"
+                                bsns_year = fallback_year
+                                logger.info(f"✅ 추가 검색으로 {report_name} 발견!")
+                                found_report = True
+                                break
+
+                        if found_report:
+                            break
+
+                if not found_report:
+                    return {
+                        "success": False,
+                        "error": "분기보고서를 찾을 수 없습니다 (최근 5년간 검색 완료)",
+                    }
             else:
                 return {
                     "success": False,
@@ -474,7 +554,7 @@ class EnhancedDartDataCollector:
     async def _check_report_exists(
         self, corp_code: str, bsns_year: str, report_code: str
     ) -> bool:
-        """보고서 존재 여부 확인"""
+        """보고서 존재 여부 확인 (Enhanced 디버깅 포함)"""
         try:
             time.sleep(self.api_delay)
 
@@ -486,18 +566,63 @@ class EnhancedDartDataCollector:
                 "page_count": "1",  # 1개만 확인
             }
 
+            # 디버깅을 위한 상세 로깅 (사용자를 위한 한국어 설명)
+            # 이 부분은 API 호출 전에 어떤 정보로 요청하는지 확인하는 로그예요
+            logger.info(f"🔍 DART API 보고서 확인 요청:")
+            logger.info(f"   - 기업코드: {corp_code}")
+            logger.info(f"   - 사업연도: {bsns_year}")
+            logger.info(f"   - 보고서코드: {report_code}")
+            logger.info(
+                f"   - API키 설정여부: {'설정됨' if self.dart_api_key else '미설정'}"
+            )
+
+            # API 키가 없으면 미리 에러 반환 (사용자에게 친절한 안내)
+            if not self.dart_api_key:
+                logger.error(
+                    "❌ DART API 키가 설정되지 않았습니다. 환경변수 DART_API_KEY를 확인해주세요."
+                )
+                return False
+
             response = requests.get(
                 self.base_url + self.endpoints["disclosures"], params=params
             )
 
+            # 응답 상태 상세 로깅 (사용자가 이해하기 쉽게)
+            logger.info(f"📡 DART API 응답:")
+            logger.info(f"   - HTTP 상태코드: {response.status_code}")
+            logger.info(
+                f"   - 요청 URL: {self.base_url + self.endpoints['disclosures']}"
+            )
+
             if response.status_code == 200:
                 data = response.json()
-                return data.get("status") == "000" and len(data.get("list", [])) > 0
+                api_status = data.get("status")
+                api_message = data.get("message", "메시지 없음")
+                list_count = len(data.get("list", []))
 
-            return False
+                # 상세한 API 응답 로깅 (문제 파악을 위한 디버깅 정보)
+                logger.info(f"   - API 상태코드: {api_status}")
+                logger.info(f"   - API 메시지: {api_message}")
+                logger.info(f"   - 검색결과 개수: {list_count}개")
+
+                # 에러인 경우 추가 정보 로깅
+                if api_status != "000":
+                    logger.warning(f"⚠️ DART API 에러 상세:")
+                    logger.warning(f"   - 에러코드: {api_status}")
+                    logger.warning(f"   - 에러메시지: {api_message}")
+                    logger.warning(
+                        f"   - 가능한 원인: 해당 연도/보고서 타입의 보고서가 존재하지 않음"
+                    )
+
+                return api_status == "000" and list_count > 0
+            else:
+                logger.error(f"❌ HTTP 오류: {response.status_code}")
+                logger.error(f"   - 응답 내용: {response.text[:200]}...")
+                return False
 
         except Exception as e:
-            logger.warning(f"⚠️ 보고서 존재 확인 중 오류: {e}")
+            logger.error(f"⚠️ 보고서 존재 확인 중 예외 발생: {e}")
+            logger.error(f"   - 예외 타입: {type(e).__name__}")
             return False
 
     async def _download_document_content(self, rcept_no: str) -> Optional[str]:
@@ -1561,6 +1686,14 @@ class EnhancedDartDataCollector:
             # XML 파싱하여 ZIP 파일 추출
 
             try:
+                # XML 파싱 경고를 무시하는 설정 추가 (사용자 요청에 따라 한국어 주석 포함)
+                # 이 부분은 XML 문서를 안전하게 처리하기 위한 경고 필터링이에요
+                import warnings
+
+                from bs4 import XMLParsedAsHTMLWarning
+
+                warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
+
                 # 응답이 ZIP 파일인 경우
                 zf = zipfile.ZipFile(io.BytesIO(response.content))
                 info_list = zf.infolist()
@@ -1572,7 +1705,7 @@ class EnhancedDartDataCollector:
                 first_file = info_list[0]
                 xml_data = zf.read(first_file.filename)
 
-                # 인코딩 시도
+                # 인코딩 시도 (사용자에게 쉽게 설명하면, 한글을 제대로 읽기 위한 방법들을 차례로 시도하는 거예요)
                 try:
                     xml_text = xml_data.decode("euc-kr")
                 except UnicodeDecodeError:
@@ -1581,10 +1714,16 @@ class EnhancedDartDataCollector:
                     except UnicodeDecodeError:
                         xml_text = xml_data.decode("cp949", errors="ignore")
 
-                # HTML 태그 제거 및 텍스트 추출
-                soup = BeautifulSoup(xml_text, "html.parser")
+                # XML 전용 파싱 사용 (경고 해결을 위한 개선)
+                # 이 부분은 XML 문서를 올바른 방법으로 분석하는 코드예요
+                try:
+                    # XML 파서 사용 (lxml이 있으면 사용, 없으면 기본 XML 파서 사용)
+                    soup = BeautifulSoup(xml_text, features="xml")
+                except Exception:
+                    # XML 파서가 없으면 html.parser 사용 (경고 필터링 적용됨)
+                    soup = BeautifulSoup(xml_text, "html.parser")
 
-                # 주요 섹션 찾기
+                # 주요 섹션 찾기 (문서에서 중요한 내용을 찾는 과정이에요)
                 main_content = ""
 
                 # 1. 주요내용 섹션 찾기
@@ -1595,7 +1734,7 @@ class EnhancedDartDataCollector:
                         if len(main_content) > 500:  # 적당한 길이로 제한
                             break
 
-                # 2. 텍스트 정리
+                # 2. 텍스트 정리 (깔끔하게 정리하는 과정이에요)
                 if main_content:
                     # 불필요한 공백 제거
                     main_content = " ".join(main_content.split())

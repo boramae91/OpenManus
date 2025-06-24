@@ -1,4 +1,4 @@
-gpydantic~=2.10.6
+pydantic~=2.10.6
 openai~=1.66.3
 tenacity~=9.0.0
 pyyaml~=6.0.2
@@ -37,6 +37,10 @@ boto3~=1.37.18
 
 requests~=2.32.3
 beautifulsoup4~=4.13.3
+
+# XML 파싱 개선을 위한 패키지 (사용자 요청에 따라 한국어 주석 포함)
+lxml~=5.3.0  # XML 전용 파서 - BeautifulSoup XML 파싱 성능 향상
+python-dotenv~=1.0.1  # 환경변수 관리 - .env 파일 자동 로드
 
 huggingface-hub~=0.29.2
 setuptools~=75.8.0
