@@ -64,6 +64,9 @@ except ImportError as e:
 
 from app.utils.large_pdf_analyzer import LargePDFAnalyzer
 
+# 🔢 토큰 계산기 import (섹션별 토큰 수 계산용)
+from app.utils.token_calculator import SectionTokenCalculator
+
 # 기존 PDFReader는 제거하고 LargePDFAnalyzer로 완전 대체
 # 대용량 PDF 원문 추출을 위한 전용 시스템 사용
 
@@ -107,6 +110,10 @@ class EnhancedStockAnalysisSystem:
 
         # 📄 대용량 PDF 분석기 초기화 (새로 추가!)
         self.large_pdf_analyzer = LargePDFAnalyzer(llm=self.llm)
+
+        # 🔢 토큰 계산기 초기화 (섹션별 토큰 수 계산용)
+        self.token_calculator = SectionTokenCalculator(model_name="gpt-4o")
+        logger.info("🔢 토큰 계산기 초기화 완료!")
 
         # 🚀 One-Hot Sector Activation 시스템 초기화 (핵심 혁신!)
         try:
@@ -1923,6 +1930,91 @@ class EnhancedStockAnalysisSystem:
                         f"   📝 주석 섹션: {pdf_dictionary_result['metadata']['footnote_sections']}개"
                     )
                     logger.info(f"   🎯 CrewAI 전문가별 선택적 접근 준비 완료!")
+
+                    # 🔢 토큰 분석 추가 (PDF 딕셔너리의 토큰 수 계산)
+                    logger.info("🔍 PDF 딕셔너리 섹션별 토큰 수 분석 시작...")
+                    pdf_dictionary = pdf_dictionary_result.get("pdf_dictionary", {})
+
+                    if pdf_dictionary:
+                        # 전체 섹션 토큰 분석
+                        token_analysis = self.token_calculator.analyze_sections_tokens(
+                            pdf_dictionary
+                        )
+
+                        # 토큰 분석 결과를 PDF 결과에 추가
+                        pdf_result["token_analysis"] = {
+                            "total_tokens": token_analysis["total_tokens"],
+                            "total_sections": token_analysis["total_sections"],
+                            "total_characters": token_analysis["total_characters"],
+                            "section_details": token_analysis["section_details"],
+                            "statistics": token_analysis["statistics"],
+                            "model_limits": token_analysis["model_limits"],
+                            "optimization_needed": not token_analysis["model_limits"][
+                                "can_fit_all_sections"
+                            ],
+                        }
+
+                        # 토큰 제한 초과 시 최적화 제안
+                        if not token_analysis["model_limits"]["can_fit_all_sections"]:
+                            logger.warning("⚠️ PDF 섹션이 토큰 제한을 초과합니다!")
+                            optimal_combination = (
+                                self.token_calculator.find_optimal_section_combination(
+                                    pdf_dictionary
+                                )
+                            )
+                            pdf_result["token_analysis"][
+                                "optimal_combination"
+                            ] = optimal_combination
+
+                            logger.info(
+                                f"💡 최적 조합 제안: {optimal_combination['total_selected_sections']}개 섹션"
+                            )
+                            logger.info(
+                                f"   선택된 토큰: {optimal_combination['total_selected_tokens']:,}토큰"
+                            )
+                            logger.info(
+                                f"   활용률: {optimal_combination['token_utilization']:.1f}%"
+                            )
+                        else:
+                            logger.info("✅ 모든 PDF 섹션이 토큰 제한 내에 있습니다!")
+
+                        # 전문가별 토큰 분석 (섹션 카테고리 기반)
+                        if (
+                            pdf_interface_dict
+                            and "section_categories" in pdf_interface_dict
+                        ):
+                            expert_sections = pdf_interface_dict["section_categories"]
+                            expert_token_analysis = (
+                                self.token_calculator.calculate_expert_tokens(
+                                    expert_sections, pdf_dictionary
+                                )
+                            )
+                            pdf_result["token_analysis"][
+                                "expert_analysis"
+                            ] = expert_token_analysis
+
+                            logger.info(
+                                f"👨‍💼 전문가별 토큰 분석 완료: {len(expert_sections)}명"
+                            )
+
+                            # 토큰 초과 전문가 확인
+                            for expert_name, analysis in expert_token_analysis.items():
+                                if not analysis["can_fit_in_context"]:
+                                    logger.warning(
+                                        f"⚠️ {expert_name}: 토큰 초과 ({analysis['total_tokens']:,}토큰)"
+                                    )
+                                else:
+                                    logger.info(
+                                        f"✅ {expert_name}: 토큰 적합 ({analysis['total_tokens']:,}토큰)"
+                                    )
+
+                        logger.info(
+                            f"🔢 PDF 토큰 분석 완료: 총 {token_analysis['total_tokens']:,}토큰"
+                        )
+                    else:
+                        logger.warning(
+                            "⚠️ PDF 딕셔너리가 비어있어 토큰 분석을 건너뛸게요"
+                        )
 
                 else:
                     logger.warning(f"⚠️ PDF 딕셔너리 생성 실패, 기존 방식으로 대체...")
