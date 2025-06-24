@@ -1,0 +1,572 @@
+{
+  "user_prompt": "???? ?? ?? ???",
+  "timestamp": "2025-06-24T10:23:04.643762",
+  "response": {
+    "comprehensive_summary": {
+      "analysis_overview": {
+        "analyzed_stock": {
+          "name": "상장주식수.",
+          "code": "060310",
+          "sector": "정보기술"
+        },
+        "expert_team": {
+          "activated_experts": [
+            "정보기술 펀더멘털 분석가",
+            "정보기술 기술적 분석가"
+          ],
+          "expert_count": 2,
+          "analysis_depth": "quick"
+        },
+        "analysis_quality": {
+          "data_integration_success": true,
+          "total_analysis_time": "37.97초",
+          "data_sources_count": 0
+        }
+      },
+      "key_findings": {
+        "investment_highlights": [
+          "1. **강한 상승 추세**: 현재 주가는 모든 주요 이동평균선 위에 위치하고 있으며, 이는 강한 상승 추세를 나타냅니다. 특히, MACD 지표가 양수로 상승 추세가 지속되고 있어 긍정적인 신호입니다.",
+          "2. **거래량 증가**: 현재 거래량이 20일 평균 대비 1.29배 증가하였으며, 이는 상승 추세의 신뢰도를 높이는 요소로 작용합니다.",
+          "3. **기술적 지표의 긍정적 신호**: MACD와 볼린저 밴드 분석에서 상승 추세가 지속되고 있으며, 종합 매매 신호는 매수로 나타나고 있습니다.",
+          "4. **지지/저항선 활용 가능성**: 2,530원의 저항선을 돌파할 경우 추가 상승 가능성이 있으며, 목표가는 2,600원으로 설정되어 있습니다."
+        ],
+        "risk_factors": [
+          "1. **과매수 상태**: RSI가 78.26으로 과매수 상태에 있으며, 이는 매도 신호를 고려할 수 있는 상황입니다. 신중한 접근이 필요합니다.",
+          "2. **지지선 이탈 가능성**: 2,287원의 지지선을 이탈할 경우 하락 가능성이 있으며, 손절매는 2,250원으로 설정되어 있습니다.",
+          "3. **거래량의 지속성**: 거래량이 지속적으로 20일 평균 이상 유지되지 않을 경우 상승 추세의 신뢰도가 낮아질 수 있습니다."
+        ],
+        "investment_recommendation": {
+          "recommendation": "매수",
+          "confidence_level": "낮음",
+          "reasoning": "투자 의견을 명확히 추출할 수 없습니다."
+        },
+        "target_price_analysis": {
+          "target_price": "2,530원",
+          "valuation_method": "알 수 없음",
+          "analysis_basis": "전문가 종합 의견"
+        }
+      },
+      "expert_consensus": {
+        "agreement_level": "알 수 없음",
+        "consensus_points": [],
+        "divergent_views": []
+      }
+    },
+    "individual_expert_analyses": [
+      {
+        "expert_profile": {
+          "name": "정보기술 펀더멘털 분석가",
+          "expertise_area": "재무제표 분석, 기업가치 평가, 수익성 분석",
+          "analysis_timestamp": 1750728381.8862894
+        },
+        "analysis_content": {
+          "full_analysis": "분석을 수행하기 위해 필요한 재무 데이터가 제공되지 않았습니다. 특히, ROE, ROIC, 유동비율, FCF, 매출 성장률 등과 같은 주요 재무 비율을 계산하기 위한 구체적인 수치가 없습니다. 이러한 데이터가 없으면 정보기술 섹터의 재무 건전성과 성장성을 분석하는 데 어려움이 있습니다.\n\n다음은 분석을 수행하기 위해 필요한 추가 데이터입니다:\n\n1. **재무제표 데이터**:\n   - 손익계산서: 매출, 영업이익, 순이익 등\n   - 대차대조표: 총자산, 총부채, 자기자본 등\n   - 현금흐름표: 영업활동으로 인한 현금흐름, 자본적 지출 등\n\n2. **시장 데이터**:\n   - 주가 정보: 시가총액, 주당 가격 등\n\n3. **비율 계산을 위한 추가 정보**:\n   - 이자비용, 차입금, EBITDA 등\n\n4. **동종업계 비교 데이터**:\n   - 동종업계의 평균 비율 및 상위 25%, 50%, 75% 위치\n\n이러한 데이터가 확보되면, 다음과 같은 분석을 수행할 수 있습니다:\n\n1. **재무비율 종합분석**:\n   - ROE, DuPont 분석, ROIC vs WACC, 유동비율 등\n\n2. **현금흐름 정밀분석**:\n   - FCF, FCF Yield, Cash Conversion Cycle 등\n\n3. **수익성 및 성장성 심화분석**:\n   - 매출 성장률, 영업레버리지, EBITDA 마진, 자산회전율 등\n\n4. **재무건전성 스트레스 테스트**:\n   - 이자보상비율, 부채상환능력 등\n\n필요한 데이터를 확보한 후, 위의 분석을 통해 정보기술 섹터 내에서 해당 기업의 재무 건전성과 성장성을 평가할 수 있습니다. 추가적인 데이터가 제공되면, 보다 구체적이고 정밀한 분석을 제공할 수 있습니다.",
+          "data_sources_used": [
+            "Technical_Analysis_Calculated",
+            "yfinance",
+            "DART"
+          ],
+          "key_insights": [
+            "**재무건전성 스트레스 테스트**:\n   - 이자보상비율, 부채상환능력 등\n\n필요한 데이터를 확보한 후, 위의 분석을 통해 정보기술 섹터 내에서 해당 기업의 재무 건전성과 성장성을 평가할 수 있습니다."
+          ],
+          "quantitative_metrics": {
+            "metrics_available": "false",
+            "reason": "정량적 지표를 찾을 수 없습니다."
+          }
+        }
+      },
+      {
+        "expert_profile": {
+          "name": "정보기술 기술적 분석가",
+          "expertise_area": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+          "analysis_timestamp": 1750728396.3988006
+        },
+        "analysis_content": {
+          "full_analysis": "### 현재 시점 정밀 분석\n\n1. **RSI, MACD, 볼린저밴드 분석**:\n   - **RSI**: 78.26으로 과매수 상태에 있으며, 매도 신호를 고려할 수 있습니다.\n   - **MACD**: MACD 라인(58.5272)이 시그널 라인(30.2599) 위에 있으며, 히스토그램(28.2673)이 양수로 상승 추세가 지속되고 있습니다.\n   - **볼린저 밴드**: 현재 주가는 상단 밴드(2,530원)에 근접해 있으며, 밴드 내부에 위치하여 정상 범위로 볼 수 있습니다.\n\n2. **이동평균선 배열과 현재가 위치**:\n   - 현재 주가(2,475원)는 모든 주요 이동평균선(MA_5, MA_20, MA_60, MA_120, MA_200) 위에 위치하고 있습니다. 이는 강한 상승 추세를 나타냅니다.\n\n3. **종합 매매 신호의 신뢰도와 근거 평가**:\n   - 종합 신호는 매수로 나타나지만, RSI와 스토캐스틱의 과매수 상태를 고려할 때 신중한 접근이 필요합니다. 분할 매수 전략이 권장됩니다.\n\n### 지지/저항선 활용 전략\n\n1. **지지/저항선 레벨**:\n   - **저항선**: 2,530원 (볼린저 밴드 상단)\n   - **지지선**: 2,287원 (MA_20 및 볼린저 밴드 중간)\n\n2. **돌파/이탈 시나리오**:\n   - **돌파 시**: 2,530원 돌파 시 추가 상승 가능성. 목표가는 2,600원으로 설정.\n   - **이탈 시**: 2,287원 이탈 시 하락 가능성. 손절매는 2,250원으로 설정.\n\n### 거래량 분석과 확인\n\n1. **OBV 추세와 주가 Divergence 여부**:\n   - 현재 OBV는 108,912,715로 추세를 명확히 알 수 없으나, 주가와의 다이버전스 여부를 지속적으로 모니터링해야 합니다.\n\n2. **현재 거래량의 20일 평균 대비 비율 해석**:\n   - 현재 거래량은 572,355주로 20일 평균 거래량(441,990주) 대비 1.29배로 증가하였습니다. 이는 상승 추세의 신뢰도를 높이는 요소입니다.\n\n3. **신호 확인을 위한 거래량 조건**:\n   - 거래량이 지속적으로 20일 평균 이상 유지될 경우 상승 추세의 지속성을 확인할 수 있습니다.\n\n### 투자 시나리오 및 목표가\n\n1. **단기(1-3개월) 목표가**:\n   - 상승 시나리오: 2,600원\n   - 하락 시나리오: 2,250원 (손절매)\n\n2. **중기(3-6개월) 목표가**:\n   - 상승 시나리오: 2,750원\n   - 하락 시나리오: 2,100원\n\n3. **대응 전략**:\n   - **상승 시나리오**: 저항선 돌파 시 추가 매수 고려. 목표가 도달 시 일부 청산.\n   - **하락 시나리오**: 지지선 이탈 시 손절매 실행. 하락 시 추가 매수는 신중히 고려.\n   - **횡보 시나리오**: 2,287원과 2,530원 사이에서 횡보 시 관망.\n\n### 주의사항\n- 모든 신호는 거래량 동반 여부를 필수로 확인해야 합니다.\n- 저항선 돌파 후 3일 지속성을 관찰하여 False Breakout 가능성을 줄입니다.\n- 공시나 이벤트 전후에는 기술적 신호의 신뢰도가 하락할 수 있습니다.\n- 단기, 중기, 장기 시계열을 종합적으로 판단하여 투자 결정을 내리세요.",
+          "data_sources_used": [
+            "Technical_Analysis_Calculated",
+            "yfinance",
+            "DART"
+          ],
+          "key_insights": [
+            "**종합 매매 신호의 신뢰도와 근거 평가**:\n   - 종합 신호는 매수로 나타나지만, RSI와 스토캐스틱의 과매수 상태를 고려할 때 신중한 접근이 필요합니다.",
+            "- 단기, 중기, 장기 시계열을 종합적으로 판단하여 투자 결정을 내리세요."
+          ],
+          "quantitative_metrics": {
+            "metrics_available": "false",
+            "reason": "정량적 지표를 찾을 수 없습니다."
+          }
+        }
+      }
+    ],
+    "analysis_metadata": {
+      "generation_timestamp": "2025-06-24T10:26:51.211396",
+      "analysis_type": "crewai_comprehensive_analysis",
+      "successful_expert_count": 2,
+      "total_expert_count": 2,
+      "data_integration_quality": {
+        "overall_score": 10.0,
+        "quality_grade": "개선필요",
+        "total_possible_score": 100.0,
+        "achieved_score": 10.0,
+        "details": {
+          "financial_data_score": 10
+        },
+        "data_sources_count": 1
+      },
+      "cost_optimization": {
+        "traditional_cost": 11.0,
+        "one_hot_cost": 0.08,
+        "savings_amount": 10.92,
+        "savings_percentage": 99.27272727272727,
+        "activated_agents": 2,
+        "depth": "quick"
+      },
+      "token_optimization": {
+        "optimization_applied": false,
+        "original_token_estimate": 643,
+        "optimized_token_estimate": 643,
+        "compression_ratio": 1.0
+      }
+    }
+  },
+  "analysis_flow": "enhanced_manus_first_crewai_synthesis",
+  "success": false,
+  "steps": {
+    "step0_intent_analysis": {
+      "primary_intent": "일반문의",
+      "secondary_intents": [],
+      "confidence": 0.3,
+      "analysis_focus": "종합분석",
+      "data_priority": "기본",
+      "keywords": []
+    },
+    "step1_stock_detection": {
+      "detected": true,
+      "stock_name": "상장주식수.",
+      "stock_code": "060310",
+      "detection_method": "ai_ai_web_search_priority",
+      "ticker_bbg": "060310 KS Equity",
+      "gics_sector": "Information Technology",
+      "mapped_company_name": "3S KOREA CO LTD",
+      "market_index": "KOSDAQ Index",
+      "original_stock_code": "060310",
+      "original_stock_name": "상장주식수."
+    },
+    "step2_financial_data": {
+      "stock_info": {
+        "stock_code": "060310",
+        "stock_name": "상장주식수.",
+        "collection_timestamp": "2025-06-24T10:25:47.400063"
+      },
+      "success": true,
+      "errors": [],
+      "data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "basic_info": {
+        "company_name": "060310.KS,0P0000BZDN,436056",
+        "sector": "정보없음",
+        "industry": "정보없음",
+        "country": "정보없음",
+        "currency": "KRW",
+        "exchange": "KOE",
+        "ticker_symbol": "060310.KS"
+      },
+      "current_price_info": {
+        "current_price": 2315.0,
+        "previous_close": null,
+        "open_price": null,
+        "day_high": null,
+        "day_low": null,
+        "volume": null,
+        "market_cap": null,
+        "shares_outstanding": null
+      },
+      "financial_ratios": {
+        "pe_ratio": null,
+        "peg_ratio": null,
+        "pb_ratio": null,
+        "ps_ratio": null,
+        "dividend_yield": null,
+        "profit_margin": null,
+        "operating_margin": null,
+        "return_on_equity": null,
+        "return_on_assets": null,
+        "debt_to_equity": null,
+        "current_ratio": null,
+        "quick_ratio": null
+      },
+      "growth_metrics": {
+        "earnings_growth": null,
+        "revenue_growth": null,
+        "earnings_quarterly_growth": null,
+        "revenue_quarterly_growth": null
+      },
+      "price_history": {
+        "52_week_high": 2885.0,
+        "52_week_low": 1637.0,
+        "avg_volume_3m": 2135049.311111111,
+        "price_change_1y": -5.534351145038168
+      },
+      "data_quality": "낮음",
+      "dart_info": {
+        "company_info": {
+          "corp_name": "종목코드_060310",
+          "corp_code": "정보없음",
+          "business_summary": "DART API 연결 실패",
+          "established_date": "정보없음",
+          "listing_date": "정보없음",
+          "ceo_name": "정보없음",
+          "address": "정보없음"
+        },
+        "financial_statements": {
+          "revenue": 0,
+          "operating_profit": 0,
+          "net_income": 0,
+          "total_assets": 0,
+          "total_liabilities": 0,
+          "total_equity": 0,
+          "cash_and_equivalents": 0,
+          "data_source": "fallback_no_dart_connection",
+          "note": "DART API 연결 실패로 기본값 사용"
+        },
+        "business_report": {
+          "main_business": "DART 연결 실패",
+          "business_risks": "정보없음",
+          "future_plans": "정보없음"
+        }
+      }
+    },
+    "step2_technical_analysis_data": {
+      "success": true,
+      "stock_code": "060310",
+      "ticker_symbol": "060310.KS",
+      "data_period": "1y",
+      "total_days": 241,
+      "last_update": "2025-06-23",
+      "current_snapshot": {
+        "price": 2475.0,
+        "volume": 572355,
+        "date": "2025-06-23"
+      },
+      "technical_indicators": {
+        "moving_averages": {
+          "MA_5": 2454.0,
+          "MA_20": 2287.25,
+          "MA_60": 2264.116666666667,
+          "MA_120": 2072.016666666667,
+          "MA_200": 2063.935
+        },
+        "rsi": {
+          "current_value": 78.26086956521739,
+          "interpretation": "과매수",
+          "signal": "매도 고려",
+          "period": 14
+        },
+        "macd": {
+          "MACD_line": 58.527175636767424,
+          "signal_line": 30.25985646450256,
+          "histogram": 28.267319172264866,
+          "signal_interpretation": "상승 추세 지속",
+          "parameters": "(12, 26, 9)"
+        },
+        "bollinger_bands": {
+          "upper_band": 2530.072764041678,
+          "middle_band": 2287.25,
+          "lower_band": 2044.4272359583222,
+          "current_price": 2475.0,
+          "band_width_percent": 21.232726115787777,
+          "position_analysis": "밴드 내부 (정상 범위)",
+          "signal": "관망",
+          "parameters": "(20일, 2σ)"
+        },
+        "stochastic": {
+          "K_percent": 84.52380952380952,
+          "D_percent": 89.97648442092886,
+          "interpretation": "과매수",
+          "signal": "매도 고려",
+          "parameters": "(14, 3)"
+        },
+        "williams_r": {
+          "current_value": -15.476190476190476,
+          "interpretation": "과매수",
+          "signal": "매도 고려",
+          "period": 14
+        },
+        "obv": {
+          "current_value": 108912715,
+          "trend_analysis": "상승 (매수세 우세)",
+          "description": "거래량 누적 지표"
+        },
+        "volume_indicators": {
+          "volume_MA_20": 441989.5,
+          "volume_ratio": 1.2949515769039763
+        }
+      },
+      "support_resistance": {
+        "support_levels": [
+          2275.0,
+          2260.0,
+          2215.0
+        ],
+        "resistance_levels": [
+          2495.0,
+          2500.0,
+          2740.0
+        ],
+        "current_price": 2475.0,
+        "analysis_period": "최근 90일",
+        "nearest_support": 2275.0,
+        "nearest_resistance": 2495.0
+      },
+      "trading_signals": {
+        "individual_signals": [
+          "이동평균선 정배열 (상승 추세)"
+        ],
+        "signal_strength_score": 1,
+        "overall_signal": "매수",
+        "confidence": 20,
+        "recommendation": "분할 매수 전략 권장. 점진적 포지션 확대."
+      },
+      "chart_patterns": {
+        "detected_patterns": [
+          "상승 추세 (최근 20일)",
+          "보통 변동성"
+        ],
+        "trend_analysis": "최근 20일 변동률: 9.07%",
+        "volatility_level": "1.80%"
+      },
+      "raw_data_summary": {
+        "start_date": "2024-06-24",
+        "end_date": "2025-06-23",
+        "price_range": {
+          "high": 2885.0,
+          "low": 1637.0,
+          "volatility": 3.224480978083581
+        }
+      }
+    },
+    "step3_information_collection": {
+      "performed": false,
+      "error": "unsupported format string passed to NoneType.__format__",
+      "primary_intent": "일반문의",
+      "ready_for_crewai": false
+    },
+    "step4_crewai_comprehensive_analysis": {
+      "success": true,
+      "analysis_type": "comprehensive_manus_crewai_synthesis_optimized",
+      "detected_sector": "INFORMATION_TECHNOLOGY",
+      "sector_korean_name": "정보기술",
+      "gics_sector_used": "Information Technology",
+      "activated_experts": [
+        "정보기술 펀더멘털 분석가",
+        "정보기술 기술적 분석가"
+      ],
+      "selected_experts_count": 2,
+      "expert_insights": {
+        "individual_expert_analyses": [
+          {
+            "expert_name": "정보기술 펀더멘털 분석가",
+            "expertise_area": "재무제표 분석, 기업가치 평가, 수익성 분석",
+            "analysis_result": "분석을 수행하기 위해 필요한 재무 데이터가 제공되지 않았습니다. 특히, ROE, ROIC, 유동비율, FCF, 매출 성장률 등과 같은 주요 재무 비율을 계산하기 위한 구체적인 수치가 없습니다. 이러한 데이터가 없으면 정보기술 섹터의 재무 건전성과 성장성을 분석하는 데 어려움이 있습니다.\n\n다음은 분석을 수행하기 위해 필요한 추가 데이터입니다:\n\n1. **재무제표 데이터**:\n   - 손익계산서: 매출, 영업이익, 순이익 등\n   - 대차대조표: 총자산, 총부채, 자기자본 등\n   - 현금흐름표: 영업활동으로 인한 현금흐름, 자본적 지출 등\n\n2. **시장 데이터**:\n   - 주가 정보: 시가총액, 주당 가격 등\n\n3. **비율 계산을 위한 추가 정보**:\n   - 이자비용, 차입금, EBITDA 등\n\n4. **동종업계 비교 데이터**:\n   - 동종업계의 평균 비율 및 상위 25%, 50%, 75% 위치\n\n이러한 데이터가 확보되면, 다음과 같은 분석을 수행할 수 있습니다:\n\n1. **재무비율 종합분석**:\n   - ROE, DuPont 분석, ROIC vs WACC, 유동비율 등\n\n2. **현금흐름 정밀분석**:\n   - FCF, FCF Yield, Cash Conversion Cycle 등\n\n3. **수익성 및 성장성 심화분석**:\n   - 매출 성장률, 영업레버리지, EBITDA 마진, 자산회전율 등\n\n4. **재무건전성 스트레스 테스트**:\n   - 이자보상비율, 부채상환능력 등\n\n필요한 데이터를 확보한 후, 위의 분석을 통해 정보기술 섹터 내에서 해당 기업의 재무 건전성과 성장성을 평가할 수 있습니다. 추가적인 데이터가 제공되면, 보다 구체적이고 정밀한 분석을 제공할 수 있습니다.",
+            "data_sources_used": [
+              "Technical_Analysis_Calculated",
+              "yfinance",
+              "DART"
+            ],
+            "analysis_timestamp": 1750728381.8862894
+          },
+          {
+            "expert_name": "정보기술 기술적 분석가",
+            "expertise_area": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+            "analysis_result": "### 현재 시점 정밀 분석\n\n1. **RSI, MACD, 볼린저밴드 분석**:\n   - **RSI**: 78.26으로 과매수 상태에 있으며, 매도 신호를 고려할 수 있습니다.\n   - **MACD**: MACD 라인(58.5272)이 시그널 라인(30.2599) 위에 있으며, 히스토그램(28.2673)이 양수로 상승 추세가 지속되고 있습니다.\n   - **볼린저 밴드**: 현재 주가는 상단 밴드(2,530원)에 근접해 있으며, 밴드 내부에 위치하여 정상 범위로 볼 수 있습니다.\n\n2. **이동평균선 배열과 현재가 위치**:\n   - 현재 주가(2,475원)는 모든 주요 이동평균선(MA_5, MA_20, MA_60, MA_120, MA_200) 위에 위치하고 있습니다. 이는 강한 상승 추세를 나타냅니다.\n\n3. **종합 매매 신호의 신뢰도와 근거 평가**:\n   - 종합 신호는 매수로 나타나지만, RSI와 스토캐스틱의 과매수 상태를 고려할 때 신중한 접근이 필요합니다. 분할 매수 전략이 권장됩니다.\n\n### 지지/저항선 활용 전략\n\n1. **지지/저항선 레벨**:\n   - **저항선**: 2,530원 (볼린저 밴드 상단)\n   - **지지선**: 2,287원 (MA_20 및 볼린저 밴드 중간)\n\n2. **돌파/이탈 시나리오**:\n   - **돌파 시**: 2,530원 돌파 시 추가 상승 가능성. 목표가는 2,600원으로 설정.\n   - **이탈 시**: 2,287원 이탈 시 하락 가능성. 손절매는 2,250원으로 설정.\n\n### 거래량 분석과 확인\n\n1. **OBV 추세와 주가 Divergence 여부**:\n   - 현재 OBV는 108,912,715로 추세를 명확히 알 수 없으나, 주가와의 다이버전스 여부를 지속적으로 모니터링해야 합니다.\n\n2. **현재 거래량의 20일 평균 대비 비율 해석**:\n   - 현재 거래량은 572,355주로 20일 평균 거래량(441,990주) 대비 1.29배로 증가하였습니다. 이는 상승 추세의 신뢰도를 높이는 요소입니다.\n\n3. **신호 확인을 위한 거래량 조건**:\n   - 거래량이 지속적으로 20일 평균 이상 유지될 경우 상승 추세의 지속성을 확인할 수 있습니다.\n\n### 투자 시나리오 및 목표가\n\n1. **단기(1-3개월) 목표가**:\n   - 상승 시나리오: 2,600원\n   - 하락 시나리오: 2,250원 (손절매)\n\n2. **중기(3-6개월) 목표가**:\n   - 상승 시나리오: 2,750원\n   - 하락 시나리오: 2,100원\n\n3. **대응 전략**:\n   - **상승 시나리오**: 저항선 돌파 시 추가 매수 고려. 목표가 도달 시 일부 청산.\n   - **하락 시나리오**: 지지선 이탈 시 손절매 실행. 하락 시 추가 매수는 신중히 고려.\n   - **횡보 시나리오**: 2,287원과 2,530원 사이에서 횡보 시 관망.\n\n### 주의사항\n- 모든 신호는 거래량 동반 여부를 필수로 확인해야 합니다.\n- 저항선 돌파 후 3일 지속성을 관찰하여 False Breakout 가능성을 줄입니다.\n- 공시나 이벤트 전후에는 기술적 신호의 신뢰도가 하락할 수 있습니다.\n- 단기, 중기, 장기 시계열을 종합적으로 판단하여 투자 결정을 내리세요.",
+            "data_sources_used": [
+              "Technical_Analysis_Calculated",
+              "yfinance",
+              "DART"
+            ],
+            "analysis_timestamp": 1750728396.3988006
+          }
+        ],
+        "expert_count": 2,
+        "successful_analyses": 2,
+        "synthesis_result": {
+          "synthesis_success": true,
+          "expert_count": 2,
+          "successful_count": 2,
+          "failed_count": 0,
+          "synthesis_content": "### 1. 핵심 투자 포인트\n\n1. **강한 상승 추세**: 현재 주가는 모든 주요 이동평균선 위에 위치하고 있으며, 이는 강한 상승 추세를 나타냅니다. 특히, MACD 지표가 양수로 상승 추세가 지속되고 있어 긍정적인 신호입니다.\n\n2. **거래량 증가**: 현재 거래량이 20일 평균 대비 1.29배 증가하였으며, 이는 상승 추세의 신뢰도를 높이는 요소로 작용합니다.\n\n3. **기술적 지표의 긍정적 신호**: MACD와 볼린저 밴드 분석에서 상승 추세가 지속되고 있으며, 종합 매매 신호는 매수로 나타나고 있습니다.\n\n4. **지지/저항선 활용 가능성**: 2,530원의 저항선을 돌파할 경우 추가 상승 가능성이 있으며, 목표가는 2,600원으로 설정되어 있습니다.\n\n### 2. 주요 리스크 요인\n\n1. **과매수 상태**: RSI가 78.26으로 과매수 상태에 있으며, 이는 매도 신호를 고려할 수 있는 상황입니다. 신중한 접근이 필요합니다.\n\n2. **지지선 이탈 가능성**: 2,287원의 지지선을 이탈할 경우 하락 가능성이 있으며, 손절매는 2,250원으로 설정되어 있습니다.\n\n3. **거래량의 지속성**: 거래량이 지속적으로 20일 평균 이상 유지되지 않을 경우 상승 추세의 신뢰도가 낮아질 수 있습니다.\n\n4. **시장 변동성**: 공시나 이벤트 전후에는 기술적 신호의 신뢰도가 하락할 수 있으며, 시장 변동성에 주의가 필요합니다.\n\n### 3. 종합 투자 의견\n\n- **보유**: 현재 강한 상승 추세와 거래량 증가로 인해 긍정적인 신호가 많지만, 과매수 상태와 지지선 이탈 가능성 등의 리스크 요인이 존재합니다. 따라서 신중한 접근이 필요하며, 보유 의견을 제시합니다.\n\n### 4. 목표가 또는 적정가 제시\n\n- **단기 목표가**: 2,600원 (상승 시나리오)\n- **손절매가**: 2,250원 (하락 시나리오)\n\n### 5. 전문가 의견 일치도\n\n- **보통**: 재무제표 분석가와 기술적 분석가의 접근 방식이 다르지만, 기술적 분석가의 분석에 따라 단기적인 상승 가능성이 높다고 판단됩니다. 그러나 재무 데이터의 부족으로 인해 장기적인 재무 건전성 평가가 어려운 상황입니다. 따라서 의견 일치도는 보통으로 평가됩니다.",
+          "synthesis_timestamp": 1750728411.2083836,
+          "data_sources_integrated": 3
+        },
+        "total_analysis_time": "37.97초",
+        "data_integration_type": "comprehensive_multi_source"
+      },
+      "cost_savings": {
+        "traditional_cost": 11.0,
+        "one_hot_cost": 0.08,
+        "savings_amount": 10.92,
+        "savings_percentage": 99.27272727272727,
+        "activated_agents": 2,
+        "depth": "quick"
+      },
+      "analysis_depth": "quick",
+      "cache_key": "a9e2d8fd16f7397acc94a64f8a665f9f",
+      "data_integration_quality": {
+        "overall_score": 10.0,
+        "quality_grade": "개선필요",
+        "total_possible_score": 100.0,
+        "achieved_score": 10.0,
+        "details": {
+          "financial_data_score": 10
+        },
+        "data_sources_count": 1
+      },
+      "synthesis_completeness": "완전통합_토큰최적화",
+      "token_optimization": {
+        "optimization_applied": false,
+        "original_token_estimate": 643,
+        "optimized_token_estimate": 643,
+        "compression_ratio": 1.0
+      }
+    }
+  },
+  "final_summary": {
+    "analyzed_stock": {
+      "name": "상장주식수.",
+      "code": "060310",
+      "ticker_bbg": "060310 KS Equity",
+      "gics_sector": "Information Technology",
+      "market_index": "KOSDAQ Index",
+      "detection_method": "ai_ai_web_search_priority"
+    },
+    "data_sources": {
+      "financial_data_collected": true,
+      "data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "data_quality": "낮음",
+      "technical_analysis_collected": true,
+      "technical_indicators_count": 8,
+      "manus_information_collected": false,
+      "data_richness_score": 0.0
+    },
+    "analysis_quality": {
+      "information_collection_performed": false,
+      "crewai_comprehensive_analysis_performed": true,
+      "financial_data_enhanced": true,
+      "workflow_type": "manus_first_crewai_synthesis"
+    },
+    "key_insights": {
+      "information_collection_quality": "알 수 없음",
+      "crewai_analysis_quality": "성공",
+      "overall_analysis_depth": "보통",
+      "data_integration_success": true
+    }
+  },
+  "crewai_detailed_analysis": {
+    "detected_sector": "INFORMATION_TECHNOLOGY",
+    "sector_korean_name": "정보기술",
+    "activated_experts": [
+      "정보기술 펀더멘털 분석가",
+      "정보기술 기술적 분석가"
+    ],
+    "expert_count": 2,
+    "individual_expert_analyses": [
+      {
+        "expert_name": "정보기술 펀더멘털 분석가",
+        "expertise_area": "재무제표 분석, 기업가치 평가, 수익성 분석",
+        "analysis_result": "분석을 수행하기 위해 필요한 재무 데이터가 제공되지 않았습니다. 특히, ROE, ROIC, 유동비율, FCF, 매출 성장률 등과 같은 주요 재무 비율을 계산하기 위한 구체적인 수치가 없습니다. 이러한 데이터가 없으면 정보기술 섹터의 재무 건전성과 성장성을 분석하는 데 어려움이 있습니다.\n\n다음은 분석을 수행하기 위해 필요한 추가 데이터입니다:\n\n1. **재무제표 데이터**:\n   - 손익계산서: 매출, 영업이익, 순이익 등\n   - 대차대조표: 총자산, 총부채, 자기자본 등\n   - 현금흐름표: 영업활동으로 인한 현금흐름, 자본적 지출 등\n\n2. **시장 데이터**:\n   - 주가 정보: 시가총액, 주당 가격 등\n\n3. **비율 계산을 위한 추가 정보**:\n   - 이자비용, 차입금, EBITDA 등\n\n4. **동종업계 비교 데이터**:\n   - 동종업계의 평균 비율 및 상위 25%, 50%, 75% 위치\n\n이러한 데이터가 확보되면, 다음과 같은 분석을 수행할 수 있습니다:\n\n1. **재무비율 종합분석**:\n   - ROE, DuPont 분석, ROIC vs WACC, 유동비율 등\n\n2. **현금흐름 정밀분석**:\n   - FCF, FCF Yield, Cash Conversion Cycle 등\n\n3. **수익성 및 성장성 심화분석**:\n   - 매출 성장률, 영업레버리지, EBITDA 마진, 자산회전율 등\n\n4. **재무건전성 스트레스 테스트**:\n   - 이자보상비율, 부채상환능력 등\n\n필요한 데이터를 확보한 후, 위의 분석을 통해 정보기술 섹터 내에서 해당 기업의 재무 건전성과 성장성을 평가할 수 있습니다. 추가적인 데이터가 제공되면, 보다 구체적이고 정밀한 분석을 제공할 수 있습니다.",
+        "data_sources_used": [
+          "Technical_Analysis_Calculated",
+          "yfinance",
+          "DART"
+        ],
+        "analysis_timestamp": 1750728381.8862894
+      },
+      {
+        "expert_name": "정보기술 기술적 분석가",
+        "expertise_area": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+        "analysis_result": "### 현재 시점 정밀 분석\n\n1. **RSI, MACD, 볼린저밴드 분석**:\n   - **RSI**: 78.26으로 과매수 상태에 있으며, 매도 신호를 고려할 수 있습니다.\n   - **MACD**: MACD 라인(58.5272)이 시그널 라인(30.2599) 위에 있으며, 히스토그램(28.2673)이 양수로 상승 추세가 지속되고 있습니다.\n   - **볼린저 밴드**: 현재 주가는 상단 밴드(2,530원)에 근접해 있으며, 밴드 내부에 위치하여 정상 범위로 볼 수 있습니다.\n\n2. **이동평균선 배열과 현재가 위치**:\n   - 현재 주가(2,475원)는 모든 주요 이동평균선(MA_5, MA_20, MA_60, MA_120, MA_200) 위에 위치하고 있습니다. 이는 강한 상승 추세를 나타냅니다.\n\n3. **종합 매매 신호의 신뢰도와 근거 평가**:\n   - 종합 신호는 매수로 나타나지만, RSI와 스토캐스틱의 과매수 상태를 고려할 때 신중한 접근이 필요합니다. 분할 매수 전략이 권장됩니다.\n\n### 지지/저항선 활용 전략\n\n1. **지지/저항선 레벨**:\n   - **저항선**: 2,530원 (볼린저 밴드 상단)\n   - **지지선**: 2,287원 (MA_20 및 볼린저 밴드 중간)\n\n2. **돌파/이탈 시나리오**:\n   - **돌파 시**: 2,530원 돌파 시 추가 상승 가능성. 목표가는 2,600원으로 설정.\n   - **이탈 시**: 2,287원 이탈 시 하락 가능성. 손절매는 2,250원으로 설정.\n\n### 거래량 분석과 확인\n\n1. **OBV 추세와 주가 Divergence 여부**:\n   - 현재 OBV는 108,912,715로 추세를 명확히 알 수 없으나, 주가와의 다이버전스 여부를 지속적으로 모니터링해야 합니다.\n\n2. **현재 거래량의 20일 평균 대비 비율 해석**:\n   - 현재 거래량은 572,355주로 20일 평균 거래량(441,990주) 대비 1.29배로 증가하였습니다. 이는 상승 추세의 신뢰도를 높이는 요소입니다.\n\n3. **신호 확인을 위한 거래량 조건**:\n   - 거래량이 지속적으로 20일 평균 이상 유지될 경우 상승 추세의 지속성을 확인할 수 있습니다.\n\n### 투자 시나리오 및 목표가\n\n1. **단기(1-3개월) 목표가**:\n   - 상승 시나리오: 2,600원\n   - 하락 시나리오: 2,250원 (손절매)\n\n2. **중기(3-6개월) 목표가**:\n   - 상승 시나리오: 2,750원\n   - 하락 시나리오: 2,100원\n\n3. **대응 전략**:\n   - **상승 시나리오**: 저항선 돌파 시 추가 매수 고려. 목표가 도달 시 일부 청산.\n   - **하락 시나리오**: 지지선 이탈 시 손절매 실행. 하락 시 추가 매수는 신중히 고려.\n   - **횡보 시나리오**: 2,287원과 2,530원 사이에서 횡보 시 관망.\n\n### 주의사항\n- 모든 신호는 거래량 동반 여부를 필수로 확인해야 합니다.\n- 저항선 돌파 후 3일 지속성을 관찰하여 False Breakout 가능성을 줄입니다.\n- 공시나 이벤트 전후에는 기술적 신호의 신뢰도가 하락할 수 있습니다.\n- 단기, 중기, 장기 시계열을 종합적으로 판단하여 투자 결정을 내리세요.",
+        "data_sources_used": [
+          "Technical_Analysis_Calculated",
+          "yfinance",
+          "DART"
+        ],
+        "analysis_timestamp": 1750728396.3988006
+      }
+    ],
+    "synthesis_result": {
+      "synthesis_success": true,
+      "expert_count": 2,
+      "successful_count": 2,
+      "failed_count": 0,
+      "synthesis_content": "### 1. 핵심 투자 포인트\n\n1. **강한 상승 추세**: 현재 주가는 모든 주요 이동평균선 위에 위치하고 있으며, 이는 강한 상승 추세를 나타냅니다. 특히, MACD 지표가 양수로 상승 추세가 지속되고 있어 긍정적인 신호입니다.\n\n2. **거래량 증가**: 현재 거래량이 20일 평균 대비 1.29배 증가하였으며, 이는 상승 추세의 신뢰도를 높이는 요소로 작용합니다.\n\n3. **기술적 지표의 긍정적 신호**: MACD와 볼린저 밴드 분석에서 상승 추세가 지속되고 있으며, 종합 매매 신호는 매수로 나타나고 있습니다.\n\n4. **지지/저항선 활용 가능성**: 2,530원의 저항선을 돌파할 경우 추가 상승 가능성이 있으며, 목표가는 2,600원으로 설정되어 있습니다.\n\n### 2. 주요 리스크 요인\n\n1. **과매수 상태**: RSI가 78.26으로 과매수 상태에 있으며, 이는 매도 신호를 고려할 수 있는 상황입니다. 신중한 접근이 필요합니다.\n\n2. **지지선 이탈 가능성**: 2,287원의 지지선을 이탈할 경우 하락 가능성이 있으며, 손절매는 2,250원으로 설정되어 있습니다.\n\n3. **거래량의 지속성**: 거래량이 지속적으로 20일 평균 이상 유지되지 않을 경우 상승 추세의 신뢰도가 낮아질 수 있습니다.\n\n4. **시장 변동성**: 공시나 이벤트 전후에는 기술적 신호의 신뢰도가 하락할 수 있으며, 시장 변동성에 주의가 필요합니다.\n\n### 3. 종합 투자 의견\n\n- **보유**: 현재 강한 상승 추세와 거래량 증가로 인해 긍정적인 신호가 많지만, 과매수 상태와 지지선 이탈 가능성 등의 리스크 요인이 존재합니다. 따라서 신중한 접근이 필요하며, 보유 의견을 제시합니다.\n\n### 4. 목표가 또는 적정가 제시\n\n- **단기 목표가**: 2,600원 (상승 시나리오)\n- **손절매가**: 2,250원 (하락 시나리오)\n\n### 5. 전문가 의견 일치도\n\n- **보통**: 재무제표 분석가와 기술적 분석가의 접근 방식이 다르지만, 기술적 분석가의 분석에 따라 단기적인 상승 가능성이 높다고 판단됩니다. 그러나 재무 데이터의 부족으로 인해 장기적인 재무 건전성 평가가 어려운 상황입니다. 따라서 의견 일치도는 보통으로 평가됩니다.",
+      "synthesis_timestamp": 1750728411.2083836,
+      "data_sources_integrated": 3
+    },
+    "data_integration_quality": {
+      "overall_score": 10.0,
+      "quality_grade": "개선필요",
+      "total_possible_score": 100.0,
+      "achieved_score": 10.0,
+      "details": {
+        "financial_data_score": 10
+      },
+      "data_sources_count": 1
+    },
+    "cost_savings": {
+      "traditional_cost": 11.0,
+      "one_hot_cost": 0.08,
+      "savings_amount": 10.92,
+      "savings_percentage": 99.27272727272727,
+      "activated_agents": 2,
+      "depth": "quick"
+    },
+    "token_optimization": {
+      "optimization_applied": false,
+      "original_token_estimate": 643,
+      "optimized_token_estimate": 643,
+      "compression_ratio": 1.0
+    },
+    "analysis_depth": "quick",
+    "total_analysis_time": "37.97초",
+    "data_sources_integrated": {
+      "financial_data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "manus_web_search_performed": false,
+      "pdf_analysis_performed": false,
+      "enhanced_dart_used": false,
+      "crewai_synthesis_performed": true
+    }
+  },
+  "data_flow_tracking": {
+    "step1_stock_detection": {
+      "method": "ai_ai_web_search_priority",
+      "confidence": "high"
+    },
+    "step2_financial_data": {
+      "sources": [
+        "yfinance",
+        "DART"
+      ],
+      "quality": "낮음"
+    },
+    "step3_manus_collection": {
+      "richness_score": 0,
+      "pdf_detected": false,
+      "ready_for_crewai": false
+    },
+    "step4_crewai_synthesis": {
+      "success": true,
+      "experts_activated": 2,
+      "data_integration_success": true
+    },
+    "overall_data_completeness": 60.0
+  }
+}

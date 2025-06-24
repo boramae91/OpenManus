@@ -440,16 +440,32 @@ class EnhancedDartDataCollector:
                     "error": f"알 수 없는 보고서 타입: {report_type}",
                 }
 
-            # 2️⃣ 보고서 목록 조회
+            # 2️⃣ 보고서 목록 조회 (수정된 날짜 범위 검색 방식)
             logger.info(f"📋 {report_name} 목록 조회 중...")
             time.sleep(self.api_delay)
+
+            # 🔧 수정: 보고서 타입별 최적화된 날짜 범위 검색
+            if report_code == "11011":  # 사업보고서
+                # 사업보고서는 다음 연도 3-5월에 제출됨
+                search_year = int(bsns_year) + 1
+                bgn_de = f"{search_year}0301"  # 다음 연도 3월부터
+                end_de = f"{search_year}0531"  # 다음 연도 5월까지
+            else:  # 분기보고서, 반기보고서
+                # 분기보고서는 해당 연도 내에 제출됨
+                bgn_de = f"{bsns_year}0101"  # 해당 연도 1월부터
+                end_de = f"{bsns_year}1231"  # 해당 연도 12월까지
 
             params = {
                 "crtfc_key": self.dart_api_key,
                 "corp_code": corp_code,
-                "bsns_year": bsns_year,
-                "reprt_code": report_code,
+                "bgn_de": bgn_de,
+                "end_de": end_de,
+                "page_count": "100",  # 충분한 개수로 검색
             }
+
+            logger.info(
+                f"🔍 검색 매개변수: corp_code={corp_code}, 연도={bsns_year}, 보고서타입={report_code}"
+            )
 
             response = requests.get(
                 self.base_url + self.endpoints["disclosures"], params=params
@@ -463,12 +479,40 @@ class EnhancedDartDataCollector:
             if data.get("status") != "000":
                 return {"success": False, "error": f"API 오류: {data.get('message')}"}
 
-            # 가장 최신 보고서 선택
-            report_list = data.get("list", [])
+            # 🔧 수정: 특정 보고서 타입 필터링 후 최신 보고서 선택
+            all_reports = data.get("list", [])
+
+            # 보고서 코드에 따른 보고서명 매핑
+            report_type_map = {
+                "11011": "사업보고서",
+                "11012": "반기보고서",
+                "11013": "1분기보고서",
+                "11014": "3분기보고서",
+            }
+            target_report_name = report_type_map.get(report_code, "")
+
+            # 해당 보고서 타입만 필터링
+            if target_report_name:
+                report_list = [
+                    r
+                    for r in all_reports
+                    if target_report_name in r.get("report_nm", "")
+                ]
+            else:
+                report_list = all_reports
+
+            logger.info(
+                f"📊 전체 공시: {len(all_reports)}개, {report_name}: {len(report_list)}개"
+            )
+
             if not report_list:
                 return {"success": False, "error": f"{report_name}을 찾을 수 없습니다"}
 
-            latest_report = report_list[0]  # 가장 최신 보고서
+            # 가장 최신 보고서 선택 (날짜순 정렬)
+            sorted_reports = sorted(
+                report_list, key=lambda x: x.get("rcept_dt", ""), reverse=True
+            )
+            latest_report = sorted_reports[0]
             rcept_no = latest_report.get("rcept_no")
 
             if not rcept_no:
@@ -554,16 +598,27 @@ class EnhancedDartDataCollector:
     async def _check_report_exists(
         self, corp_code: str, bsns_year: str, report_code: str
     ) -> bool:
-        """보고서 존재 여부 확인 (Enhanced 디버깅 포함)"""
+        """보고서 존재 여부 확인 (Enhanced 디버깅 포함) - 날짜 범위 검색 방식 사용"""
         try:
             time.sleep(self.api_delay)
+
+            # 🔧 수정: 보고서 타입별 최적화된 날짜 범위 검색
+            if report_code == "11011":  # 사업보고서
+                # 사업보고서는 다음 연도 3-5월에 제출됨
+                search_year = int(bsns_year) + 1
+                bgn_de = f"{search_year}0301"  # 다음 연도 3월부터
+                end_de = f"{search_year}0531"  # 다음 연도 5월까지
+            else:  # 분기보고서, 반기보고서
+                # 분기보고서는 해당 연도 내에 제출됨
+                bgn_de = f"{bsns_year}0101"  # 해당 연도 1월부터
+                end_de = f"{bsns_year}1231"  # 해당 연도 12월까지
 
             params = {
                 "crtfc_key": self.dart_api_key,
                 "corp_code": corp_code,
-                "bsns_year": bsns_year,
-                "reprt_code": report_code,
-                "page_count": "1",  # 1개만 확인
+                "bgn_de": bgn_de,
+                "end_de": end_de,
+                "page_count": "100",  # 충분한 개수로 검색
             }
 
             # 디버깅을 위한 상세 로깅 (사용자를 위한 한국어 설명)
@@ -598,12 +653,46 @@ class EnhancedDartDataCollector:
                 data = response.json()
                 api_status = data.get("status")
                 api_message = data.get("message", "메시지 없음")
-                list_count = len(data.get("list", []))
+                report_list = data.get("list", [])
+
+                # 🔧 수정: 특정 보고서 타입 필터링
+                filtered_reports = []
+                if report_code and report_list:
+                    # 보고서 코드에 따른 보고서명 매핑
+                    report_type_map = {
+                        "11011": "사업보고서",
+                        "11012": "반기보고서",
+                        "11013": "1분기보고서",
+                        "11014": "3분기보고서",
+                    }
+                    target_report_name = report_type_map.get(report_code, "")
+
+                    if target_report_name:
+                        filtered_reports = [
+                            r
+                            for r in report_list
+                            if target_report_name in r.get("report_nm", "")
+                        ]
+                    else:
+                        filtered_reports = report_list
+                else:
+                    filtered_reports = report_list
+
+                list_count = len(filtered_reports)
 
                 # 상세한 API 응답 로깅 (문제 파악을 위한 디버깅 정보)
                 logger.info(f"   - API 상태코드: {api_status}")
                 logger.info(f"   - API 메시지: {api_message}")
-                logger.info(f"   - 검색결과 개수: {list_count}개")
+                logger.info(f"   - 전체 검색결과: {len(report_list)}개")
+                logger.info(f"   - 필터링된 결과: {list_count}개")
+
+                # 찾은 보고서들 로깅
+                if filtered_reports:
+                    logger.info(f"   - 발견된 보고서들:")
+                    for i, report in enumerate(filtered_reports[:3]):
+                        report_nm = report.get("report_nm", "N/A")
+                        rcept_dt = report.get("rcept_dt", "N/A")
+                        logger.info(f"     [{i+1}] {report_nm} ({rcept_dt})")
 
                 # 에러인 경우 추가 정보 로깅
                 if api_status != "000":
