@@ -479,6 +479,7 @@ class LargePDFAnalyzer:
 
     def __init__(
         self,
+        llm=None,  # LLM 인스턴스 (선택사항)
         chunk_size: int = 100000,  # 10만자 청크
         overlap_size: int = 5000,  # 5천자 겹침
         max_section_size=2000000,  # 🚀 200만자 지원으로 확장
@@ -523,9 +524,7 @@ class LargePDFAnalyzer:
         self.analysis_results = {}
 
         logger.info("✅ 대용량 PDF 분석 시스템 초기화 완료!")
-        logger.info(
-            f"📊 설정값: 청크크기={max_chunk_size:,}자, 겹침={overlap_size:,}자"
-        )
+        logger.info(f"📊 설정값: 청크크기={chunk_size:,}자, 겹침={overlap_size:,}자")
 
     async def extract_raw_text_only(
         self,
