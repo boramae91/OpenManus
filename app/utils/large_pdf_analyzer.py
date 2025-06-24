@@ -1032,6 +1032,9 @@ class LargePDFAnalyzer:
         🚀 PDFReader 없이 직접 PDF 텍스트 추출 (대용량 특화)
         로컬 파일과 URL PDF 모두 지원 (다운로드 없이 메모리 처리)
 
+        🔧 ZIP 파일 감지 및 처리 로직 추가됨
+        (DART API에서 ZIP 압축 파일로 문서를 제공하는 경우를 대응해요)
+
         Args:
             pdf_path: PDF 파일 경로 또는 URL
 
@@ -1039,13 +1042,6 @@ class LargePDFAnalyzer:
             Dict: 추출 결과
         """
         import io
-
-        # 지원하는 PDF 라이브러리들 (우선순위 순서)
-        extraction_methods = [
-            ("pdfplumber", self._extract_with_pdfplumber),
-            ("pymupdf", self._extract_with_pymupdf),
-            ("pypdf", self._extract_with_pypdf),
-        ]
 
         # PDF 데이터 준비 (로컬 파일 또는 URL)
         try:
@@ -1058,8 +1054,40 @@ class LargePDFAnalyzer:
                 # 📁 로컬 파일 - 파일에서 읽기
                 with open(pdf_path, "rb") as file:
                     pdf_data = io.BytesIO(file.read())
+
+            # 🔧 ZIP 파일 감지 (DART API 대응)
+            pdf_data.seek(0)
+            file_header = pdf_data.read(4)
+            pdf_data.seek(0)
+
+            # ZIP 파일 매직 넘버 확인 (b'PK\x03\x04' 또는 다른 ZIP 변형들)
+            if file_header.startswith(b"PK"):
+                logger.warning("🚨 ZIP 압축 파일 감지 - PDF 추출 불가")
+                return {
+                    "success": False,
+                    "error": "ZIP 압축 파일입니다. DART API 문서는 압축 해제 후 처리되어야 합니다.",
+                    "file_type": "ZIP",
+                    "suggestion": "EnhancedDartDataCollector의 ZIP 처리 로직을 사용하세요",
+                }
+
+            # PDF 파일 매직 넘버 확인
+            if not file_header.startswith(b"%PDF"):
+                logger.warning(f"⚠️ PDF 형식이 아닌 파일 감지: {file_header}")
+                return {
+                    "success": False,
+                    "error": f"PDF 형식이 아닙니다. 파일 헤더: {file_header}",
+                    "file_type": "Unknown",
+                }
+
         except Exception as e:
             return {"success": False, "error": f"PDF 데이터 준비 실패: {str(e)}"}
+
+        # 지원하는 PDF 라이브러리들 (우선순위 순서)
+        extraction_methods = [
+            ("pdfplumber", self._extract_with_pdfplumber),
+            ("pymupdf", self._extract_with_pymupdf),
+            ("pypdf", self._extract_with_pypdf),
+        ]
 
         # 각 라이브러리를 순차 시도
         for method_name, method_func in extraction_methods:

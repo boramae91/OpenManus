@@ -548,12 +548,13 @@ class EnhancedDartDataCollector:
             try:
                 # LargePDFAnalyzer로 텍스트 기반 딕셔너리 생성
                 if self.large_pdf_analyzer:
-                    dictionary_result = (
-                        await self.large_pdf_analyzer._create_dictionary_without_toc(
-                            pdf_path=temp_file_path,  # 텍스트 파일 경로
-                            company_name=company_name,
-                            max_section_size=1000000,  # 100만자 제한
-                        )
+                    # 🔧 수정: 텍스트 파일인 경우 직접 딕셔너리 생성
+                    # DART API에서 다운로드한 텍스트를 PDF처럼 처리하지 말고 텍스트로 처리해요
+                    dictionary_result = await self._create_text_based_dictionary(
+                        text_content=document_content,
+                        company_name=company_name,
+                        max_section_size=1000000,  # 100만자 제한
+                        file_path=temp_file_path,
                     )
 
                     if dictionary_result.get("success"):
@@ -576,7 +577,7 @@ class EnhancedDartDataCollector:
                     else:
                         return {
                             "success": False,
-                            "error": f"LargePDFAnalyzer 처리 실패: {dictionary_result.get('error')}",
+                            "error": f"텍스트 기반 딕셔너리 생성 실패: {dictionary_result.get('error')}",
                         }
                 else:
                     return {
@@ -718,6 +719,10 @@ class EnhancedDartDataCollector:
         """
         🚀 DART API에서 보고서 원문 내용 다운로드
 
+        DART API는 문서를 ZIP 압축 파일로 제공하므로 이를 올바르게 처리해요
+        (사용자에게 쉽게 설명하면, DART에서 문서를 압축해서 보내주기 때문에
+        압축을 풀어서 내용을 읽어야 해요)
+
         Args:
             rcept_no: 접수번호
 
@@ -742,8 +747,52 @@ class EnhancedDartDataCollector:
                 )
                 return None
 
-            # 🚀 XML 응답 처리 (수정됨)
-            content = response.text
+            # 🔧 수정: DART API는 ZIP 압축 파일로 문서를 제공합니다
+            try:
+                # ZIP 파일 처리 (b'PK\x03\x04\x14' 헤더가 ZIP 파일의 매직 넘버예요)
+                import io
+                import zipfile
+
+                # 응답 내용이 ZIP 파일인지 확인
+                if response.content.startswith(b"PK\x03\x04"):
+                    logger.info("📦 ZIP 압축 파일 감지 - 압축 해제 중...")
+
+                    # ZIP 파일 압축 해제
+                    zf = zipfile.ZipFile(io.BytesIO(response.content))
+                    info_list = zf.infolist()
+
+                    if not info_list:
+                        logger.error("❌ ZIP 파일이 비어있습니다")
+                        return None
+
+                    # 첫 번째 파일 읽기 (보통 문서 내용이 첫 번째 파일에 있어요)
+                    first_file = info_list[0]
+                    document_data = zf.read(first_file.filename)
+
+                    logger.info(f"📄 ZIP에서 파일 추출: {first_file.filename}")
+
+                    # 인코딩 시도 (한글을 제대로 읽기 위한 방법들을 차례로 시도해요)
+                    content = None
+                    for encoding in ["euc-kr", "utf-8", "cp949"]:
+                        try:
+                            content = document_data.decode(encoding)
+                            logger.info(f"✅ 인코딩 성공: {encoding}")
+                            break
+                        except UnicodeDecodeError:
+                            continue
+
+                    if not content:
+                        logger.error("❌ 모든 인코딩 방식 실패")
+                        return None
+
+                else:
+                    # ZIP이 아닌 경우 (기존 방식)
+                    content = response.text
+
+            except Exception as zip_error:
+                logger.error(f"❌ ZIP 처리 실패: {zip_error}")
+                # ZIP 처리 실패시 기존 방식으로 시도
+                content = response.text
 
             # XML 오류 응답 확인
             if "<?xml" in content and ("status" in content or "error" in content):
@@ -2201,3 +2250,235 @@ class EnhancedDartDataCollector:
             result["success"] = False
             result["error"] = str(e)
             return result
+
+    async def _create_text_based_dictionary(
+        self,
+        text_content: str,
+        company_name: str,
+        max_section_size: int,
+        file_path: str = None,
+    ) -> Dict[str, Any]:
+        """
+        DART API에서 다운로드한 텍스트를 직접 섹션별 딕셔너리로 변환
+
+        이 함수는 ZIP 압축 해제 후 얻은 텍스트 내용을 PDF로 처리하지 않고
+        텍스트 분석으로 바로 딕셔너리를 만들어줘요
+
+        Args:
+            text_content: DART API에서 다운로드한 텍스트 내용
+            company_name: 회사명
+            max_section_size: 섹션별 최대 크기
+            file_path: 임시 파일 경로 (옵션)
+
+        Returns:
+            Dict: 딕셔너리 생성 결과
+        """
+        try:
+            start_time = time.time()
+            logger.info(f"📝 텍스트 기반 딕셔너리 생성 시작: {company_name}")
+
+            if not text_content or len(text_content.strip()) < 1000:
+                return {
+                    "success": False,
+                    "error": f"텍스트 내용이 너무 짧습니다: {len(text_content)}자",
+                }
+
+            # 텍스트를 논리적 섹션으로 분할
+            sections_dict = self._split_text_into_logical_sections(
+                text_content, max_section_size
+            )
+
+            if not sections_dict:
+                return {"success": False, "error": "텍스트 섹션 분할 실패"}
+
+            # 메타데이터 생성
+            metadata = {
+                "company_name": company_name,
+                "total_text_length": len(text_content),
+                "section_count": len(sections_dict),
+                "processing_time_seconds": time.time() - start_time,
+                "creation_timestamp": datetime.now().isoformat(),
+                "extraction_method": "dart_api_text",
+                "file_type": "DART_ZIP_TEXT",
+                "average_section_size": (
+                    len(text_content) // len(sections_dict) if sections_dict else 0
+                ),
+            }
+
+            logger.info(
+                f"✅ 텍스트 기반 딕셔너리 생성 완료: {len(sections_dict)}개 섹션"
+            )
+
+            return {
+                "success": True,
+                "pdf_dictionary": sections_dict,
+                "metadata": metadata,
+                "processing_time": time.time() - start_time,
+            }
+
+        except Exception as e:
+            logger.error(f"❌ 텍스트 기반 딕셔너리 생성 실패: {e}")
+            return {
+                "success": False,
+                "error": f"텍스트 기반 딕셔너리 생성 실패: {str(e)}",
+            }
+
+    def _split_text_into_logical_sections(
+        self, text: str, max_section_size: int
+    ) -> Dict[str, str]:
+        """
+        텍스트를 논리적 섹션으로 분할
+
+        사업보고서나 분기보고서의 구조를 인식해서 의미있는 섹션으로 나누어줘요
+        """
+        try:
+            sections = {}
+
+            # 섹션 구분 키워드들 (사업보고서/분기보고서용)
+            section_keywords = [
+                "【 주요 경영지표 】",
+                "【 사업의 내용 】",
+                "【 경영진의 경영진단 】",
+                "【 재무제표 】",
+                "【 감사보고서 】",
+                "【 주주총회 】",
+                "Ⅰ. 회사의 개요",
+                "Ⅱ. 사업의 내용",
+                "Ⅲ. 재무에 관한 사항",
+                "Ⅳ. 감사인의 감사의견",
+                "Ⅴ. 이사회 등 회사의 기관",
+                "1. 회사의 개요",
+                "2. 사업의 내용",
+                "3. 재무에 관한 사항",
+                "4. 감사인의 감사의견",
+                "5. 이사회 등 회사의 기관",
+                "가. 회사의 개요",
+                "나. 사업의 내용",
+                "다. 재무에 관한 사항",
+                "(1) 회사의 개요",
+                "(2) 사업의 내용",
+                "(3) 재무에 관한 사항",
+            ]
+
+            # 현재 섹션
+            current_section = "01_회사개요_및_사업내용"
+            current_content = ""
+            section_count = 1
+
+            lines = text.split("\n")
+
+            for line in lines:
+                line_stripped = line.strip()
+
+                # 섹션 구분점 찾기
+                section_found = False
+                for keyword in section_keywords:
+                    if keyword in line_stripped:
+                        # 이전 섹션 저장
+                        if current_content.strip():
+                            # 섹션 크기 제한 적용
+                            if len(current_content) > max_section_size:
+                                sub_sections = self._split_large_section(
+                                    current_content, current_section, max_section_size
+                                )
+                                sections.update(sub_sections)
+                            else:
+                                sections[current_section] = current_content.strip()
+
+                        # 새 섹션 시작
+                        section_count += 1
+                        current_section = f"{section_count:02d}_{self._extract_section_name(line_stripped)}"
+                        current_content = line + "\n"
+                        section_found = True
+                        break
+
+                if not section_found:
+                    current_content += line + "\n"
+
+            # 마지막 섹션 저장
+            if current_content.strip():
+                if len(current_content) > max_section_size:
+                    sub_sections = self._split_large_section(
+                        current_content, current_section, max_section_size
+                    )
+                    sections.update(sub_sections)
+                else:
+                    sections[current_section] = current_content.strip()
+
+            # 빈 섹션이나 너무 작은 섹션 제거
+            filtered_sections = {
+                k: v for k, v in sections.items() if v.strip() and len(v.strip()) > 100
+            }
+
+            logger.info(f"📊 텍스트 섹션 분할 완료: {len(filtered_sections)}개 섹션")
+            return filtered_sections
+
+        except Exception as e:
+            logger.error(f"❌ 텍스트 섹션 분할 실패: {e}")
+            return {}
+
+    def _extract_section_name(self, line: str) -> str:
+        """라인에서 섹션 이름 추출"""
+        # 특수문자 제거하고 간단한 이름 생성
+        import re
+
+        clean_name = re.sub(r"[【】\[\]()（）Ⅰ-Ⅴ1-9가-힣\.\s]+", "", line)
+        clean_name = re.sub(r"[^가-힣a-zA-Z]", "_", clean_name)
+        clean_name = clean_name.strip("_")
+
+        if not clean_name:
+            return "기타섹션"
+
+        return clean_name[:20]  # 최대 20자로 제한
+
+    def _split_large_section(
+        self, content: str, section_name: str, max_size: int
+    ) -> Dict[str, str]:
+        """큰 섹션을 여러 개로 분할"""
+        try:
+            sections = {}
+
+            # 단락별로 분할 시도
+            paragraphs = content.split("\n\n")
+            current_subsection = ""
+            subsection_count = 1
+
+            for paragraph in paragraphs:
+                if len(current_subsection) + len(paragraph) > max_size:
+                    if current_subsection.strip():
+                        sections[f"{section_name}_part{subsection_count:02d}"] = (
+                            current_subsection.strip()
+                        )
+                        subsection_count += 1
+                        current_subsection = paragraph + "\n\n"
+                    else:
+                        # 단일 단락이 너무 큰 경우 강제 분할
+                        if len(paragraph) > max_size:
+                            chunks = [
+                                paragraph[i : i + max_size]
+                                for i in range(0, len(paragraph), max_size)
+                            ]
+                            for i, chunk in enumerate(chunks):
+                                sections[
+                                    f"{section_name}_chunk{subsection_count:02d}"
+                                ] = chunk
+                                subsection_count += 1
+                        else:
+                            sections[f"{section_name}_part{subsection_count:02d}"] = (
+                                paragraph
+                            )
+                            subsection_count += 1
+                else:
+                    current_subsection += paragraph + "\n\n"
+
+            # 마지막 서브섹션 저장
+            if current_subsection.strip():
+                sections[f"{section_name}_part{subsection_count:02d}"] = (
+                    current_subsection.strip()
+                )
+
+            return sections
+
+        except Exception as e:
+            logger.error(f"❌ 대형 섹션 분할 실패: {e}")
+            return {section_name: content}  # 실패시 원본 반환
