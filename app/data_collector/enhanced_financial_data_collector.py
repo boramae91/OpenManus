@@ -62,8 +62,8 @@ class EnhancedDartDataCollector:
             # 공시정보
             "disclosures": "/list.json",  # 공시검색
             "corp_code": "/corpCode.xml",  # 고유번호
-            # 🚀 보고서 원문 관련 (NEW!)
-            "document": "/document.json",  # 보고서 원문
+            # 🚀 보고서 원문 관련 (FIXED!)
+            "document": "/document.xml",  # 보고서 원문 (XML 형식)
         }
 
         # 🚀 대용량 PDF 분석기 지연 로딩을 위한 참조
@@ -552,7 +552,7 @@ class EnhancedDartDataCollector:
                         await self.large_pdf_analyzer._create_dictionary_without_toc(
                             pdf_path=temp_file_path,  # 텍스트 파일 경로
                             company_name=company_name,
-                            max_section_size=600000,  # 60만자 제한
+                            max_section_size=1000000,  # 100만자 제한
                         )
                     )
 
@@ -742,20 +742,27 @@ class EnhancedDartDataCollector:
                 )
                 return None
 
-            # 응답이 JSON인 경우 (오류 응답)
-            try:
-                json_data = response.json()
-                if json_data.get("status") != "000":
-                    logger.error(
-                        f"❌ 보고서 원문 다운로드 API 오류: {json_data.get('message')}"
-                    )
-                    return None
-            except:
-                # JSON이 아니면 원문 내용으로 간주
-                pass
-
-            # 원문 내용 추출 및 정제
+            # 🚀 XML 응답 처리 (수정됨)
             content = response.text
+
+            # XML 오류 응답 확인
+            if "<?xml" in content and ("status" in content or "error" in content):
+                try:
+                    # XML 파싱으로 오류 확인
+                    import xml.etree.ElementTree as ET
+
+                    root = ET.fromstring(content)
+
+                    # 오류 메시지 추출
+                    error_msg = root.find(".//message")
+                    if error_msg is not None:
+                        logger.error(
+                            f"❌ 보고서 원문 다운로드 API 오류: {error_msg.text}"
+                        )
+                        return None
+                except Exception:
+                    # XML 파싱 실패시 계속 진행
+                    pass
 
             # HTML 태그 제거 (BeautifulSoup 사용)
             try:

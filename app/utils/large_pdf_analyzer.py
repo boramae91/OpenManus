@@ -1,23 +1,47 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-🚀 대용량 PDF 보고서 분석 시스템
+🚀 대용량 PDF 분석 시스템 v2.0
 
-60만 글자까지의 대용량 PDF 파일을 AI로 완전 분석하는 전문 시스템입니다.
-CrewAI 전문가들이 활용할 수 있는 PDF 딕셔너리 인터페이스도 제공해요!
+100만 글자까지의 대용량 PDF 파일을 AI로 완전 분석하는 전문 시스템입니다.
 
 주요 기능:
-1. 📄 무제한 PDF 텍스트 추출 (URL + 로컬 파일 지원)
-2. 🧩 스마트 청킹 (목차 기반 + AI 구조 분석)
-3. 🎯 CrewAI용 PDF 딕셔너리 생성 (60만자 지원)
-4. 📝 전문가별 섹션 선별 시스템
-5. 💾 구조화된 JSON 결과 저장
+1. 🔍 PDF 목차 기반 지능형 청킹 (최적화된 섹션 분할)
+2. 🤖 GPT-4o 기반 섹션별 정밀 분석
+3. 🎯 CrewAI용 PDF 딕셔너리 생성 (100만자 지원)
+4. 💾 JSON 직렬화 지원 (메모리 효율성)
 
-🔧 지원하는 PDF 처리:
-- 로컬 파일: /path/to/file.pdf
-- URL: https://example.com/report.pdf
-- 대용량: 60만+ 글자 처리 가능
-- 다양한 형식: 사업보고서, 분기보고서, 연구보고서 등
+특징:
+- 지능형: 목차와 제목 구조를 인식한 논리적 분할
+- 확장성: 다양한 PDF 형식 지원
+- 대용량: 100만+ 글자 처리 가능
+- 효율성: 메모리 최적화 및 병렬 처리
+- 안정성: 에러 처리 및 복구 기능
+
+사용법:
+```python
+from app.utils.large_pdf_analyzer import LargePDFAnalyzer
+from app.llm import LLM
+
+llm = LLM()
+analyzer = LargePDFAnalyzer(llm=llm)
+
+# PDF 파일을 딕셔너리로 변환
+result = await analyzer.analyze_pdf_to_dictionary(
+    pdf_path="report.pdf",
+    company_name="삼성전자",
+    max_section_size=1000000  # 100만자 지원
+)
+
+if result["success"]:
+    pdf_dict = result["pdf_dictionary"]
+    print(f"분석 완료: {len(pdf_dict)}개 섹션")
+```
+
+버전 히스토리:
+- v1.0: 기본 PDF 분석 기능
+- v1.5: 목차 기반 청킹 추가
+- v2.0: 100만+ 글자 지원
 """
 
 import asyncio
@@ -83,7 +107,7 @@ class IndependentChunkProcessor:
 
     대용량 PDF를 위한 전용 청크 프로세서예요:
     - PDFReader 의존성 완전 제거
-    - 60만+ 글자 지원
+    - 100만+ 글자 지원
     - 🔖 목차 기반 청킹 지원
     - 스마트 섹션 보존
     """
@@ -143,7 +167,7 @@ class IndependentChunkProcessor:
         """
         텍스트를 논리적 섹션으로 분할합니다 (목차가 없는 경우)
 
-        🚀 60만자 지원으로 대용량 섹션도 완벽 처리!
+        🚀 100만자 지원으로 대용량 섹션도 완벽 처리!
         """
         sections = {}
 
@@ -171,7 +195,7 @@ class IndependentChunkProcessor:
 
             section_text = text[start:end].strip()
 
-            # 🚀 최소 길이 100자로 유지하되, 최대 크기는 60만자로 확장
+            # 🚀 최소 길이 100자로 유지하되, 최대 크기는 100만자로 확장
             if len(section_text) >= 100:  # 최소 길이
                 # 섹션 제목 추출
                 title_match = re.match(r"(.*?)\n", section_text)
@@ -180,16 +204,15 @@ class IndependentChunkProcessor:
                 else:
                     section_title = f"섹션_{i+1}"
 
-                # 🚀 60만자 제한 적용 (기존보다 12배 확장!)
-                if len(section_text) > self.chunk_size:
+                # 🚀 100만자 제한 적용 (기존보다 20배 확장!)
+                if len(section_text) > 1000000:
                     section_text = (
-                        section_text[: self.chunk_size]
-                        + "...[60만자 제한으로 내용 일부 생략]"
+                        section_text[:1000000] + "...[100만자 제한으로 내용 일부 생략]"
                     )
 
                 sections[section_title] = section_text
 
-        logger.info(f"🤖 논리적 섹션 분할 완료 - {len(sections)}개 섹션 (60만자 지원)")
+        logger.info(f"🤖 논리적 섹션 분할 완료 - {len(sections)}개 섹션 (100만자 지원)")
         return [
             {
                 "chunk_id": i + 1,
@@ -449,26 +472,28 @@ class IndependentChunkProcessor:
 
 class LargePDFAnalyzer:
     """
-    대용량 PDF 보고서 전문 분석 시스템
+    🚀 대용량 PDF 분석기 v2.0
 
-    이 클래스는 대용량 PDF를 처리하는 전문가입니다:
-    - 60만 글자도 안전하게 처리할 수 있어요
-    - 보고서 구조를 자동으로 파악해요
-    - 각 섹션을 전문적으로 분석해요
-    - 결과를 체계적으로 정리해서 JSON으로 저장해요
+    주요 개선사항:
+    - 목차 기반 지능형 청킹
+    - 100만+ 글자 지원
+    - CrewAI 호환 딕셔너리 생성
+    - JSON 직렬화 지원
     """
 
-    def __init__(self, llm: LLM = None):
+    def __init__(self, llm: LLM, max_chunk_size: int = 25000, overlap_size: int = 2000):
         """
-        시스템 초기화
+        🚀 100만자 지원 대용량 PDF 분석기 초기화
 
         Args:
-            llm: OpenAI GPT-4o를 사용하는 언어모델 (없으면 자동 생성)
+            llm: LLM 인스턴스
+            max_chunk_size: 청크 최대 크기 (기본 25,000자)
+            overlap_size: 청크 간 겹침 크기 (기본 2,000자)
         """
         logger.info("🚀 대용량 PDF 분석 시스템 초기화 중...")
 
         # AI 에이전트들 초기화
-        self.llm = llm if llm else LLM()
+        self.llm = llm
 
         # Manus agent import 처리
         try:
@@ -483,8 +508,8 @@ class LargePDFAnalyzer:
 
         # 🚀 독립 청크 처리기 초기화 (PDFReader 완전 제거!)
         self.chunk_processor = IndependentChunkProcessor(
-            chunk_size=25000,  # 25KB 청크 (더 큰 청크로 효율성 향상)
-            overlap_size=2000,  # 2KB 겹침 (맥락 보존)
+            chunk_size=max_chunk_size,  # 최대 청크 크기 설정
+            overlap_size=overlap_size,  # 청크 간 겹침 크기 설정
         )
 
         # 분석 결과 저장용
@@ -492,7 +517,7 @@ class LargePDFAnalyzer:
 
         logger.info("✅ 대용량 PDF 분석 시스템 초기화 완료!")
         logger.info(
-            f"📊 설정값: 청크크기={self.chunk_processor.chunk_size:,}자, 겹침={self.chunk_processor.overlap_size:,}자"
+            f"📊 설정값: 청크크기={max_chunk_size:,}자, 겹침={overlap_size:,}자"
         )
 
     async def extract_raw_text_only(
@@ -885,7 +910,7 @@ class LargePDFAnalyzer:
         """
         PDF에서 전체 텍스트를 추출하는 함수
 
-        60만 글자도 안전하게 처리할 수 있도록 최적화되어 있어요.
+        100만 글자도 안전하게 처리할 수 있도록 최적화되어 있어요.
         여러 PDF 라이브러리를 시도해서 가장 좋은 결과를 얻습니다.
         URL PDF도 자동으로 다운로드해서 처리합니다.
 
@@ -1743,7 +1768,7 @@ class LargePDFAnalyzer:
         self,
         pdf_path: str,
         company_name: str = "분석대상회사",
-        max_section_size: int = 600000,  # 🚀 60만자로 확장!
+        max_section_size: int = 1000000,  # 🚀 100만자로 확장!
     ) -> Dict[str, Any]:
         """
         🚀 CrewAI 전문가용 PDF 딕셔너리 생성기
@@ -1756,7 +1781,7 @@ class LargePDFAnalyzer:
         Args:
             pdf_path: PDF 파일 경로 또는 URL
             company_name: 회사명
-            max_section_size: 각 섹션의 최대 크기 (토큰 제한 고려) - 기본 60만자
+            max_section_size: 각 섹션의 최대 크기 (토큰 제한 고려) - 기본 100만자
 
         Returns:
             Dict: {
@@ -1769,7 +1794,7 @@ class LargePDFAnalyzer:
         """
         start_time = time.time()
         logger.info(f"🚀 {company_name} PDF 딕셔너리 생성 시작...")
-        logger.info(f"   최대 섹션 크기: {max_section_size:,}자 (60만자 지원)")
+        logger.info(f"   최대 섹션 크기: {max_section_size:,}자 (100만자 지원)")
 
         try:
             # 1️⃣ PDF 목차 추출
@@ -1880,7 +1905,7 @@ class LargePDFAnalyzer:
 
         사업보고서나 분기보고서에서 중요한 주석 정보를 찾아내는 핵심 기능입니다.
 
-        🚀 60만자 지원으로 대용량 주석도 완전 분석!
+        🚀 100만자 지원으로 대용량 주석도 완전 분석!
         """
         footnote_sections = {}
 
@@ -1901,7 +1926,7 @@ class LargePDFAnalyzer:
                 for match in matches:
                     footnote_text = match.group().strip()
 
-                    # 🚀 60만자 제한으로 확장 (기존 100~50,000자에서 100~600,000자로)
+                    # 🚀 100만자 제한으로 확장 (기존 100~50,000자에서 100~1,000,000자로)
                     if 100 <= len(footnote_text) <= max_section_size:
                         # 주석 제목 추출 (첫 줄 또는 처음 50자)
                         first_line = footnote_text.split("\n")[0][:50]
@@ -1928,14 +1953,14 @@ class LargePDFAnalyzer:
 
                 for match in matches:
                     context_text = match.group().strip()
-                    # 🚀 최소 200자에서 최대 60만자까지 지원
+                    # 🚀 최소 200자에서 최대 100만자까지 지원
                     if 200 <= len(context_text) <= max_section_size:
                         footnote_title = f"키워드_{keyword}_주변내용"
                         if footnote_title not in footnote_sections:  # 중복 방지
                             footnote_sections[footnote_title] = context_text
 
             logger.info(
-                f"📝 주석 섹션 {len(footnote_sections)}개 추출 완료 (60만자 지원)"
+                f"📝 주석 섹션 {len(footnote_sections)}개 추출 완료 (100만자 지원)"
             )
 
         except Exception as e:
@@ -2066,7 +2091,7 @@ class LargePDFAnalyzer:
         """
         텍스트를 논리적 섹션으로 분할합니다 (목차가 없는 경우)
 
-        🚀 60만자 지원으로 대용량 섹션도 완벽 처리!
+        🚀 100만자 지원으로 대용량 섹션도 완벽 처리!
         """
         sections = {}
 
@@ -2094,7 +2119,7 @@ class LargePDFAnalyzer:
 
             section_text = text[start:end].strip()
 
-            # 🚀 최소 길이 100자로 유지하되, 최대 크기는 60만자로 확장
+            # 🚀 최소 길이 100자로 유지하되, 최대 크기는 100만자로 확장
             if len(section_text) >= 100:  # 최소 길이
                 # 섹션 제목 추출
                 title_match = re.match(r"(.*?)\n", section_text)
@@ -2103,11 +2128,11 @@ class LargePDFAnalyzer:
                 else:
                     section_title = f"섹션_{i+1}"
 
-                # 🚀 60만자 제한 적용
+                # 🚀 100만자 제한 적용
                 if len(section_text) > max_section_size:
                     section_text = (
                         section_text[:max_section_size]
-                        + "...[60만자 제한으로 내용 일부 생략]"
+                        + "...[100만자 제한으로 내용 일부 생략]"
                     )
 
                 sections[section_title] = section_text
@@ -2116,7 +2141,7 @@ class LargePDFAnalyzer:
         if not sections and len(text) >= 100:
             sections["전체_문서"] = text[:max_section_size]
 
-        logger.info(f"🤖 논리적 섹션 분할 완료 - {len(sections)}개 섹션 (60만자 지원)")
+        logger.info(f"🤖 논리적 섹션 분할 완료 - {len(sections)}개 섹션 (100만자 지원)")
         return sections
 
 
