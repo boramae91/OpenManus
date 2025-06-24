@@ -126,7 +126,7 @@ async def test_document_download_directly():
             # 텍스트 기반 딕셔너리 생성 테스트
             print(f"\n🧩 텍스트 기반 딕셔너리 생성 테스트...")
             dict_result = await collector._create_text_based_dictionary(
-                text_content=content, company_name="삼성전자", max_section_size=1000000
+                text_content=content, company_name="삼성전자", max_section_size=2000000
             )
 
             if dict_result.get("success"):

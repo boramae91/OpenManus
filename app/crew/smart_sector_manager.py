@@ -1168,11 +1168,11 @@ class SmartSectorManager:
                         if section_title in pdf_dictionary:
                             content = pdf_dictionary[section_title]
 
-                            # 100만자 제한
-                            if len(content) > 1000000:
+                            # 🚀 200만자 제한으로 확장
+                            if len(content) > 2000000:
                                 content = (
-                                    content[:1000000]
-                                    + "\n...[100만자 제한으로 내용 일부 생략]..."
+                                    content[:2000000]
+                                    + "\n...[200만자 제한으로 내용 일부 생략]..."
                                 )
 
                             context_parts.append(f"### {section_title}")
@@ -1206,11 +1206,11 @@ class SmartSectorManager:
                         for section_title, content in footnote_sections.items():
                             # 🚀 주석 전문가는 섹션 제한 없음! 모든 주석 섹션 완전 분석
                             if (
-                                len(content) > 1000000
-                            ):  # 개별 섹션 100만자 제한으로 확대
+                                len(content) > 2000000
+                            ):  # 🚀 개별 섹션 200만자 제한으로 확대
                                 content = (
-                                    content[:1000000]
-                                    + "\n...[100만자 제한으로 내용 일부 생략]..."
+                                    content[:2000000]
+                                    + "\n...[200만자 제한으로 내용 일부 생략]..."
                                 )
 
                             context_parts.append(f"### {section_title}")
@@ -1240,11 +1240,11 @@ class SmartSectorManager:
                         for section_title, content in expert_sections.items():
                             # 🚀 모든 전문가 섹션 제한 제거! 필요한 모든 섹션 활용
                             if (
-                                len(content) > 1000000
-                            ):  # 개별 섹션 100만자 제한으로 확대
+                                len(content) > 2000000
+                            ):  # 🚀 개별 섹션 200만자 제한으로 확대
                                 content = (
-                                    content[:1000000]
-                                    + "\n...[100만자 제한으로 내용 일부 생략]..."
+                                    content[:2000000]
+                                    + "\n...[200만자 제한으로 내용 일부 생략]..."
                                 )
 
                             context_parts.append(f"### {section_title}")
@@ -1412,10 +1412,12 @@ class SmartSectorManager:
                         f"📄 **{expert.name} 관련 사업보고서 섹션 (연간 종합정보)**:"
                     )
                     for section_title, content, score in business_sections:
-                        if len(content) > 1000000:  # 사업보고서는 100만자 제한
+                        if (
+                            len(content) > 2000000
+                        ):  # 🚀 사업보고서 200만자 제한으로 확장
                             content = (
-                                content[:1000000]
-                                + "\n...[사업보고서 내용 일부 생략]..."
+                                content[:2000000]
+                                + "\n...[사업보고서 내용 일부 생략 (200만자 제한)]..."
                             )
                         context_parts.append(f"### {section_title} (관련도: {score}점)")
                         context_parts.append(content)
@@ -1431,10 +1433,12 @@ class SmartSectorManager:
                         f"📈 **{expert.name} 관련 분기보고서 섹션 (최신 분기정보)**:"
                     )
                     for section_title, content, score in quarterly_sections:
-                        if len(content) > 1000000:  # 분기보고서도 100만자 제한
+                        if (
+                            len(content) > 2000000
+                        ):  # 🚀 분기보고서 200만자 제한으로 확장
                             content = (
-                                content[:1000000]
-                                + "\n...[분기보고서 내용 일부 생략]..."
+                                content[:2000000]
+                                + "\n...[분기보고서 내용 일부 생략 (200만자 제한)]..."
                             )
                         context_parts.append(f"### {section_title} (관련도: {score}점)")
                         context_parts.append(content)

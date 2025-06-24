@@ -553,7 +553,7 @@ class EnhancedDartDataCollector:
                     dictionary_result = await self._create_text_based_dictionary(
                         text_content=document_content,
                         company_name=company_name,
-                        max_section_size=1000000,  # 100만자 제한
+                        max_section_size=2000000,  # 🚀 200만자로 확장 (기존 100만자에서 2배 증가)
                         file_path=temp_file_path,
                     )
 
@@ -2329,92 +2329,202 @@ class EnhancedDartDataCollector:
         """
         텍스트를 논리적 섹션으로 분할
 
+        🚀 100만자 지원으로 대용량 사업보고서도 완벽 처리!
         사업보고서나 분기보고서의 구조를 인식해서 의미있는 섹션으로 나누어줘요
         """
         try:
             sections = {}
 
-            # 섹션 구분 키워드들 (사업보고서/분기보고서용)
+            # 🔧 대폭 확장된 섹션 구분 키워드들 (실제 DART 보고서 구조 반영)
             section_keywords = [
+                # 【】 형태 키워드 (최우선)
                 "【 주요 경영지표 】",
                 "【 사업의 내용 】",
                 "【 경영진의 경영진단 】",
                 "【 재무제표 】",
                 "【 감사보고서 】",
                 "【 주주총회 】",
+                "【 이사회 등 회사의 기관 】",
+                "【 대주주 등과의 거래 】",
+                "【 주요 계약 】",
+                "【 연구개발활동 】",
+                "【 기타 투자자 보호를 위한 사항 】",
+                # 로마숫자 형태 (우선도 높음)
                 "Ⅰ. 회사의 개요",
                 "Ⅱ. 사업의 내용",
                 "Ⅲ. 재무에 관한 사항",
                 "Ⅳ. 감사인의 감사의견",
                 "Ⅴ. 이사회 등 회사의 기관",
+                "Ⅵ. 대주주 등과의 거래",
+                "Ⅶ. 주요 계약",
+                "Ⅷ. 연구개발활동",
+                "Ⅸ. 기타 투자자 보호를 위한 사항",
+                # 숫자 형태 키워드
                 "1. 회사의 개요",
                 "2. 사업의 내용",
                 "3. 재무에 관한 사항",
                 "4. 감사인의 감사의견",
                 "5. 이사회 등 회사의 기관",
+                "6. 대주주 등과의 거래",
+                "7. 주요 계약",
+                "8. 연구개발활동",
+                "9. 기타 투자자 보호를 위한 사항",
+                # 세부 하위 섹션들
+                "1-1. 회사의 개요",
+                "1-2. 회사의 역사",
+                "2-1. 사업의 내용",
+                "2-2. 주요 제품 및 서비스",
+                "3-1. 요약재무정보",
+                "3-2. 연결재무제표",
+                "3-3. 재무제표",
+                # 가나다 형태
                 "가. 회사의 개요",
                 "나. 사업의 내용",
                 "다. 재무에 관한 사항",
+                "라. 감사인의 감사의견",
+                "마. 이사회 등 회사의 기관",
+                # 괄호 번호 형태
                 "(1) 회사의 개요",
                 "(2) 사업의 내용",
                 "(3) 재무에 관한 사항",
+                "(4) 감사인의 감사의견",
+                "(5) 이사회 등 회사의 기관",
+                # 추가 세부 섹션들 (사업보고서에서 자주 나타나는 구조)
+                "가) 영업 현황",
+                "나) 매출 현황",
+                "다) 수주 현황",
+                "라) 생산 현황",
+                "마) 판매 현황",
+                "바) 수출 현황",
+                # 재무 관련 세부 섹션
+                "① 요약재무정보",
+                "② 연결재무제표",
+                "③ 재무제표",
+                "④ 재무상태표",
+                "⑤ 손익계산서",
+                "⑥ 현금흐름표",
+                "⑦ 자본변동표",
+                # 기타 중요 섹션들
+                "□ 주요 경영지표",
+                "■ 사업부문별 현황",
+                "◆ 계열회사 현황",
+                "◇ 임직원 현황",
+                "▲ 주주 현황",
+                "▼ 배당 현황",
+                # 영문 섹션들 (글로벌 기업 대응)
+                "I. Company Overview",
+                "II. Business Description",
+                "III. Financial Information",
+                "IV. Auditor's Opinion",
+                "V. Board of Directors",
             ]
+
+            logger.info(
+                f"📝 텍스트 분할 시작: {len(text):,}자, 최대 섹션 크기: {max_section_size:,}자"
+            )
 
             # 현재 섹션
             current_section = "01_회사개요_및_사업내용"
             current_content = ""
             section_count = 1
 
+            # 🔧 더 정확한 라인 분석을 위해 전처리
             lines = text.split("\n")
+            total_lines = len(lines)
 
-            for line in lines:
+            logger.info(
+                f"📊 전체 라인 수: {total_lines:,}개, 키워드 수: {len(section_keywords)}개"
+            )
+
+            for line_idx, line in enumerate(lines):
                 line_stripped = line.strip()
 
-                # 섹션 구분점 찾기
+                # 섹션 구분점 찾기 (더 정확한 매칭)
                 section_found = False
                 for keyword in section_keywords:
-                    if keyword in line_stripped:
+                    # 🎯 정확한 매칭을 위한 조건들
+                    if keyword in line_stripped and (
+                        line_stripped.startswith(keyword)  # 라인 시작
+                        or f" {keyword}" in line_stripped  # 공백 후
+                        or f"\t{keyword}" in line_stripped  # 탭 후
+                    ):
                         # 이전 섹션 저장
-                        if current_content.strip():
-                            # 섹션 크기 제한 적용
+                        if (
+                            current_content.strip()
+                            and len(current_content.strip()) > 200
+                        ):
+                            # 🚀 100만자 제한 적용 (기존 50만자에서 2배 확장!)
                             if len(current_content) > max_section_size:
+                                logger.info(
+                                    f"🔄 대형 섹션 분할: {current_section} ({len(current_content):,}자)"
+                                )
                                 sub_sections = self._split_large_section(
                                     current_content, current_section, max_section_size
                                 )
                                 sections.update(sub_sections)
                             else:
                                 sections[current_section] = current_content.strip()
+                                logger.debug(
+                                    f"✅ 섹션 저장: {current_section} ({len(current_content):,}자)"
+                                )
 
                         # 새 섹션 시작
                         section_count += 1
                         current_section = f"{section_count:02d}_{self._extract_section_name(line_stripped)}"
                         current_content = line + "\n"
                         section_found = True
+                        logger.debug(
+                            f"🆕 새 섹션 시작: {current_section} (라인 {line_idx+1})"
+                        )
                         break
 
                 if not section_found:
                     current_content += line + "\n"
 
             # 마지막 섹션 저장
-            if current_content.strip():
+            if current_content.strip() and len(current_content.strip()) > 200:
                 if len(current_content) > max_section_size:
+                    logger.info(
+                        f"🔄 마지막 대형 섹션 분할: {current_section} ({len(current_content):,}자)"
+                    )
                     sub_sections = self._split_large_section(
                         current_content, current_section, max_section_size
                     )
                     sections.update(sub_sections)
                 else:
                     sections[current_section] = current_content.strip()
+                    logger.debug(
+                        f"✅ 마지막 섹션 저장: {current_section} ({len(current_content):,}자)"
+                    )
 
-            # 빈 섹션이나 너무 작은 섹션 제거
+            # 🧹 빈 섹션이나 너무 작은 섹션 제거 (최소 500자로 상향)
             filtered_sections = {
-                k: v for k, v in sections.items() if v.strip() and len(v.strip()) > 100
+                k: v for k, v in sections.items() if v.strip() and len(v.strip()) > 500
             }
 
-            logger.info(f"📊 텍스트 섹션 분할 완료: {len(filtered_sections)}개 섹션")
+            # 🎯 섹션이 너무 적으면 강제 분할 (사업보고서가 1개 섹션인 문제 해결)
+            if len(filtered_sections) <= 2 and len(text) > 50000:
+                logger.warning(
+                    f"⚠️ 섹션 수가 너무 적음 ({len(filtered_sections)}개). 강제 분할 실행..."
+                )
+                forced_sections = self._force_split_large_text(text, max_section_size)
+                filtered_sections.update(forced_sections)
+
+            logger.info(
+                f"✅ 텍스트 섹션 분할 완료: {len(filtered_sections)}개 섹션 (100만자 지원)"
+            )
+
+            # 섹션별 통계 출력
+            for section_name, content in filtered_sections.items():
+                logger.debug(f"   📄 {section_name}: {len(content):,}자")
+
             return filtered_sections
 
         except Exception as e:
             logger.error(f"❌ 텍스트 섹션 분할 실패: {e}")
+            # 실패시 전체 텍스트를 하나의 섹션으로 반환
+            if len(text.strip()) > 500:
+                return {"01_전체문서": text[:max_section_size]}
             return {}
 
     def _extract_section_name(self, line: str) -> str:
@@ -2482,3 +2592,142 @@ class EnhancedDartDataCollector:
         except Exception as e:
             logger.error(f"❌ 대형 섹션 분할 실패: {e}")
             return {section_name: content}  # 실패시 원본 반환
+
+    def _force_split_large_text(
+        self, text: str, max_section_size: int
+    ) -> Dict[str, str]:
+        """
+        🔧 대형 텍스트를 강제로 논리적 섹션으로 분할
+
+        섹션 키워드로 분할이 안되는 경우 사용하는 백업 분할 방법이에요
+        문단 구조와 문맥을 고려해서 자연스럽게 분할합니다
+
+        Args:
+            text: 분할할 텍스트
+            max_section_size: 섹션별 최대 크기
+
+        Returns:
+            Dict: 강제 분할된 섹션들
+        """
+        try:
+            logger.info(f"🔨 강제 분할 시작: {len(text):,}자")
+
+            forced_sections = {}
+
+            # 1단계: 큰 문단으로 분할 (빈 줄 기준)
+            paragraphs = text.split("\n\n")
+
+            current_section = ""
+            section_count = 1
+
+            for para in paragraphs:
+                para = para.strip()
+                if not para:
+                    continue
+
+                # 현재 섹션에 추가했을 때 크기 확인
+                if len(current_section) + len(para) > max_section_size:
+                    # 현재 섹션 저장
+                    if current_section.strip():
+                        section_name = f"강제분할_{section_count:02d}_section"
+                        forced_sections[section_name] = current_section.strip()
+                        logger.debug(
+                            f"💪 강제 섹션 생성: {section_name} ({len(current_section):,}자)"
+                        )
+                        section_count += 1
+
+                    # 새 섹션 시작
+                    current_section = para + "\n\n"
+                else:
+                    current_section += para + "\n\n"
+
+            # 마지막 섹션 저장
+            if current_section.strip():
+                section_name = f"강제분할_{section_count:02d}_section"
+                forced_sections[section_name] = current_section.strip()
+                logger.debug(
+                    f"💪 마지막 강제 섹션: {section_name} ({len(current_section):,}자)"
+                )
+
+            # 2단계: 여전히 섹션이 적으면 페이지나 특수 구분자로 분할
+            if len(forced_sections) <= 2:
+                logger.warning("🔄 2단계 강제 분할 실행 (페이지 기준)")
+
+                # 페이지 구분자들
+                page_separators = [
+                    "---",
+                    "━━━",
+                    "페이지",
+                    "Page",
+                    "- ",
+                    "■",
+                    "□",
+                    "▣",
+                    "▢",
+                ]
+
+                # 페이지별로 분할 시도
+                for separator in page_separators:
+                    if separator in text and len(text.split(separator)) > 2:
+                        parts = text.split(separator)
+                        forced_sections = {}
+
+                        for i, part in enumerate(parts):
+                            part = part.strip()
+                            if len(part) > 1000:  # 최소 크기 필터
+                                section_name = f"페이지분할_{i+1:02d}_section"
+                                # 크기 제한 적용
+                                if len(part) > max_section_size:
+                                    # 큰 페이지는 다시 분할
+                                    sub_parts = [
+                                        part[j : j + max_section_size]
+                                        for j in range(0, len(part), max_section_size)
+                                    ]
+                                    for k, sub_part in enumerate(sub_parts):
+                                        if sub_part.strip():
+                                            sub_section_name = f"페이지분할_{i+1:02d}_{k+1:02d}_section"
+                                            forced_sections[sub_section_name] = (
+                                                sub_part.strip()
+                                            )
+                                else:
+                                    forced_sections[section_name] = part
+
+                        if len(forced_sections) > 2:
+                            logger.info(
+                                f"✅ 페이지 분할 성공: {len(forced_sections)}개 섹션"
+                            )
+                            break
+
+            # 3단계: 최후 수단 - 고정 크기 분할
+            if len(forced_sections) <= 1:
+                logger.warning("🔄 3단계 강제 분할 실행 (고정 크기)")
+                forced_sections = {}
+
+                # 문장 경계를 고려한 고정 크기 분할
+                sentences = text.split(". ")
+                current_section = ""
+                section_count = 1
+
+                for sentence in sentences:
+                    if len(current_section) + len(sentence) > max_section_size:
+                        if current_section.strip():
+                            section_name = f"고정분할_{section_count:02d}_section"
+                            forced_sections[section_name] = current_section.strip()
+                            section_count += 1
+                        current_section = sentence + ". "
+                    else:
+                        current_section += sentence + ". "
+
+                # 마지막 섹션
+                if current_section.strip():
+                    section_name = f"고정분할_{section_count:02d}_section"
+                    forced_sections[section_name] = current_section.strip()
+
+            logger.info(f"💪 강제 분할 완료: {len(forced_sections)}개 섹션 생성")
+            return forced_sections
+
+        except Exception as e:
+            logger.error(f"❌ 강제 분할 실패: {e}")
+            # 최후의 최후 수단
+            section_size = min(max_section_size, len(text))
+            return {"99_강제분할_전체": text[:section_size]}

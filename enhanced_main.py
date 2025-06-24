@@ -1842,7 +1842,7 @@ class EnhancedStockAnalysisSystem:
                     await self.large_pdf_analyzer.create_pdf_dictionary_for_crewai(
                         pdf_path=pdf_url,
                         company_name=stock_info.get("stock_name", "분석대상회사"),
-                        max_section_size=1000000,  # 🚀 100만자로 확장!
+                        max_section_size=2000000,  # 🚀 200만자로 확장!
                     )
                 )
 
