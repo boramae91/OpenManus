@@ -1,0 +1,613 @@
+{
+  "user_prompt": "q\u0004\u0003",
+  "timestamp": "2025-06-24T13:13:13.441805",
+  "response": {
+    "comprehensive_summary": {
+      "analysis_overview": {
+        "analyzed_stock": {
+          "name": "종목명.",
+          "code": "000020",
+          "sector": "헬스케어"
+        },
+        "expert_team": {
+          "activated_experts": [
+            "헬스케어 펀더멘털 분석가",
+            "헬스케어 기술적 분석가"
+          ],
+          "expert_count": 2,
+          "analysis_depth": "quick"
+        },
+        "analysis_quality": {
+          "data_integration_success": true,
+          "total_analysis_time": "43.93초",
+          "data_sources_count": 0
+        }
+      },
+      "key_findings": {
+        "investment_highlights": [
+          "1. **재무 안정성**: Dongwha Pharm.Co.,Ltd는 유동비율이 1.76으로 단기적인 재무 안정성이 양호합니다. 이는 유동부채 대비 유동자산이 충분함을 나타내며, 단기적인 재무 리스크가 낮습니다.",
+          "2. **기술적 상승 추세**: 기술적 분석에 따르면, MACD와 볼린저 밴드가 상승 추세를 시사하고 있습니다. 특히, 주가가 볼린저 밴드의 중간 밴드 위에 위치하고 있어 상단 밴드를 향해 상승할 가능성이 있습니다.",
+          "3. **중장기 상승 가능성**: 이동평균선 분석에서 현재 주가가 중장기 이동평균선(MA_20, MA_60, MA_120) 위에 있어 중장기적으로 상승 추세를 유지하고 있습니다.",
+          "4. **매수 전략**: 지지선인 6,626원 근처에서 매수 포지션을 고려할 수 있으며, 저항선인 6,934원 돌파 시 추가 매수를 고려할 수 있습니다."
+        ],
+        "risk_factors": [
+          "2. **기술적 상승 추세**: 기술적 분석에 따르면, MACD와 볼린저 밴드가 상승 추세를 시사하고 있습니다. 특히, 주가가 볼린저 밴드의 중간 밴드 위에 위치하고 있어 상단 밴드를 향해 상승할 가능성이 있습니다.",
+          "3. **중장기 상승 가능성**: 이동평균선 분석에서 현재 주가가 중장기 이동평균선(MA_20, MA_60, MA_120) 위에 있어 중장기적으로 상승 추세를 유지하고 있습니다.",
+          "4. **매수 전략**: 지지선인 6,626원 근처에서 매수 포지션을 고려할 수 있으며, 저항선인 6,934원 돌파 시 추가 매수를 고려할 수 있습니다.",
+          "1. **낮은 ROE**: 현재 ROE가 -0.393%로, 동종업계 평균에 미치지 못하고 있습니다. 이는 회사의 수익성이 낮음을 나타내며, 장기적인 투자 매력도를 감소시킬 수 있습니다.",
+          "2. **거래량 부족**: 현재 거래량이 20일 평균 거래량의 0.54배로 낮아, 기술적 신호의 신뢰도가 떨어질 수 있습니다. 이는 시장의 관심이 부족함을 나타낼 수 있습니다."
+        ],
+        "investment_recommendation": {
+          "recommendation": "매수",
+          "confidence_level": "낮음",
+          "reasoning": "투자 의견을 명확히 추출할 수 없습니다."
+        },
+        "target_price_analysis": {
+          "target_price": "제시되지 않음",
+          "valuation_method": "알 수 없음",
+          "analysis_basis": "전문가 종합 의견"
+        }
+      },
+      "expert_consensus": {
+        "agreement_level": "알 수 없음",
+        "consensus_points": [],
+        "divergent_views": []
+      }
+    },
+    "individual_expert_analyses": [
+      {
+        "expert_profile": {
+          "name": "헬스케어 펀더멘털 분석가",
+          "expertise_area": "재무제표 분석, 기업가치 평가, 수익성 분석",
+          "analysis_timestamp": 1750738619.591764
+        },
+        "analysis_content": {
+          "full_analysis": "### Dongwha Pharm.Co.,Ltd (000020.KS) 펀더멘털 분석\n\n#### 1. 재무비율 종합분석\n\n- **ROE (Return on Equity)**\n  - 현재 ROE는 -0.393%로, 이는 자기자본 대비 순이익이 마이너스임을 나타냅니다. 이는 동종업계 평균에 비해 낮은 수준입니다.\n  - **DuPont 분석**: \n    - 순이익률: 0.5529%\n    - 자산회전율: 0.966% (매출/평균총자산)\n    - 레버리지: 1.26069 (자산/자기자본)\n    - ROE = 0.5529% × 0.966 × 1.26069 = 약 -0.393%\n  - **ROIC vs WACC**: ROIC를 계산하기 위해 NOPAT(영업이익 × (1-세율))이 필요합니다. WACC와 비교하여 자본비용 대비 수익성을 평가해야 합니다.\n\n- **유동비율**\n  - 유동비율은 1.76으로, 이는 유동부채 대비 유동자산이 충분함을 나타내며, 단기적인 재무 안정성이 양호함을 의미합니다.\n\n#### 2. 현금흐름 정밀분석\n\n- **FCF (Free Cash Flow)**\n  - FCF = 영업CF - 자본적지출로 계산되며, 3년 평균을 통해 안정성을 평가해야 합니다.\n  - **FCF Yield**: FCF/시가총액 × 100으로, 투자 대비 현금흐름 수익성을 나타냅니다.\n\n- **Cash Conversion Cycle**\n  - DIO(재고보유기간) + DSO(매출채권회수기간) - DPO(매입채무지급기간)로 계산되며, 운영 효율성을 평가합니다.\n\n#### 3. 수익성 및 성장성 심화분석\n\n- **매출 성장률**\n  - 매출 성장률은 전기 대비 당기 매출의 증가율로, 회사의 성장성을 평가하는 지표입니다.\n\n- **영업레버리지**\n  - 영업이익 증가율/매출 증가율로, 매출 증가에 따른 영업이익의 민감도를 평가합니다.\n\n- **EBITDA 마진**\n  - EBITDA/매출 × 100으로, 현금창출력을 나타내며, EBITDA는 영업이익에 감가상각비를 더한 값입니다.\n\n- **Asset Turnover**\n  - 매출/평균총자산으로, 자산 효율성을 평가합니다.\n\n#### 4. 재무건전성 스트레스 테스트\n\n- **Interest Coverage**\n  - EBIT/이자비용으로, 이자지급능력을 평가합니다.\n\n- **Debt Service Coverage**\n  - OCF/(원금상환+이자지급)으로, 부채상환능력을 평가합니다.\n\n- **Net Debt/EBITDA 비율**\n  - 부채상환 소요연수를 평가하며, 낮을수록 좋습니다.\n\n- **경기침체 시나리오**\n  - 경기침체 시 부채상환능력을 평가하여, 재무건전성을 스트레스 테스트합니다.\n\n### 결론\nDongwha Pharm.Co.,Ltd는 현재 ROE가 낮고, 수익성 지표가 동종업계 평균에 미치지 못하고 있습니다. 그러나 유동비율이 양호하여 단기적인 재무 안정성은 확보하고 있습니다. 현금흐름과 수익성 지표를 개선하기 위한 전략이 필요하며, 특히 ROIC와 WACC 비교를 통해 자본비용 대비 수익성을 면밀히 검토해야 합니다.",
+          "data_sources_used": [
+            "Technical_Analysis_Calculated",
+            "Manus_Web_Search",
+            "yfinance",
+            "PDF_Analysis",
+            "DART"
+          ],
+          "key_insights": [
+            "WACC와 비교하여 자본비용 대비 수익성을 평가해야 합니다.",
+            "현금흐름 정밀분석\n\n- **FCF (Free Cash Flow)**\n  - FCF = 영업CF - 자본적지출로 계산되며, 3년 평균을 통해 안정성을 평가해야 합니다.",
+            "- **Cash Conversion Cycle**\n  - DIO(재고보유기간) + DSO(매출채권회수기간) - DPO(매입채무지급기간)로 계산되며, 운영 효율성을 평가합니다."
+          ],
+          "quantitative_metrics": {
+            "metrics_available": "false",
+            "reason": "정량적 지표를 찾을 수 없습니다."
+          }
+        }
+      },
+      {
+        "expert_profile": {
+          "name": "헬스케어 기술적 분석가",
+          "expertise_area": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+          "analysis_timestamp": 1750738637.012359
+        },
+        "analysis_content": {
+          "full_analysis": "### 현재 시점 정밀 분석\n\n1. **RSI (상대강도지수)**:\n   - 현재 RSI는 61.48로 중립 상태에 있습니다. 이는 과매수나 과매도 상태가 아님을 의미하며, 현재 시장의 방향성을 명확히 판단하기 어려운 상황입니다.\n\n2. **MACD**:\n   - MACD 라인은 117.1260, 시그널 라인은 114.3074로, 히스토그램은 2.8186입니다. 이는 상승 추세가 지속되고 있음을 나타내며, 매수 신호로 해석할 수 있습니다.\n\n3. **볼린저 밴드**:\n   - 현재 주가는 볼린저 밴드의 중간 밴드(6,626원) 위에 위치하고 있으며, 상단 밴드(6,934원)와의 거리가 좁아지고 있습니다. 이는 주가가 상단 밴드를 향해 상승할 가능성을 시사합니다.\n\n4. **이동평균선**:\n   - 현재 주가(6,770원)는 MA_5(6,806원) 아래에 있지만, MA_20(6,626원), MA_60(6,309원), MA_120(6,273원) 위에 있습니다. 이는 단기적으로는 약세일 수 있으나, 중장기적으로는 상승 추세를 유지하고 있음을 나타냅니다.\n\n### 지지/저항선 활용 전략\n\n1. **지지선**:\n   - 주요 지지선은 MA_20인 6,626원입니다. 이 수준이 유지된다면 추가 상승 가능성이 있습니다.\n\n2. **저항선**:\n   - 주요 저항선은 볼린저 밴드 상단인 6,934원입니다. 이 수준을 돌파할 경우, 추가 상승 여력이 있을 수 있습니다.\n\n3. **전략**:\n   - 지지선인 6,626원 근처에서 매수 포지션을 고려할 수 있으며, 저항선인 6,934원 돌파 시 추가 매수를 고려할 수 있습니다.\n\n### 거래량 분석과 확인\n\n1. **OBV (On Balance Volume)**:\n   - 현재 OBV는 -34,428로, 주가와의 다이버전스 여부를 확인하기 어렵습니다. 거래량이 주가 상승을 뒷받침하는지 확인이 필요합니다.\n\n2. **거래량 비율**:\n   - 현재 거래량은 42,815주로, 20일 평균 거래량(79,545주)의 0.54배입니다. 이는 거래량이 평균보다 낮아, 신호의 신뢰도가 다소 떨어질 수 있음을 의미합니다.\n\n### 투자 시나리오 및 목표가\n\n1. **단기 목표가 (1-3개월)**:\n   - 상승 시나리오: 7,000원 (저항선 돌파 시)\n   - 하락 시나리오: 6,500원 (지지선 이탈 시)\n\n2. **중기 목표가 (3-6개월)**:\n   - 상승 시나리오: 7,200원 (추가 상승 모멘텀 발생 시)\n   - 하락 시나리오: 6,300원 (중기 이동평균선 이탈 시)\n\n3. **전략**:\n   - 상승 시나리오에서는 저항선 돌파 후 3일 이상 지속성을 확인한 후 매수 포지션을 강화할 수 있습니다.\n   - 하락 시나리오에서는 지지선 이탈 시 손절매를 고려하여 리스크를 관리해야 합니다.\n\n### 주의사항\n- 모든 매매 신호는 거래량의 동반 여부를 반드시 확인해야 합니다.\n- 공시나 이벤트 전후에는 기술적 신호의 신뢰도가 낮아질 수 있으므로 주의가 필요합니다.\n- 단기, 중기, 장기 시계열을 종합적으로 판단하여 투자 결정을 내려야 합니다.",
+          "data_sources_used": [
+            "Technical_Analysis_Calculated",
+            "Manus_Web_Search",
+            "yfinance",
+            "PDF_Analysis",
+            "DART"
+          ],
+          "key_insights": [
+            "이는 과매수나 과매도 상태가 아님을 의미하며, 현재 시장의 방향성을 명확히 판단하기 어려운 상황입니다.",
+            "- 단기, 중기, 장기 시계열을 종합적으로 판단하여 투자 결정을 내려야 합니다."
+          ],
+          "quantitative_metrics": {
+            "metrics_available": "false",
+            "reason": "정량적 지표를 찾을 수 없습니다."
+          }
+        }
+      }
+    ],
+    "analysis_metadata": {
+      "generation_timestamp": "2025-06-24T13:17:29.175929",
+      "analysis_type": "crewai_comprehensive_analysis",
+      "successful_expert_count": 2,
+      "total_expert_count": 2,
+      "data_integration_quality": {
+        "overall_score": 30.0,
+        "quality_grade": "개선필요",
+        "total_possible_score": 100.0,
+        "achieved_score": 30.0,
+        "details": {
+          "financial_data_score": 10,
+          "manus_data_score": 20
+        },
+        "data_sources_count": 2
+      },
+      "cost_optimization": {
+        "traditional_cost": 11.0,
+        "one_hot_cost": 0.08,
+        "savings_amount": 10.92,
+        "savings_percentage": 99.27272727272727,
+        "activated_agents": 2,
+        "depth": "quick"
+      },
+      "token_optimization": {
+        "optimization_applied": false,
+        "original_token_estimate": 6007,
+        "optimized_token_estimate": 6007,
+        "compression_ratio": 1.0
+      }
+    }
+  },
+  "analysis_flow": "enhanced_manus_first_crewai_synthesis",
+  "success": false,
+  "steps": {
+    "step0_intent_analysis": {
+      "primary_intent": "일반문의",
+      "secondary_intents": [],
+      "confidence": 0.3,
+      "analysis_focus": "종합분석",
+      "data_priority": "기본",
+      "keywords": []
+    },
+    "step1_stock_detection": {
+      "detected": true,
+      "stock_name": "종목명.",
+      "stock_code": "000020",
+      "detection_method": "ai_ai_web_search_priority",
+      "ticker_bbg": "000020 KS Equity",
+      "gics_sector": "Health Care",
+      "mapped_company_name": "DONGWHA PHARM CO LTD",
+      "market_index": "KOSPI Index",
+      "original_stock_code": "000020",
+      "original_stock_name": "종목명."
+    },
+    "step2_financial_data": {
+      "stock_info": {
+        "stock_code": "000020",
+        "stock_name": "종목명.",
+        "collection_timestamp": "2025-06-24T13:14:50.629502"
+      },
+      "success": true,
+      "errors": [],
+      "data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "basic_info": {
+        "company_name": "Dongwha Pharm.Co.,Ltd",
+        "sector": "Healthcare",
+        "industry": "Drug Manufacturers - Specialty & Generic",
+        "country": "South Korea",
+        "currency": "KRW",
+        "exchange": "KSC",
+        "ticker_symbol": "000020.KS"
+      },
+      "current_price_info": {
+        "current_price": 6760.0,
+        "previous_close": 6700.0,
+        "open_price": 0.0,
+        "day_high": 6810.0,
+        "day_low": 6710.0,
+        "volume": 42812,
+        "market_cap": 187373010944,
+        "shares_outstanding": 27717900
+      },
+      "financial_ratios": {
+        "pe_ratio": null,
+        "peg_ratio": null,
+        "pb_ratio": null,
+        "ps_ratio": 0.39726,
+        "dividend_yield": 2.69,
+        "profit_margin": 0.0055299997,
+        "operating_margin": 0.01806,
+        "return_on_equity": -0.00393,
+        "return_on_assets": 0.00966,
+        "debt_to_equity": 26.069,
+        "current_ratio": 1.76,
+        "quick_ratio": 1.051
+      },
+      "growth_metrics": {
+        "earnings_growth": -0.989,
+        "revenue_growth": 0.057,
+        "earnings_quarterly_growth": -0.989,
+        "revenue_quarterly_growth": null
+      },
+      "price_history": {
+        "52_week_high": 8318.116774867958,
+        "52_week_low": 5600.0,
+        "avg_volume_3m": 51098.1,
+        "price_change_1y": -13.776416659426932
+      },
+      "data_quality": "보통",
+      "dart_info": {
+        "company_info": {
+          "corp_name": "종목코드_000020",
+          "corp_code": "정보없음",
+          "business_summary": "DART API 연결 실패",
+          "established_date": "정보없음",
+          "listing_date": "정보없음",
+          "ceo_name": "정보없음",
+          "address": "정보없음"
+        },
+        "financial_statements": {
+          "revenue": 0,
+          "operating_profit": 0,
+          "net_income": 0,
+          "total_assets": 0,
+          "total_liabilities": 0,
+          "total_equity": 0,
+          "cash_and_equivalents": 0,
+          "data_source": "fallback_no_dart_connection",
+          "note": "DART API 연결 실패로 기본값 사용"
+        },
+        "business_report": {
+          "main_business": "DART 연결 실패",
+          "business_risks": "정보없음",
+          "future_plans": "정보없음"
+        }
+      }
+    },
+    "step2_technical_analysis_data": {
+      "success": true,
+      "stock_code": "000020",
+      "ticker_symbol": "000020.KS",
+      "data_period": "1y",
+      "total_days": 242,
+      "last_update": "2025-06-24",
+      "current_snapshot": {
+        "price": 6770.0,
+        "volume": 42815,
+        "date": "2025-06-24"
+      },
+      "technical_indicators": {
+        "moving_averages": {
+          "MA_5": 6806.0,
+          "MA_20": 6625.5,
+          "MA_60": 6309.166666666667,
+          "MA_120": 6272.8404012044275,
+          "MA_200": 6607.703217773437
+        },
+        "rsi": {
+          "current_value": 61.47540983606557,
+          "interpretation": "중립",
+          "signal": "관망",
+          "period": 14
+        },
+        "macd": {
+          "MACD_line": 117.12598190545214,
+          "signal_line": 114.30735248312698,
+          "histogram": 2.8186294223251593,
+          "signal_interpretation": "상승 추세 지속",
+          "parameters": "(12, 26, 9)"
+        },
+        "bollinger_bands": {
+          "upper_band": 6933.804360895883,
+          "middle_band": 6625.5,
+          "lower_band": 6317.195639104117,
+          "current_price": 6770.0,
+          "band_width_percent": 9.30659907617186,
+          "position_analysis": "밴드 내부 (정상 범위)",
+          "signal": "관망",
+          "parameters": "(20일, 2σ)"
+        },
+        "stochastic": {
+          "K_percent": 65.9090909090909,
+          "D_percent": 66.66666666666667,
+          "interpretation": "하락 모멘텀",
+          "signal": "매도 신호",
+          "parameters": "(14, 3)"
+        },
+        "williams_r": {
+          "current_value": -34.090909090909086,
+          "interpretation": "중립",
+          "signal": "관망",
+          "period": 14
+        },
+        "obv": {
+          "current_value": -34428,
+          "trend_analysis": "상승 (매수세 우세)",
+          "description": "거래량 누적 지표"
+        },
+        "volume_indicators": {
+          "volume_MA_20": 79545.15,
+          "volume_ratio": 0.5382477750057673
+        }
+      },
+      "support_resistance": {
+        "support_levels": [
+          6490.0,
+          6300.0,
+          6190.0
+        ],
+        "resistance_levels": [
+          6900.0
+        ],
+        "current_price": 6770.0,
+        "analysis_period": "최근 90일",
+        "nearest_support": 6490.0,
+        "nearest_resistance": 6900.0
+      },
+      "trading_signals": {
+        "individual_signals": [
+          "이동평균선 정배열 (상승 추세)"
+        ],
+        "signal_strength_score": 1,
+        "overall_signal": "매수",
+        "confidence": 20,
+        "recommendation": "분할 매수 전략 권장. 점진적 포지션 확대."
+      },
+      "chart_patterns": {
+        "detected_patterns": [
+          "횡보 추세 (최근 20일)",
+          "보통 변동성"
+        ],
+        "trend_analysis": "최근 20일 변동률: 3.05%",
+        "volatility_level": "1.54%"
+      },
+      "raw_data_summary": {
+        "start_date": "2024-06-24",
+        "end_date": "2025-06-24",
+        "price_range": {
+          "high": 8318.116774867958,
+          "low": 5600.0,
+          "volatility": 1.5340136932476625
+        }
+      }
+    },
+    "step3_information_collection": {
+      "performed": true,
+      "method": "information_collection_for_crewai_일반문의",
+      "collected_information": "Step 6: Observed output of cmd `browser_use` executed:\nSearch results for '동화약품 (종목코드: 000020) 최신 뉴스 및 이슈':\n\n1. 동화약품 뉴스 | 알파스퀘어 종목이슈\n   URL: https://alphasquare.co.kr/home/stock-issue?code=000020&type=news\n   Description:  동화약품(000020) 종목뉴스 ; 윤길준 동화약품 부회장, 아들 윤현호 이사에게 지분 승계…사촌경영 시작되나, 2025-04-17T09:00:00+00:00. 동화약품 오너일가의 지분 승계가 ... \n   Content: ìíì¤íì´ | ì¬ì¸ì ì¤ë§í¸ í¸ë ì´ë© íë«í¼ We're sorry but alphasquare-frontend doesn't work properly without JavaScript enabled. Please enable it to continue.\n\nMetadata:\n- Total results: 1\n- Language: en\n- Country: us\n\nObserved output of cmd `browser_use` executed:\nSearch results for '동화약품 (종목코드: 000020) 시장 동향':\n\n1. 동화약품 주가 - 실시간 차트 및 종목정보\n   URL: https://alphasquare.co.kr/home/stock-summary?code=000020\n   Description:  동화약품 (000020) 주가 및 종목 정보. 동화약품 실시간 주가. 현재가, 6,760 원 ... 동화약품 투자자별 매매동향. 순매수량. 개인: 17,303. 기관: 7,173. 외인: -24,476 ... \n   Content: ìíì¤íì´ | ì¬ì¸ì ì¤ë§í¸ í¸ë ì´ë© íë«í¼ We're sorry but alphasquare-frontend doesn't work properly without JavaScript enabled. Please enable it to continue.\n\nMetadata:\n- Total results: 1\n- Language: en\n- Country: us\n\nObserved output of cmd `browser_use` executed:\nSearch results for '동화약품 (종목코드: 000020) 애널리스트 의견':\n\n1. 000020 - 네이버 금융\n   URL: https://finance.naver.com/item/main.nhn?code=000020\n   Description:  No information is available for this page.  ·  Learn why \n   Content: 동화약품 : 네이버페이 증권 메인 메뉴로 바로가기 본문으로 바로가기 네이버 페이 증권 증권 종목명·지수명 검색 검색 자동완성 @code@ @txt@ @market@ @full_txt@ @in_code@ @in_name@ @in_link@ @in_market@ 공모주와 해외 종목은 모바일 페이지로 이동합니다. 현재 자동완성 기능을 사용하고 계십니다. 자동완성 기능이 활성화되었습니다. 증권 홈 국내증시 선택됨 해외증시 시장지표 리서치 뉴스 MY 종목 시세 정보 2025년 06월 24일 13시 15분 기준 장중 종목명 동화약품 종목코드 000020 코스피 현재가 6,760 전일대비 상승 60 플러스 0.90 퍼센트 전일가 6,700 시가 6,710 고가 6,810 상한가 8,710 저가 6,710 하한가 4,690 거래량 45,682 거래대금 309백만 동화약품 000020 날짜 2025.06.24 13:15 기준(KRX 장중) 실시간 기업개요 기업개요 동사는 1897년 설립되어 1976년 유가증권시장에 상장된 중견기업으로, 메디쎄이와 동화크립톤, TS Care를 종속회사로 두고 있음. 의약품·원료의약품·의약외품·의료용구 제조 및 매매, 건강기능식품 제조 및 매매를 주요 사업으로 영위하며, 2023년 베트남 현지 의약품 유통체인 TS Care를 인수함. 신약 개발과 의료기기 제조 등 기술·지식 집약형 산업을 중심으로 사업 다각화를 추진하고 있음. 출처 : 에프앤가이드 MY STOCK 추가 빠른주문 추가할 그룹이 없습니다. 그룹을 추가해주세요. 그룹추가 확인 닫기 네이버 주식거래연결 빠른 주문을 도와드립니다! 본 서비스는 고객님의 빠른 주문을 돕기 위해 증권사의 로그인을 연결 해드리고 있습니다. 고객님이 보유하고 계신 증권사를 클릭한 후 증권사의 아이디, 비밀번호, 공인인증서로 주문 을 하실 수 있습니다. 증권사 로그인 이후 시스템 문제가 발생하면, 증권사 고객센터로 직접 문의 하시기 바랍니다. 네이버는 증권사 서비스의 시스템 장애에 따른 법적 책임을 지지 않습니다. 동화약품 오늘의시세 6,760 포인트 60 포인트 상승 0.90% 플러스 6,760 6 , 7 6 0 전일대비 상승 60 6 0 l + 0.90 0 . 9 0 % 주요 시세 전일 6,700 6 , 7 0 0 고가 6,810 6 , 8 1 0 (상한가 8,710 8 , 7 1 0 ) 거래량 45,682 4 5 , 6 8 2 시가 6,710 6 , 7 1 0 저가 6,710 6 , 7 1 0 (하한가 4 , 6 9 0 ) 거래대금 309 3 0 9 백만 종목 시세 차트 선차트 1일 1주일 3개월 1년 3년 5년 10년 봉차트 일봉 주봉 월봉 한국거래소(KRX) 이미지 차트 한국거래소(KRX) 제공 도움말 한국거래소(KRX) 제공 종합정보 데이터는 한국거래소(KRX)에서 제공합니다. 종합정보 시세 차트 투자자별 매매동향 뉴스·공시 종목분석 종목토론실 전자공시 공매도현황 종합정보 투자자별 매매동향 거래원 정보 : 일별 상위 5위 거래원의 누적 정보 기준 (20분 지연) 거래원 정보 거래원 정보 매도상위 거래량 매수상위 거개량 외국계추정합 909 -909 0 미래에셋증권 7,652 신한투자증권 7,774 키움증권 4,594 미래에셋증권 7,005 삼성증권 4,289 LS증권 5,726 신한투자증권 3,156 삼성증권 4,387 KB증권 3,139 키움증권 2,988 외국인 기관 외국인 기관 날짜 종가 전일비 외국인 기관 06/23 6,700 하향 150 -24,612 +1,528 06/20 6,850 상향 10 +11,251 -645 06/19 6,840 하향 30 -16,069 +3,249 06/18 6,870 상향 240 -5,638 +7,237 06/17 6,630 상향 90 -8,696 +7,693 06/16 6,540 상향 10 +10,609 -4,367 더보기 뉴스공시 \"불닭 만드는 회사 아니라고!\"...B2B가 주력인 삼양... 06/21 'TV만 틀면 나오네'…변우석·유재석 제친 '광고 투... 06/17 파마리서치, 인적분할 결의…지주사 체제로 전환 06/13 '국내 최초 제약사' 동화약품, 신약개발 승부수 06/12 강남서 입소문 탄 ‘연어 주사’ 해외로…파마리서... 06/10 반려동물 신약 개발 러시… 제약사들 \"수익성·성장... 06/09 오가노이드·로킷헬스케어·LS머트리얼즈, 보호예수... 06/09 [광화문약국] 마시고 짜 먹고 뿌리고…감기약의 변... 06/07 “화장품+제약·바이오”… ‘K더마’로 진화하는 ... 06/07 베트남부터 美하와이까지…K편의점들, 글로벌 영토... 05/28 더보기 종목토론실 주가누르기 주가 조작행위는 적극적으로 신... [1] 06/23 10:06 올가을 [2] 06/19 15:35 올가을 06/19 19:22 130년 06/19 09:30 Still alive... 06/18 13:21 Still alive... [1] 06/18 17:06 왜 올라가는거죠? 06/18 12:41 똥와는 잠재력보다 잠재움 06/18 12:06 DW2008S [1] 06/18 11:55 ㅋ [1] 06/18 11:01 더보기 기업실적분석 기업실적분석 테이블 주요재무정보 최근 연간 실적 최근 분기 실적 2022.12 2023.12 2024.12 2025.12 (E) 2024.03 2024.06 2024.09 2024.12 2025.03 2025.06 (E) IFRS연결 IFRS연결 IFRS연결 IFRS연결 IFRS연결 IFRS연결 IFRS연결 IFRS연결 IFRS연결 IFRS연결 매출액 3,404 3,611 4,649 1,189 1,152 1,102 1,206 1,257 영업이익 299 188 134 65 46 -6 28 23 당기순이익 216 282 21 29 31 -21 -18 -8 영업이익률 8.79 5.20 2.89 5.50 4.01 -0.53 2.36 1.81 순이익률 6.34 7.82 0.46 2.46 2.71 -1.87 -1.52 -0.64 ROE(지배주주) 5.73 7.45 1.49 4.82 3.69 2.01 1.49 0.71 부채비율 21.78 38.66 54.26 37.78 36.58 45.05 54.26 57.45 당좌비율 204.63 147.25 103.86 161.04 147.70 119.00 103.86 100.83 유보율 1,215.54 1,244.56 1,244.84 1,237.40 1,252.57 1,257.75 1,244.84 1,237.08 EPS(원) 730 982 199 107 126 -11 -23 1 PER(배) 12.69 10.45 31.63 14.68 16.19 28.25 31.63 64.11 BPS(원) 13,165 13,413 13,470 13,337 13,493 13,558 13,470 13,352 PBR(배) 0.70 0.77 0.47 0.70 0.60 0.57 0.47 0.45 주당배당금(원) 180 180 180 180 시가배당률(%) 1.94 1.75 2.86 2.86 배당성향(%) 24.44 18.18 89.68 -779.83 분기 실적은 해당 분기까지의 누적 실적에서 직전 분기까지의 누적 실적을 차감하는 방식으로 계산되므로, 기업에서 공시한 분기 실적과 차이가 있을 수 있습니다. 컨센서스( E ) : 최근 3개월간 증권사에서 발표한 전망치의 평균값입니다. 손익계산서 조정영업이익 매출액-매출원가-판관비 지배주주지분 지배회상의 지분에 귀속되는 당기순이익 비지배주주지분 종속회사의 지분에 귀속되는 당기순이익 수익성 조정영업이익률 조정영업이익/매출액 ROE(지배주주지분) 지배주주지분 당기순이익 / (자본총계 - 비지배주주지분) 가치지표 EPS(지배주주지분) 지배주주지분 당기순이익/지배주주 평균발행주식수(우선주+보통주) BPS(지배주주지분 지배주주지분 귀속 순자산/지배주주 기말발행주식(우선주+보통주) 더보기 동종업종비교 (업종명 : 제약 ｜ 재무정보: 2025.03 분기 기준) 동종업종비교 종목명 동화약품 * 000020 삼성바이오로직스 * 207940 셀트리온 * 068270 유한양행 * 000100 SK바이오팜 * 326030 현재가 6,760 998,500 161,100 102,600 92,050 전일대비 상향 60 상향 6,500 상향 2,100 상향 1,500 상향 1,150 등락률 상향 +0.90% 상향 +0.66% 상향 +1.32% 상향 +1.48% 상향 +1.27% 시가총액(억) 1,888 710,672 358,328 82,047 72,087 외국인비율(%) 2.89 12.87 21.50 17.55 11.08 매출액(억) 1,257 12,983 8,419 4,916 1,444 영업이익(억) 23 4,867 1,494 64 257 조정영업이익(억) 23 4,867 1,494 64 257 영업이익증가율(%) -20.17 49.45 -23.92 154.32 -36.85 당기순이익(억) -8 3,756 1,083 100 196 주당순이익(원) 1.23 5,276.56 466.25 108.46 297.58 ROE(%) 0.71 12.02 2.99 3.26 57.63 PER(%) 72.69 55.54 74.55 124.97 28.69 PBR(배) 0.51 6.30 2.08 3.72 12.70 더보기 PER, PBR 수치는 최근 4분기 기준입니다. * 종목은 IFRS (연결) 회계기준을 적용한 종목입니다. (최근 분기보고서 기준이며, 기준 분기는 업종마다 다를 수 있습니다.) IFRS (연결) 적용 종목의 당기순이익 및 가치지표(주당순이익, PER, PBR)는 지배주주지분을 기준으로 산출하였습니다. 투자정보 호가10단계 투자정보 시가총액 시가총액 1,888 억원 시가총액순위 코스피 742 위 상장주식수 27,931,470 액면가 l 매매단위 1,000 원 l 1 주 외국인한도주식수 외국인한도주식수(A) 27,931,470 외국인보유주식수(B) 808,296 외국인소진율(B/A) 외국인(한도)소진율이란 외국인보유주식수를 외국인한도주식수으로 나눈 값입니다. 일반적인 경우에는 외국인한도주식수와 상장주식수가 같아서 외국인 소진율과 보유율이 동일하지만, 국가 기간산업의 경우 한도주식수가 정해져 있어 두 비율이 달라질 수 있습니다.(Ex. 한국전력)...\n\nMetadata:\n- Total results: 1\n- Language: en\n- Country: us\n\nObserved output of cmd `browser_use` executed:\nSearch results for '동화약품 (종목코드: 000020) 경쟁사 정보':\n\n1. 동화약품 - 경쟁사분석 - 기업모니터\n   URL: https://comp.wisereport.co.kr/company/c1060001.aspx?cmp_cd=000020&cn=\n   Description:  경쟁사분석 · 업종분석 · 지분현황 · 최근리포트 · 금감원공시. 경쟁사분석. 인쇄인쇄. 요약정보. 동화약품 000020. 홈페이지 대표전화 주소. EPS199. BPS13,470. PER28.87. \n   Content: 동화약품 - 경쟁사분석 - 기업모니터 CompanyWise 리포트 앱 리타민, 라이트요금제 출시 지금 구독하면 얼리버드 평생할인 검색 메인메뉴 기업모니터 ETF/ETN 어닝스모니터 랭킹정보 부가정보 리포트서머리 어닝스캘린더 서브메뉴 기업현황 기업개요 재무분석 투자지표 컨센서스 경쟁사분석 업종분석 지분현황 최근리포트 금감원공시 기업모니터 인쇄 인쇄 요약정보 동화약품 000020 홈페이지 대표전화 주소 EPS 199 BPS 13,470 PER 33.64 업종PER 226.32 PBR 0.50 현금배당수익률 2.69% 전일종가 6,700 도움말 KOSPI : 코스피 제약 | WI26 : 건강관리 | 12월 결산 * PER : 전일자 보통주 수정주가 / 최근결산 EPS * PBR : 전일자 보통주 수정주가 / 최근결산 BPS * 현금배당수익률 : 최근 결산 수정DPS(현금) / 전일자 보통주 수정주가 * PER, PBR값이 (-)일 경우, N/A로 표기됩니다. * WI26 : WISE Industry 26 펀더멘털 비교 재무제표기준 주재무제표 K-IFRS(별도) K-IFRS(연결) K-GAAP(개별) K-GAAP(연결) 기준업종 [FG000]경쟁사 비교 [KOSPI]코스피 제약 [WI26]에너지 [WI26]화학 [WI26]비철,목재등 [WI26]철강 [WI26]건설,건축관련 [WI26]기계 [WI26]조선 [WI26]상사,자본재 [WI26]운송 [WI26]자동차 [WI26]화장품,의류,완구 [WI26]호텔,레저서비스 [WI26]미디어,교육 [WI26]소매(유통) [WI26]필수소비재 [WI26]건강관리 [WI26]은행 [WI26]증권 [WI26]보험 [WI26]소프트웨어 [WI26]IT하드웨어 [WI26]반도체 [WI26]IT가전 [WI26]디스플레이 [WI26]통신서비스 [WI26]유틸리티 검색 IFRS 기준업종 연간 분기 자산총계(억원) 자료보기 차트 건너뛰기 \"데이터를 차트로 제공하고 있습니다. 차트를 건너뛰고 싶은 경우 이 링크를 선택하시기 바랍니다.\" 차트 건너뛰기 ※ 종목선택은 최대 4개까지 입니다. ※ 각 항목 입력 후 엔터키를 누르시면 분석결과를 확인하실수 있습니다. ※ 재무아이템을 클릭하시면 아래 기업의 최근 결산/분기 순액 데이터를 차트로 확인하실수 있습니다. 기업간비교자료(연간) 항목 동화약품 A000020 (IFRS연결) 종목입력2 기업검색 () 종목입력3 기업검색 () 종목입력4 기업검색 () 종목입력5 기업검색 () * 재무실적 업데이트는 검수 및 주석반영으로 공시 이후 약 일주일 정도 소요되며, 기업별로 다르게 적용됨 * IFRS 연결 기업의 당기순이익 및 자본총계는 지배주주 기준 * 영업이익 = 매출액 - 매출원가 - 판매비와관리비 주석 펼치기/접기 FnGuide에서 제공하는 정보는 신뢰할 만한 자료 및 정보로부터 얻어진 것이나 그 정확성이나 완전성을 보장 할 수 없으며, 시간이 경과함에 따라 변경될 수 있습니다. 따라서 정보의 오류, 누락에 대하여 FnGuide 또는FnGuide에 자료를 제공하는 회사에서는 그 결과에 대해 법적인 책임을 지지 않습니다. 모든 콘텐츠에 대한 저작권은 FnGuide에 있으며 사전 허가없이 이를 무단으로 사용하거나, 데이터 베이스화 할 경우 민형사상 책임을 물을 수 있습니다.\n\nMetadata:\n- Total results: 1\n- Language: en\n- Country: us\n\nObserved output of cmd `browser_use` executed:\nError: Browser action 'web_search' failed: Page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to \"https://kr.investing.com/equities/dongwha-pharm\", waiting until \"load\"\n\n\nObserved output of cmd `browser_use` executed:\nSearch results for '동화약품 (종목코드: 000020) PDF 보고서':\n\n1. [PDF] 동화약품 (000020)\n   URL: https://securities.miraeasset.com/bbs/download/2128943.pdf?attachmentId=2128943\n   Description:  Jun 24, 2024  ·  동화약품 (000020). 종목 읽어주는 AI. 개요. 뉴스 분석. 경쟁사 분석. 종목 테마 분석. 개요. 기준일: 2024년 6월 21일. 종목 지수. 49점. 뉴스  . 2328위 ... \n   Content: [PDF 파일 텍스트 추출 완료 - https://securities.miraeasset.com/bbs/download/2128943.pdf?attachmentId=2128943]  --- 페이지 1 --- 2024년\u00016월\u000124일(월) 종목 읽어주는 AI 동화약품 (000020) 개요 뉴스 분석 경쟁사 분석 종목 테마 분석 개요 기준일: 2024년 6월 21일 종목 지수 49 70 74 점 점 점 뉴스 차트 재무 2328위/2350 1093위/2350 817위/2350 1 10 1 10 1 10 9등급 5등급 4등급 주가 (3개월) 9.6 2.6 천) 화 약 품( 8.8 2.4 제 약 (만 동 ) 8.0 2.2 04/01 05/02 06/03 동화약품 제약(평균 가격) 기본 정보 동화약품 (000020) 8,160 ▲20 +0.25% 시장 코스피 PER 12.74배 시가총액 2,279억원 PBR 0.61배 시가총액순위 코스피 477위 ROE 4.83% 섹터 제약 EV/EBITDA 20.49배 발행주식주 2,793만주 현금배당수익률 2.21%  --- 페이지 2 --- 뉴스 분석 투자 심리 분석 주목할 만한 종목 뉴스에 나타난 심리를 분석해드려요. 부정 0 50 100 긍정 100 50 0 12월 1월 2월 3월 4월 5월 6월 2023년 2024년 원의 색깔은 뉴스의 긍정 점수를 나타내며 원의 크기는 뉴스의 중요도를 의미해요. 원 선택시 자세한 정보를 볼 수 있어요. 종목 대표 뉴스 인공지능(AI)이 분석한 중요도 높은 대표 뉴스를 선별해드려요. [동화약품은 지금] 생존 힘든 업황에 무차입 원칙도 깼다, 강력해진 '투자본능' ①오너 4세 윤인호 부사장 등  장에 달라진 분위기, 최근 3년 신규투자만 1000억 중립 활명수와 후시딘. 국내서 가장 오래된 최고(最古) 제약사라는 타이틀을 가진 동화약품의 변신이 새롭다. 물론 보령의 우주, 일동제약의 신약처럼 전격적이진 않다. 더디지만 기존과는 완전히 다른 파격을 만들고 있다. 변화 없이는 더이상 생존하… 더벨 | 2024.06.21 “현대인 맞춤 피로해소제”… 동화약품 ‘퀵앤써’ 출시  동화약품은 벤포티아민을 함유한 액상형 피로해소제 ‘퀵앤써’(사진)를 출시했다고 14일 밝혔다. 동화약품에 따르면 퀵앤 긍정 써는 에너지 대사의 필수 성분인 벤포티아민을 일일 섭취 권장량 대비 6배 이상 함유한 의약외품이다. 질병의 치료·예… 문화일보 | 2024.06.14 다가오는 여름 남녀노소 누구나 사용가능…동화약품, 저자극 선크림‘주목’  본격적인 여름을 앞두고 자외선 차단에 대한 사람들의 관심이 높아지고 있다. 화장품 시장에서의 선케어 제품 경쟁이 치열 긍정 해질 것으로 예상되는 가운데, 동화약품이 지난 3월 출시한 ‘후시다인 더마 트러블 징크 카밍 선크림’이 올리브영의 더… 매일경제 | 2024.06.14 동화약품, 국내 최초 액상형 벤포티아민 피로회복제 ‘퀵앤써’ 출시  동화약품(대표이사 유준하)은 벤포티아민을 함유한 액상형 피로회복제 ‘퀵앤써’를 출시했다. 에너지 대사의 필수 성분인 긍정 벤포티아민을 일일 섭취 권장량 대비 약 6배 이상 함유한 의약외품이다. 의약외품은 건강기능식품과 달리 질병의 치료, … 스포츠동아 | 2024.06.05 [단독] 동화약품, 화장품사업 ⽇ 출사표…'후시드크림' 첫 발  더마 트러블 '젊은층' 후시드 바이옴 '중년층' 타깃 '127년 역사' 제약사 피부질환 기술력·전문성 강조 [더구루=한아름 기 긍정 자] 동화약품이 일본 뷰티 시장에 도전장을 던졌다. 상처 연고 '후시딘'과 같은 유래 성분을 활용한 화장품을 론칭한다. … 더구루 | 2024.05.31 대웅제약 이어 동화약품도…‘주블리아’ 제네릭 잇달아 출격  '오니샥외용액' 품목 허가 [메디컬투데이=김동주 기자] 손발톱무좀 치료제 ‘주블리아(에피코나졸)’를 타겟 삼은 제네릭이 긍정 속속 등장하고 있다. 식품의약품안전처는 지난 29일자로 동화약품의 ‘오니샥외용액’의 품목허가를 승인했다. 해당 품… 메디컬투데이2 | 2024.05.02 동화약품, '약학 박사' 박진 신임 공장장 취임 - 글로벌이코노믹  동화약품은 8대 공장장으로 박진 상무를 신임 공장장으로 선임했다고 17일 밝혔다. 박 공장장은 중앙대학교 위생제약학 중립 과를 졸업하고 중앙대학교 약학과 박사과정을 취득했다. 지난 1991년 일양약품 선임연구원으로 입사해 이후 한국릴리, … 글로벌 이코노믹 | 2024.04.17 동화약품, 향을 더한 다한증 치료제 ‘드라이언액’ 출시  [메디컬투데이=김준수 기자] 동화약품은 땀 분비 억제 효과는 물론 은은한 파우더리 머스크향을 첨가해 상쾌함까지 더한 긍정 다한증 치료제 ‘드라이언액’을 출시했다고 14일 밝혔다. 겨드랑이, 손, 발 다한증(땀과다증) 치료에 사용하는 드라이언액…  --- 페이지 3 --- 메디컬투데이2 | 2024.03.14 CU, 동화약품 손잡고 에너지 드링크 개발…`하루 한 병`  CU는 `부채표`로 잘 알려진 제약업체 동화약품과 함께 에너지 드링크 `하루 한 병` 2종을 출시했다고 12일 밝혔다. `하 긍정 루 한 병 아르기닌`에는 활력 증진을 돕는 L-아르기닌 1000㎎이, `하루 한 병 테아닌`에는 스트레스에 의한 긴장 완화… 디지털타임스 | 2024.03.12 동화약품 판콜에스, 2023년 감기약 시장 매출 1위 달성  IQVIA 4Q MAT 데이터 347억 매출로 24% 점유율 1968년 출시 이후 IQVIA 3Q MAT 데이터서 첫 1위 동화약품(대표이 긍정 사 유준하)의 종합감기약 ‘판콜에스’가 2023년 감기약 시장 매출 1위를 했다. 동화약품에 따르면 최근 공개된 IQVIA 4… 스포츠동아 | 2024.03.03 `살릴活·생명命·물⽔` 활명수에 담은 동화약품의 독립운동  [머니S리포트-독립운동 제약·의학⼈] ②\"약을 팔아 독립운동 자금으로\"… 직원도 독립운동가로 채워 [편집자주] 3·1운 중립 동이 올해로 105주년을 맞이했다. 일제강점기 당시 독립운동에 큰 족적을 남긴 기업과 의료인들이 있다. 유한양행과 동… 머니S | 2024.02.29 동화약품 `판콜에스`, 작년 종합감기약 판매 `1위`  동화약품 종합감기약 `판콜에스`가 작년 한 해 종합감기약 중 가장 많이 팔린 것으로 나타났다. 아이큐비아가 발표한 4Q 긍정 MAT 데이터(2023년 1분기~2023년 4분기)에 따르면 동화약품 판콜에스는 작년 한 해 347억원(약 1740만개)의 매출… 블로터 | 2024.02.28  --- 페이지 4 --- 경쟁사 분석 기준일: 2024년 6월 21일 주가 추이 비교 사업 영역이 유사한 경쟁사의 주가 추이를 비교해드려요. 0 -10 -20 -30 1일 11일 21일 1일 11일 21일 1일 11일 2024년 3월 4월 5월 6월 동화약품 동아에스티 대웅 보령 재무 비교 경쟁사간 성장성, 수익성, 안정성, 활동성 관련 재무 지수를 비교해드려요. 수익성 (ROE, %) 성장성 (매출액증가율(YoY), %) 동화약품 44..8833 동화약품 1199..5588 동아에스티 --00..8800 동아에스티 55..6611 대웅 1144..0099 대웅 11..8844 보령 99..3377 보령 1144..6622 안정성 (유동비율, %) 활동성 (총자산회전율, %) 동화약품 223322..7755 동화약품 2211..1177 동아에스티 115566..6644 동아에스티 1122..0066 대웅 111188..6655 대웅 1188..3399 보령 116666..5577 보령 2244..3377  --- 페이지 5 --- 종목 테마 분석 기준일: 2024년 6월 21일 테마 키워드 언급량 추이 종목이 속한 테마 관련 주요 키워드를 분석하여 해당 테마의 투자 언급량 추이를 보여드려요. 2 1 수 점 0 준 표 급 량 -1 언 -2 -3 1일 11일 21일 1일 11일 21일 1일 11일 21일 2024년 3월 4월 5월 6월 의약품 테마 관련 종목 테마 내의 다른 종목을 보여드려요. 의약품 등락률 삼성바이오로직스 +0.40% 셀트리온 -1.67% 대웅 -2.48% 본 컨텐츠는 ㈜바이브컴퍼니 데이터를 바탕으로 제공되며, ㈜바이브컴퍼니 정책에 따라 데이터 항목 업데이트 주기가 상이할 수 있습니다. 본 컨텐츠는 정보 제공을 목적으로 제작되는 것으로 특정 종목에 대한 매수(매도) 신호나 추천, 판매, 투자 권유를 의미하지 않으며, 투자의 최종 판단은 이용하시는 고객 에게 있습니다. 본 컨텐츠는 인공지능 모델을 활용한 분석이기 때문에 실제 결과와 차이가 있을 수 있으며 당사의 공식적인 의견과 다를 수 있습니다.\n\nMetadata:\n- Total results: 1\n- Language: en\n- Country: us\nStep 7: I have gathered a variety of information related to 동화약품 (종목코드: 000020) from different sources. Here's a summary of the findings:\n\n1. **최신 뉴스 및 이슈**:\n   - A recent news article from AlphaSquare discusses the leadership transition within Dongwha Pharm, where the chairman passed the leadership to his son. [Read more](https://alphasquare.co.kr/home/stock-issue?code=000020&type=news).\n\n2. **시장 동향**:\n   - The market trends and real-time stock information for Dongwha Pharm can be found on AlphaSquare. [View details](https://alphasquare.co.kr/home/stock-summary?code=000020).\n\n3. **애널리스트 의견**:\n   - Naver Finance provides a platform for analyst opinions and stock information for Dongwha Pharm. [Visit Naver Finance](https://finance.naver.com/item/main.nhn?code=000020).\n\n4. **경쟁사 정보**:\n   - Competitive analysis and industry insights for Dongwha Pharm are available on WiseReport. [Explore more](https://comp.wisereport.co.kr/company/c1060001.aspx?cmp_cd=000020&cn=).\n\n5. **기술적 분석**:\n   - Unfortunately, the search for technical analysis on Dongwha Pharm timed out. I recommend visiting investing.com for detailed technical charts and analysis.\n\n6. **특별 정보**:\n   - A PDF report from Mirae Asset provides an in-depth analysis of Dongwha Pharm. [Download PDF](https://securities.miraeasset.com/bbs/download/2128943.pdf?attachmentId=2128943).\n\n### Next Steps:\n- **For Technical Analysis**: Visit [Investing.com](https://kr.investing.com/equities/dongwha-pharm) directly to access technical charts and indicators.\n- **For Comprehensive Analysis**: Review the PDF report from Mirae Asset for detailed insights and analysis.\n\nIf you need further assistance or specific details from any of these sources, please let me know!\nStep 8: Observed output of cmd `terminate` executed:\nThe interaction has been completed with status: success",
+      "primary_intent": "일반문의",
+      "analysis_focus": "종합분석",
+      "data_priority": "기본",
+      "confidence": 0.3,
+      "basic_financial_data_used": true,
+      "enhanced_dart_data_used": false,
+      "collection_purpose": "crewai_feeding",
+      "ready_for_crewai": true,
+      "pdf_analysis": {
+        "pdf_detected": true,
+        "analysis_completed": false,
+        "pdf_content": {},
+        "analysis_method": "none",
+        "pdf_dictionary_interface": null,
+        "error": "PDF 형식이 아닙니다. 파일 헤더: b''"
+      },
+      "data_richness_score": 59.5
+    },
+    "pdf_large_analysis": {
+      "pdf_detected": true,
+      "analysis_completed": false,
+      "pdf_content": {},
+      "analysis_method": "none",
+      "pdf_dictionary_interface": null,
+      "error": "PDF 형식이 아닙니다. 파일 헤더: b''"
+    },
+    "step4_crewai_comprehensive_analysis": {
+      "success": true,
+      "analysis_type": "comprehensive_manus_crewai_synthesis_optimized",
+      "detected_sector": "HEALTH_CARE",
+      "sector_korean_name": "헬스케어",
+      "gics_sector_used": "Health Care",
+      "activated_experts": [
+        "헬스케어 펀더멘털 분석가",
+        "헬스케어 기술적 분석가"
+      ],
+      "selected_experts_count": 2,
+      "expert_insights": {
+        "individual_expert_analyses": [
+          {
+            "expert_name": "헬스케어 펀더멘털 분석가",
+            "expertise_area": "재무제표 분석, 기업가치 평가, 수익성 분석",
+            "analysis_result": "### Dongwha Pharm.Co.,Ltd (000020.KS) 펀더멘털 분석\n\n#### 1. 재무비율 종합분석\n\n- **ROE (Return on Equity)**\n  - 현재 ROE는 -0.393%로, 이는 자기자본 대비 순이익이 마이너스임을 나타냅니다. 이는 동종업계 평균에 비해 낮은 수준입니다.\n  - **DuPont 분석**: \n    - 순이익률: 0.5529%\n    - 자산회전율: 0.966% (매출/평균총자산)\n    - 레버리지: 1.26069 (자산/자기자본)\n    - ROE = 0.5529% × 0.966 × 1.26069 = 약 -0.393%\n  - **ROIC vs WACC**: ROIC를 계산하기 위해 NOPAT(영업이익 × (1-세율))이 필요합니다. WACC와 비교하여 자본비용 대비 수익성을 평가해야 합니다.\n\n- **유동비율**\n  - 유동비율은 1.76으로, 이는 유동부채 대비 유동자산이 충분함을 나타내며, 단기적인 재무 안정성이 양호함을 의미합니다.\n\n#### 2. 현금흐름 정밀분석\n\n- **FCF (Free Cash Flow)**\n  - FCF = 영업CF - 자본적지출로 계산되며, 3년 평균을 통해 안정성을 평가해야 합니다.\n  - **FCF Yield**: FCF/시가총액 × 100으로, 투자 대비 현금흐름 수익성을 나타냅니다.\n\n- **Cash Conversion Cycle**\n  - DIO(재고보유기간) + DSO(매출채권회수기간) - DPO(매입채무지급기간)로 계산되며, 운영 효율성을 평가합니다.\n\n#### 3. 수익성 및 성장성 심화분석\n\n- **매출 성장률**\n  - 매출 성장률은 전기 대비 당기 매출의 증가율로, 회사의 성장성을 평가하는 지표입니다.\n\n- **영업레버리지**\n  - 영업이익 증가율/매출 증가율로, 매출 증가에 따른 영업이익의 민감도를 평가합니다.\n\n- **EBITDA 마진**\n  - EBITDA/매출 × 100으로, 현금창출력을 나타내며, EBITDA는 영업이익에 감가상각비를 더한 값입니다.\n\n- **Asset Turnover**\n  - 매출/평균총자산으로, 자산 효율성을 평가합니다.\n\n#### 4. 재무건전성 스트레스 테스트\n\n- **Interest Coverage**\n  - EBIT/이자비용으로, 이자지급능력을 평가합니다.\n\n- **Debt Service Coverage**\n  - OCF/(원금상환+이자지급)으로, 부채상환능력을 평가합니다.\n\n- **Net Debt/EBITDA 비율**\n  - 부채상환 소요연수를 평가하며, 낮을수록 좋습니다.\n\n- **경기침체 시나리오**\n  - 경기침체 시 부채상환능력을 평가하여, 재무건전성을 스트레스 테스트합니다.\n\n### 결론\nDongwha Pharm.Co.,Ltd는 현재 ROE가 낮고, 수익성 지표가 동종업계 평균에 미치지 못하고 있습니다. 그러나 유동비율이 양호하여 단기적인 재무 안정성은 확보하고 있습니다. 현금흐름과 수익성 지표를 개선하기 위한 전략이 필요하며, 특히 ROIC와 WACC 비교를 통해 자본비용 대비 수익성을 면밀히 검토해야 합니다.",
+            "data_sources_used": [
+              "Technical_Analysis_Calculated",
+              "Manus_Web_Search",
+              "yfinance",
+              "PDF_Analysis",
+              "DART"
+            ],
+            "analysis_timestamp": 1750738619.591764
+          },
+          {
+            "expert_name": "헬스케어 기술적 분석가",
+            "expertise_area": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+            "analysis_result": "### 현재 시점 정밀 분석\n\n1. **RSI (상대강도지수)**:\n   - 현재 RSI는 61.48로 중립 상태에 있습니다. 이는 과매수나 과매도 상태가 아님을 의미하며, 현재 시장의 방향성을 명확히 판단하기 어려운 상황입니다.\n\n2. **MACD**:\n   - MACD 라인은 117.1260, 시그널 라인은 114.3074로, 히스토그램은 2.8186입니다. 이는 상승 추세가 지속되고 있음을 나타내며, 매수 신호로 해석할 수 있습니다.\n\n3. **볼린저 밴드**:\n   - 현재 주가는 볼린저 밴드의 중간 밴드(6,626원) 위에 위치하고 있으며, 상단 밴드(6,934원)와의 거리가 좁아지고 있습니다. 이는 주가가 상단 밴드를 향해 상승할 가능성을 시사합니다.\n\n4. **이동평균선**:\n   - 현재 주가(6,770원)는 MA_5(6,806원) 아래에 있지만, MA_20(6,626원), MA_60(6,309원), MA_120(6,273원) 위에 있습니다. 이는 단기적으로는 약세일 수 있으나, 중장기적으로는 상승 추세를 유지하고 있음을 나타냅니다.\n\n### 지지/저항선 활용 전략\n\n1. **지지선**:\n   - 주요 지지선은 MA_20인 6,626원입니다. 이 수준이 유지된다면 추가 상승 가능성이 있습니다.\n\n2. **저항선**:\n   - 주요 저항선은 볼린저 밴드 상단인 6,934원입니다. 이 수준을 돌파할 경우, 추가 상승 여력이 있을 수 있습니다.\n\n3. **전략**:\n   - 지지선인 6,626원 근처에서 매수 포지션을 고려할 수 있으며, 저항선인 6,934원 돌파 시 추가 매수를 고려할 수 있습니다.\n\n### 거래량 분석과 확인\n\n1. **OBV (On Balance Volume)**:\n   - 현재 OBV는 -34,428로, 주가와의 다이버전스 여부를 확인하기 어렵습니다. 거래량이 주가 상승을 뒷받침하는지 확인이 필요합니다.\n\n2. **거래량 비율**:\n   - 현재 거래량은 42,815주로, 20일 평균 거래량(79,545주)의 0.54배입니다. 이는 거래량이 평균보다 낮아, 신호의 신뢰도가 다소 떨어질 수 있음을 의미합니다.\n\n### 투자 시나리오 및 목표가\n\n1. **단기 목표가 (1-3개월)**:\n   - 상승 시나리오: 7,000원 (저항선 돌파 시)\n   - 하락 시나리오: 6,500원 (지지선 이탈 시)\n\n2. **중기 목표가 (3-6개월)**:\n   - 상승 시나리오: 7,200원 (추가 상승 모멘텀 발생 시)\n   - 하락 시나리오: 6,300원 (중기 이동평균선 이탈 시)\n\n3. **전략**:\n   - 상승 시나리오에서는 저항선 돌파 후 3일 이상 지속성을 확인한 후 매수 포지션을 강화할 수 있습니다.\n   - 하락 시나리오에서는 지지선 이탈 시 손절매를 고려하여 리스크를 관리해야 합니다.\n\n### 주의사항\n- 모든 매매 신호는 거래량의 동반 여부를 반드시 확인해야 합니다.\n- 공시나 이벤트 전후에는 기술적 신호의 신뢰도가 낮아질 수 있으므로 주의가 필요합니다.\n- 단기, 중기, 장기 시계열을 종합적으로 판단하여 투자 결정을 내려야 합니다.",
+            "data_sources_used": [
+              "Technical_Analysis_Calculated",
+              "Manus_Web_Search",
+              "yfinance",
+              "PDF_Analysis",
+              "DART"
+            ],
+            "analysis_timestamp": 1750738637.012359
+          }
+        ],
+        "expert_count": 2,
+        "successful_analyses": 2,
+        "synthesis_result": {
+          "synthesis_success": true,
+          "expert_count": 2,
+          "successful_count": 2,
+          "failed_count": 0,
+          "synthesis_content": "### 1. 핵심 투자 포인트\n\n1. **재무 안정성**: Dongwha Pharm.Co.,Ltd는 유동비율이 1.76으로 단기적인 재무 안정성이 양호합니다. 이는 유동부채 대비 유동자산이 충분함을 나타내며, 단기적인 재무 리스크가 낮습니다.\n\n2. **기술적 상승 추세**: 기술적 분석에 따르면, MACD와 볼린저 밴드가 상승 추세를 시사하고 있습니다. 특히, 주가가 볼린저 밴드의 중간 밴드 위에 위치하고 있어 상단 밴드를 향해 상승할 가능성이 있습니다.\n\n3. **중장기 상승 가능성**: 이동평균선 분석에서 현재 주가가 중장기 이동평균선(MA_20, MA_60, MA_120) 위에 있어 중장기적으로 상승 추세를 유지하고 있습니다.\n\n4. **매수 전략**: 지지선인 6,626원 근처에서 매수 포지션을 고려할 수 있으며, 저항선인 6,934원 돌파 시 추가 매수를 고려할 수 있습니다.\n\n### 2. 주요 리스크 요인\n\n1. **낮은 ROE**: 현재 ROE가 -0.393%로, 동종업계 평균에 미치지 못하고 있습니다. 이는 회사의 수익성이 낮음을 나타내며, 장기적인 투자 매력도를 감소시킬 수 있습니다.\n\n2. **거래량 부족**: 현재 거래량이 20일 평균 거래량의 0.54배로 낮아, 기술적 신호의 신뢰도가 떨어질 수 있습니다. 이는 시장의 관심이 부족함을 나타낼 수 있습니다.\n\n3. **수익성 개선 필요**: ROIC와 WACC 비교를 통해 자본비용 대비 수익성을 면밀히 검토해야 하며, 수익성 지표 개선이 필요합니다.\n\n4. **시장 변동성**: 공시나 이벤트 전후에는 기술적 신호의 신뢰도가 낮아질 수 있으며, 시장 변동성에 주의가 필요합니다.\n\n### 3. 종합 투자 의견\n\n**보유**: 현재 재무 안정성과 기술적 상승 추세가 긍정적이지만, 낮은 ROE와 거래량 부족이 리스크 요인으로 작용하고 있습니다. 따라서, 보유 의견을 제시하며, 기술적 지표와 거래량의 변화를 주시할 필요가 있습니다.\n\n### 4. 목표가 또는 적정가 제시\n\n- **단기 목표가**: 7,000원 (저항선 돌파 시)\n- **중기 목표가**: 7,200원 (추가 상승 모멘텀 발생 시)\n\n### 5. 전문가 의견 일치도\n\n**보통**: 펀더멘털 분석과 기술적 분석 모두 재무 안정성과 기술적 상승 추세를 긍정적으로 평가하고 있으나, 낮은 ROE와 거래량 부족에 대한 우려가 존재합니다. 두 전문가의 분석이 일부 일치하지만, 수익성 개선 필요성과 거래량 부족에 대한 의견이 다소 상이합니다.",
+          "synthesis_timestamp": 1750738649.1715875,
+          "data_sources_integrated": 5
+        },
+        "total_analysis_time": "43.93초",
+        "data_integration_type": "comprehensive_multi_source"
+      },
+      "cost_savings": {
+        "traditional_cost": 11.0,
+        "one_hot_cost": 0.08,
+        "savings_amount": 10.92,
+        "savings_percentage": 99.27272727272727,
+        "activated_agents": 2,
+        "depth": "quick"
+      },
+      "analysis_depth": "quick",
+      "cache_key": "58e0d16093a7125a32b4689af54c5af6",
+      "data_integration_quality": {
+        "overall_score": 30.0,
+        "quality_grade": "개선필요",
+        "total_possible_score": 100.0,
+        "achieved_score": 30.0,
+        "details": {
+          "financial_data_score": 10,
+          "manus_data_score": 20
+        },
+        "data_sources_count": 2
+      },
+      "synthesis_completeness": "완전통합_토큰최적화",
+      "token_optimization": {
+        "optimization_applied": false,
+        "original_token_estimate": 6007,
+        "optimized_token_estimate": 6007,
+        "compression_ratio": 1.0
+      }
+    }
+  },
+  "final_summary": {
+    "analyzed_stock": {
+      "name": "종목명.",
+      "code": "000020",
+      "ticker_bbg": "000020 KS Equity",
+      "gics_sector": "Health Care",
+      "market_index": "KOSPI Index",
+      "detection_method": "ai_ai_web_search_priority"
+    },
+    "data_sources": {
+      "financial_data_collected": true,
+      "data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "data_quality": "보통",
+      "technical_analysis_collected": true,
+      "technical_indicators_count": 8,
+      "manus_information_collected": true,
+      "data_richness_score": 59.5
+    },
+    "analysis_quality": {
+      "information_collection_performed": true,
+      "crewai_comprehensive_analysis_performed": true,
+      "financial_data_enhanced": true,
+      "workflow_type": "manus_first_crewai_synthesis"
+    },
+    "key_insights": {
+      "information_collection_quality": "보통",
+      "crewai_analysis_quality": "성공",
+      "overall_analysis_depth": "높음",
+      "data_integration_success": true
+    }
+  },
+  "crewai_detailed_analysis": {
+    "detected_sector": "HEALTH_CARE",
+    "sector_korean_name": "헬스케어",
+    "activated_experts": [
+      "헬스케어 펀더멘털 분석가",
+      "헬스케어 기술적 분석가"
+    ],
+    "expert_count": 2,
+    "individual_expert_analyses": [
+      {
+        "expert_name": "헬스케어 펀더멘털 분석가",
+        "expertise_area": "재무제표 분석, 기업가치 평가, 수익성 분석",
+        "analysis_result": "### Dongwha Pharm.Co.,Ltd (000020.KS) 펀더멘털 분석\n\n#### 1. 재무비율 종합분석\n\n- **ROE (Return on Equity)**\n  - 현재 ROE는 -0.393%로, 이는 자기자본 대비 순이익이 마이너스임을 나타냅니다. 이는 동종업계 평균에 비해 낮은 수준입니다.\n  - **DuPont 분석**: \n    - 순이익률: 0.5529%\n    - 자산회전율: 0.966% (매출/평균총자산)\n    - 레버리지: 1.26069 (자산/자기자본)\n    - ROE = 0.5529% × 0.966 × 1.26069 = 약 -0.393%\n  - **ROIC vs WACC**: ROIC를 계산하기 위해 NOPAT(영업이익 × (1-세율))이 필요합니다. WACC와 비교하여 자본비용 대비 수익성을 평가해야 합니다.\n\n- **유동비율**\n  - 유동비율은 1.76으로, 이는 유동부채 대비 유동자산이 충분함을 나타내며, 단기적인 재무 안정성이 양호함을 의미합니다.\n\n#### 2. 현금흐름 정밀분석\n\n- **FCF (Free Cash Flow)**\n  - FCF = 영업CF - 자본적지출로 계산되며, 3년 평균을 통해 안정성을 평가해야 합니다.\n  - **FCF Yield**: FCF/시가총액 × 100으로, 투자 대비 현금흐름 수익성을 나타냅니다.\n\n- **Cash Conversion Cycle**\n  - DIO(재고보유기간) + DSO(매출채권회수기간) - DPO(매입채무지급기간)로 계산되며, 운영 효율성을 평가합니다.\n\n#### 3. 수익성 및 성장성 심화분석\n\n- **매출 성장률**\n  - 매출 성장률은 전기 대비 당기 매출의 증가율로, 회사의 성장성을 평가하는 지표입니다.\n\n- **영업레버리지**\n  - 영업이익 증가율/매출 증가율로, 매출 증가에 따른 영업이익의 민감도를 평가합니다.\n\n- **EBITDA 마진**\n  - EBITDA/매출 × 100으로, 현금창출력을 나타내며, EBITDA는 영업이익에 감가상각비를 더한 값입니다.\n\n- **Asset Turnover**\n  - 매출/평균총자산으로, 자산 효율성을 평가합니다.\n\n#### 4. 재무건전성 스트레스 테스트\n\n- **Interest Coverage**\n  - EBIT/이자비용으로, 이자지급능력을 평가합니다.\n\n- **Debt Service Coverage**\n  - OCF/(원금상환+이자지급)으로, 부채상환능력을 평가합니다.\n\n- **Net Debt/EBITDA 비율**\n  - 부채상환 소요연수를 평가하며, 낮을수록 좋습니다.\n\n- **경기침체 시나리오**\n  - 경기침체 시 부채상환능력을 평가하여, 재무건전성을 스트레스 테스트합니다.\n\n### 결론\nDongwha Pharm.Co.,Ltd는 현재 ROE가 낮고, 수익성 지표가 동종업계 평균에 미치지 못하고 있습니다. 그러나 유동비율이 양호하여 단기적인 재무 안정성은 확보하고 있습니다. 현금흐름과 수익성 지표를 개선하기 위한 전략이 필요하며, 특히 ROIC와 WACC 비교를 통해 자본비용 대비 수익성을 면밀히 검토해야 합니다.",
+        "data_sources_used": [
+          "Technical_Analysis_Calculated",
+          "Manus_Web_Search",
+          "yfinance",
+          "PDF_Analysis",
+          "DART"
+        ],
+        "analysis_timestamp": 1750738619.591764
+      },
+      {
+        "expert_name": "헬스케어 기술적 분석가",
+        "expertise_area": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+        "analysis_result": "### 현재 시점 정밀 분석\n\n1. **RSI (상대강도지수)**:\n   - 현재 RSI는 61.48로 중립 상태에 있습니다. 이는 과매수나 과매도 상태가 아님을 의미하며, 현재 시장의 방향성을 명확히 판단하기 어려운 상황입니다.\n\n2. **MACD**:\n   - MACD 라인은 117.1260, 시그널 라인은 114.3074로, 히스토그램은 2.8186입니다. 이는 상승 추세가 지속되고 있음을 나타내며, 매수 신호로 해석할 수 있습니다.\n\n3. **볼린저 밴드**:\n   - 현재 주가는 볼린저 밴드의 중간 밴드(6,626원) 위에 위치하고 있으며, 상단 밴드(6,934원)와의 거리가 좁아지고 있습니다. 이는 주가가 상단 밴드를 향해 상승할 가능성을 시사합니다.\n\n4. **이동평균선**:\n   - 현재 주가(6,770원)는 MA_5(6,806원) 아래에 있지만, MA_20(6,626원), MA_60(6,309원), MA_120(6,273원) 위에 있습니다. 이는 단기적으로는 약세일 수 있으나, 중장기적으로는 상승 추세를 유지하고 있음을 나타냅니다.\n\n### 지지/저항선 활용 전략\n\n1. **지지선**:\n   - 주요 지지선은 MA_20인 6,626원입니다. 이 수준이 유지된다면 추가 상승 가능성이 있습니다.\n\n2. **저항선**:\n   - 주요 저항선은 볼린저 밴드 상단인 6,934원입니다. 이 수준을 돌파할 경우, 추가 상승 여력이 있을 수 있습니다.\n\n3. **전략**:\n   - 지지선인 6,626원 근처에서 매수 포지션을 고려할 수 있으며, 저항선인 6,934원 돌파 시 추가 매수를 고려할 수 있습니다.\n\n### 거래량 분석과 확인\n\n1. **OBV (On Balance Volume)**:\n   - 현재 OBV는 -34,428로, 주가와의 다이버전스 여부를 확인하기 어렵습니다. 거래량이 주가 상승을 뒷받침하는지 확인이 필요합니다.\n\n2. **거래량 비율**:\n   - 현재 거래량은 42,815주로, 20일 평균 거래량(79,545주)의 0.54배입니다. 이는 거래량이 평균보다 낮아, 신호의 신뢰도가 다소 떨어질 수 있음을 의미합니다.\n\n### 투자 시나리오 및 목표가\n\n1. **단기 목표가 (1-3개월)**:\n   - 상승 시나리오: 7,000원 (저항선 돌파 시)\n   - 하락 시나리오: 6,500원 (지지선 이탈 시)\n\n2. **중기 목표가 (3-6개월)**:\n   - 상승 시나리오: 7,200원 (추가 상승 모멘텀 발생 시)\n   - 하락 시나리오: 6,300원 (중기 이동평균선 이탈 시)\n\n3. **전략**:\n   - 상승 시나리오에서는 저항선 돌파 후 3일 이상 지속성을 확인한 후 매수 포지션을 강화할 수 있습니다.\n   - 하락 시나리오에서는 지지선 이탈 시 손절매를 고려하여 리스크를 관리해야 합니다.\n\n### 주의사항\n- 모든 매매 신호는 거래량의 동반 여부를 반드시 확인해야 합니다.\n- 공시나 이벤트 전후에는 기술적 신호의 신뢰도가 낮아질 수 있으므로 주의가 필요합니다.\n- 단기, 중기, 장기 시계열을 종합적으로 판단하여 투자 결정을 내려야 합니다.",
+        "data_sources_used": [
+          "Technical_Analysis_Calculated",
+          "Manus_Web_Search",
+          "yfinance",
+          "PDF_Analysis",
+          "DART"
+        ],
+        "analysis_timestamp": 1750738637.012359
+      }
+    ],
+    "synthesis_result": {
+      "synthesis_success": true,
+      "expert_count": 2,
+      "successful_count": 2,
+      "failed_count": 0,
+      "synthesis_content": "### 1. 핵심 투자 포인트\n\n1. **재무 안정성**: Dongwha Pharm.Co.,Ltd는 유동비율이 1.76으로 단기적인 재무 안정성이 양호합니다. 이는 유동부채 대비 유동자산이 충분함을 나타내며, 단기적인 재무 리스크가 낮습니다.\n\n2. **기술적 상승 추세**: 기술적 분석에 따르면, MACD와 볼린저 밴드가 상승 추세를 시사하고 있습니다. 특히, 주가가 볼린저 밴드의 중간 밴드 위에 위치하고 있어 상단 밴드를 향해 상승할 가능성이 있습니다.\n\n3. **중장기 상승 가능성**: 이동평균선 분석에서 현재 주가가 중장기 이동평균선(MA_20, MA_60, MA_120) 위에 있어 중장기적으로 상승 추세를 유지하고 있습니다.\n\n4. **매수 전략**: 지지선인 6,626원 근처에서 매수 포지션을 고려할 수 있으며, 저항선인 6,934원 돌파 시 추가 매수를 고려할 수 있습니다.\n\n### 2. 주요 리스크 요인\n\n1. **낮은 ROE**: 현재 ROE가 -0.393%로, 동종업계 평균에 미치지 못하고 있습니다. 이는 회사의 수익성이 낮음을 나타내며, 장기적인 투자 매력도를 감소시킬 수 있습니다.\n\n2. **거래량 부족**: 현재 거래량이 20일 평균 거래량의 0.54배로 낮아, 기술적 신호의 신뢰도가 떨어질 수 있습니다. 이는 시장의 관심이 부족함을 나타낼 수 있습니다.\n\n3. **수익성 개선 필요**: ROIC와 WACC 비교를 통해 자본비용 대비 수익성을 면밀히 검토해야 하며, 수익성 지표 개선이 필요합니다.\n\n4. **시장 변동성**: 공시나 이벤트 전후에는 기술적 신호의 신뢰도가 낮아질 수 있으며, 시장 변동성에 주의가 필요합니다.\n\n### 3. 종합 투자 의견\n\n**보유**: 현재 재무 안정성과 기술적 상승 추세가 긍정적이지만, 낮은 ROE와 거래량 부족이 리스크 요인으로 작용하고 있습니다. 따라서, 보유 의견을 제시하며, 기술적 지표와 거래량의 변화를 주시할 필요가 있습니다.\n\n### 4. 목표가 또는 적정가 제시\n\n- **단기 목표가**: 7,000원 (저항선 돌파 시)\n- **중기 목표가**: 7,200원 (추가 상승 모멘텀 발생 시)\n\n### 5. 전문가 의견 일치도\n\n**보통**: 펀더멘털 분석과 기술적 분석 모두 재무 안정성과 기술적 상승 추세를 긍정적으로 평가하고 있으나, 낮은 ROE와 거래량 부족에 대한 우려가 존재합니다. 두 전문가의 분석이 일부 일치하지만, 수익성 개선 필요성과 거래량 부족에 대한 의견이 다소 상이합니다.",
+      "synthesis_timestamp": 1750738649.1715875,
+      "data_sources_integrated": 5
+    },
+    "data_integration_quality": {
+      "overall_score": 30.0,
+      "quality_grade": "개선필요",
+      "total_possible_score": 100.0,
+      "achieved_score": 30.0,
+      "details": {
+        "financial_data_score": 10,
+        "manus_data_score": 20
+      },
+      "data_sources_count": 2
+    },
+    "cost_savings": {
+      "traditional_cost": 11.0,
+      "one_hot_cost": 0.08,
+      "savings_amount": 10.92,
+      "savings_percentage": 99.27272727272727,
+      "activated_agents": 2,
+      "depth": "quick"
+    },
+    "token_optimization": {
+      "optimization_applied": false,
+      "original_token_estimate": 6007,
+      "optimized_token_estimate": 6007,
+      "compression_ratio": 1.0
+    },
+    "analysis_depth": "quick",
+    "total_analysis_time": "43.93초",
+    "data_sources_integrated": {
+      "financial_data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "manus_web_search_performed": true,
+      "pdf_analysis_performed": false,
+      "enhanced_dart_used": false,
+      "crewai_synthesis_performed": true
+    }
+  },
+  "data_flow_tracking": {
+    "step1_stock_detection": {
+      "method": "ai_ai_web_search_priority",
+      "confidence": "high"
+    },
+    "step2_financial_data": {
+      "sources": [
+        "yfinance",
+        "DART"
+      ],
+      "quality": "보통"
+    },
+    "step3_manus_collection": {
+      "richness_score": 59.5,
+      "pdf_detected": true,
+      "ready_for_crewai": true
+    },
+    "step4_crewai_synthesis": {
+      "success": true,
+      "experts_activated": 2,
+      "data_integration_success": true
+    },
+    "overall_data_completeness": 81.9
+  }
+}
