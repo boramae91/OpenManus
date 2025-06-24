@@ -1492,6 +1492,91 @@ class SmartSectorManager:
             context_parts.append("   - ROIC = NOPAT/(차입금+자기자본) vs WACC 비교")
             context_parts.append("   - 유동비율 = 유동자산/유동부채 (안전성 지표)")
             context_parts.append("")
+
+            # 🚀 NEW: 현금흐름표 직접 계산 지침 추가
+            context_parts.append(
+                "🚀 **핵심: 현금흐름표 계정과목 직접 계산 (사업보고서/분기보고서 딕셔너리 활용)**:"
+            )
+            context_parts.append(
+                "   ⭐ 위에 제공된 사업보고서/분기보고서 딕셔너리에서 다음 계정과목들을 직접 찾아서 계산하세요:"
+            )
+            context_parts.append("")
+            context_parts.append(
+                "   **영업활동 현금흐름 (Operating Cash Flow) 관련 계정과목:**"
+            )
+            context_parts.append("   - 당기순이익 (순이익, Net Income, 당기순손익)")
+            context_parts.append("   - 감가상각비 (Depreciation, 유형자산상각비)")
+            context_parts.append(
+                "   - 무형자산상각비 (Amortization, 무형자산감가상각비)"
+            )
+            context_parts.append("   - 운전자본 변동 (Working Capital Changes):")
+            context_parts.append(
+                "     * 매출채권 증감 (Trade Receivables, 매출채권및기타채권)"
+            )
+            context_parts.append("     * 재고자산 증감 (Inventory, 재고자산)")
+            context_parts.append(
+                "     * 매입채무 증감 (Trade Payables, 매입채무및기타채무)"
+            )
+            context_parts.append(
+                "   - 기타 영업활동 현금흐름 (충당부채, 이연법인세 등)"
+            )
+            context_parts.append("")
+            context_parts.append(
+                "   **투자활동 현금흐름 (Investing Cash Flow) 관련 계정과목:**"
+            )
+            context_parts.append(
+                "   - 유형자산 취득 (Property, Plant & Equipment 취득, 설비투자)"
+            )
+            context_parts.append("   - 유형자산 처분 (Fixed Assets 처분, 자산매각)")
+            context_parts.append("   - 무형자산 취득/처분 (Intangible Assets)")
+            context_parts.append("   - 투자자산 취득/처분 (Investment Securities)")
+            context_parts.append("   - 사업결합 (Business Combination, 인수합병)")
+            context_parts.append("")
+            context_parts.append(
+                "   **재무활동 현금흐름 (Financing Cash Flow) 관련 계정과목:**"
+            )
+            context_parts.append(
+                "   - 차입금 차입/상환 (Borrowings, 단기차입금, 장기차입금)"
+            )
+            context_parts.append("   - 배당금 지급 (Dividend Payments)")
+            context_parts.append(
+                "   - 주식 발행/자사주 취득 (Stock Issuance/Repurchase)"
+            )
+            context_parts.append("   - 사채 발행/상환 (Bond Issuance/Redemption)")
+            context_parts.append("")
+            context_parts.append("   **📊 계산 방법:**")
+            context_parts.append(
+                "   1. 위 딕셔너리 섹션에서 '재무제표', '현금흐름표', '연결재무제표' 등의 섹션을 찾으세요"
+            )
+            context_parts.append(
+                "   2. 각 계정과목의 실제 금액을 추출하여 현금흐름표를 재구성하세요"
+            )
+            context_parts.append(
+                "   3. 영업현금흐름 = 당기순이익 + 비현금비용 + 운전자본변동 + 기타영업활동"
+            )
+            context_parts.append(
+                "   4. 투자현금흐름 = -자본적지출 + 자산처분 + 기타투자활동"
+            )
+            context_parts.append(
+                "   5. 재무현금흐름 = 차입금순증가 - 배당금지급 + 기타재무활동"
+            )
+            context_parts.append(
+                "   6. 현금및현금성자산 순증가 = 영업CF + 투자CF + 재무CF"
+            )
+            context_parts.append("")
+            context_parts.append("   **🔴 중요한 원칙:**")
+            context_parts.append(
+                "   - 실제 딕셔너리에서 찾은 수치만 사용하고, 가정값 사용시 반드시 '(가정)' 표시"
+            )
+            context_parts.append("   - 연결재무제표 > 개별재무제표 우선순위")
+            context_parts.append(
+                "   - 사업보고서(연간) > 분기보고서(최신분기) 우선순위"
+            )
+            context_parts.append(
+                "   - 계정과목명이 다를 수 있으니 유사한 용어도 검색하세요"
+            )
+            context_parts.append("")
+
             context_parts.append("2. 현금흐름 정밀분석:")
             context_parts.append("   - FCF = 영업CF - 자본적지출 (3년 평균 산출)")
             context_parts.append("   - FCF Yield = FCF/시가총액 × 100 (%)")
@@ -1771,6 +1856,51 @@ class SmartSectorManager:
 
             # 🎯 시니어 밸류에이션 애널리스트 구체적 분석 지침
             context_parts.append("\n🎯 밸류에이션 분석 필수 수행사항:")
+
+            # 🚀 NEW: 현금흐름표 직접 계산 지침 추가 (밸류에이션 전문가용)
+            context_parts.append(
+                "🚀 **핵심: DCF 분석을 위한 현금흐름표 직접 계산 (사업보고서/분기보고서 딕셔너리 활용)**:"
+            )
+            context_parts.append(
+                "   ⭐ DCF 분석의 기초가 되는 자유현금흐름(FCF) 계산을 위해 딕셔너리에서 다음을 찾으세요:"
+            )
+            context_parts.append("")
+            context_parts.append("   **자유현금흐름(FCF) 계산 요소:**")
+            context_parts.append(
+                "   - 영업현금흐름 (Operating Cash Flow) = 위 딕셔너리의 '영업활동으로인한현금흐름' 섹션에서 추출"
+            )
+            context_parts.append(
+                "   - 자본적지출 (CapEx) = 위 딕셔너리의 '투자활동으로인한현금흐름' 섹션에서:"
+            )
+            context_parts.append(
+                "     * 유형자산 취득액 (설비투자, Property Plant Equipment)"
+            )
+            context_parts.append("     * 무형자산 취득액 (소프트웨어, 특허권 등)")
+            context_parts.append("   - FCF = 영업현금흐름 - 자본적지출")
+            context_parts.append("")
+            context_parts.append("   **Working Capital 변동 분석:**")
+            context_parts.append("   - 매출채권 변동: (당기말 - 전기말) 매출채권")
+            context_parts.append("   - 재고자산 변동: (당기말 - 전기말) 재고자산")
+            context_parts.append("   - 매입채무 변동: (당기말 - 전기말) 매입채무")
+            context_parts.append(
+                "   - Working Capital 변동 = 매출채권증가 + 재고증가 - 매입채무증가"
+            )
+            context_parts.append("")
+            context_parts.append("   **📊 FCF 품질 평가:**")
+            context_parts.append("   1. FCF/순이익 비율 (1.0 이상이 이상적)")
+            context_parts.append("   2. FCF 성장률 vs 매출 성장률 비교")
+            context_parts.append("   3. 3년 평균 FCF vs 최근년도 FCF 안정성")
+            context_parts.append("   4. 계절성 조정: 분기별 FCF 패턴 분석")
+            context_parts.append("")
+            context_parts.append("   **🔴 중요한 원칙:**")
+            context_parts.append("   - 실제 딕셔너리에서 찾은 현금흐름 수치만 사용")
+            context_parts.append("   - FCF 예측시 가정 사용하되 반드시 '(가정)' 표시")
+            context_parts.append("   - 연결재무제표 현금흐름표 > 개별재무제표 우선순위")
+            context_parts.append(
+                "   - 사업보고서(연간 실적) > 분기보고서(최신분기) 우선순위"
+            )
+            context_parts.append("")
+
             context_parts.append("1. DCF 분석 (구체적 산출식 제시):")
             context_parts.append("   - 자유현금흐름(FCF) 5년 예측값과 근거")
             context_parts.append(
@@ -1833,6 +1963,50 @@ class SmartSectorManager:
 
             # 🎯 시니어 리스크 애널리스트 정량적 분석 지침
             context_parts.append("\n🎯 리스크 분석 필수 수행사항:")
+
+            # 🚀 NEW: 현금흐름표 직접 계산 지침 추가 (리스크 평가자용)
+            context_parts.append(
+                "🚀 **핵심: 재무 리스크 평가를 위한 현금흐름표 직접 계산 (사업보고서/분기보고서 딕셔너리 활용)**:"
+            )
+            context_parts.append(
+                "   ⭐ 유동성 위험과 재무 안정성 평가를 위해 딕셔너리에서 다음 현금흐름 항목들을 찾으세요:"
+            )
+            context_parts.append("")
+            context_parts.append("   **현금흐름 리스크 지표 계산:**")
+            context_parts.append(
+                "   - 영업현금흐름 변동성: 3년간 영업CF 표준편차/평균 (CV 계수)"
+            )
+            context_parts.append("   - 자유현금흐름 안정성: FCF가 음수인 연도 빈도")
+            context_parts.append(
+                "   - 현금흐름 커버리지: 영업CF / (자본적지출 + 배당금 + 원금상환)"
+            )
+            context_parts.append("   - 현금 소진률: 현재 현금잔액 / 월평균 현금소모액")
+            context_parts.append("")
+            context_parts.append("   **부채 상환 능력 평가:**")
+            context_parts.append("   - 영업CF/총부채 비율 (0.15 이상 안전)")
+            context_parts.append("   - 순부채/영업CF 비율 (3.0 이하 안전)")
+            context_parts.append("   - EBITDA/이자비용 비율 (3.0 이상 안전)")
+            context_parts.append("   - 운전자본 변동성: 3년간 운전자본 변동의 표준편차")
+            context_parts.append("")
+            context_parts.append("   **현금흐름 품질 진단:**")
+            context_parts.append(
+                "   - 영업CF vs 순이익 괴리도: (영업CF - 순이익) / 순이익"
+            )
+            context_parts.append(
+                "   - 매출채권/매출 비율 증가 추세 (매출 품질 저하 신호)"
+            )
+            context_parts.append("   - 재고자산/매출 비율 증가 추세 (재고 과적 위험)")
+            context_parts.append("   - 현금전환주기(CCC) 연장 위험도")
+            context_parts.append("")
+            context_parts.append("   **🔴 리스크 임계점:**")
+            context_parts.append("   - 영업CF 2분기 연속 감소: 주의 (Yellow Flag)")
+            context_parts.append("   - 자유현금흐름 음수 전환: 경고 (Orange Flag)")
+            context_parts.append("   - 현금잔액 6개월분 미만: 위험 (Red Flag)")
+            context_parts.append(
+                "   - 실제 딕셔너리 수치만 사용, 가정시 반드시 '(가정)' 표시"
+            )
+            context_parts.append("")
+
             context_parts.append("1. 정량적 리스크 지표 산출:")
             context_parts.append("   - VaR (95% 신뢰구간): 1일, 10일, 1개월 VaR 계산")
             context_parts.append("   - CVaR (Conditional VaR): VaR 초과 손실의 평균")
