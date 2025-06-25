@@ -1164,13 +1164,50 @@ class SmartSectorManager:
 
             synthesis_prompt += """
 
-위 전문가들의 분석을 종합하여 다음과 같이 정리해주세요:
+🎯 위 전문가들의 분석을 종합하여 다음과 같이 정리해주세요 (Chat GPT 피드백 완전 반영):
 
-1. **핵심 투자 포인트** (3-5개)
-2. **주요 리스크 요인** (3-5개)
-3. **종합 투자 의견** (매수/보유/매도 + 근거)
-4. **목표가 또는 적정가 제시** (가능한 경우)
-5. **전문가 의견 일치도** (높음/보통/낮음 + 이유)
+## 🚀 Chat GPT 피드백 반영 - 시니어 애널리스트 수준 통합 분석
+
+### 1. **전문가 간 분석 결과 일관성 검토** (Chat GPT 피드백 핵심)
+- **일치하는 의견**: 여러 전문가가 동일하게 제시한 강점/약점 (신뢰도 높음)
+- **상반된 의견**: 전문가 간 모순되는 결론과 그 원인 분석
+  * 예: 기술적 분석(단기 하락) vs 밸류에이션(매수 권장)의 차이점
+- **의견 불일치 해결**: 상반된 의견에 대한 종합적 판단과 우선순위
+
+### 2. **시간적 프레임별 투자 전략** (Chat GPT 피드백 핵심)
+- **단기 전략 (1-3개월)**: 기술적 분석 + 이벤트 기반 요인
+- **중기 전략 (3-12개월)**: 펀더멘털 + 산업 트렌드 + 밸류에이션
+- **장기 전략 (1-3년)**: 구조적 경쟁력 + ESG + 기술 혁신 주기
+
+### 3. **시나리오별 대응 전략** (Chat GPT 피드백 핵심)
+- **Bull Case (30% 확률)**: 최적 시나리오에서의 목표가와 대응 전략
+- **Base Case (40% 확률)**: 기본 시나리오에서의 투자 접근법
+- **Bear Case (30% 확률)**: 악재 시나리오에서의 리스크 관리 방안
+
+### 4. **핵심 투자 포인트** (정량 지표 장기 추세 포함)
+- **정량적 우위**: 경쟁사 대비 ROE, ROIC, 마진율 우위와 지속성
+- **정성적 강점**: 경영진, 기술력, 브랜드 파워 등
+- **성장 동력**: 신사업, 신제품, 신시장 진출 가능성
+
+### 5. **주요 리스크 요인** (비재무 리스크 확대)
+- **재무 리스크**: 부채, 현금흐름, 수익성 악화 위험
+- **비재무 리스크**: ESG, 지정학, 기술 혁신, 규제 변화
+- **시장 리스크**: 경쟁 심화, 수요 변화, 사이클 리스크
+
+### 6. **종합 투자 의견** (시간적 프레임 명확화)
+- **12개월 투자 의견**: 매수/보유/매도 + 신뢰도 (%)
+- **목표가 산출**: 전문가별 목표가의 가중평균과 근거
+- **핵심 모니터링 지표**: 투자 의견 변경을 위한 핵심 변수들
+
+### 7. **전문가 의견 가중치** (신뢰도 기반)
+- **높은 신뢰도**: 데이터 기반 정량 분석 (펀더멘털, 밸류에이션)
+- **중간 신뢰도**: 시장 기반 분석 (기술적, 산업)
+- **참고 수준**: 정성적 평가 (리스크, 주석)
+
+**🔍 분석 품질 검증**:
+- 각 결론에 대한 전문가별 근거 일치도 확인
+- 정량적 수치의 일관성 검토 (재무비율, 목표가 등)
+- 시간적 일관성 확인 (단기 vs 장기 전망의 논리적 연결)
 
 각 항목별로 구체적인 근거와 함께 명확하게 제시해주세요.
 """
@@ -1660,22 +1697,66 @@ class SmartSectorManager:
                 "\n🎯 펀더멘털 분석 필수 수행사항 (Chat GPT 피드백 완전 적용):"
             )
 
-            # 🚀 Chat GPT 피드백 1: 정성적 분석 및 사업모델 이해 강화
-            context_parts.append("📊 **1. 사업모델 및 경쟁우위 정성분석**:")
+            # 🚀 Chat GPT 최신 피드백 1: 경쟁사 벤치마킹 및 산업 내 위치 분석 강화 (필수)
             context_parts.append(
-                "   - 핵심 수익원(Revenue Stream) 분석: 각 부문별 매출 기여도와 수익성"
+                "🏆 **1. 경쟁사 벤치마킹 및 산업 내 위치 분석** (시니어 애널리스트 필수):"
             )
             context_parts.append(
-                "   - 가치사슬(Value Chain) 분석: 원료조달→제조→유통→판매 각 단계별 부가가치"
+                "   - **경쟁사 재무비율 비교**: 동일 업종 Top 3 기업과 ROE, ROIC, 마진율 정량 비교 **[웹검색]**"
             )
             context_parts.append(
-                "   - 경쟁우위 모트(Economic Moat): 브랜드파워, 특허, 네트워크효과, 전환비용"
+                "   - **시장점유율 추이**: 최근 3년간 주요 사업부문별 시장점유율 변화와 순위 변동 **[웹검색]**"
             )
             context_parts.append(
-                "   - 고객구조 분석: 주요 고객 집중도, 고객충성도, 고객생애가치(CLV)"
+                "   - **상대적 밸류에이션**: 경쟁사 대비 PER, PBR, EV/EBITDA 프리미엄/디스카운트율 **[웹검색]**"
             )
             context_parts.append(
-                "   - 공급망 안정성: 주요 공급업체 의존도, 대체 공급원 확보 현황"
+                "   - **경쟁우위 지속성**: 경쟁사 대비 차별화 요소의 지속 가능성과 모방 가능성 평가 **[사업보고서]**"
+            )
+            context_parts.append(
+                "   - **산업 내 위치 변화**: 5년간 업계 순위 변동, 시장점유율 증감 원인 분석 **[웹검색]**"
+            )
+            context_parts.append("")
+
+            # 🚀 Chat GPT 최신 피드백 2: ROIC vs WACC 장기 추세 분석 (필수)
+            context_parts.append(
+                "📈 **2. ROIC vs WACC 장기 추세 분석** (가치창출 지속성 핵심):"
+            )
+            context_parts.append(
+                "   - **5년 ROIC 추세**: 연도별 ROIC 변화 패턴과 개선/악화 요인 구체적 분석 **[재무데이터 기반 계산]**"
+            )
+            context_parts.append(
+                "   - **WACC 변동성**: 시장 환경(금리, 신용스프레드) 변화에 따른 WACC 변동 패턴 **[재무데이터 기반 계산]**"
+            )
+            context_parts.append(
+                "   - **스프레드 분석**: (ROIC - WACC) 스프레드의 지속성과 향후 3년 개선 가능성 **[재무데이터 기반 계산]**"
+            )
+            context_parts.append(
+                "   - **가치창출 지속성**: ROIC > WACC 달성 연수와 경쟁사 대비 우위 지속 가능성 **[재무데이터 기반 계산]**"
+            )
+            context_parts.append(
+                "   - **자본효율성 개선**: ROIC 개선을 위한 구체적 전략(자산 경량화, 마진 개선 등) **[사업보고서]**"
+            )
+            context_parts.append("")
+
+            # 🚀 Chat GPT 최신 피드백 3: 비재무 요인 정성적 평가 강화 (필수)
+            context_parts.append(
+                "👥 **3. 비재무 요인 정성적 평가** (ESG 및 지배구조 포함):"
+            )
+            context_parts.append(
+                "   - **경영진 리더십**: CEO/CFO 교체 이력, 전략 실행력, 주주친화 정책 실적 **[사업보고서]**"
+            )
+            context_parts.append(
+                "   - **조직문화 지표**: 직원 만족도, 이직률, 혁신 문화 지수, R&D 인력 비중 **[웹검색]**"
+            )
+            context_parts.append(
+                "   - **지배구조 평가**: 이사회 독립성, 감사위원회 효율성, 내부통제 시스템 **[사업보고서]**"
+            )
+            context_parts.append(
+                "   - **전략적 방향성**: 중장기 전략의 일관성, 실행 가능성, 시장 적합성 **[사업보고서]**"
+            )
+            context_parts.append(
+                "   - **이해관계자 관계**: 노조, 정부, 지역사회, 공급업체와의 관계 품질 **[웹검색]**"
             )
             context_parts.append("")
 
@@ -2023,10 +2104,10 @@ class SmartSectorManager:
                     context_parts.append("🔍 추가 기술분석 관련 정보:")
                     context_parts.append(technical_info)
 
-            # 🎯 시니어 기술적 애널리스트 분석 지침 (실제 계산된 지표 활용!)
+            # 🎯 시니어 기술적 애널리스트 분석 지침 (Chat GPT 피드백 완전 반영)
             if technical_analysis_data and technical_analysis_data.get("success"):
                 context_parts.append(
-                    "\n🎯 **기술적 분석 필수 수행사항 (계산된 지표 활용)**:"
+                    "\n🎯 **기술적 분석 필수 수행사항 (시니어 애널리스트 수준 고도화)**:"
                 )
                 context_parts.append(
                     "✅ 위에 제공된 실제 계산된 지표 값들을 반드시 활용하세요!"
@@ -2035,7 +2116,58 @@ class SmartSectorManager:
                     "❌ 지표 정의나 일반론 설명은 생략하고, 구체적 수치 기반 분석에 집중하세요!"
                 )
                 context_parts.append("")
-                context_parts.append("1. **현재 시점 정밀 분석**:")
+
+                # 🚀 Chat GPT 피드백 1: 이벤트 기반 분석 추가
+                context_parts.append(
+                    "📅 **1. 이벤트 기반 분석** (Chat GPT 피드백 반영):"
+                )
+                context_parts.append(
+                    "   - **배당락일 전후**: 배당락일 ±5일간 주가 패턴과 거래량 변화 분석 **[웹검색]**"
+                )
+                context_parts.append(
+                    "   - **IR 발표일 영향**: 실적발표, 컨퍼런스콜 전후 기술적 신호 변화 **[웹검색]**"
+                )
+                context_parts.append(
+                    "   - **공시 이벤트**: 주요 공시 발표 전후 차트 패턴 변화와 신뢰도 **[웹검색]**"
+                )
+                context_parts.append(
+                    "   - **계절성 패턴**: 월별, 분기별 주가 패턴과 현재 시점의 계절적 요인 **[재무데이터 기반 계산]**"
+                )
+                context_parts.append("")
+
+                # 🚀 Chat GPT 피드백 2: 수급 분석 강화
+                context_parts.append("💹 **2. 수급 분석 (기관/외국인 매매 동향)**:")
+                context_parts.append(
+                    "   - **기관 매매 패턴**: 최근 20일간 기관 순매수/순매도 추이와 주가 상관관계 **[웹검색]**"
+                )
+                context_parts.append(
+                    "   - **외국인 매매 동향**: 외국인 지분율 변화와 주가 모멘텀 분석 **[웹검색]**"
+                )
+                context_parts.append(
+                    "   - **개인 투자자 심리**: 개인 매매 비중과 시장 센티먼트 지표 **[웹검색]**"
+                )
+                context_parts.append(
+                    "   - **대량거래 분석**: 대량거래 발생 시점과 주가 반응 패턴 **[재무데이터]**"
+                )
+                context_parts.append("")
+
+                # 🚀 Chat GPT 피드백 3: 퀀트 지표 통합
+                context_parts.append("🔢 **3. 퀀트 지표 통합 분석**:")
+                context_parts.append(
+                    "   - **VIX 상관관계**: 변동성 지수와 개별 주식 변동성 비교 **[웹검색]**"
+                )
+                context_parts.append(
+                    "   - **섹터 로테이션**: 섹터별 자금 흐름과 개별 종목 상대강도 **[재무데이터 기반 계산]**"
+                )
+                context_parts.append(
+                    "   - **모멘텀 팩터**: 가격 모멘텀, 수익 모멘텀 통합 점수 **[재무데이터 기반 계산]**"
+                )
+                context_parts.append(
+                    "   - **평균회귀 신호**: 장기 평균 대비 이탈 정도와 회귀 가능성 **[재무데이터 기반 계산]**"
+                )
+                context_parts.append("")
+
+                context_parts.append("4. **현재 시점 정밀 분석** (기존 강화):")
                 context_parts.append(
                     "   - 제공된 RSI, MACD, 볼린저밴드 실제 값으로 현재 상태 진단"
                 )
@@ -2137,8 +2269,10 @@ class SmartSectorManager:
                     logger.warning(f"⚠️ DART 사업 정보 추출 실패: {e}")
                     pass
 
-            # 🎯 시니어 산업 애널리스트 분석 지침 (데이터 우선순위 적용)
-            context_parts.append("\n🎯 산업 분석 필수 수행사항:")
+            # 🎯 시니어 산업 애널리스트 분석 지침 (Chat GPT 피드백 완전 반영)
+            context_parts.append(
+                "\n🎯 산업 분석 필수 수행사항 (시니어 애널리스트 수준 고도화):"
+            )
 
             context_parts.append("**📊 데이터 우선순위 (반드시 준수)**:")
             context_parts.append(
@@ -2152,6 +2286,56 @@ class SmartSectorManager:
             )
             context_parts.append("4순위: **[웹검색]** - 외부 데이터 (최후 수단)")
             context_parts.append("5순위: **[추정]** - 분석가 가정 (반드시 근거 명시)")
+            context_parts.append("")
+
+            # 🚀 Chat GPT 피드백 1: 향후 기술 로드맵 분석 추가
+            context_parts.append(
+                "🚀 **1. 향후 기술 로드맵 분석** (Chat GPT 피드백 반영):"
+            )
+            context_parts.append(
+                "   - **반도체 공정 발전**: 현재 공정 대비 차세대 기술 도입 시점과 경쟁력 **[웹검색]**"
+            )
+            context_parts.append(
+                "   - **기술 혁신 주기**: 업계 기술 혁신 주기와 회사의 기술 로드맵 부합성 **[사업보고서]**"
+            )
+            context_parts.append(
+                "   - **특허 포트폴리오**: 핵심 기술 특허 만료 일정과 신규 특허 출원 현황 **[웹검색]**"
+            )
+            context_parts.append(
+                "   - **기술 표준화**: 업계 표준 기술 변화와 회사의 대응 전략 **[사업보고서]**"
+            )
+            context_parts.append("")
+
+            # 🚀 Chat GPT 피드백 2: 정부 정책 및 지정학 리스크 분석
+            context_parts.append("🏛️ **2. 정부 정책 및 지정학 리스크 분석**:")
+            context_parts.append(
+                "   - **정부 정책 변화**: 반도체 지원 정책, 규제 변화가 산업에 미치는 영향 **[웹검색]**"
+            )
+            context_parts.append(
+                "   - **지정학적 리스크**: 미중 무역분쟁, 공급망 재편이 업계에 미치는 영향 **[웹검색]**"
+            )
+            context_parts.append(
+                "   - **국가별 정책**: 주요 국가별 반도체 육성 정책과 경쟁 구도 변화 **[웹검색]**"
+            )
+            context_parts.append(
+                "   - **규제 리스크**: 환경 규제, 데이터 보안 규제 등이 사업에 미치는 영향 **[웹검색]**"
+            )
+            context_parts.append("")
+
+            # 🚀 Chat GPT 피드백 3: 서브섹터별 경쟁 구도 분석
+            context_parts.append("🏭 **3. 서브섹터별 경쟁 구도 분석**:")
+            context_parts.append(
+                "   - **메모리 vs 파운드리**: 각 서브섹터별 경쟁 구도와 회사의 포지셔닝 **[웹검색]**"
+            )
+            context_parts.append(
+                "   - **시장 점유율 변화**: 서브섹터별 시장 점유율 추이와 경쟁사 분석 **[웹검색]**"
+            )
+            context_parts.append(
+                "   - **수익성 차이**: 서브섹터별 수익성 차이와 회사의 포트폴리오 최적화 **[재무데이터 기반 계산]**"
+            )
+            context_parts.append(
+                "   - **전략 변화**: 회사의 서브섹터별 투자 전략과 자원 배분 변화 **[사업보고서]**"
+            )
             context_parts.append("")
             context_parts.append("1. Porter 5 Forces 정량평가:")
             context_parts.append(
@@ -2274,7 +2458,60 @@ class SmartSectorManager:
             )
             context_parts.append("")
 
-            context_parts.append("1. DCF 분석 (구체적 산출식 제시):")
+            # 🚀 Chat GPT 피드백 1: 민감도 분석 강화 및 가정 값 타당성 평가
+            context_parts.append(
+                "📊 **1. 민감도 분석 및 가정 값 타당성 평가** (Chat GPT 피드백 반영):"
+            )
+            context_parts.append(
+                "   - **WACC 민감도**: WACC ±0.5%, ±1.0% 변동 시 목표가 변화율 **[재무데이터 기반 계산]**"
+            )
+            context_parts.append(
+                "   - **영구성장률 민감도**: g ±0.5%, ±1.0% 변동 시 목표가 변화율 **[재무데이터 기반 계산]**"
+            )
+            context_parts.append(
+                "   - **FCF 성장률 민감도**: 5년 평균 FCF 성장률 ±5%, ±10% 변동 시 영향 **[재무데이터 기반 계산]**"
+            )
+            context_parts.append(
+                "   - **가정 값 타당성**: 각 가정의 과거 실적 대비 합리성과 경쟁사 대비 비교 **[웹검색]**"
+            )
+            context_parts.append(
+                "   - **시나리오별 확률**: Bull(30%), Base(40%), Bear(30%) 시나리오 확률가중 목표가 **[재무데이터 기반 계산]**"
+            )
+            context_parts.append("")
+
+            # 🚀 Chat GPT 피드백 2: 밸류에이션 방법론 타당성 정량 평가
+            context_parts.append("🎯 **2. 밸류에이션 방법론 타당성 정량 평가**:")
+            context_parts.append(
+                "   - **DCF vs 멀티플 괴리도**: DCF 목표가와 멀티플 목표가 차이 분석과 원인 **[재무데이터 기반 계산]**"
+            )
+            context_parts.append(
+                "   - **WACC 적정성**: 업종 평균 WACC 대비 편차와 합리성 **[웹검색]**"
+            )
+            context_parts.append(
+                "   - **멀티플 근거**: 사용된 PER, PBR의 과거 밴드 대비 현재 위치 **[웹검색]**"
+            )
+            context_parts.append(
+                "   - **방법론별 신뢰도**: 업종 특성상 가장 적합한 밸류에이션 방법론 선택 근거 **[사업보고서]**"
+            )
+            context_parts.append("")
+
+            # 🚀 Chat GPT 피드백 3: 가치 평가 적정 시점 명확화
+            context_parts.append("⏰ **3. 가치 평가 적정 시점 명확화**:")
+            context_parts.append(
+                "   - **12개월 목표가**: 향후 12개월 기준 목표가와 달성 시점 **[재무데이터 기반 계산]**"
+            )
+            context_parts.append(
+                "   - **현재 시점 적정가**: 현재 시점 기준 이론적 적정가치 **[재무데이터 기반 계산]**"
+            )
+            context_parts.append(
+                "   - **시점별 밸류에이션**: 3개월, 6개월, 12개월, 24개월 목표가 제시 **[재무데이터 기반 계산]**"
+            )
+            context_parts.append(
+                "   - **카탈리스트 반영**: 주요 이벤트(실적발표, 신제품 출시 등) 반영 시점 **[사업보고서]**"
+            )
+            context_parts.append("")
+
+            context_parts.append("4. DCF 분석 (구체적 산출식 제시):")
             context_parts.append("   - 자유현금흐름(FCF) 5년 예측값과 근거")
             context_parts.append(
                 "   - 할인율(WACC) 산출 과정: WACC = (E/V)×Re + (D/V)×Rd×(1-T)"
@@ -2394,12 +2631,52 @@ class SmartSectorManager:
             )
             context_parts.append("")
 
-            context_parts.append("1. 정량적 리스크 지표 산출:")
-            context_parts.append("   - VaR (95% 신뢰구간): 1일, 10일, 1개월 VaR 계산")
-            context_parts.append("   - CVaR (Conditional VaR): VaR 초과 손실의 평균")
-            context_parts.append("   - Maximum Drawdown: 고점 대비 최대 하락률")
+            # 🚀 Chat GPT 피드백 1: 비재무 리스크 항목 강화
+            context_parts.append(
+                "🛡️ **1. 비재무 리스크 항목 강화** (Chat GPT 피드백 반영):"
+            )
+            context_parts.append(
+                "   - **사이버 보안 리스크**: 데이터 유출, 시스템 해킹 위험도와 대응 체계 **[웹검색]**"
+            )
+            context_parts.append(
+                "   - **반도체 공급 과잉/부족**: 메모리 사이클, 공급망 불안정성 리스크 **[웹검색]**"
+            )
+            context_parts.append(
+                "   - **ESG 규제 변화**: 탄소중립, 환경 규제 강화가 사업에 미치는 영향 **[웹검색]**"
+            )
+            context_parts.append(
+                "   - **지정학적 리스크**: 미중 갈등, 공급망 재편 리스크 정량화 **[웹검색]**"
+            )
+            context_parts.append(
+                "   - **기술 혁신 리스크**: 차세대 기술 전환 실패 시 시장점유율 손실 **[사업보고서]**"
+            )
+            context_parts.append("")
+
+            # 🚀 Chat GPT 피드백 2: VaR, CVaR 분석 도입
+            context_parts.append(
+                "📊 **2. VaR, CVaR 분석 및 리스크-리턴 트레이드오프**:"
+            )
+            context_parts.append(
+                "   - **VaR 분석**: 95%, 99% 신뢰구간에서 1일, 10일, 1개월 VaR 계산 **[재무데이터 기반 계산]**"
+            )
+            context_parts.append(
+                "   - **CVaR 분석**: VaR 초과 손실의 평균(Expected Shortfall) **[재무데이터 기반 계산]**"
+            )
+            context_parts.append(
+                "   - **리스크-리턴 트레이드오프**: 샤프비율, 트레이너비율, 정보비율 분석 **[재무데이터 기반 계산]**"
+            )
+            context_parts.append(
+                "   - **Maximum Drawdown**: 고점 대비 최대 하락률과 회복 기간 **[재무데이터 기반 계산]**"
+            )
+            context_parts.append(
+                "   - **베타 안정성**: 시장 대비 베타 변동성과 하방 베타 분석 **[재무데이터 기반 계산]**"
+            )
+            context_parts.append("")
+
+            context_parts.append("3. 정량적 리스크 지표 산출 (기존 강화):")
             context_parts.append("   - Sharpe Ratio = (수익률-무위험수익률)/표준편차")
             context_parts.append("   - Information Ratio = 초과수익률/추적오차")
+            context_parts.append("   - Sortino Ratio = (수익률-무위험수익률)/하방편차")
             context_parts.append("")
             context_parts.append("2. 시나리오 분석 및 확률 산정:")
             context_parts.append("   - Base Case (50% 확률): 현재 추세 연장")
@@ -2449,9 +2726,67 @@ class SmartSectorManager:
                     logger.warning(f"⚠️ DART 투자정보 추출 실패: {e}")
                     pass
 
-            # 🎯 시니어 재무제표 주석 전문가 상세 분석 지침
-            context_parts.append("\n🎯 재무제표 주석 분석 필수 수행사항:")
-            context_parts.append("1. 우발채무 및 보증채무 정밀분석:")
+            # 🎯 시니어 재무제표 주석 전문가 상세 분석 지침 (Chat GPT 피드백 완전 반영)
+            context_parts.append(
+                "\n🎯 재무제표 주석 분석 필수 수행사항 (시니어 애널리스트 수준 고도화):"
+            )
+
+            # 🚀 Chat GPT 피드백 1: IFRS 관련 주요 리스크 분석 추가
+            context_parts.append(
+                "📋 **1. IFRS 관련 주요 리스크 분석** (Chat GPT 피드백 반영):"
+            )
+            context_parts.append(
+                "   - **IFRS 16 리스 영향**: 운용리스의 자산/부채 인식이 재무비율에 미치는 영향 **[사업보고서]**"
+            )
+            context_parts.append(
+                "   - **IFRS 9 금융상품**: 기대신용손실 모델 적용으로 인한 손실충당금 변화 **[사업보고서]**"
+            )
+            context_parts.append(
+                "   - **IFRS 15 수익인식**: 수익인식 시점 변경이 매출 패턴에 미치는 영향 **[사업보고서]**"
+            )
+            context_parts.append(
+                "   - **IFRS 17 보험계약**: 보험부채 측정 변경(해당시)이 재무상태에 미치는 영향 **[사업보고서]**"
+            )
+            context_parts.append("")
+
+            # 🚀 Chat GPT 피드백 2: 영속성 가정 및 감사의견 분석
+            context_parts.append(
+                "🔍 **2. 영속성 가정(Going Concern) 및 감사의견 분석**:"
+            )
+            context_parts.append(
+                "   - **영속성 가정**: 계속기업 가정에 대한 경영진 평가와 불확실성 **[사업보고서]**"
+            )
+            context_parts.append(
+                "   - **감사의견 분석**: 적정의견, 한정의견, 부적정의견, 의견거절 사유 **[사업보고서]**"
+            )
+            context_parts.append(
+                "   - **핵심감사사항(KAM)**: 감사인이 식별한 주요 위험 영역과 대응 방안 **[사업보고서]**"
+            )
+            context_parts.append(
+                "   - **내부통제 결함**: 재무보고 내부통제의 중요한 결함 여부 **[사업보고서]**"
+            )
+            context_parts.append("")
+
+            # 🚀 Chat GPT 피드백 3: 회계추정 관련 리스크 강화
+            context_parts.append("💰 **3. 회계추정 관련 리스크 분석 강화**:")
+            context_parts.append(
+                "   - **비유동자산 손상차손**: 손상 테스트 가정의 합리성과 민감도 분석 **[사업보고서]**"
+            )
+            context_parts.append(
+                "   - **충당부채 적정성**: 충당부채 설정 기준과 과거 실제 지출 대비 정확도 **[사업보고서]**"
+            )
+            context_parts.append(
+                "   - **이연법인세 자산**: 미래 과세소득 발생 가능성과 회수 가능성 **[사업보고서]**"
+            )
+            context_parts.append(
+                "   - **퇴직급여채무**: 보험수리적 가정(할인율, 임금상승률 등)의 합리성 **[사업보고서]**"
+            )
+            context_parts.append(
+                "   - **금융상품 공정가치**: 공정가치 측정 기법과 관측 불가능한 투입변수 **[사업보고서]**"
+            )
+            context_parts.append("")
+
+            context_parts.append("4. 우발채무 및 보증채무 정밀분석 (기존 강화):")
             context_parts.append("   - 우발채무 총액과 발생가능성 평가")
             context_parts.append("   - 우발채무/총자산 비율 (5% 이상시 주의)")
             context_parts.append("   - 보증채무 잔액과 대상 (관계회사, 임직원 등)")
