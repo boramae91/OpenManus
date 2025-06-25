@@ -602,48 +602,72 @@ class SmartSectorManager:
                     )
                     context = str(context) if context else "컨텍스트 생성 실패"
 
-                # 🎯 개선된 펀더멘탈 분석 프롬프트 (웹검색 강제 활용)
+                # 🎯 Chat GPT 7가지 피드백 완전 반영 - 시니어 애널리스트급 펀더멘털 분석 프롬프트
                 prompt = f"""
+**역할**: 대형 증권사 시니어 펀더멘털 애널리스트 (10년 경력)
 **전문가**: {expert.name} ({expert.role})
 **전문 분야**: {expert.expertise}
 
 {context}
 
-🎯 **핵심 임무**: Chat GPT 피드백을 반영한 고품질 펀더멘탈 분석
+🎯 **핵심 임무**: Chat GPT 피드백 7가지 완전 반영한 투자 실무급 분석
 
-## 📊 **필수 분석 항목** (위 웹검색 데이터 활용):
+## 📊 **STEP 1: 동종업계 비교 분석** (필수)
+- **경쟁사 3개 기업** ROE, PER, EBITDA 마진, 매출성장률 비교 테이블 작성
+- **상대적 순위** 제시: "업계 3위/7개사" 형태로 명시
+- **격차 분석**: "경쟁사 대비 ROE 2.3%p 낮음" 등 구체적 수치
 
-### 1️⃣ **경쟁사 비교 분석**
-- 동종업계 주요 3개 기업과 ROE, PER, 매출성장률 비교
-- 반드시 위 웹검색 결과에서 실제 수치 인용
-- 테이블 형태로 정리: | 기업명 | ROE | PER | 매출성장률 |
+## 📊 **STEP 2: 3년 시계열 트렌드 분석** (필수)
+- **ROE 추이**: "2021년 15.2% → 2022년 12.8% → 2023년 9.1%" 정확한 연도별 수치
+- **매출성장률 추이**: 3년간 변화와 **구체적 원인** (반도체 사이클, 환율 등)
+- **트렌드 방향성**: 개선/악화 여부를 수치로 입증
 
-### 2️⃣ **시계열 트렌드 분석**
-- 과거 3년간 ROE, 매출성장률 변화 추이
-- "2021년 15% → 2022년 12% → 2023년 9%" 형태로 명시
-- 상승/하락 원인을 웹검색 결과에서 찾아 설명
+## 📊 **STEP 3: WACC vs ROIC 정량 분석** (필수)
+- **WACC 직접 계산**: 자기자본비용 + 타인자본비용 (가중평균)
+- **ROIC 계산**: NOPAT ÷ Invested Capital
+- **Value Creation**: ROIC - WACC = +/- X.X% (가치창출/파괴 명확히 판단)
 
-### 3️⃣ **밸류에이션 분석**
-- 현재 PER, PBR vs 업계 평균 (웹검색 결과 활용)
-- FCF 수익률 = FCF ÷ 시가총액 (정확한 계산)
-- WACC vs ROIC 비교 (베타는 웹검색 결과 사용)
+## 📊 **STEP 4: FCF 정확한 정의 및 분석** (필수)
+- **FCF 정의**: 영업활동현금흐름 - 자본적지출 (재무활동현금흐름 아님!)
+- **FCF Yield**: FCF ÷ 시가총액 × 100 (%)
+- **3년 FCF 추이**: 안정성과 지속가능성 평가
 
-### 4️⃣ **목표주가 분석**
-- 증권사 컨센서스 목표주가 (웹검색 결과 인용)
-- 현재가 대비 상승/하락 여력 계산
-- 3시나리오 목표가 (Bear/Base/Bull Case)
+## 📊 **STEP 5: 세그먼트별 손익 분석** (필수)
+- **주요 사업부문별** 매출 비중과 영업이익 기여도
+- **핵심 수익원**: 어느 사업부가 전체 이익의 몇 %를 차지하는지
+- **사업부별 성장성**: 각 부문의 전년 대비 성장률
 
-## 🎯 **최종 투자 판단**:
-- **결론**: "지금 사야 할지, 기다려야 할지, 피해야 할지" 명확히 제시
-- **핵심 근거**: 구체적 수치 3개 이상으로 뒷받침
-- **리스크**: 주요 하방 리스크 2개 명시
+## 📊 **STEP 6: 밸류에이션 멀티플 분석** (필수)
+- **PER, PBR, EV/EBITDA**: 현재값 vs 업계 평균 vs 과거 3년 평균
+- **목표주가 3시나리오**: Bear Case / Base Case / Bull Case (각각 근거 제시)
+- **Fair Value**: DCF 또는 멀티플 방식으로 적정가치 산출
 
-## 🚫 **절대 금지사항**:
-- "양호함", "안정적", "긍정적" 등 모호한 표현 사용 금지
-- 웹검색 결과 없이 경쟁사나 업계 데이터 추측 금지
+## 🎯 **Executive Summary** (최종 결론):
+
+### 📈 **투자 스코어카드** (5점 만점):
+- 수익성: X.X/5.0점 (ROE, ROIC 기준)
+- 성장성: X.X/5.0점 (매출/이익 성장률 기준)
+- 안전성: X.X/5.0점 (부채비율, FCF 기준)
+- 밸류에이션: X.X/5.0점 (PER, PBR 기준)
+- **종합점수**: X.X/5.0점
+
+### 💡 **투자 실행 전략**:
+- **BUY/HOLD/SELL**: 명확한 투자 의견 + 목표주가
+- **매수 시점**: "지금 즉시" / "X% 하락 시" / "실적 개선 확인 후"
+- **투자 기간**: 단기(3개월) / 중기(1년) / 장기(3년)
+
+### ⚠️ **핵심 리스크 2가지**:
+1. **[구체적 리스크명]**: 발생 확률 X%, 예상 주가 영향 -X%
+2. **[구체적 리스크명]**: 발생 확률 X%, 예상 주가 영향 -X%
+
+## 🚫 **품질 기준** (다음 표현 사용 시 분석 실패):
+- "긍정적", "양호한", "안정적", "경쟁력 있는" 등 모호한 표현 금지
 - "~로 보입니다", "~것으로 판단됩니다" 등 애매한 결론 금지
+- 동일한 문장이나 표현을 2번 이상 반복 금지
+- 웹검색 없이 경쟁사 데이터 추측 금지
 
-**위 웹검색 데이터를 반드시 활용하여 구체적이고 실용적인 분석을 제공해주세요.**
+**🔥 차별화 포인트**: 투자 통찰, 상대적 우위, 지속가능성, 적정 투자시점 제시 필수
+**📊 필수 요소**: 구체적 수치, 비교 데이터, 원인 분석, 명확한 투자 판단
 """
 
                 # 🔧 안전한 프롬프트 검증
@@ -1631,17 +1655,81 @@ class SmartSectorManager:
                     context_parts.append("🚀 상세 재무정보 (DART):")
                     context_parts.append(dart_financial)
 
-            # 🎯 시니어 펀더멘털 애널리스트 분석 지침 (구체적 산출식 포함)
-            context_parts.append("\n🎯 펀더멘털 분석 필수 수행사항:")
-            context_parts.append("1. 재무비율 종합분석:")
+            # 🎯 시니어 펀더멘털 애널리스트 분석 지침 (Chat GPT 피드백 7가지 핵심 보완 포인트 반영)
             context_parts.append(
-                "   - ROE = 순이익/평균자기자본 (3년 트렌드와 동종업계 Percentile)"
+                "\n🎯 펀더멘털 분석 필수 수행사항 (Chat GPT 피드백 완전 적용):"
+            )
+
+            # 🚀 Chat GPT 피드백 1: 정성적 분석 및 사업모델 이해 강화
+            context_parts.append("📊 **1. 사업모델 및 경쟁우위 정성분석**:")
+            context_parts.append(
+                "   - 핵심 수익원(Revenue Stream) 분석: 각 부문별 매출 기여도와 수익성"
             )
             context_parts.append(
-                "   - DuPont 3단계: ROE = 순이익률 × 자산회전율 × 레버리지"
+                "   - 가치사슬(Value Chain) 분석: 원료조달→제조→유통→판매 각 단계별 부가가치"
             )
-            context_parts.append("   - ROIC = NOPAT/(차입금+자기자본) vs WACC 비교")
-            context_parts.append("   - 유동비율 = 유동자산/유동부채 (안전성 지표)")
+            context_parts.append(
+                "   - 경쟁우위 모트(Economic Moat): 브랜드파워, 특허, 네트워크효과, 전환비용"
+            )
+            context_parts.append(
+                "   - 고객구조 분석: 주요 고객 집중도, 고객충성도, 고객생애가치(CLV)"
+            )
+            context_parts.append(
+                "   - 공급망 안정성: 주요 공급업체 의존도, 대체 공급원 확보 현황"
+            )
+            context_parts.append("")
+
+            # 🚀 Chat GPT 피드백 2: 산업별 특화 지표 추가
+            context_parts.append("🏭 **2. 산업별 특화 KPI 분석**:")
+            context_parts.append(
+                "   **반도체/IT**: R&D집약도, 신제품 출시 사이클, IP 포트폴리오 가치"
+            )
+            context_parts.append(
+                "   **금융**: 순이자마진(NIM), 대손충당금비율, BIS자기자본비율, 예대마진"
+            )
+            context_parts.append(
+                "   **제조업**: 자산회전율, 재고회전일수, 설비가동률, 품질지표(PPM)"
+            )
+            context_parts.append(
+                "   **유통/서비스**: 매장당 매출, 고객당 평균구매액, 동일매장 성장률"
+            )
+            context_parts.append(
+                "   **바이오/제약**: 파이프라인 가치, 임상시험 성공률, 특허 만료 일정"
+            )
+            context_parts.append(
+                "   **에너지**: 매장량 대비 생산비용, 정제마진, 탄소배출 효율성"
+            )
+            context_parts.append("")
+
+            # 🚀 Chat GPT 피드백 3: 재무비율 심화분석 (기존 내용 강화)
+            context_parts.append("📈 **3. 재무비율 종합분석 (정량적 계산식)**:")
+            context_parts.append("   **수익성 지표**:")
+            context_parts.append(
+                "   - ROE = 순이익/평균자기자본 (3년 트렌드와 동종업계 상위 25%, 50%, 75% 분위)"
+            )
+            context_parts.append(
+                "   - DuPont 5단계 분해: ROE = (순이익/세전이익) × (세전이익/EBIT) × (EBIT/매출) × (매출/총자산) × (총자산/자기자본)"
+            )
+            context_parts.append(
+                "   - ROIC = NOPAT/(차입금+자기자본) vs WACC 스프레드 (가치창출 여부)"
+            )
+            context_parts.append("   - ROIC > WACC 지속년수 (경쟁우위 지속성 평가)")
+            context_parts.append("   **안정성 지표**:")
+            context_parts.append("   - 유동비율 = 유동자산/유동부채 (1.5배 이상 안전)")
+            context_parts.append(
+                "   - 당좌비율 = (유동자산-재고)/유동부채 (1.0배 이상 안전)"
+            )
+            context_parts.append("   - 자기자본비율 = 자기자본/총자산 (40% 이상 안전)")
+            context_parts.append("   **활동성 지표**:")
+            context_parts.append(
+                "   - 총자산회전율 = 매출/평균총자산 (업종별 벤치마크 비교)"
+            )
+            context_parts.append(
+                "   - 매출채권회전율 = 매출/평균매출채권 (회수기간 = 365일/회전율)"
+            )
+            context_parts.append(
+                "   - 재고자산회전율 = 매출원가/평균재고 (재고보유기간 = 365일/회전율)"
+            )
             context_parts.append("")
 
             # 🚀 NEW: 현금흐름표 직접 계산 지침 추가
@@ -1728,33 +1816,139 @@ class SmartSectorManager:
             )
             context_parts.append("")
 
-            context_parts.append("2. 현금흐름 정밀분석:")
-            context_parts.append("   - FCF = 영업CF - 자본적지출 (3년 평균 산출)")
-            context_parts.append("   - FCF Yield = FCF/시가총액 × 100 (%)")
-            context_parts.append("   - Cash Conversion Cycle = DIO + DSO - DPO")
-            context_parts.append("   - Working Capital 변동이 OCF에 미치는 영향 정량화")
-            context_parts.append("")
-            context_parts.append("3. 수익성 및 성장성 심화분석:")
+            # 🚀 Chat GPT 피드백 4: 성장성 분석 심화 - 매출 증동력 분해
+            context_parts.append("🚀 **4. 성장 동력 분해 분석**:")
+            context_parts.append("   **매출 성장률 분해**:")
             context_parts.append(
                 "   - 매출 성장률 = (당기매출-전기매출)/전기매출 × 100"
             )
-            context_parts.append("   - 영업레버리지 = 영업이익 증가율/매출 증가율")
-            context_parts.append("   - EBITDA 마진 = EBITDA/매출 × 100 (현금창출력)")
-            context_parts.append("   - Asset Turnover = 매출/평균총자산 (자산효율성)")
-            context_parts.append("")
-            context_parts.append("4. 재무건전성 스트레스 테스트:")
             context_parts.append(
-                "   - Interest Coverage = EBIT/이자비용 (이자지급능력)"
+                "   - 가격 효과 vs 물량 효과 분리 (Price-Volume Mix 분석)"
+            )
+            context_parts.append("   - 기존 제품 vs 신제품 기여도 분석")
+            context_parts.append("   - 지역별 매출 성장률 분해 (국내 vs 해외)")
+            context_parts.append("   **운영 레버리지 분석**:")
+            context_parts.append("   - 영업레버리지 = 영업이익 증가율/매출 증가율")
+            context_parts.append(
+                "   - 고정비/변동비 구조 분석 (Operating Leverage 계산)"
+            )
+            context_parts.append(
+                "   - 손익분기점 분석: BEP = 고정비/(단위당매출-단위당변동비)"
+            )
+            context_parts.append("   - 한계기여율 = (매출-변동비)/매출 × 100")
+            context_parts.append("")
+
+            # 🚀 Chat GPT 피드백 5: 현금흐름 분석 강화
+            context_parts.append("💰 **5. 현금흐름 품질 정밀분석**:")
+            context_parts.append("   **자유현금흐름 품질 평가**:")
+            context_parts.append(
+                "   - FCF = 영업CF - 자본적지출 (3년 평균과 최근년도 비교)"
+            )
+            context_parts.append("   - FCF Yield = FCF/시가총액 × 100 (5% 이상 우수)")
+            context_parts.append("   - FCF/순이익 비율 (1.0 이상이 건전)")
+            context_parts.append("   - FCF 변동성: 3년간 FCF 표준편차/평균 (CV 계수)")
+            context_parts.append("   **운전자본 효율성**:")
+            context_parts.append("   - Cash Conversion Cycle = DIO + DSO - DPO")
+            context_parts.append(
+                "   - DIO = 평균재고/일평균매출원가 × 365 (재고보유일수)"
+            )
+            context_parts.append(
+                "   - DSO = 평균매출채권/일평균매출 × 365 (매출채권회수일수)"
+            )
+            context_parts.append(
+                "   - DPO = 평균매입채무/일평균매출원가 × 365 (매입채무지급일수)"
+            )
+            context_parts.append(
+                "   - Working Capital 변동이 OCF에 미치는 영향 정량화 (%)"
+            )
+            context_parts.append("")
+
+            # 🚀 Chat GPT 피드백 6: 경영진 효율성 및 배분 정책
+            context_parts.append("👔 **6. 경영진 효율성 및 자본배분 정책**:")
+            context_parts.append("   **경영진 의사결정 품질**:")
+            context_parts.append(
+                "   - 투자효율성: 신규투자 대비 실제 수익률 vs 계획 수익률"
+            )
+            context_parts.append("   - M&A 성과: 인수 후 통합효과(Synergy) 실현 정도")
+            context_parts.append("   - 구조조정 효과: 비용절감 목표 대비 실제 달성률")
+            context_parts.append("   **자본배분 정책 분석**:")
+            context_parts.append(
+                "   - 배당정책: 배당성향, 배당수익률, 배당증가율 3년 추이"
+            )
+            context_parts.append(
+                "   - 자사주 매입: 자사주 취득규모, 주당가치 증대 효과"
+            )
+            context_parts.append(
+                "   - 재투자율 = (CapEx + R&D + 운전자본 증가) / 영업현금흐름"
+            )
+            context_parts.append(
+                "   - 자본배분 우선순위: 성장투자 vs 주주환원 균형 평가"
+            )
+            context_parts.append("")
+
+            # 🚀 Chat GPT 피드백 7: ESG 리스크 통합
+            context_parts.append("🌱 **7. ESG 리스크 및 기회 분석**:")
+            context_parts.append("   **환경(E) 리스크**:")
+            context_parts.append(
+                "   - 탄소집약도: 온실가스 배출량/매출 (산업대비 벤치마크)"
+            )
+            context_parts.append("   - 환경투자: 환경설비 투자액/총 CapEx 비율")
+            context_parts.append(
+                "   - 규제 리스크: 탄소세, 환경규제 강화시 비용 영향도"
+            )
+            context_parts.append("   **사회(S) 리스크**:")
+            context_parts.append("   - 인력 안정성: 직원 이직률, 평균 근속연수")
+            context_parts.append("   - 안전 지표: 산업재해율, 안전사고 빈도")
+            context_parts.append("   - 공급망 리스크: 협력업체 ESG 수준, 인권 이슈")
+            context_parts.append("   **지배구조(G) 리스크**:")
+            context_parts.append(
+                "   - 이사회 독립성: 사외이사 비율, 이사회 운영 투명성"
+            )
+            context_parts.append("   - 주주권리 보호: 소액주주 권익 보호 수준")
+            context_parts.append(
+                "   - ESG 경영 통합도: ESG 목표의 경영진 성과급 연동 여부"
+            )
+            context_parts.append("")
+
+            context_parts.append("📊 **8. 재무건전성 스트레스 테스트**:")
+            context_parts.append("   **안정성 지표 심화분석**:")
+            context_parts.append(
+                "   - Interest Coverage = EBIT/이자비용 (3.0배 이상 안전)"
             )
             context_parts.append("   - Debt Service Coverage = OCF/(원금상환+이자지급)")
-            context_parts.append("   - Net Debt/EBITDA 비율 (부채상환 소요연수)")
-            context_parts.append("   - 경기침체 시나리오 하에서 부채상환능력 평가")
+            context_parts.append("   - Net Debt/EBITDA 비율 (3.0배 이하 안전)")
+            context_parts.append(
+                "   - Cash Runway = 현금잔액/월평균 현금소모액 (12개월 이상 안전)"
+            )
+            context_parts.append("   **스트레스 시나리오 분석**:")
+            context_parts.append("   - 매출 20% 감소시 현금흐름 및 부채상환능력")
+            context_parts.append("   - 금리 200bp 상승시 이자비용 증가 영향")
+            context_parts.append("   - 주요 고객 상실시 재무 영향도")
+            context_parts.append("   - 경기침체 시나리오 하에서 생존 가능성")
             context_parts.append("")
-            context_parts.append("⚠️ 분석 시 주의사항:")
-            context_parts.append("- 모든 비율은 반드시 3년 트렌드로 분석")
-            context_parts.append("- 동종업계 상위 25%, 50%, 75% 대비 위치 명시")
-            context_parts.append("- 계절성/일회성 요인 제거한 정상화 수치 병기")
-            context_parts.append("- 연결재무제표 기준으로 분석 (별도 재무제표 참고)")
+
+            context_parts.append("⚠️ **분석 시 주의사항 (Chat GPT 피드백 반영)**:")
+            context_parts.append(
+                "✅ **정량 + 정성 균형**: 수치 분석과 사업모델 이해 병행"
+            )
+            context_parts.append(
+                "✅ **산업 특화**: 해당 산업 고유의 KPI와 벤치마크 적용"
+            )
+            context_parts.append(
+                "✅ **시계열 분석**: 모든 비율은 반드시 3년 트렌드로 분석"
+            )
+            context_parts.append(
+                "✅ **동종업계 비교**: 상위 25%, 50%, 75% 분위 대비 위치 명시"
+            )
+            context_parts.append(
+                "✅ **정상화 조정**: 계절성/일회성 요인 제거한 정상화 수치 병기"
+            )
+            context_parts.append(
+                "✅ **ESG 통합**: ESG 리스크가 재무성과에 미치는 영향 정량화"
+            )
+            context_parts.append(
+                "✅ **데이터 근거**: 연결재무제표 기준, 모든 수치에 출처 명시"
+            )
 
         elif "기술" in expert.expertise or "Technical" in expert.role:
             # 기술 분석 전문가 - 🎯 실제 계산된 지표 데이터 우선 제공!
@@ -2270,12 +2464,36 @@ class SmartSectorManager:
                 # 기타 타입은 문자열로 변환
                 safe_context_parts.append(str(part))
 
+                # 🎯 모든 GICS 섹터별 전문가에게 공통 적용되는 데이터 출처 명시 규칙 추가
+        data_source_guidelines = """
+
+📊 **데이터 출처 명시 규칙** (모든 수치에 필수 적용):
+모든 수치 뒤에 반드시 출처를 표기해주세요:
+- **[재무데이터]**: 제공된 재무제표에서 직접 계산한 수치
+- **[사업보고서]**: DART 사업보고서에서 추출한 정보
+- **[웹검색]**: 웹검색을 통해 수집한 외부 데이터
+- **[추정]**: 애널리스트 자체 추정 또는 가정 수치
+- **[업계평균]**: 웹검색으로 확인한 동종업계 평균값
+- **[재무데이터 기반 계산]**: 재무제표 데이터를 사용한 직접 계산 (WACC, ROIC 등)
+
+**예시**: "ROE 12.5% **[재무데이터]**, 업계 평균 10.2% **[웹검색]**"
+
+🎯 **WACC 직접 계산 필수**: 웹검색 대신 사업보고서 데이터로 계산하세요:
+- 자기자본비용 = 무위험수익률 **[웹검색]** + 베타 **[재무데이터]** × 시장위험프리미엄 **[추정]**
+- 타인자본비용 = 이자비용 **[재무데이터]** ÷ 총부채 **[재무데이터]** × (1-세율) **[사업보고서]**
+- WACC = (E/V × Re) + (D/V × Rd × (1-T)) **[재무데이터 기반 계산]**
+
+🚫 **중요**: 출처 표기가 없는 수치는 분석에서 제외됩니다.
+"""
+
+        safe_context_parts.append(data_source_guidelines)
+
         full_context = "\n".join(safe_context_parts)
 
         # 토큰 수 계산 및 로깅
         estimated_tokens = self._estimate_tokens(full_context)
         logger.info(
-            f"🎯 {expert.name} 통합 컨텍스트: {estimated_tokens:,} 토큰 (PDF 딕셔너리 완전 활용)"
+            f"🎯 {expert.name} 통합 컨텍스트: {estimated_tokens:,} 토큰 (PDF 딕셔너리 완전 활용 + 출처 명시 규칙)"
         )
 
         return full_context
