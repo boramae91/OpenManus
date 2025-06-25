@@ -480,10 +480,120 @@ class SmartSectorManager:
                     f"🎯 {expert.name} 전문가 분석 시작 (시도 {attempt + 1}/{max_retries})"
                 )
 
-                # 🔧 안전한 컨텍스트 생성
+                # 🔧 안전한 컨텍스트 생성 (데이터 보강 포함)
                 context = await self._create_expert_specific_context(
                     expert, financial_data, enhanced_dart_data, manus_collected_data
                 )
+
+                # 🌐 웹검색 강제 실행 (Chat GPT 피드백 해결)
+                web_search_results = ""
+                stock_name = getattr(financial_data, "stock_name", "분석대상")
+
+                # 🌐 펀더멘털 전문가 전용 강제 웹검색 시스템
+                web_search_data = ""
+                if (
+                    "펀더멘털" in expert.name
+                    or "펀더멘탈" in expert.name
+                    or "fundamental" in expert.name.lower()
+                ):
+                    logger.info(f"🔍 {expert.name} 전용 웹검색 강제 실행 시작...")
+
+                    try:
+                        from app.tool.web_search import WebSearch
+
+                        web_search_tool = WebSearch()
+
+                        # Chat GPT 피드백 핵심 요구사항 웹검색 (반드시 실행)
+                        mandatory_searches = [
+                            f"{stock_name} 경쟁사 ROE PER 비교 분석",
+                            f"{stock_name} 3년 ROE 매출성장률 추이 변화",
+                            f"{stock_name} 업계 평균 PER PBR 2024",
+                            f"{stock_name} 목표주가 컨센서스 증권사",
+                            f"{stock_name} WACC 베타 계산 2024",
+                            f"{stock_name} 동종업계 FCF 수익률 비교",
+                        ]
+
+                        search_results = []
+                        successful_searches = 0
+
+                        for i, query in enumerate(mandatory_searches, 1):
+                            logger.info(
+                                f"🔍 필수 검색 {i}/{len(mandatory_searches)}: {query}"
+                            )
+
+                            try:
+                                result = await web_search_tool.execute(
+                                    query=query,
+                                    num_results=3,
+                                    lang="ko",
+                                    country="kr",
+                                    fetch_content=True,  # 더 상세한 내용 가져오기
+                                )
+
+                                if result and result.output:
+                                    search_results.append(
+                                        f"""
+🔍 **검색 {i}**: {query}
+{result.output}
+{'='*80}
+"""
+                                    )
+                                    successful_searches += 1
+                                    logger.info(
+                                        f"✅ 검색 성공 {i}: {len(result.output):,}자"
+                                    )
+                                else:
+                                    search_results.append(f"❌ 검색 {i} 실패: {query}")
+                                    logger.warning(f"❌ 검색 {i} 결과 없음: {query}")
+
+                            except Exception as e:
+                                search_results.append(
+                                    f"❌ 검색 {i} 오류: {query} - {str(e)}"
+                                )
+                                logger.error(f"❌ 검색 {i} 오류: {query} - {e}")
+
+                        # 웹검색 결과 통합
+                        if successful_searches > 0:
+                            web_search_data = f"""
+
+🌐 **실시간 웹검색 데이터** (Chat GPT 피드백 반영 - {successful_searches}/{len(mandatory_searches)} 성공):
+{chr(10).join(search_results)}
+
+🚨 **중요 지시사항**:
+1. 위 웹검색 결과를 반드시 분석에 활용하세요
+2. 경쟁사 비교는 검색된 실제 데이터만 사용하세요
+3. 시계열 데이터는 검색 결과에서 추출한 수치만 사용하세요
+4. 업계 평균은 추측하지 말고 검색된 데이터를 인용하세요
+5. 목표주가는 검색된 증권사 컨센서스를 명시하세요
+
+"""
+                            logger.info(
+                                f"✅ 웹검색 데이터 준비 완료: {len(web_search_data):,}자"
+                            )
+                        else:
+                            web_search_data = """
+
+⚠️ **웹검색 실패**: 모든 웹검색이 실패했습니다.
+분석 시 다음과 같이 명시해주세요:
+- 경쟁사 비교: "웹검색 실패로 데이터 부족"
+- 시계열 분석: "웹검색 실패로 트렌드 분석 불가"
+- 업계 평균: "웹검색 실패로 비교 데이터 없음"
+- 목표주가: "웹검색 실패로 컨센서스 확인 불가"
+
+"""
+                            logger.warning("❌ 모든 웹검색 실패")
+
+                    except Exception as e:
+                        logger.error(f"❌ 웹검색 시스템 오류: {e}")
+                        web_search_data = f"""
+
+❌ **웹검색 시스템 오류**: {str(e)}
+분석 시 "웹검색 시스템 오류로 실시간 데이터 확인 불가"라고 명시해주세요.
+
+"""
+
+                # 컨텍스트에 웹검색 데이터 추가
+                context += web_search_data
 
                 # 🔧 컨텍스트 타입 검증
                 if not isinstance(context, str):
@@ -492,175 +602,48 @@ class SmartSectorManager:
                     )
                     context = str(context) if context else "컨텍스트 생성 실패"
 
-                # 🎯 ChatGPT 완전 개선 프롬프트 (반복 방지 + 투자 통찰력 강화)
+                # 🎯 개선된 펀더멘탈 분석 프롬프트 (웹검색 강제 활용)
                 prompt = f"""
 **전문가**: {expert.name} ({expert.role})
 **전문 분야**: {expert.expertise}
 
 {context}
 
-🎯 **시니어 펀더멘탈 애널리스트 투자 보고서 작성 지침**:
+🎯 **핵심 임무**: Chat GPT 피드백을 반영한 고품질 펀더멘탈 분석
 
-당신은 대형 증권사의 시니어 펀더멘탈 애널리스트입니다. "숫자의 나열"이 아닌 "투자 통찰과 전략적 해석"을 제공하는 완성도 높은 투자 보고서를 작성해주세요.
+## 📊 **필수 분석 항목** (위 웹검색 데이터 활용):
 
-## 📊 **STEP 1: 재무지표 원인 분석 (교과서적 설명 금지)**
+### 1️⃣ **경쟁사 비교 분석**
+- 동종업계 주요 3개 기업과 ROE, PER, 매출성장률 비교
+- 반드시 위 웹검색 결과에서 실제 수치 인용
+- 테이블 형태로 정리: | 기업명 | ROE | PER | 매출성장률 |
 
-### 🔍 **ROE/ROIC 핵심 진단**:
-- **DuPont 3단계 분해**: ROE = 순이익률 × 자산회전율 × 레버리지
-- **각 구성요소 변화 원인**: 어떤 요소가 ROE 변화를 주도했는가?
-- **ROIC 효율성 진단**: ROIC = 영업이익률 × 자산회전율 ÷ (1-부채비율)
-  * 💡 **핵심 질문**: "수익성 문제인가? 자본 효율성 문제인가?"
-  * 🌐 **웹검색 필수**: 대규모 CAPEX나 M&A가 있었다면 그 배경과 성과 검색
+### 2️⃣ **시계열 트렌드 분석**
+- 과거 3년간 ROE, 매출성장률 변화 추이
+- "2021년 15% → 2022년 12% → 2023년 9%" 형태로 명시
+- 상승/하락 원인을 웹검색 결과에서 찾아 설명
 
-### 💰 **FCF 질적 분석**:
-- **정확한 FCF 계산**: FCF = 영업현금흐름 - 자본적지출
-- **FCF 안정성**: 최근 3년간 변동성 분석 (표준편차/평균 × 100)
-- **배당 지속가능성**: FCF 배당 커버리지 = FCF ÷ 배당금
-- **자사주 매입 여력**: 잉여 FCF = FCF - 배당금 - 필수 투자
-- 🌐 **웹검색**: 동종업계 FCF Yield 평균 확인하여 상대 평가
+### 3️⃣ **밸류에이션 분석**
+- 현재 PER, PBR vs 업계 평균 (웹검색 결과 활용)
+- FCF 수익률 = FCF ÷ 시가총액 (정확한 계산)
+- WACC vs ROIC 비교 (베타는 웹검색 결과 사용)
 
-## 📈 **STEP 2: 경쟁사 벤치마킹 (절대 필수)**
+### 4️⃣ **목표주가 분석**
+- 증권사 컨센서스 목표주가 (웹검색 결과 인용)
+- 현재가 대비 상승/하락 여력 계산
+- 3시나리오 목표가 (Bear/Base/Bull Case)
 
-### 🏆 **동종업계 상대평가 테이블**:
-```
-| 핵심지표 | 분석대상 | 경쟁사1 | 경쟁사2 | 업계평균 | 업계순위 |
-|----------|----------|---------|---------|----------|----------|
-| ROE      | X.X%     | Y.Y%    | Z.Z%    | W.W%     | N위/M사  |
-| ROIC     | X.X%     | Y.Y%    | Z.Z%    | W.W%     | N위/M사  |
-| EBITDA마진| X.X%    | Y.Y%    | Z.Z%    | W.W%     | N위/M사  |
-```
+## 🎯 **최종 투자 판단**:
+- **결론**: "지금 사야 할지, 기다려야 할지, 피해야 할지" 명확히 제시
+- **핵심 근거**: 구체적 수치 3개 이상으로 뒷받침
+- **리스크**: 주요 하방 리스크 2개 명시
 
-- 🌐 **웹검색 필수**: 업종별 주요 경쟁사 최신 재무지표 검색
-  * 반도체: TSMC, SK하이닉스, Intel, Nvidia
-  * 기술: Apple, Microsoft, Google, Amazon
-  * 금융: JP모건, 뱅크오브아메리카, 씨티그룹
-- **격차 분석**: "왜 경쟁사보다 낮은가/높은가?" 구체적 원인 제시
-- **상대 포지셔닝**: "업계 상위 25%", "중위권", "하위 10%" 등 명확한 순위
+## 🚫 **절대 금지사항**:
+- "양호함", "안정적", "긍정적" 등 모호한 표현 사용 금지
+- 웹검색 결과 없이 경쟁사나 업계 데이터 추측 금지
+- "~로 보입니다", "~것으로 판단됩니다" 등 애매한 결론 금지
 
-### 💎 **밸류에이션 멀티플 비교**:
-- 🌐 **웹검색**: 업계 평균 PER, PBR, EV/EBITDA, P/FCF
-- **할인/프리미엄 요인**: 시장이 왜 더 높게/낮게 평가하는가?
-- **Fair Value 밴드**: 업계 멀티플 기준 적정가치 레인지
-
-## 📅 **STEP 3: 시계열 트렌드 분석 (3-5년)**
-
-### 📊 **핵심지표 추세 패턴**:
-- 🌐 **웹검색**: 최근 3-5년 ROE, ROIC, 매출성장률, 영업이익률 데이터
-- **트렌드 서술**: "ROE 2021년 15% → 2022년 12% → 2023년 9%" 형태
-- **CAGR 분석**: 매출/영업이익/순이익 복합성장률 및 지속성
-- **변곡점 식별**: 언제부터 개선/악화? 원인은?
-
-### 🔄 **산업 사이클 포지션**:
-- 🌐 **웹검색**: 해당 산업 사이클(반도체/경기/기술 사이클) 현재 위치
-- **사이클 전망**: 회복/악화 국면 중 어디인가?
-- **구조적 vs 순환적**: 현재 부진이 일시적인가, 구조적 문제인가?
-
-## 💰 **STEP 4: 완전한 밸류에이션 분석**
-
-### ⚖️ **WACC vs ROIC 경제적 부가가치 분석**:
-- **WACC 실제 계산**:
-  * 🌐 **웹검색**: 베타, 국고채 수익률, 시장위험프리미엄
-  * 자기자본비용 = 무위험수익률 + 베타 × 시장위험프리미엄
-  * 타인자본비용 = 이자비용 ÷ 유이자부채
-  * WACC = (E/(E+D) × Re) + (D/(E+D) × Rd × (1-세율))
-- **ROIC vs WACC 해석**:
-  * ROIC > WACC: 가치 창출, 투자 매력적
-  * ROIC < WACC: 가치 파괴, 사업구조 개선 필요
-  * **구체적 갭 분석**: "ROIC가 WACC보다 2%p 낮아 자본 효율성 개선 시급"
-
-### 📊 **멀티플 밸류에이션**:
-- **PER 분석**: 🌐 Forward PER, 업계 평균 대비 할인/프리미엄
-- **EV/EBITDA**: 부채 고려한 기업가치 대비 수익성
-- **P/FCF**: 실제 현금창출 기준 밸류에이션
-- **FCF Yield**: FCF/시가총액, 국채 수익률 대비 매력도
-
-## 🏢 **STEP 5: 질적 분석 (사업보고서/분기보고서 완전활용)**
-
-### 📋 **사업보고서 딕셔너리 핵심 추출**:
-- **경영진 가이던스 vs 실제**: 전망 신뢰성 평가
-- **사업부문별 세부분석**: 각 부문 매출/이익 기여도 및 성장성
-- **CAPEX 투자계획**: 투자 방향성과 예상 ROI
-- **위험요인 분석**: 회사가 인지한 주요 리스크와 대응책
-
-### 🌐 **산업 구조 및 전략 분석**:
-- **업황 분석**: 🌐 웹검색으로 산업 사이클, 기술 트렌드, 지정학 리스크
-- **경쟁 우위**: 핵심 기술/브랜드/유통망의 지속가능성
-- **ESG 리스크**: 환경 규제, 지배구조가 재무성과에 미치는 영향
-- **거시경제 민감도**: 환율, 금리, 원자재 가격 변동 영향
-
-## 🎯 **STEP 6: 투자 의견 및 실행 전략**
-
-### 💡 **3시나리오 목표주가**:
-- **Bear Case (30%)**: 악재 지속 시 하방 리스크
-- **Base Case (50%)**: 컨센서스 기반 합리적 전망
-- **Bull Case (20%)**: 호재 실현 시 상방 잠재력
-- **확률가중 목표가**: 각 시나리오 확률 반영 최종 목표가
-
-### ⚡ **투자 포인트 vs 리스크 (각 3가지)**:
-- **투자 포인트**: 매수해야 하는 구체적 근거 3가지
-- **리스크 요인**: 투자 시 주의할 위험 요소 3가지
-- **투자 타이밍**: "지금 사도 될까?"에 대한 명확한 답변
-
-## 📋 **최종 결과물 구성**
-
-### 🔥 **Executive Summary (3줄 요약)**:
-- 투자의견 + 목표가 + 핵심 논리
-
-### 📊 **종합 평가 스코어카드**:
-- **안전성**: A/B/C 등급 (부채비율, 유동성 기준)
-- **성장성**: High/Medium/Low (매출/이익 성장률 기준)
-- **수익성**: 상위/중위/하위 % (ROE, ROIC 기준)
-
-### 🏆 **경쟁 포지셔닝**:
-- 업계 내 순위 및 상대적 강약점
-- 지속가능한 경쟁우위(Economic Moat) 존재 여부
-
-### 🎯 **실행 전략**:
-- **진입 시점**: 언제 매수할 것인가
-- **보유 기간**: 단기/중기/장기 투자 관점
-- **Exit 전략**: 언제 매도할 것인가
-
-## 🌐 **웹검색 필수 체크리스트**
-
-1. ✅ **시계열 데이터**: 과거 3-5년 ROE, ROIC, 매출성장률
-2. ✅ **경쟁사 벤치마킹**: 주요 경쟁사 최신 재무지표
-3. ✅ **업계 멀티플**: PER, PBR, EV/EBITDA 업계 평균
-4. ✅ **WACC 계산 요소**: 베타, 국고채 수익률, 시장위험프리미엄
-5. ✅ **애널리스트 컨센서스**: 목표가, 투자의견 현황
-6. ✅ **산업 동향**: 업황, 사이클 위치, 기술 트렌드
-7. ✅ **특이사항**: 최근 뉴스, 공시, 이슈 사항
-
-## 🚫 **반복 방지 및 품질 향상 가이드**
-
-### ❌ **금지사항 (반복 문제 해결)**:
-- 동일한 문장/표현을 2번 이상 사용 금지
-- "긍정적", "양호한", "안정적" 등 모호한 표현 금지
-- 교과서적 설명이나 일반론적 서술 금지
-- 근거 없는 낙관적 전망 금지
-
-### ✅ **필수사항 (투자 통찰 강화)**:
-- 모든 수치에 "왜?"라는 원인 분석 필수
-- 경쟁사 대비 상대적 우열 명시
-- 구체적 숫자와 비교 데이터 제시
-- "투자자 관점"에서 실용적 결론 도출
-
-### 🎯 **문체 및 어조**:
-- **초보자 친화적**: 재무용어는 쉬운 비유로 설명
-  * ROE → "투자 대비 수익률"
-  * FCF → "실제 주머니에 들어오는 현금"
-  * WACC → "자금조달 비용"
-- **단정적 어조**: "~것으로 보입니다" 대신 "~입니다"
-- **구체적 수치**: "높다" 대신 "15% 수준으로 업계 상위 20%"
-
-### 💎 **차별화 포인트**:
-- 단순 재무분석을 넘어선 **투자 통찰** 제공
-- 경쟁사 분석을 통한 **상대적 우위** 평가
-- 시계열 분석을 통한 **지속가능성** 판단
-- 밸류에이션을 통한 **적정 투자시점** 제시
-
-**🎯 최종 목표**: 투자자가 이 보고서만 보고도 "지금 사야 할지, 기다려야 할지, 피해야 할지" 명확한 투자 결정을 내릴 수 있는 실용적 분석 제공
-
-한국어로 작성하되, 전문성과 가독성을 모두 갖춘 고품질 투자 보고서를 완성해주세요.
+**위 웹검색 데이터를 반드시 활용하여 구체적이고 실용적인 분석을 제공해주세요.**
 """
 
                 # 🔧 안전한 프롬프트 검증
@@ -670,31 +653,46 @@ class SmartSectorManager:
                 # LLM 분석 수행
                 logger.info(f"🤖 {expert.name} LLM 분석 요청...")
 
-                # 🔧 안전한 LLM 호출
+                # 🔧 단순화된 LLM 호출 (웹검색은 이미 완료)
                 try:
-                    analysis_result = await llm_instance.agenerate(prompt)
+                    # 웹검색 없이 순수 분석만 수행
+                    analysis_result = await llm_instance.ask(
+                        prompt=prompt, temperature=0.3, max_tokens=4000
+                    )
 
-                    # 결과 타입 검증
+                    # 결과 처리
                     if not analysis_result:
                         raise ValueError("LLM 분석 결과가 None 또는 빈 값")
 
-                    # 문자열로 변환 (안전한 처리)
-                    if isinstance(analysis_result, str):
-                        analysis_text = analysis_result
-                    elif hasattr(analysis_result, "content"):
-                        analysis_text = str(analysis_result.content)
-                    elif hasattr(analysis_result, "text"):
-                        analysis_text = str(analysis_result.text)
-                    else:
-                        analysis_text = str(analysis_result)
+                    # 텍스트 추출
+                    analysis_text = str(analysis_result)
 
                     # 최소 길이 검증
-                    if len(analysis_text.strip()) < 50:
+                    if len(analysis_text.strip()) < 200:
                         raise ValueError(
                             f"분석 결과가 너무 짧음: {len(analysis_text)}자"
                         )
 
                     logger.info(f"✅ {expert.name} 분석 완료: {len(analysis_text):,}자")
+
+                    # 웹검색 수행 여부 확인 (펀더멘털 전문가만)
+                    web_search_performed = False
+                    web_search_count = 0
+                    if (
+                        "펀더멘털" in expert.name
+                        or "펀더멘탈" in expert.name
+                        or "fundamental" in expert.name.lower()
+                    ):
+                        web_search_performed = (
+                            successful_searches > 0
+                            if "successful_searches" in locals()
+                            else False
+                        )
+                        web_search_count = (
+                            successful_searches
+                            if "successful_searches" in locals()
+                            else 0
+                        )
 
                     return {
                         "expert_name": expert.name,
@@ -704,6 +702,8 @@ class SmartSectorManager:
                         "analysis_timestamp": datetime.now().isoformat(),
                         "attempt_number": attempt + 1,
                         "success": True,
+                        "web_search_performed": web_search_performed,
+                        "web_search_count": web_search_count,
                     }
 
                 except Exception as llm_error:
@@ -718,6 +718,7 @@ class SmartSectorManager:
                             "attempt_number": attempt + 1,
                             "success": False,
                             "error": str(llm_error),
+                            "tool_calls_info": "",
                         }
                     # 재시도 계속
                     logger.warning(
@@ -739,6 +740,7 @@ class SmartSectorManager:
                         "attempt_number": attempt + 1,
                         "success": False,
                         "error": str(e),
+                        "tool_calls_info": "",
                     }
 
                 # 재시도 대기
@@ -757,6 +759,7 @@ class SmartSectorManager:
             "attempt_number": max_retries,
             "success": False,
             "error": "Maximum retries exceeded",
+            "tool_calls_info": "",
         }
 
     def _calculate_cost_savings(
@@ -1061,7 +1064,9 @@ class SmartSectorManager:
             used_sources.append("Manus_Web_Search")
 
         # PDF 분석 여부 확인
-        if manus_collected_data.get("pdf_analysis", {}).get("pdf_detected"):
+        if manus_collected_data and manus_collected_data.get("pdf_analysis", {}).get(
+            "pdf_detected"
+        ):
             used_sources.append("PDF_Analysis")
 
         # 🎯 기술적 분석 데이터 확인
