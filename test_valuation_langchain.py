@@ -81,7 +81,7 @@ def test_valuation_langchain():
 
         print("✅ LangChain 활성화 상태 확인 완료!")
 
-        # 8. 테스트 데이터 준비
+        # 8. 테스트 데이터 준비 (실제 사업보고서 기반)
         print("\n📊 8단계: 테스트 데이터 준비 중...")
         test_financial_data = {
             "company_name": "삼성전자",
@@ -99,6 +99,16 @@ def test_valuation_langchain():
                 "interest_expense_2023": 15000,  # 1조 5000억원
                 "tax_expense_2023": 45000,  # 4조 5000억원
                 "pretax_income_2023": 195000,  # 19조 5000억원
+            },
+            # 🆕 실제 사업보고서 현금흐름 정보 추가
+            "cash_flow_statement": {
+                "operating_cash_flow_2023": 220000,  # 영업활동으로 인한 현금흐름 (22조원)
+                "investing_cash_flow_2023": -40000,  # 투자활동으로 인한 현금흐름 (-4조원)
+                "financing_cash_flow_2023": -18000,  # 재무활동으로 인한 현금흐름 (-1.8조원)
+                "capex_2023": 45000,  # 자본적지출 (4.5조원)
+                "depreciation_2023": 35000,  # 감가상각비 (3.5조원)
+                "amortization_2023": 5000,  # 무형자산상각비 (0.5조원)
+                "working_capital_change_2023": -5000,  # 운전자본 변동 (-0.5조원)
             },
             "historical_data": {
                 "per_2021": 12.5,
