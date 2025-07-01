@@ -194,6 +194,55 @@ class AnalystAgent:
         except Exception as e:
             print(f"❌ {self.name} 분석 이력 로드 실패: {e}")
 
+    def run_full_valuation_analysis(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        밸류에이션 전문가 5단계 전체 분석을 순차적으로 실행해요
+        (LangChain RunnableSequence 기반)
+
+        Args:
+            input_data: {
+                'financial_data': str(재무데이터),
+                'sector_name': str(섹터명),
+                'company_name': str(회사명)
+            }
+        Returns:
+            dict: 각 단계별 결과가 담긴 사전
+        """
+        if not self.langchain_enabled or self.langchain_chain is None:
+            return {"error": "LangChain이 활성화되어 있지 않아요!"}
+        try:
+            # 분석 시작 시간 기록
+            from datetime import datetime
+
+            start_time = datetime.now()
+
+            # 5단계 전체 실행 (함수 호출)
+            chain_result = self.langchain_chain(input_data)
+
+            # 분석 시간 계산
+            analysis_time = (datetime.now() - start_time).total_seconds()
+
+            # 단계별 결과를 dict로 정리
+            result_dict = {
+                "step1_result": chain_result.get("step1_result"),
+                "step2_result": chain_result.get("step2_result"),
+                "step3_result": chain_result.get("step3_result"),
+                "step4_result": chain_result.get("step4_result"),
+                "step5_result": chain_result.get("step5_result"),
+                "analysis_time": analysis_time,
+                "agent_name": self.name,
+                "role": self.role,
+            }
+            # 분석 이력에 저장
+            self.analysis_history.append(result_dict)
+            print(
+                f"✅ {self.name} 5단계 전체 분석 완료! (소요시간: {analysis_time:.2f}초)"
+            )
+            return result_dict
+        except Exception as e:
+            print(f"❌ {self.name} 5단계 전체 분석 실패: {e}")
+            return {"error": str(e)}
+
 
 @dataclass
 class SectorTeam:
@@ -629,7 +678,14 @@ class SectorTeamFactory:
                 for metric in critical_metrics_list
                 if any(word in metric for word in ["비율", "수익률", "마진", "배수"])
             ],
+            langchain_enabled=True,  # 🚀 LangChain 활성화
         )
+
+        # 🚀 밸류에이션 전문가 LangChain Chain 설정
+        valuation_specialist.langchain_chain = self._create_valuation_analysis_chain(
+            valuation_specialist, sector_korean_name
+        )
+
         experts.append(valuation_specialist)
 
         # 5. 리스크 평가자 (섹터 특화) - 🎯 시니어 애널리스트 수준 업그레이드
@@ -1027,6 +1083,277 @@ class SectorTeamFactory:
 
             print(f"✅ {analyst.name} LangChain Chain 생성 완료!")
             return fundamental_chain
+
+        except Exception as e:
+            print(f"❌ {analyst.name} LangChain Chain 생성 실패: {e}")
+            return None
+
+    def _create_valuation_analysis_chain(
+        self, analyst: AnalystAgent, sector_name: str
+    ) -> Any:
+        """
+        밸류에이션 전문가를 위한 LangChain 5단계 분석 Chain 생성 (순차 실행)
+
+        Args:
+            analyst: 분석가 객체
+            sector_name: 섹터 이름
+
+        Returns:
+            Chain: 5단계 밸류에이션 분석 RunnableSequence
+        """
+        try:
+            # LLM 모델 설정 (OpenAI GPT-4o)
+            llm = ChatOpenAI(
+                model="gpt-4o",
+                temperature=0.1,  # 분석의 일관성을 위해 낮은 값
+                max_tokens=4000,
+            )
+
+            # 1단계: 시계열 멀티플 분석 프롬프트
+            multiple_analysis_prompt = PromptTemplate(
+                input_variables=["financial_data", "sector_name", "company_name"],
+                template="""
+당신은 {sector_name} 섹터 전문 밸류에이션 전문가입니다.
+
+**1단계: 시계열 멀티플 분석**
+
+제공된 재무데이터를 바탕으로 멀티플을 계산하고 분석하세요:
+
+**입력 데이터:**
+{financial_data}
+
+**회사명:** {company_name}
+
+**분석 요구사항:**
+1. 과거 3년간 PER, PBR, EV/EBITDA 계산 및 추세 분석
+2. 현재 멀티플의 역사적 Percentile 순위 산출
+3. 밸류에이션 사이클 분석 (고평가/저평가 구간 패턴)
+4. FCF Yield 3년 트렌드와 채권수익률 대비 매력도
+
+**출력 형식:**
+- 계산된 멀티플: [구체적 수치와 계산 과정]
+- 트렌드 분석: [3년간 변화 추이와 패턴]
+- Percentile 순위: [역사적 대비 현재 위치]
+- FCF Yield: [현재 수준과 매력도 평가]
+
+모든 계산 과정을 명시하고, 정량적 근거를 제시하세요.
+""",
+            )
+
+            # 2단계: 경쟁사 멀티플 비교 프롬프트
+            competitive_multiple_prompt = PromptTemplate(
+                input_variables=[
+                    "multiple_analysis_result",
+                    "sector_name",
+                    "company_name",
+                ],
+                template="""
+당신은 {sector_name} 섹터 전문 밸류에이션 전문가입니다.
+
+**2단계: 경쟁사 멀티플 비교 분석**
+
+이전 단계의 멀티플 분석 결과를 바탕으로 경쟁사와 비교하세요:
+
+**멀티플 분석 결과:**
+{multiple_analysis_result}
+
+**회사명:** {company_name}
+
+**분석 요구사항:**
+1. 동종업계 상위 5개 경쟁사 현재 멀티플 수집 (인터넷 서치 활용)
+2. 업계 평균 대비 밸류에이션 프리미엄/디스카운트율 계산
+3. 글로벌 동종업계 평균 멀티플과 비교
+4. 경쟁사 대비 차이의 근본 원인 분석
+
+**출력 형식:**
+- 경쟁사 데이터: [수집된 경쟁사 멀티플과 출처]
+- 업계 비교: [평균 대비 프리미엄/디스카운트율]
+- 글로벌 비교: [해외 동종업계 대비 평가]
+- 차이 원인: [멀티플 차이의 근본 요인]
+
+인터넷 서치를 통해 최신 정보를 수집하고, 출처를 명시하세요.
+""",
+            )
+
+            # 3단계: WACC 계산 및 DCF 모델링 프롬프트
+            dcf_modeling_prompt = PromptTemplate(
+                input_variables=[
+                    "competitive_multiple_result",
+                    "financial_data",
+                    "sector_name",
+                    "company_name",
+                ],
+                template="""
+당신은 {sector_name} 섹터 전문 밸류에이션 전문가입니다.
+
+**3단계: WACC 계산 및 DCF 모델링**
+
+재무데이터를 바탕으로 WACC를 계산하고 DCF 모델을 구축하세요:
+
+**경쟁사 비교 결과:**
+{competitive_multiple_result}
+
+**재무데이터:**
+{financial_data}
+
+**회사명:** {company_name}
+
+**분석 요구사항:**
+1. WACC 실제 계산:
+   - 타인자본 비용(Rd) = 이자비용 ÷ 유이자부채
+   - 법인세율(T) = 법인세비용 ÷ 세전이익
+   - 자기자본비용(Re) = 무위험수익률 + 베타 × 위험프리미엄
+   - WACC = (E/(E+D) × Re) + (D/(E+D) × Rd × (1-T))
+
+2. DCF 모델 구축:
+   - 향후 5년 FCF 예측
+   - Terminal Value 계산
+   - 현재가치 산출
+
+**출력 형식:**
+- WACC 계산: [구체적 계산 과정과 결과]
+- FCF 예측: [5년간 예측과 근거]
+- DCF 결과: [내재가치와 계산 과정]
+- Terminal Value: [계산 방법과 결과]
+
+모든 계산 과정을 명시하고, 가정사항을 명확히 표시하세요.
+""",
+            )
+
+            # 4단계: 목표가 산출 프롬프트
+            target_price_prompt = PromptTemplate(
+                input_variables=[
+                    "dcf_result",
+                    "multiple_analysis_result",
+                    "sector_name",
+                    "company_name",
+                ],
+                template="""
+당신은 {sector_name} 섹터 전문 밸류에이션 전문가입니다.
+
+**4단계: 종합 목표가 산출**
+
+모든 분석 결과를 종합하여 목표가를 산출하세요:
+
+**DCF 모델링 결과:**
+{dcf_result}
+
+**멀티플 분석 결과:**
+{multiple_analysis_result}
+
+**회사명:** {company_name}
+
+**분석 요구사항:**
+1. 다양한 방법론별 목표가 산출:
+   - DCF 기반 목표가
+   - 멀티플 기반 목표가 (PER, PBR, EV/EBITDA)
+   - 배당할인모델 기반 목표가
+
+2. 가중평균 목표가 계산:
+   - 각 방법론별 신뢰도 가중치 적용
+   - 최종 목표가 산출
+
+3. 애널리스트 컨센서스 비교:
+   - 인터넷 서치를 통한 컨센서스 수집
+   - 본인 분석과의 차이점 분석
+
+**출력 형식:**
+- 방법론별 목표가: [각 방법론의 결과와 근거]
+- 가중평균 목표가: [최종 목표가와 가중치]
+- 컨센서스 비교: [시장 의견과의 차이]
+- 투자 의견: [매수/보유/매도 권고]
+
+정량적 근거를 바탕으로 명확한 투자 의견을 제시하세요.
+""",
+            )
+
+            # 5단계: 시나리오별 민감도 분석 프롬프트
+            scenario_analysis_prompt = PromptTemplate(
+                input_variables=["target_price_result", "sector_name", "company_name"],
+                template="""
+당신은 {sector_name} 섹터 전문 밸류에이션 전문가입니다.
+
+**5단계: 시나리오별 민감도 분석**
+
+목표가 산출 결과를 바탕으로 시나리오 분석을 수행하세요:
+
+**목표가 산출 결과:**
+{target_price_result}
+
+**회사명:** {company_name}
+
+**분석 요구사항:**
+1. 3시나리오 분석:
+   - 낙관 시나리오 (25% 확률): 최고 실적 가정
+   - 기본 시나리오 (50% 확률): 컨센서스 기반
+   - 비관 시나리오 (25% 확률): 악재 반영
+
+2. 확률가중 목표가 계산:
+   - 3시나리오 확률 가중 평균값
+
+3. 민감도 분석:
+   - 핵심 변수 ±10% 변동시 목표가 변화폭
+   - 주요 리스크 요인별 영향도
+
+**출력 형식:**
+- 시나리오별 목표가: [3시나리오의 결과와 근거]
+- 확률가중 목표가: [최종 목표가]
+- 민감도 분석: [주요 변수별 영향도]
+- 리스크 평가: [주요 리스크와 대응 방안]
+
+정량적 근거를 바탕으로 실용적인 분석을 제시하세요.
+""",
+            )
+
+            # 5단계 순차 실행 체인 (파이프와 람다로 직접 연결)
+            def valuation_chain(input_data):
+                """
+                5단계 밸류에이션 분석을 순차적으로 실행하는 함수에요
+                각 단계 결과를 dict로 누적해서 전달해요
+                """
+                # 1단계 실행
+                step1_result = (multiple_analysis_prompt | llm).invoke(input_data)
+                # 2단계 실행
+                step2_input = {
+                    "multiple_analysis_result": step1_result,
+                    "sector_name": input_data["sector_name"],
+                    "company_name": input_data["company_name"],
+                }
+                step2_result = (competitive_multiple_prompt | llm).invoke(step2_input)
+                # 3단계 실행
+                step3_input = {
+                    "competitive_multiple_result": step2_result,
+                    "financial_data": input_data["financial_data"],
+                    "sector_name": input_data["sector_name"],
+                    "company_name": input_data["company_name"],
+                }
+                step3_result = (dcf_modeling_prompt | llm).invoke(step3_input)
+                # 4단계 실행
+                step4_input = {
+                    "dcf_result": step3_result,
+                    "multiple_analysis_result": step1_result,
+                    "sector_name": input_data["sector_name"],
+                    "company_name": input_data["company_name"],
+                }
+                step4_result = (target_price_prompt | llm).invoke(step4_input)
+                # 5단계 실행
+                step5_input = {
+                    "target_price_result": step4_result,
+                    "sector_name": input_data["sector_name"],
+                    "company_name": input_data["company_name"],
+                }
+                step5_result = (scenario_analysis_prompt | llm).invoke(step5_input)
+                # 단계별 결과 dict로 반환
+                return {
+                    "step1_result": step1_result,
+                    "step2_result": step2_result,
+                    "step3_result": step3_result,
+                    "step4_result": step4_result,
+                    "step5_result": step5_result,
+                }
+
+            print(f"✅ {analyst.name} 5단계 LangChain 분석 체인 생성 완료!")
+            return valuation_chain
 
         except Exception as e:
             print(f"❌ {analyst.name} LangChain Chain 생성 실패: {e}")
