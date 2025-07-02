@@ -111,3 +111,85 @@ except Exception as e:
     import traceback
 
     traceback.print_exc()
+
+
+def test_data_creation():
+    """테스트 데이터 생성 테스트"""
+
+    def _create_test_data_for_expert(role: str):
+        """전문가 역할에 맞는 테스트 데이터를 생성해요"""
+        # 모든 전문가에게 공통적으로 필요한 값이에요
+        base_data = {
+            "sector_name": "Technology",  # 섹터명
+            "company_name": "삼성전자",  # 회사명
+        }
+
+        # 펀더멘털 분석가: financial_data가 반드시 필요해요
+        if "펀더멘털" in role:
+            base_data.update(
+                {
+                    # financial_data는 재무데이터 전체를 의미해요
+                    "financial_data": "매출액: 100조원, 영업이익: 15조원, 순이익: 12조원",
+                }
+            )
+        # 기술적 분석가: price_data가 반드시 필요해요
+        elif "기술적" in role:
+            base_data.update(
+                {
+                    # price_data는 주가 데이터 전체를 의미해요
+                    "price_data": "현재가: 70,000원, 52주 최고: 80,000원, 52주 최저: 50,000원",
+                }
+            )
+        # 밸류에이션 전문가: financial_data가 반드시 필요해요
+        elif "밸류에이션" in role:
+            base_data.update(
+                {
+                    "financial_data": "매출액: 100조원, 영업이익: 15조원, 순이익: 12조원",
+                }
+            )
+        # 리스크 평가자: financial_data가 반드시 필요해요
+        elif "리스크" in role:
+            base_data.update(
+                {
+                    "financial_data": "부채비율: 30%, 유동비율: 2.5, 이자보상배율: 15",
+                }
+            )
+        # 산업 전문가: company_data가 반드시 필요해요 (PromptTemplate에서 요구하는 변수명)
+        elif "산업" in role:
+            base_data.update(
+                {
+                    "company_data": "반도체 시장 규모: 500조원, 성장률: 8%, 경쟁사: SK하이닉스, TSMC, 시장점유율: 15%",
+                }
+            )
+        # 주석 전문가: financial_data가 반드시 필요해요
+        elif "주석" in role:
+            base_data.update(
+                {
+                    "financial_data": "매출액: 100조원, 영업이익: 15조원, 순이익: 12조원",
+                }
+            )
+
+        return base_data
+
+    # 테스트
+    roles = [
+        "펀더멘털 분석가",
+        "기술적 분석가",
+        "산업 전문가",
+        "밸류에이션 전문가",
+        "리스크 평가자",
+        "재무제표 주석 전문가",
+    ]
+
+    print("🔍 테스트 데이터 생성 테스트")
+    print("=" * 50)
+
+    for role in roles:
+        data = _create_test_data_for_expert(role)
+        print(f"\n📊 {role}:")
+        print(f"   데이터: {data}")
+        print(f"   키: {list(data.keys())}")
+
+
+if __name__ == "__main__":
+    test_data_creation()

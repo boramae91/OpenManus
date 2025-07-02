@@ -1035,14 +1035,14 @@ class SectorTeamFactory:
         self, analyst: AnalystAgent, sector_name: str
     ) -> Any:
         """
-        펀더멘털 분석가를 위한 LangChain SequentialChain 생성
+        펀더멘털 분석가를 위한 LangChain Chain 생성
 
         Args:
             analyst: 분석가 객체
             sector_name: 섹터 이름
 
         Returns:
-            SequentialChain: 4단계 분석 Chain
+            Chain: 단일 단계 분석 Chain
         """
         try:
             # LLM 모델 설정 (환경변수에서 API 키 가져오기)
@@ -1052,160 +1052,47 @@ class SectorTeamFactory:
                 max_tokens=4000,
             )
 
-            # 1단계: 데이터 검증 및 정규화 Chain
-            data_validation_prompt = PromptTemplate(
+            # 단일 단계: 종합 재무 분석 Chain
+            fundamental_analysis_prompt = PromptTemplate(
                 input_variables=["financial_data", "sector_name", "company_name"],
                 template="""
 당신은 {sector_name} 섹터 전문 펀더멘털 분석가입니다.
 
-**1단계: 데이터 검증 및 정규화**
+**종합 재무 분석**
 
-제공된 재무데이터를 검증하고 정규화하세요:
+제공된 재무데이터를 바탕으로 종합적인 재무 분석을 수행하세요:
 
 **입력 데이터:**
 {financial_data}
 
 **회사명:** {company_name}
 
-**검증 요구사항:**
-1. 데이터 완성도 확인 (누락된 값 식별)
-2. 데이터 일관성 검증 (단위, 기간 등)
-3. 이상치 탐지 및 처리 방안 제시
-4. 데이터 정규화 (비교 가능한 형태로 변환)
-
-**출력 형식:**
-- 검증 결과: [통과/부분 통과/실패]
-- 데이터 품질 점수: [1-10점]
-- 주요 이슈: [발견된 문제점들]
-- 정규화된 데이터: [처리된 데이터 요약]
-
-단계별로 사고 과정을 명시하고, 구체적인 근거를 제시하세요.
-""",
-            )
-
-            # 최신 LangChain API 사용
-            data_validation_chain = data_validation_prompt | llm
-
-            # 2단계: 재무비율 계산 및 트렌드 분석 Chain
-            ratio_analysis_prompt = PromptTemplate(
-                input_variables=[
-                    "data_validation_result",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 펀더멘털 분석가입니다.
-
-**2단계: 재무비율 계산 및 트렌드 분석**
-
-이전 단계의 검증된 데이터를 바탕으로 재무비율을 계산하고 트렌드를 분석하세요:
-
-**검증된 데이터:**
-{data_validation_result}
-
-**회사명:** {company_name}
-
 **분석 요구사항:**
-1. 핵심 재무비율 계산 (ROE, ROA, ROIC, 유동비율, 부채비율 등)
-2. 3년간 트렌드 분석 및 변화 패턴 식별
-3. CAGR 계산 (매출, 영업이익, 순이익)
-4. 현금흐름 안정성 분석
-5. DuPont 분석을 통한 ROE 분해
+1. 데이터 검증 및 정규화
+2. 핵심 재무비율 계산 (ROE, ROA, ROIC, 유동비율, 부채비율 등)
+3. 3년간 트렌드 분석 및 변화 패턴 식별
+4. CAGR 계산 (매출, 영업이익, 순이익)
+5. 현금흐름 안정성 분석
+6. DuPont 분석을 통한 ROE 분해
+7. 경쟁사 비교 분석 (업계 평균 대비)
+8. 종합 평가 및 투자 의견
 
 **출력 형식:**
-- 계산된 재무비율: [구체적 수치와 계산 과정]
+- 데이터 검증 결과: [통과/부분 통과/실패]
+- 재무비율 분석: [구체적 수치와 계산 과정]
 - 트렌드 분석: [3년간 변화 추이와 패턴]
 - 성장성 평가: [CAGR과 지속가능성]
 - 현금흐름 평가: [안정성과 품질]
-- DuPont 분석: [ROE 동력 분석]
+- 경쟁사 비교: [업계 내 상대적 위치]
+- 종합 평가: [재무 건전성과 투자 매력도]
+- 투자 의견: [명확한 권고와 근거]
 
-모든 계산 과정을 명시하고, 정량적 근거를 제시하세요.
+단계별로 사고 과정을 명시하고, 정량적 근거를 제시하세요.
 """,
             )
 
-            ratio_analysis_chain = ratio_analysis_prompt | llm
-
-            # 3단계: 경쟁사 비교 및 벤치마크 분석 Chain
-            competitive_analysis_prompt = PromptTemplate(
-                input_variables=[
-                    "ratio_analysis_result",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 펀더멘털 분석가입니다.
-
-**3단계: 경쟁사 비교 및 벤치마크 분석**
-
-이전 단계의 분석 결과를 바탕으로 경쟁사와 비교 분석하세요:
-
-**재무비율 분석 결과:**
-{ratio_analysis_result}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. 동종업계 상위 3-5개 경쟁사 재무비율 수집 (인터넷 서치 활용)
-2. 업계 평균 대비 상대적 위치 분석 (Percentile 순위)
-3. 경쟁우위 지속성 평가
-4. 시장점유율 변화 추이 분석
-5. 업계 평균 멀티플과 비교
-
-**출력 형식:**
-- 경쟁사 데이터: [수집된 경쟁사 정보와 출처]
-- 상대적 위치: [업계 내 순위와 차이점]
-- 경쟁우위 분석: [우위 요인과 지속가능성]
-- 시장점유율: [변화 추이와 전망]
-- 멀티플 비교: [업계 평균 대비 평가]
-
-인터넷 서치를 통해 최신 정보를 수집하고, 출처를 명시하세요.
-""",
-            )
-
-            competitive_analysis_chain = competitive_analysis_prompt | llm
-
-            # 4단계: 종합 평가 및 투자 의견 Chain
-            final_evaluation_prompt = PromptTemplate(
-                input_variables=[
-                    "competitive_analysis_result",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 펀더멘털 분석가입니다.
-
-**4단계: 종합 평가 및 투자 의견**
-
-모든 이전 단계의 분석을 종합하여 최종 투자 의견을 도출하세요:
-
-**경쟁사 비교 분석 결과:**
-{competitive_analysis_result}
-
-**회사명:** {company_name}
-
-**종합 평가 요구사항:**
-1. 재무 건전성 종합 평가 (안전성, 수익성, 성장성, 활동성)
-2. 경쟁우위 지속가능성 평가
-3. 리스크 요인 식별 및 정량화
-4. 투자 매력도 종합 판단
-5. 구체적인 투자 의견 (매수/보유/매도)
-
-**출력 형식:**
-- 재무 건전성: [4대 영역별 평가와 종합 점수]
-- 경쟁우위: [지속가능성과 전망]
-- 리스크 평가: [주요 리스크와 영향도]
-- 투자 매력도: [종합 판단과 근거]
-- 투자 의견: [명확한 권고와 목표가]
-
-정량적 근거를 바탕으로 명확하고 실용적인 투자 의견을 제시하세요.
-""",
-            )
-
-            final_evaluation_chain = final_evaluation_prompt | llm
-
-            # 간단한 Chain으로 시작 (복잡한 SequentialChain 대신)
-            # 실제로는 각 단계를 순차적으로 실행하는 방식으로 구현
-            fundamental_chain = data_validation_chain
+            # 단일 Chain 생성
+            fundamental_chain = fundamental_analysis_prompt | llm
 
             print(f"✅ {analyst.name} LangChain Chain 생성 완료!")
             return fundamental_chain
@@ -1218,14 +1105,14 @@ class SectorTeamFactory:
         self, analyst: AnalystAgent, sector_name: str
     ) -> Any:
         """
-        밸류에이션 전문가를 위한 LangChain 5단계 분석 Chain 생성 (순차 실행)
+        밸류에이션 전문가를 위한 LangChain Chain 생성
 
         Args:
             analyst: 분석가 객체
             sector_name: 섹터 이름
 
         Returns:
-            Chain: 5단계 밸류에이션 분석 RunnableSequence
+            Chain: 단일 단계 분석 Chain
         """
         try:
             # LLM 모델 설정 (OpenAI GPT-4o)
@@ -1235,15 +1122,15 @@ class SectorTeamFactory:
                 max_tokens=4000,
             )
 
-            # 1단계: 시계열 멀티플 분석 프롬프트
-            multiple_analysis_prompt = PromptTemplate(
+            # 단일 단계: 종합 밸류에이션 분석 프롬프트
+            valuation_analysis_prompt = PromptTemplate(
                 input_variables=["financial_data", "sector_name", "company_name"],
                 template="""
 당신은 {sector_name} 섹터 전문 밸류에이션 전문가입니다.
 
-**1단계: 시계열 멀티플 분석**
+**종합 밸류에이션 분석**
 
-제공된 재무데이터를 바탕으로 멀티플을 계산하고 분석하세요:
+제공된 재무데이터를 바탕으로 종합적인 밸류에이션 분석을 수행하세요:
 
 **입력 데이터:**
 {financial_data}
@@ -1251,234 +1138,47 @@ class SectorTeamFactory:
 **회사명:** {company_name}
 
 **분석 요구사항:**
-1. 과거 3년간 PER, PBR, EV/EBITDA 계산 및 추세 분석
-2. 현재 멀티플의 역사적 Percentile 순위 산출
-3. 밸류에이션 사이클 분석 (고평가/저평가 구간 패턴)
-4. FCF Yield 3년 트렌드와 채권수익률 대비 매력도
+1. 시계열 멀티플 분석:
+   - 과거 3년간 PER, PBR, EV/EBITDA 계산 및 추세 분석
+   - 현재 멀티플의 역사적 Percentile 순위 산출
+   - 밸류에이션 사이클 분석 (고평가/저평가 구간 패턴)
+
+2. 경쟁사 비교 분석:
+   - 동종업계 상위 5개 경쟁사 현재 멀티플 비교
+   - 업계 평균 대비 밸류에이션 프리미엄/디스카운트율 계산
+   - 글로벌 동종업계 평균 멀티플과 비교
+
+3. DCF 모델링:
+   - WACC 계산 (구체적 계산 과정 포함)
+   - 향후 5년 FCF 예측
+   - Terminal Value 계산
+   - 내재가치 산출
+
+4. 목표가 산출:
+   - DCF 기반 목표가
+   - 멀티플 기반 목표가 (PER, PBR, EV/EBITDA)
+   - 가중평균 목표가 계산
+
+5. 시나리오별 민감도 분석:
+   - 낙관/기본/비관 3시나리오 분석
+   - 주요 변수별 민감도 분석
 
 **출력 형식:**
-- 계산된 멀티플: [구체적 수치와 계산 과정]
-- 트렌드 분석: [3년간 변화 추이와 패턴]
-- Percentile 순위: [역사적 대비 현재 위치]
-- FCF Yield: [현재 수준과 매력도 평가]
+- 멀티플 분석: [계산된 멀티플과 트렌드]
+- 경쟁사 비교: [업계 대비 상대적 위치]
+- DCF 모델링: [내재가치와 계산 과정]
+- 목표가 산출: [최종 목표가와 근거]
+- 시나리오 분석: [3시나리오별 전망]
+- 투자 의견: [매수/보유/매도 권고]
 
 모든 계산 과정을 명시하고, 정량적 근거를 제시하세요.
 """,
             )
 
-            # 2단계: 경쟁사 멀티플 비교 프롬프트
-            competitive_multiple_prompt = PromptTemplate(
-                input_variables=[
-                    "multiple_analysis_result",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 밸류에이션 전문가입니다.
+            # 단일 Chain 생성
+            valuation_chain = valuation_analysis_prompt | llm
 
-**2단계: 경쟁사 멀티플 비교 분석**
-
-이전 단계의 멀티플 분석 결과를 바탕으로 경쟁사와 비교하세요:
-
-**멀티플 분석 결과:**
-{multiple_analysis_result}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. 동종업계 상위 5개 경쟁사 현재 멀티플 수집 (인터넷 서치 활용)
-2. 업계 평균 대비 밸류에이션 프리미엄/디스카운트율 계산
-3. 글로벌 동종업계 평균 멀티플과 비교
-4. 경쟁사 대비 차이의 근본 원인 분석
-
-**출력 형식:**
-- 경쟁사 데이터: [수집된 경쟁사 멀티플과 출처]
-- 업계 비교: [평균 대비 프리미엄/디스카운트율]
-- 글로벌 비교: [해외 동종업계 대비 평가]
-- 차이 원인: [멀티플 차이의 근본 요인]
-
-인터넷 서치를 통해 최신 정보를 수집하고, 출처를 명시하세요.
-""",
-            )
-
-            # 3단계: WACC 계산 및 DCF 모델링 프롬프트
-            dcf_modeling_prompt = PromptTemplate(
-                input_variables=[
-                    "competitive_multiple_result",
-                    "financial_data",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 밸류에이션 전문가입니다.
-
-**3단계: WACC 계산 및 DCF 모델링**
-
-재무데이터를 바탕으로 WACC를 계산하고 DCF 모델을 구축하세요:
-
-**경쟁사 비교 결과:**
-{competitive_multiple_result}
-
-**재무데이터:**
-{financial_data}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. WACC 실제 계산:
-   - 타인자본 비용(Rd) = 이자비용 ÷ 유이자부채
-   - 법인세율(T) = 법인세비용 ÷ 세전이익
-   - 자기자본비용(Re) = 무위험수익률 + 베타 × 위험프리미엄
-   - WACC = (E/(E+D) × Re) + (D/(E+D) × Rd × (1-T))
-
-2. DCF 모델 구축:
-   - 향후 5년 FCF 예측
-   - Terminal Value 계산
-   - 현재가치 산출
-
-**출력 형식:**
-- WACC 계산: [구체적 계산 과정과 결과]
-- FCF 예측: [5년간 예측과 근거]
-- DCF 결과: [내재가치와 계산 과정]
-- Terminal Value: [계산 방법과 결과]
-
-모든 계산 과정을 명시하고, 가정사항을 명확히 표시하세요.
-""",
-            )
-
-            # 4단계: 목표가 산출 프롬프트
-            target_price_prompt = PromptTemplate(
-                input_variables=[
-                    "dcf_result",
-                    "multiple_analysis_result",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 밸류에이션 전문가입니다.
-
-**4단계: 종합 목표가 산출**
-
-모든 분석 결과를 종합하여 목표가를 산출하세요:
-
-**DCF 모델링 결과:**
-{dcf_result}
-
-**멀티플 분석 결과:**
-{multiple_analysis_result}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. 다양한 방법론별 목표가 산출:
-   - DCF 기반 목표가
-   - 멀티플 기반 목표가 (PER, PBR, EV/EBITDA)
-   - 배당할인모델 기반 목표가
-
-2. 가중평균 목표가 계산:
-   - 각 방법론별 신뢰도 가중치 적용
-   - 최종 목표가 산출
-
-3. 애널리스트 컨센서스 비교:
-   - 인터넷 서치를 통한 컨센서스 수집
-   - 본인 분석과의 차이점 분석
-
-**출력 형식:**
-- 방법론별 목표가: [각 방법론의 결과와 근거]
-- 가중평균 목표가: [최종 목표가와 가중치]
-- 컨센서스 비교: [시장 의견과의 차이]
-- 투자 의견: [매수/보유/매도 권고]
-
-정량적 근거를 바탕으로 명확한 투자 의견을 제시하세요.
-""",
-            )
-
-            # 5단계: 시나리오별 민감도 분석 프롬프트
-            scenario_analysis_prompt = PromptTemplate(
-                input_variables=["target_price_result", "sector_name", "company_name"],
-                template="""
-당신은 {sector_name} 섹터 전문 밸류에이션 전문가입니다.
-
-**5단계: 시나리오별 민감도 분석**
-
-목표가 산출 결과를 바탕으로 시나리오 분석을 수행하세요:
-
-**목표가 산출 결과:**
-{target_price_result}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. 3시나리오 분석:
-   - 낙관 시나리오 (25% 확률): 최고 실적 가정
-   - 기본 시나리오 (50% 확률): 컨센서스 기반
-   - 비관 시나리오 (25% 확률): 악재 반영
-
-2. 확률가중 목표가 계산:
-   - 3시나리오 확률 가중 평균값
-
-3. 민감도 분석:
-   - 핵심 변수 ±10% 변동시 목표가 변화폭
-   - 주요 리스크 요인별 영향도
-
-**출력 형식:**
-- 시나리오별 목표가: [3시나리오의 결과와 근거]
-- 확률가중 목표가: [최종 목표가]
-- 민감도 분석: [주요 변수별 영향도]
-- 리스크 평가: [주요 리스크와 대응 방안]
-
-정량적 근거를 바탕으로 실용적인 분석을 제시하세요.
-""",
-            )
-
-            # 5단계 순차 실행 체인 (파이프와 람다로 직접 연결)
-            def valuation_chain(input_data):
-                """
-                5단계 밸류에이션 분석을 순차적으로 실행하는 함수에요
-                각 단계 결과를 dict로 누적해서 전달해요
-                """
-                # 1단계 실행
-                step1_result = (multiple_analysis_prompt | llm).invoke(input_data)
-                # 2단계 실행
-                step2_input = {
-                    "multiple_analysis_result": step1_result,
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step2_result = (competitive_multiple_prompt | llm).invoke(step2_input)
-                # 3단계 실행
-                step3_input = {
-                    "competitive_multiple_result": step2_result,
-                    "financial_data": input_data["financial_data"],
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step3_result = (dcf_modeling_prompt | llm).invoke(step3_input)
-                # 4단계 실행
-                step4_input = {
-                    "dcf_result": step3_result,
-                    "multiple_analysis_result": step1_result,
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step4_result = (target_price_prompt | llm).invoke(step4_input)
-                # 5단계 실행
-                step5_input = {
-                    "target_price_result": step4_result,
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step5_result = (scenario_analysis_prompt | llm).invoke(step5_input)
-                # 단계별 결과 dict로 반환
-                return {
-                    "step1_result": step1_result,
-                    "step2_result": step2_result,
-                    "step3_result": step3_result,
-                    "step4_result": step4_result,
-                    "step5_result": step5_result,
-                }
-
-            print(f"✅ {analyst.name} 5단계 LangChain 분석 체인 생성 완료!")
+            print(f"✅ {analyst.name} LangChain Chain 생성 완료!")
             return valuation_chain
 
         except Exception as e:
@@ -1489,14 +1189,14 @@ class SectorTeamFactory:
         self, analyst: AnalystAgent, sector_name: str
     ) -> Any:
         """
-        리스크 평가자를 위한 LangChain 5단계 분석 Chain 생성 (순차 실행)
+        리스크 평가자를 위한 LangChain Chain 생성
 
         Args:
             analyst: 분석가 객체
             sector_name: 섹터 이름
 
         Returns:
-            Chain: 5단계 리스크 분석 RunnableSequence
+            Chain: 단일 단계 분석 Chain
         """
         try:
             # LLM 모델 설정 (OpenAI GPT-4o)
@@ -1506,15 +1206,15 @@ class SectorTeamFactory:
                 max_tokens=4000,
             )
 
-            # 1단계: 시계열 멀티플 분석 프롬프트
-            multiple_analysis_prompt = PromptTemplate(
+            # 단일 단계: 종합 리스크 분석 프롬프트
+            risk_analysis_prompt = PromptTemplate(
                 input_variables=["financial_data", "sector_name", "company_name"],
                 template="""
 당신은 {sector_name} 섹터 전문 리스크 평가자입니다.
 
-**1단계: 시계열 멀티플 분석**
+**종합 리스크 분석**
 
-제공된 재무데이터를 바탕으로 멀티플을 계산하고 분석하세요:
+제공된 재무데이터를 바탕으로 종합적인 리스크 분석을 수행하세요:
 
 **입력 데이터:**
 {financial_data}
@@ -1522,235 +1222,48 @@ class SectorTeamFactory:
 **회사명:** {company_name}
 
 **분석 요구사항:**
-1. 과거 3년간 PER, PBR, EV/EBITDA 계산 및 추세 분석
-2. 현재 멀티플의 역사적 Percentile 순위 산출
-3. 밸류에이션 사이클 분석 (고평가/저평가 구간 패턴)
-4. FCF Yield 3년 트렌드와 채권수익률 대비 매력도
+1. 재무 리스크 분석:
+   - 부채비율, 유동비율, 이자보상배율 분석
+   - 현금흐름 안정성 평가
+   - 신용 리스크 스코어링
+
+2. 사업 리스크 분석:
+   - 시장점유율 변화 리스크
+   - 경쟁사 대응 리스크
+   - 기술 변화 리스크
+
+3. 시장 리스크 분석:
+   - 주가 변동성 분석
+   - 베타 계수 계산
+   - 시장 대비 상대적 리스크
+
+4. ESG 리스크 분석:
+   - 환경 리스크 (규제, 기후변화)
+   - 사회 리스크 (인권, 노동환경)
+   - 지배구조 리스크 (투명성, 독립성)
+
+5. 종합 리스크 평가:
+   - 주요 리스크 요인별 영향도 분석
+   - 시나리오별 리스크 시뮬레이션
+   - 리스크 대응 전략 제시
 
 **출력 형식:**
-- 계산된 멀티플: [구체적 수치와 계산 과정]
-- 트렌드 분석: [3년간 변화 추이와 패턴]
-- Percentile 순위: [역사적 대비 현재 위치]
-- FCF Yield: [현재 수준과 매력도 평가]
+- 재무 리스크: [부채 및 유동성 리스크 평가]
+- 사업 리스크: [경쟁 및 시장 리스크 분석]
+- 시장 리스크: [주가 변동성 및 베타 분석]
+- ESG 리스크: [환경, 사회, 지배구조 리스크]
+- 종합 평가: [전체 리스크 수준과 대응 방안]
+- 투자 권고: [리스크 대비 수익률 평가]
 
-모든 계산 과정을 명시하고, 정량적 근거를 제시하세요.
+정량적 근거를 바탕으로 명확한 리스크 평가를 제시하세요.
 """,
             )
 
-            # 2단계: 경쟁사 멀티플 비교 프롬프트
-            competitive_multiple_prompt = PromptTemplate(
-                input_variables=[
-                    "multiple_analysis_result",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 리스크 평가자입니다.
+            # 단일 Chain 생성
+            risk_chain = risk_analysis_prompt | llm
 
-**2단계: 경쟁사 멀티플 비교 분석**
-
-이전 단계의 멀티플 분석 결과를 바탕으로 경쟁사와 비교하세요:
-
-**멀티플 분석 결과:**
-{multiple_analysis_result}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. 동종업계 상위 5개 경쟁사 현재 멀티플 수집 (인터넷 서치 활용)
-2. 업계 평균 대비 밸류에이션 프리미엄/디스카운트율 계산
-3. 글로벌 동종업계 평균 멀티플과 비교
-4. 경쟁사 대비 차이의 근본 원인 분석
-
-**출력 형식:**
-- 경쟁사 데이터: [수집된 경쟁사 멀티플과 출처]
-- 업계 비교: [평균 대비 프리미엄/디스카운트율]
-- 글로벌 비교: [해외 동종업계 대비 평가]
-- 차이 원인: [멀티플 차이의 근본 요인]
-
-인터넷 서치를 통해 최신 정보를 수집하고, 출처를 명시하세요.
-""",
-            )
-
-            # 3단계: WACC 계산 및 DCF 모델링 프롬프트
-            dcf_modeling_prompt = PromptTemplate(
-                input_variables=[
-                    "competitive_multiple_result",
-                    "financial_data",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 리스크 평가자입니다.
-
-**3단계: WACC 계산 및 DCF 모델링**
-
-재무데이터를 바탕으로 WACC를 계산하고 DCF 모델을 구축하세요:
-
-**경쟁사 비교 결과:**
-{competitive_multiple_result}
-
-**재무데이터:**
-{financial_data}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. WACC 실제 계산:
-   - 타인자본 비용(Rd) = 이자비용 ÷ 유이자부채
-   - 법인세율(T) = 법인세비용 ÷ 세전이익
-   - 자기자본비용(Re) = 무위험수익률 + 베타 × 위험프리미엄
-   - WACC = (E/(E+D) × Re) + (D/(E+D) × Rd × (1-T))
-
-2. DCF 모델 구축:
-   - 향후 5년 FCF 예측
-   - Terminal Value 계산
-   - 현재가치 산출
-
-**출력 형식:**
-- WACC 계산: [구체적 계산 과정과 결과]
-- FCF 예측: [5년간 예측과 근거]
-- DCF 결과: [내재가치와 계산 과정]
-- Terminal Value: [계산 방법과 결과]
-
-모든 계산 과정을 명시하고, 가정사항을 명확히 표시하세요.
-""",
-            )
-
-            # 4단계: 목표가 산출 프롬프트
-            target_price_prompt = PromptTemplate(
-                input_variables=[
-                    "dcf_result",
-                    "multiple_analysis_result",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 리스크 평가자입니다.
-
-**4단계: 종합 목표가 산출**
-
-모든 분석 결과를 종합하여 목표가를 산출하세요:
-
-**DCF 모델링 결과:**
-{dcf_result}
-
-**멀티플 분석 결과:**
-{multiple_analysis_result}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. 다양한 방법론별 목표가 산출:
-   - DCF 기반 목표가
-   - 멀티플 기반 목표가 (PER, PBR, EV/EBITDA)
-   - 배당할인모델 기반 목표가
-
-2. 가중평균 목표가 계산:
-   - 각 방법론별 신뢰도 가중치 적용
-   - 최종 목표가 산출
-
-3. 애널리스트 컨센서스 비교:
-   - 인터넷 서치를 통한 컨센서스 수집
-   - 본인 분석과의 차이점 분석
-
-**출력 형식:**
-- 방법론별 목표가: [각 방법론의 결과와 근거]
-- 가중평균 목표가: [최종 목표가와 가중치]
-- 컨센서스 비교: [시장 의견과의 차이]
-- 투자 의견: [매수/보유/매도 권고]
-
-정량적 근거를 바탕으로 명확한 투자 의견을 제시하세요.
-""",
-            )
-
-            # 5단계: 시나리오별 민감도 분석 프롬프트
-            scenario_analysis_prompt = PromptTemplate(
-                input_variables=["target_price_result", "sector_name", "company_name"],
-                template="""
-당신은 {sector_name} 섹터 전문 리스크 평가자입니다.
-
-**5단계: 시나리오별 민감도 분석**
-
-목표가 산출 결과를 바탕으로 시나리오 분석을 수행하세요:
-
-**목표가 산출 결과:**
-{target_price_result}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. 3시나리오 분석:
-   - 낙관 시나리오 (25% 확률): 최고 실적 가정
-   - 기본 시나리오 (50% 확률): 컨센서스 기반
-   - 비관 시나리오 (25% 확률): 악재 반영
-
-2. 확률가중 목표가 계산:
-   - 3시나리오 확률 가중 평균값
-
-3. 민감도 분석:
-   - 핵심 변수 ±10% 변동시 목표가 변화폭
-   - 주요 리스크 요인별 영향도
-
-**출력 형식:**
-- 시나리오별 목표가: [3시나리오의 결과와 근거]
-- 확률가중 목표가: [최종 목표가]
-- 민감도 분석: [주요 변수별 영향도]
-- 리스크 평가: [주요 리스크와 대응 방안]
-
-정량적 근거를 바탕으로 실용적인 분석을 제시하세요.
-""",
-            )
-
-            # 5단계 순차 실행 체인 (파이프와 람다로 직접 연결)
-            def risk_analysis_chain(input_data):
-                """
-                5단계 리스크 분석을 순차적으로 실행하는 함수에요
-                각 단계 결과를 dict로 누적해서 전달해요
-                """
-                # 1단계 실행
-                step1_result = (multiple_analysis_prompt | llm).invoke(input_data)
-                # 2단계 실행
-                step2_input = {
-                    "multiple_analysis_result": step1_result,
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step2_result = (competitive_multiple_prompt | llm).invoke(step2_input)
-                # 3단계 실행
-                step3_input = {
-                    "competitive_multiple_result": step2_result,
-                    "financial_data": input_data["financial_data"],
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step3_result = (dcf_modeling_prompt | llm).invoke(step3_input)
-                # 4단계 실행
-                step4_input = {
-                    "dcf_result": step3_result,
-                    "multiple_analysis_result": step1_result,
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step4_result = (target_price_prompt | llm).invoke(step4_input)
-                # 5단계 실행
-                step5_input = {
-                    "target_price_result": step4_result,
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step5_result = (scenario_analysis_prompt | llm).invoke(step5_input)
-                # 단계별 결과 dict로 반환
-                return {
-                    "step1_result": step1_result,
-                    "step2_result": step2_result,
-                    "step3_result": step3_result,
-                    "step4_result": step4_result,
-                    "step5_result": step5_result,
-                }
-
-            print(f"✅ {analyst.name} 5단계 LangChain 분석 체인 생성 완료!")
-            return risk_analysis_chain
+            print(f"✅ {analyst.name} LangChain Chain 생성 완료!")
+            return risk_chain
 
         except Exception as e:
             print(f"❌ {analyst.name} LangChain Chain 생성 실패: {e}")
@@ -1760,14 +1273,14 @@ class SectorTeamFactory:
         self, analyst: AnalystAgent, sector_name: str
     ) -> Any:
         """
-        산업 전문가를 위한 LangChain 5단계 분석 Chain 생성 (순차 실행)
+        산업 전문가를 위한 LangChain Chain 생성
 
         Args:
             analyst: 분석가 객체
             sector_name: 섹터 이름
 
         Returns:
-            Chain: 5단계 산업 분석 RunnableSequence
+            Chain: 단일 단계 분석 Chain
         """
         try:
             # LLM 모델 설정 (OpenAI GPT-4o)
@@ -1777,284 +1290,64 @@ class SectorTeamFactory:
                 max_tokens=4000,
             )
 
-            # 1단계: 산업 구조 분석 프롬프트
-            industry_structure_prompt = PromptTemplate(
-                input_variables=["company_data", "sector_name", "company_name"],
+            # 단일 단계: 종합 산업 분석 프롬프트
+            industry_analysis_prompt = PromptTemplate(
+                input_variables=["financial_data", "sector_name", "company_name"],
                 template="""
-당신은 {sector_name} 섹터 전문 산업 분석가입니다.
+당신은 {sector_name} 섹터 전문 산업 전문가입니다.
 
-**1단계: 산업 구조 분석 (Porter 5 Forces)**
+**종합 산업 분석**
 
-제공된 기업 데이터를 바탕으로 산업 구조를 분석하세요:
+제공된 재무데이터를 바탕으로 종합적인 산업 분석을 수행하세요:
 
 **입력 데이터:**
-{company_data}
+{financial_data}
 
 **회사명:** {company_name}
 
 **분석 요구사항:**
-1. Porter 5 Forces 각 요소별 분석:
-   - 신규진입자의 위협 (Entry Barriers, 규제, 자본요구량, 브랜드 충성도)
-   - 대체재의 위협 (대체재 가격, 전환비용, 고객 충성도)
-   - 공급업체의 교섭력 (공급업체 집중도, 전환비용, 차별화 정도)
-   - 구매자의 교섭력 (구매자 집중도, 가격 민감도, 전환비용)
-   - 기존 경쟁자 간 경쟁 (경쟁자 수, 산업 성장률, 고정비용)
+1. 산업 구조 분석:
+   - 산업의 성숙도와 성장 단계 평가
+   - 시장 규모와 성장률 분석
+   - 진입장벽과 경쟁 강도 평가
 
-2. 각 요소별 점수화 (1-5점, 5점이 가장 강함):
-   - 신규진입 위협: __점
-   - 대체재 위협: __점
-   - 공급업체 교섭력: __점
-   - 구매자 교섭력: __점
-   - 기존 경쟁: __점
+2. 시장 동향 및 성장성 분석:
+   - 주요 성장 동력과 트렌드 분석
+   - 기술 혁신과 디지털 전환 영향
+   - 규제 환경 변화와 정책 영향
 
-3. 종합 산업 매력도 평가 (총점 25점 만점)
+3. 경쟁사 분석:
+   - 주요 경쟁사 시장점유율 분석
+   - 경쟁 우위 요인과 차별화 전략
+   - 신규 진입자와 대체재 위협
+
+4. 규제 및 정책 환경 분석:
+   - 관련 법규와 규제 동향
+   - 정부 정책과 지원 방안
+   - ESG 규제와 준수 현황
+
+5. 산업 전망 및 기회/위험 분석:
+   - 단기/중장기 산업 전망
+   - 주요 기회 요인과 위험 요소
+   - 투자 전략적 시사점
 
 **출력 형식:**
-- 각 Forces별 상세 분석: [구체적 분석 내용]
-- 점수화 결과: [각 요소별 점수와 근거]
-- 종합 평가: [산업 매력도와 투자 관점]
+- 산업 구조: [성숙도, 규모, 경쟁 강도 분석]
+- 시장 동향: [성장 동력과 트렌드 분석]
+- 경쟁 환경: [경쟁사와 시장점유율 분석]
+- 규제 환경: [법규와 정책 영향 분석]
+- 산업 전망: [기회와 위험 요소 분석]
+- 투자 시사점: [산업 관점에서의 투자 권고]
 
-모든 분석은 정량적 근거를 바탕으로 객관적으로 수행하세요.
+정량적 근거를 바탕으로 명확한 산업 분석을 제시하세요.
 """,
             )
 
-            # 2단계: 시장 동향 및 성장성 분석 프롬프트
-            market_trend_prompt = PromptTemplate(
-                input_variables=[
-                    "industry_structure_result",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 산업 분석가입니다.
+            # 단일 Chain 생성
+            industry_chain = industry_analysis_prompt | llm
 
-**2단계: 시장 동향 및 성장성 분석**
-
-이전 단계의 산업 구조 분석을 바탕으로 시장 동향을 분석하세요:
-
-**산업 구조 분석 결과:**
-{industry_structure_result}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. 시장 규모 및 성장률 분석:
-   - 현재 시장 규모 (국내/글로벌)
-   - 과거 3년간 성장률 (CAGR)
-   - 향후 3-5년 성장 전망
-   - 성장 동력과 제약 요인
-
-2. 주요 트렌드 분석:
-   - 기술적 트렌드 (AI, IoT, 자동화 등)
-   - 소비자 트렌드 (선호도 변화, 새로운 니즈)
-   - 규제 트렌드 (정부 정책, 환경 규제)
-   - 글로벌 트렌드 (해외 시장 변화)
-
-3. 시장 세분화 분석:
-   - 주요 시장 세그먼트별 규모
-   - 고성장 세그먼트 식별
-   - 기업의 포지셔닝 분석
-
-**출력 형식:**
-- 시장 규모 분석: [구체적 수치와 성장률]
-- 트렌드 분석: [주요 트렌드와 영향도]
-- 세분화 분석: [세그먼트별 분석과 기회요소]
-
-인터넷 서치를 통해 최신 정보를 수집하고, 출처를 명시하세요.
-""",
-            )
-
-            # 3단계: 경쟁사 분석 프롬프트
-            competitor_analysis_prompt = PromptTemplate(
-                input_variables=[
-                    "market_trend_result",
-                    "company_data",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 산업 분석가입니다.
-
-**3단계: 경쟁사 분석**
-
-시장 동향 분석을 바탕으로 경쟁사 분석을 수행하세요:
-
-**시장 동향 분석 결과:**
-{market_trend_result}
-
-**기업 데이터:**
-{company_data}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. 주요 경쟁사 식별 및 분석:
-   - Top 5 경쟁사 선정 (국내/해외)
-   - 각 경쟁사의 시장 점유율
-   - 경쟁사의 핵심 강점과 약점
-   - 경쟁사의 전략적 포지셔닝
-
-2. 경쟁 우위 분석:
-   - 기업의 핵심 경쟁 우위 요소
-   - 경쟁사 대비 차별화 포인트
-   - 경쟁 우위의 지속 가능성
-   - 경쟁 우위 확대 방안
-
-3. 시장 점유율 변화 분석:
-   - 과거 3년간 점유율 변화 추이
-   - 점유율 변화의 주요 원인
-   - 향후 점유율 전망
-
-**출력 형식:**
-- 경쟁사 분석: [주요 경쟁사별 상세 분석]
-- 경쟁 우위: [기업의 핵심 우위와 차별화]
-- 점유율 분석: [변화 추이와 전망]
-
-정량적 데이터를 바탕으로 객관적인 분석을 수행하세요.
-""",
-            )
-
-            # 4단계: 규제 환경 및 정책 분석 프롬프트
-            regulatory_analysis_prompt = PromptTemplate(
-                input_variables=[
-                    "competitor_analysis_result",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 산업 분석가입니다.
-
-**4단계: 규제 환경 및 정책 분석**
-
-경쟁사 분석을 바탕으로 규제 환경을 분석하세요:
-
-**경쟁사 분석 결과:**
-{competitor_analysis_result}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. 현재 규제 환경 분석:
-   - 주요 규제 법령 및 정책
-   - 규제의 기업 활동에 미치는 영향
-   - 규제 준수 비용 및 부담
-   - 규제의 경쟁 환경에 미치는 영향
-
-2. 규제 변화 전망:
-   - 예상되는 규제 변화
-   - 규제 변화의 기업에 미치는 영향
-   - 규제 변화에 대한 대응 방안
-   - 규제 변화의 산업 구조에 미치는 영향
-
-3. 정책 지원 분석:
-   - 정부 지원 정책 및 혜택
-   - 정책 지원의 활용 방안
-   - 정책 변화의 리스크와 기회
-
-**출력 형식:**
-- 현재 규제 분석: [규제 환경과 영향도]
-- 규제 변화 전망: [예상 변화와 대응 방안]
-- 정책 지원 분석: [지원 정책과 활용 방안]
-
-최신 규제 동향을 파악하고 구체적인 영향도를 분석하세요.
-""",
-            )
-
-            # 5단계: 산업 리스크 및 기회요소 분석 프롬프트
-            risk_opportunity_prompt = PromptTemplate(
-                input_variables=[
-                    "regulatory_analysis_result",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 산업 분석가입니다.
-
-**5단계: 산업 리스크 및 기회요소 종합 분석**
-
-모든 이전 분석을 종합하여 리스크와 기회를 분석하세요:
-
-**규제 환경 분석 결과:**
-{regulatory_analysis_result}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. 주요 리스크 요인 분석:
-   - 기술적 리스크 (기술 변화, 혁신 실패)
-   - 시장 리스크 (수요 변화, 경쟁 심화)
-   - 규제 리스크 (정책 변화, 규제 강화)
-   - 글로벌 리스크 (환율, 무역 분쟁, 지정학적 위험)
-   - ESG 리스크 (환경, 사회, 지배구조)
-
-2. 주요 기회요소 분석:
-   - 신기술 기회 (AI, IoT, 자동화 등)
-   - 신시장 기회 (해외 진출, 신규 세그먼트)
-   - 정책 기회 (정부 지원, 규제 완화)
-   - 협력 기회 (전략적 제휴, M&A)
-
-3. 시나리오별 전망:
-   - 낙관 시나리오 (최고 성장)
-   - 기본 시나리오 (현재 추세 유지)
-   - 비관 시나리오 (침체 상황)
-
-**출력 형식:**
-- 리스크 분석: [주요 리스크와 대응 방안]
-- 기회 분석: [주요 기회와 활용 전략]
-- 시나리오 전망: [3가지 시나리오별 전망]
-
-정량적 근거를 바탕으로 실용적인 분석을 제시하세요.
-""",
-            )
-
-            # 5단계 순차 실행 체인 (파이프와 람다로 직접 연결)
-            def industry_analysis_chain(input_data):
-                """
-                5단계 산업 분석을 순차적으로 실행하는 함수에요
-                각 단계 결과를 dict로 누적해서 전달해요
-                """
-                # 1단계 실행
-                step1_result = (industry_structure_prompt | llm).invoke(input_data)
-                # 2단계 실행
-                step2_input = {
-                    "industry_structure_result": step1_result,
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step2_result = (market_trend_prompt | llm).invoke(step2_input)
-                # 3단계 실행
-                step3_input = {
-                    "market_trend_result": step2_result,
-                    "company_data": input_data["company_data"],
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step3_result = (competitor_analysis_prompt | llm).invoke(step3_input)
-                # 4단계 실행
-                step4_input = {
-                    "competitor_analysis_result": step3_result,
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step4_result = (regulatory_analysis_prompt | llm).invoke(step4_input)
-                # 5단계 실행
-                step5_input = {
-                    "regulatory_analysis_result": step4_result,
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step5_result = (risk_opportunity_prompt | llm).invoke(step5_input)
-                # 단계별 결과 dict로 반환
-                return {
-                    "step1_result": step1_result,
-                    "step2_result": step2_result,
-                    "step3_result": step3_result,
-                    "step4_result": step4_result,
-                    "step5_result": step5_result,
-                }
-
-            print(f"✅ {analyst.name} 5단계 LangChain 분석 체인 생성 완료!")
-            return industry_analysis_chain
+            print(f"✅ {analyst.name} LangChain Chain 생성 완료!")
+            return industry_chain
 
         except Exception as e:
             print(f"❌ {analyst.name} LangChain Chain 생성 실패: {e}")
@@ -2064,14 +1357,14 @@ class SectorTeamFactory:
         self, analyst: AnalystAgent, sector_name: str
     ) -> Any:
         """
-        기술적 분석가를 위한 LangChain 5단계 분석 Chain 생성 (순차 실행)
+        기술적 분석가를 위한 LangChain Chain 생성
 
         Args:
             analyst: 분석가 객체
             sector_name: 섹터 이름
 
         Returns:
-            Chain: 5단계 기술적 분석 RunnableSequence
+            Chain: 단일 단계 분석 Chain
         """
         try:
             # LLM 모델 설정 (OpenAI GPT-4o)
@@ -2081,15 +1374,15 @@ class SectorTeamFactory:
                 max_tokens=4000,
             )
 
-            # 1단계: 차트 패턴 분석 프롬프트
-            chart_pattern_prompt = PromptTemplate(
+            # 단일 단계: 종합 기술적 분석 프롬프트
+            technical_analysis_prompt = PromptTemplate(
                 input_variables=["price_data", "sector_name", "company_name"],
                 template="""
 당신은 {sector_name} 섹터 전문 기술적 분석가입니다.
 
-**1단계: 차트 패턴 분석**
+**종합 기술적 분석**
 
-제공된 가격 데이터를 바탕으로 기술적 지표를 분석하세요:
+제공된 가격 데이터를 바탕으로 종합적인 기술적 분석을 수행하세요:
 
 **입력 데이터:**
 {price_data}
@@ -2097,298 +1390,48 @@ class SectorTeamFactory:
 **회사명:** {company_name}
 
 **분석 요구사항:**
-1. 이동평균선 분석:
-   - 5일, 20일, 60일, 120일 이동평균선 배열 상태
-   - Golden Cross / Dead Cross 신호 확인
-   - 현재가와 이동평균선의 관계
+1. 차트 패턴 분석:
+   - 주요 차트 패턴 식별 (헤드앤숄더, 더블탑/바텀 등)
+   - 추세선과 채널 분석
+   - 지지선과 저항선 레벨 분석
 
-2. MACD/RSI 분석:
-   - MACD(12,26,9) 히스토그램 변화율
-   - Signal Line 교차 타이밍
-   - RSI(14) Divergence 패턴
-   - 과매수/과매도 구간 진입/이탈 시점
+2. 기술적 지표 분석:
+   - 이동평균선 분석 (20일, 60일, 200일)
+   - RSI, MACD, 스토캐스틱 등 오실레이터 분석
+   - 볼린저 밴드와 피벗 포인트 분석
 
-3. 볼린저 밴드 분석:
-   - 20일 이동평균 ±2표준편차
-   - 밴드폭 확장/수축 패턴
-   - 밴드 이탈 방향성
+3. 거래량 분석:
+   - 거래량 추세와 가격 변동의 관계
+   - 거래량 가중 평균가격(VWAP) 분석
+   - 거래량 프로파일 분석
 
-4. 캔들패턴 분석:
-   - Doji, Hammer, Engulfing 등 반전신호
-   - 주요 지지/저항 레벨에서의 패턴
+4. 섹터 상대강도 분석:
+   - 섹터 대비 상대적 성과 분석
+   - 섹터 내 순위와 강도 평가
+   - 섹터 로테이션 영향 분석
+
+5. 기술적 전망 및 투자 권고:
+   - 단기/중기 기술적 전망
+   - 주요 지지/저항 레벨과 목표가
+   - 매수/매도 시점 권고
 
 **출력 형식:**
-- 이동평균선 분석: [배열 상태와 신호 해석]
-- MACD/RSI 분석: [신호와 패턴 분석]
-- 볼린저 밴드 분석: [밴드 상태와 방향성]
-- 캔들패턴 분석: [주요 패턴과 의미]
+- 차트 패턴: [주요 패턴과 의미 분석]
+- 기술적 지표: [주요 지표별 신호 분석]
+- 거래량 분석: [거래량과 가격 관계 분석]
+- 섹터 비교: [섹터 대비 상대적 성과]
+- 기술적 전망: [단기/중기 전망과 목표가]
+- 투자 권고: [매수/매도 시점과 근거]
 
-모든 분석은 정량적 근거를 바탕으로 객관적으로 수행하세요.
+정량적 근거를 바탕으로 명확한 기술적 분석을 제시하세요.
 """,
             )
 
-            # 2단계: 지지/저항선 분석 프롬프트
-            support_resistance_prompt = PromptTemplate(
-                input_variables=[
-                    "chart_pattern_result",
-                    "price_data",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 기술적 분석가입니다.
+            # 단일 Chain 생성
+            technical_chain = technical_analysis_prompt | llm
 
-**2단계: 지지/저항선 분석**
-
-이전 단계의 차트 패턴 분석을 바탕으로 지지/저항선을 분석하세요:
-
-**차트 패턴 분석 결과:**
-{chart_pattern_result}
-
-**가격 데이터:**
-{price_data}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. 주요 지지/저항 레벨 식별:
-   - 과거 고점/저점 기반 주요 레벨
-   - 이동평균선 기반 지지/저항
-   - 볼린저 밴드 기반 레벨
-
-2. Fibonacci Retracement 분석:
-   - 38.2%, 50%, 61.8% 레벨 계산
-   - 주요 되돌림 구간 식별
-   - 다음 목표 레벨 예측
-
-3. 돌파/이탈 분석:
-   - 주요 레벨 돌파 여부
-   - 거래량 동반 여부
-   - False Breakout 위험도
-
-4. 목표가 산출:
-   - 측정이론 적용
-   - 다음 지지/저항 레벨까지의 거리
-
-**출력 형식:**
-- 주요 레벨 분석: [지지/저항 레벨과 의미]
-- Fibonacci 분석: [되돌림 레벨과 목표가]
-- 돌파 분석: [돌파 신호와 위험도]
-- 목표가 산출: [측정이론 기반 목표가]
-
-정량적 근거를 바탕으로 실용적인 분석을 제시하세요.
-""",
-            )
-
-            # 3단계: 거래량 분석 프롬프트
-            volume_analysis_prompt = PromptTemplate(
-                input_variables=[
-                    "support_resistance_result",
-                    "price_data",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 기술적 분석가입니다.
-
-**3단계: 거래량 분석**
-
-지지/저항선 분석을 바탕으로 거래량을 분석하세요:
-
-**지지/저항선 분석 결과:**
-{support_resistance_result}
-
-**가격 데이터:**
-{price_data}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. OBV (On-Balance Volume) 분석:
-   - OBV 추세와 가격 추세의 일치성
-   - OBV Divergence 패턴
-   - 누적/분산 신호
-
-2. Volume Profile 분석:
-   - 거래량 분포 패턴
-   - 고거래량 구간 식별
-   - 거래량 기반 지지/저항
-
-3. Price-Volume Relationship:
-   - 가격 변동과 거래량의 관계
-   - 거래량 동반 여부
-   - 신뢰도 평가
-
-4. 누적/분산 분석:
-   - Accumulation/Distribution Line
-   - 기관/개인 매매 패턴
-   - 시장 참여도 평가
-
-**출력 형식:**
-- OBV 분석: [추세와 신호 해석]
-- Volume Profile: [거래량 분포와 의미]
-- Price-Volume: [관계성과 신뢰도]
-- 누적/분산: [매매 패턴과 참여도]
-
-거래량 데이터를 활용한 객관적인 분석을 수행하세요.
-""",
-            )
-
-            # 4단계: 섹터 상대강도 분석 프롬프트
-            sector_strength_prompt = PromptTemplate(
-                input_variables=[
-                    "volume_analysis_result",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 기술적 분석가입니다.
-
-**4단계: 섹터 상대강도 분석**
-
-거래량 분석을 바탕으로 섹터 상대강도를 분석하세요:
-
-**거래량 분석 결과:**
-{volume_analysis_result}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. KOSPI 대비 상대강도 분석:
-   - 20일/60일 이동평균 대비 성과
-   - 상대강도 지수 (RSI) 계산
-   - 아웃퍼폼/언더퍼폼 판단
-
-2. 섹터 로테이션 분석:
-   - 섹터 모멘텀 지표
-   - 다른 섹터와의 상관관계
-   - 로테이션 타이밍
-
-3. 섹터 내 상대적 성과:
-   - 동종업계 대비 성과
-   - 섹터 내 순위
-   - 베타 계수 분석
-
-4. 시장 대비 성과:
-   - 전체 시장 대비 성과
-   - 리스크 대비 수익률
-   - 변동성 분석
-
-**출력 형식:**
-- KOSPI 대비 분석: [상대강도와 성과]
-- 섹터 로테이션: [모멘텀과 타이밍]
-- 섹터 내 성과: [순위와 베타]
-- 시장 대비 성과: [수익률과 리스크]
-
-섹터 특성을 반영한 종합적인 분석을 수행하세요.
-""",
-            )
-
-            # 5단계: 기술적 전망 및 매매 신호 분석 프롬프트
-            technical_outlook_prompt = PromptTemplate(
-                input_variables=[
-                    "sector_strength_result",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 기술적 분석가입니다.
-
-**5단계: 기술적 전망 및 매매 신호 종합 분석**
-
-모든 이전 분석을 종합하여 기술적 전망을 제시하세요:
-
-**섹터 상대강도 분석 결과:**
-{sector_strength_result}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. 단기 전망 (1주):
-   - 주요 기술적 지표 신호
-   - 단기 목표가와 손절가
-   - 주요 변곡점
-
-2. 중기 전망 (1개월):
-   - 추세 전환 가능성
-   - 중기 목표가
-   - 주요 이벤트 영향
-
-3. 장기 전망 (3개월):
-   - 장기 추세 방향
-   - 구조적 변화 가능성
-   - 장기 목표가
-
-4. 매매 신호 종합:
-   - 매수/매도/보유 신호
-   - 신호 강도와 신뢰도
-   - 리스크 관리 방안
-
-5. 핵심 변곡점:
-   - 주요 지지/저항 레벨
-   - 돌파/이탈 시점
-   - 트렌드 전환 신호
-
-**출력 형식:**
-- 단기 전망: [1주 전망과 신호]
-- 중기 전망: [1개월 전망과 목표가]
-- 장기 전망: [3개월 전망과 방향성]
-- 매매 신호: [종합 신호와 강도]
-- 변곡점: [주요 레벨과 타이밍]
-
-실용적이고 명확한 투자 의견을 제시하세요.
-""",
-            )
-
-            # 5단계 순차 실행 체인 (파이프와 람다로 직접 연결)
-            def technical_analysis_chain(input_data):
-                """
-                5단계 기술적 분석을 순차적으로 실행하는 함수에요
-                각 단계 결과를 dict로 누적해서 전달해요
-                """
-                # 1단계 실행
-                step1_result = (chart_pattern_prompt | llm).invoke(input_data)
-                # 2단계 실행
-                step2_input = {
-                    "chart_pattern_result": step1_result,
-                    "price_data": input_data["price_data"],
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step2_result = (support_resistance_prompt | llm).invoke(step2_input)
-                # 3단계 실행
-                step3_input = {
-                    "support_resistance_result": step2_result,
-                    "price_data": input_data["price_data"],
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step3_result = (volume_analysis_prompt | llm).invoke(step3_input)
-                # 4단계 실행
-                step4_input = {
-                    "volume_analysis_result": step3_result,
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step4_result = (sector_strength_prompt | llm).invoke(step4_input)
-                # 5단계 실행
-                step5_input = {
-                    "sector_strength_result": step4_result,
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step5_result = (technical_outlook_prompt | llm).invoke(step5_input)
-                # 단계별 결과 dict로 반환
-                return {
-                    "step1_result": step1_result,
-                    "step2_result": step2_result,
-                    "step3_result": step3_result,
-                    "step4_result": step4_result,
-                    "step5_result": step5_result,
-                }
-
-            print(f"✅ {analyst.name} 5단계 LangChain 분석 체인 생성 완료!")
-            return technical_analysis_chain
+            print(f"✅ {analyst.name} LangChain Chain 생성 완료!")
+            return technical_chain
 
         except Exception as e:
             print(f"❌ {analyst.name} LangChain Chain 생성 실패: {e}")
@@ -2398,14 +1441,14 @@ class SectorTeamFactory:
         self, analyst: AnalystAgent, sector_name: str
     ) -> Any:
         """
-        주석 전문가를 위한 LangChain 5단계 분석 Chain 생성 (순차 실행)
+        주석 전문가를 위한 LangChain Chain 생성
 
         Args:
             analyst: 분석가 객체
             sector_name: 섹터 이름
 
         Returns:
-            Chain: 5단계 주석 분석 RunnableSequence
+            Chain: 단일 단계 분석 Chain
         """
         try:
             # LLM 모델 설정 (OpenAI GPT-4o)
@@ -2415,15 +1458,15 @@ class SectorTeamFactory:
                 max_tokens=4000,
             )
 
-            # 1단계: 재무상태표 주석 분석 프롬프트
-            balance_sheet_footnote_prompt = PromptTemplate(
+            # 단일 단계: 종합 주석 분석 프롬프트
+            footnote_analysis_prompt = PromptTemplate(
                 input_variables=["financial_data", "sector_name", "company_name"],
                 template="""
 당신은 {sector_name} 섹터 전문 재무제표 주석 분석가입니다.
 
-**1단계: 재무상태표 주석 분석**
+**종합 재무제표 주석 분석**
 
-제공된 재무제표 주석 데이터를 바탕으로 재무상태표 관련 주석을 분석하세요:
+제공된 재무제표 주석 데이터를 바탕으로 종합적인 주석 분석을 수행하세요:
 
 **입력 데이터:**
 {financial_data}
@@ -2431,295 +1474,48 @@ class SectorTeamFactory:
 **회사명:** {company_name}
 
 **분석 요구사항:**
-1. 자산 분류 및 평가 주석:
-   - 유형자산의 감가상각 방법과 잔존가치
-   - 무형자산의 상각기간과 손상차손
-   - 금융상품의 분류 및 공정가치 평가
+1. 재무상태표 주석 분석:
+   - 자산 분류 및 평가 방법 분석
+   - 부채 구조와 만기 분석
+   - 자본 구성과 이익잉여금 분석
 
-2. 부채 분류 및 평가 주석:
-   - 유동부채와 비유동부채의 분류 기준
-   - 우발부채의 발생 가능성과 금액 추정
-   - 보증부채의 대상과 보증금액
+2. 손익계산서 주석 분석:
+   - 매출 인식 기준과 방법 분석
+   - 비용 분류와 처리 방법 분석
+   - 특별손익과 지속사업손익 분석
 
-3. 자본 구성 주석:
-   - 자본금 변동사항과 그 원인
-   - 자본잉여금의 성격과 발생원인
-   - 이익잉여금의 적립과 처분 내역
+3. 현금흐름표 주석 분석:
+   - 영업활동 현금흐름 분석
+   - 투자활동 현금흐름 분석
+   - 재무활동 현금흐름 분석
 
-4. 연결범위 주석:
-   - 연결대상 회사의 선정 기준
-   - 연결범위 변동사항과 그 영향
-   - 지배력 판단 기준과 적용
+4. 우발채무 및 보증채무 분석:
+   - 우발채무 규모와 성격 분석
+   - 보증채무 현황과 리스크 분석
+   - 잠재적 부채 노출도 평가
+
+5. 회계정책 및 추정사항 분석:
+   - 주요 회계정책 변경 영향 분석
+   - 추정사항의 불확실성 분석
+   - 감사의견과 관련 이슈 분석
 
 **출력 형식:**
-- 자산 분류 분석: [분류 기준과 평가 방법]
-- 부채 분류 분석: [부채 성격과 위험도]
-- 자본 구성 분석: [자본 구조와 변동사항]
-- 연결범위 분석: [연결 대상과 영향도]
+- 재무상태표 주석: [자산, 부채, 자본 분석]
+- 손익계산서 주석: [매출, 비용, 손익 분석]
+- 현금흐름표 주석: [현금흐름 구조 분석]
+- 우발채무 분석: [잠재적 부채 리스크]
+- 회계정책 분석: [정책 변경과 추정사항]
+- 종합 평가: [주석 관점에서의 재무상태 평가]
 
-모든 분석은 정량적 근거를 바탕으로 객관적으로 수행하세요.
+정량적 근거를 바탕으로 명확한 주석 분석을 제시하세요.
 """,
             )
 
-            # 2단계: 손익계산서 주석 분석 프롬프트
-            income_statement_footnote_prompt = PromptTemplate(
-                input_variables=[
-                    "balance_sheet_result",
-                    "financial_data",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 재무제표 주석 분석가입니다.
+            # 단일 Chain 생성
+            footnote_chain = footnote_analysis_prompt | llm
 
-**2단계: 손익계산서 주석 분석**
-
-이전 단계의 재무상태표 주석 분석을 바탕으로 손익계산서 주석을 분석하세요:
-
-**재무상태표 주석 분석 결과:**
-{balance_sheet_result}
-
-**재무 데이터:**
-{financial_data}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. 매출 인식 주석:
-   - 매출 인식 기준과 시점
-   - 장기공사 수익 인식 방법
-   - 반품 및 할인 정책
-
-2. 원가 분류 주석:
-   - 제조원가와 판매관리비 분류 기준
-   - 고정비와 변동비 구분
-   - 원가 배분 방법
-
-3. 특별손익 주석:
-   - 영업외수익/비용의 성격
-   - 일회성 손익의 발생 원인
-   - 특별손익의 재발 가능성
-
-4. 세금 주석:
-   - 법인세율과 유효세율 차이
-   - 이연법인세자산/부채의 성격
-   - 세금계산서와 재무제표 차이
-
-**출력 형식:**
-- 매출 인식 분석: [인식 기준과 품질]
-- 원가 분류 분석: [분류 기준과 일관성]
-- 특별손익 분석: [일회성 요인과 영향]
-- 세금 분석: [세율 차이와 원인]
-
-정량적 근거를 바탕으로 실용적인 분석을 제시하세요.
-""",
-            )
-
-            # 3단계: 현금흐름표 주석 분석 프롬프트
-            cash_flow_footnote_prompt = PromptTemplate(
-                input_variables=[
-                    "income_statement_result",
-                    "financial_data",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 재무제표 주석 분석가입니다.
-
-**3단계: 현금흐름표 주석 분석**
-
-손익계산서 주석 분석을 바탕으로 현금흐름표 주석을 분석하세요:
-
-**손익계산서 주석 분석 결과:**
-{income_statement_result}
-
-**재무 데이터:**
-{financial_data}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. 영업활동 현금흐름 주석:
-   - 순이익과 영업현금흐름 차이 원인
-   - 운전자본 변동 요인
-   - 현금흐름 품질 지표
-
-2. 투자활동 현금흐름 주석:
-   - 유형자산 투자 내역과 계획
-   - 무형자산 투자 성격
-   - 투자활동 현금흐름 지속성
-
-3. 재무활동 현금흐름 주석:
-   - 자금조달 방법과 비용
-   - 배당정책과 현금배당
-   - 부채 상환 계획
-
-4. 현금 및 현금성자산 주석:
-   - 현금성자산 분류 기준
-   - 제한된 현금의 용도
-   - 외화 현금의 환율 영향
-
-**출력 형식:**
-- 영업현금흐름 분석: [현금흐름 품질과 지속성]
-- 투자현금흐름 분석: [투자 규모와 방향성]
-- 재무현금흐름 분석: [자금조달과 배당정책]
-- 현금성자산 분석: [현금 보유와 제한사항]
-
-현금흐름 데이터를 활용한 객관적인 분석을 수행하세요.
-""",
-            )
-
-            # 4단계: 우발부채 및 보증부채 분석 프롬프트
-            contingent_liability_prompt = PromptTemplate(
-                input_variables=[
-                    "cash_flow_result",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 재무제표 주석 분석가입니다.
-
-**4단계: 우발부채 및 보증부채 분석**
-
-현금흐름표 주석 분석을 바탕으로 우발부채와 보증부채를 분석하세요:
-
-**현금흐름표 주석 분석 결과:**
-{cash_flow_result}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. 우발부채 분석:
-   - 소송사건의 진행상황과 예상 결과
-   - 환경오염 관련 부담 가능성
-   - 제품보증 부채의 추정 금액
-
-2. 보증부채 분석:
-   - 보증 대상과 보증금액
-   - 보증 기간과 조건
-   - 보증 실행 가능성
-
-3. 리스 및 임차 계약 분석:
-   - 리스부채의 미래 현금흐름
-   - 임차 계약의 의무사항
-   - 계약 해지 시 영향
-
-4. 파생상품 분석:
-   - 파생상품 거래 목적과 규모
-   - 공정가치 변동의 영향
-   - 헤지 효과성 평가
-
-**출력 형식:**
-- 우발부채 분석: [발생 가능성과 금액]
-- 보증부채 분석: [보증 대상과 위험도]
-- 리스 분석: [미래 현금흐름 영향]
-- 파생상품 분석: [거래 목적과 위험]
-
-섹터 특성을 반영한 종합적인 분석을 수행하세요.
-""",
-            )
-
-            # 5단계: 회계정책 및 위험요소 종합 분석 프롬프트
-            accounting_policy_prompt = PromptTemplate(
-                input_variables=[
-                    "contingent_liability_result",
-                    "sector_name",
-                    "company_name",
-                ],
-                template="""
-당신은 {sector_name} 섹터 전문 재무제표 주석 분석가입니다.
-
-**5단계: 회계정책 및 위험요소 종합 분석**
-
-모든 이전 분석을 종합하여 회계정책과 숨겨진 위험요소를 분석하세요:
-
-**우발부채 및 보증부채 분석 결과:**
-{contingent_liability_result}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. 회계정책 변경 영향:
-   - 회계정책 변경 사유와 시점
-   - 변경이 재무성과에 미치는 영향
-   - 비교가능성 훼손 정도
-
-2. 숨겨진 위험요소:
-   - 재무제표 본문에 미반영된 위험
-   - 주석에만 나타나는 잠재적 부채
-   - 향후 재무성과에 미칠 영향
-
-3. 투자자 주의사항:
-   - 주석 분석 시 중점 확인 사항
-   - 재무제표 해석 시 주의점
-   - 추가 정보 필요 사항
-
-4. 종합 평가:
-   - 주석 분석 결과의 투자 의의
-   - 재무제표 신뢰성 평가
-   - 향후 모니터링 포인트
-
-**출력 형식:**
-- 회계정책 분석: [변경 영향과 일관성]
-- 숨겨진 위험: [잠재적 부채와 영향]
-- 투자자 주의: [중점 확인 사항]
-- 종합 평가: [신뢰성과 투자 의의]
-
-실용적이고 명확한 투자 의견을 제시하세요.
-""",
-            )
-
-            # 5단계 순차 실행 체인 (파이프와 람다로 직접 연결)
-            def footnote_analysis_chain(input_data):
-                """
-                5단계 주석 분석을 순차적으로 실행하는 함수에요
-                각 단계 결과를 dict로 누적해서 전달해요
-                """
-                # 1단계 실행
-                step1_result = (balance_sheet_footnote_prompt | llm).invoke(input_data)
-                # 2단계 실행
-                step2_input = {
-                    "balance_sheet_result": step1_result,
-                    "financial_data": input_data["financial_data"],
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step2_result = (income_statement_footnote_prompt | llm).invoke(
-                    step2_input
-                )
-                # 3단계 실행
-                step3_input = {
-                    "income_statement_result": step2_result,
-                    "financial_data": input_data["financial_data"],
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step3_result = (cash_flow_footnote_prompt | llm).invoke(step3_input)
-                # 4단계 실행
-                step4_input = {
-                    "cash_flow_result": step3_result,
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step4_result = (contingent_liability_prompt | llm).invoke(step4_input)
-                # 5단계 실행
-                step5_input = {
-                    "contingent_liability_result": step4_result,
-                    "sector_name": input_data["sector_name"],
-                    "company_name": input_data["company_name"],
-                }
-                step5_result = (accounting_policy_prompt | llm).invoke(step5_input)
-                # 단계별 결과 dict로 반환
-                return {
-                    "step1_result": step1_result,
-                    "step2_result": step2_result,
-                    "step3_result": step3_result,
-                    "step4_result": step4_result,
-                    "step5_result": step5_result,
-                }
-
-            print(f"✅ {analyst.name} 5단계 LangChain 분석 체인 생성 완료!")
-            return footnote_analysis_chain
+            print(f"✅ {analyst.name} LangChain Chain 생성 완료!")
+            return footnote_chain
 
         except Exception as e:
             print(f"❌ {analyst.name} LangChain Chain 생성 실패: {e}")

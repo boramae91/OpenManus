@@ -1,0 +1,1953 @@
+{
+  "test_timestamp": "2025-07-02T09:10:49.948791",
+  "total_sectors_tested": 11,
+  "sector_results": {
+    "ENERGY": {
+      "team_name": "에너지 섹터 전문 분석팀",
+      "sector_name": "ENERGY",
+      "expert_count": 6,
+      "expert_results": {
+        "Fundamental Analyst": {
+          "basic_info": {
+            "name": "에너지 펀더멘털 분석가",
+            "role": "Fundamental Analyst",
+            "expertise": "재무제표 분석, 기업가치 평가, 수익성 분석",
+            "analysis_focus": "에너지 섹터의 재무 건전성과 성장성 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.02099919319152832,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Technical Analyst": {
+          "basic_info": {
+            "name": "에너지 기술적 분석가",
+            "role": "Technical Analyst",
+            "expertise": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+            "analysis_focus": "에너지 섹터의 가격 움직임과 매매 신호 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Industry Expert": {
+          "basic_info": {
+            "name": "에너지 산업 전문가",
+            "role": "Industry Expert",
+            "expertise": "산업 분석, 경쟁 구조 분석, 트렌드 예측",
+            "analysis_focus": "에너지 산업의 구조적 변화와 성장 동력 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Valuation Specialist": {
+          "basic_info": {
+            "name": "에너지 밸류에이션 전문가",
+            "role": "Valuation Specialist",
+            "expertise": "기업가치 평가, 적정주가 산정, 투자지표 분석",
+            "analysis_focus": "에너지 기업의 내재가치와 투자 매력도 평가"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Risk Assessor": {
+          "basic_info": {
+            "name": "에너지 리스크 평가자",
+            "role": "Risk Assessor",
+            "expertise": "위험 요소 분석, 시나리오 분석, 리스크 관리",
+            "analysis_focus": "에너지 투자의 주요 리스크와 대응 전략 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0014576911926269531,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Financial Statement Footnote Specialist": {
+          "basic_info": {
+            "name": "에너지 재무제표 주석 전문가",
+            "role": "Financial Statement Footnote Specialist",
+            "expertise": "재무제표 주석(footnote) 분석, 재무상태표 주석 해석, 숨겨진 재무정보 발굴",
+            "analysis_focus": "에너지 기업의 재무제표 주석(footnote)에 숨겨진 중요 재무정보와 위험요소를 전문적으로 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        }
+      },
+      "status": "success"
+    },
+    "MATERIALS": {
+      "team_name": "소재 섹터 전문 분석팀",
+      "sector_name": "MATERIALS",
+      "expert_count": 6,
+      "expert_results": {
+        "Fundamental Analyst": {
+          "basic_info": {
+            "name": "소재 펀더멘털 분석가",
+            "role": "Fundamental Analyst",
+            "expertise": "재무제표 분석, 기업가치 평가, 수익성 분석",
+            "analysis_focus": "소재 섹터의 재무 건전성과 성장성 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.002001523971557617,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Technical Analyst": {
+          "basic_info": {
+            "name": "소재 기술적 분석가",
+            "role": "Technical Analyst",
+            "expertise": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+            "analysis_focus": "소재 섹터의 가격 움직임과 매매 신호 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Industry Expert": {
+          "basic_info": {
+            "name": "소재 산업 전문가",
+            "role": "Industry Expert",
+            "expertise": "산업 분석, 경쟁 구조 분석, 트렌드 예측",
+            "analysis_focus": "소재 산업의 구조적 변화와 성장 동력 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0009996891021728516,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Valuation Specialist": {
+          "basic_info": {
+            "name": "소재 밸류에이션 전문가",
+            "role": "Valuation Specialist",
+            "expertise": "기업가치 평가, 적정주가 산정, 투자지표 분석",
+            "analysis_focus": "소재 기업의 내재가치와 투자 매력도 평가"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Risk Assessor": {
+          "basic_info": {
+            "name": "소재 리스크 평가자",
+            "role": "Risk Assessor",
+            "expertise": "위험 요소 분석, 시나리오 분석, 리스크 관리",
+            "analysis_focus": "소재 투자의 주요 리스크와 대응 전략 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Financial Statement Footnote Specialist": {
+          "basic_info": {
+            "name": "소재 재무제표 주석 전문가",
+            "role": "Financial Statement Footnote Specialist",
+            "expertise": "재무제표 주석(footnote) 분석, 재무상태표 주석 해석, 숨겨진 재무정보 발굴",
+            "analysis_focus": "소재 기업의 재무제표 주석(footnote)에 숨겨진 중요 재무정보와 위험요소를 전문적으로 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0009992122650146484,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        }
+      },
+      "status": "success"
+    },
+    "INDUSTRIALS": {
+      "team_name": "산업재 섹터 전문 분석팀",
+      "sector_name": "INDUSTRIALS",
+      "expert_count": 6,
+      "expert_results": {
+        "Fundamental Analyst": {
+          "basic_info": {
+            "name": "산업재 펀더멘털 분석가",
+            "role": "Fundamental Analyst",
+            "expertise": "재무제표 분석, 기업가치 평가, 수익성 분석",
+            "analysis_focus": "산업재 섹터의 재무 건전성과 성장성 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0010113716125488281,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Technical Analyst": {
+          "basic_info": {
+            "name": "산업재 기술적 분석가",
+            "role": "Technical Analyst",
+            "expertise": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+            "analysis_focus": "산업재 섹터의 가격 움직임과 매매 신호 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Industry Expert": {
+          "basic_info": {
+            "name": "산업재 산업 전문가",
+            "role": "Industry Expert",
+            "expertise": "산업 분석, 경쟁 구조 분석, 트렌드 예측",
+            "analysis_focus": "산업재 산업의 구조적 변화와 성장 동력 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Valuation Specialist": {
+          "basic_info": {
+            "name": "산업재 밸류에이션 전문가",
+            "role": "Valuation Specialist",
+            "expertise": "기업가치 평가, 적정주가 산정, 투자지표 분석",
+            "analysis_focus": "산업재 기업의 내재가치와 투자 매력도 평가"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Risk Assessor": {
+          "basic_info": {
+            "name": "산업재 리스크 평가자",
+            "role": "Risk Assessor",
+            "expertise": "위험 요소 분석, 시나리오 분석, 리스크 관리",
+            "analysis_focus": "산업재 투자의 주요 리스크와 대응 전략 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Financial Statement Footnote Specialist": {
+          "basic_info": {
+            "name": "산업재 재무제표 주석 전문가",
+            "role": "Financial Statement Footnote Specialist",
+            "expertise": "재무제표 주석(footnote) 분석, 재무상태표 주석 해석, 숨겨진 재무정보 발굴",
+            "analysis_focus": "산업재 기업의 재무제표 주석(footnote)에 숨겨진 중요 재무정보와 위험요소를 전문적으로 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        }
+      },
+      "status": "success"
+    },
+    "CONSUMER_DISCRETIONARY": {
+      "team_name": "임의소비재 섹터 전문 분석팀",
+      "sector_name": "CONSUMER_DISCRETIONARY",
+      "expert_count": 6,
+      "expert_results": {
+        "Fundamental Analyst": {
+          "basic_info": {
+            "name": "임의소비재 펀더멘털 분석가",
+            "role": "Fundamental Analyst",
+            "expertise": "재무제표 분석, 기업가치 평가, 수익성 분석",
+            "analysis_focus": "임의소비재 섹터의 재무 건전성과 성장성 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0019927024841308594,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Technical Analyst": {
+          "basic_info": {
+            "name": "임의소비재 기술적 분석가",
+            "role": "Technical Analyst",
+            "expertise": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+            "analysis_focus": "임의소비재 섹터의 가격 움직임과 매매 신호 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Industry Expert": {
+          "basic_info": {
+            "name": "임의소비재 산업 전문가",
+            "role": "Industry Expert",
+            "expertise": "산업 분석, 경쟁 구조 분석, 트렌드 예측",
+            "analysis_focus": "임의소비재 산업의 구조적 변화와 성장 동력 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0009982585906982422,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Valuation Specialist": {
+          "basic_info": {
+            "name": "임의소비재 밸류에이션 전문가",
+            "role": "Valuation Specialist",
+            "expertise": "기업가치 평가, 적정주가 산정, 투자지표 분석",
+            "analysis_focus": "임의소비재 기업의 내재가치와 투자 매력도 평가"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Risk Assessor": {
+          "basic_info": {
+            "name": "임의소비재 리스크 평가자",
+            "role": "Risk Assessor",
+            "expertise": "위험 요소 분석, 시나리오 분석, 리스크 관리",
+            "analysis_focus": "임의소비재 투자의 주요 리스크와 대응 전략 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Financial Statement Footnote Specialist": {
+          "basic_info": {
+            "name": "임의소비재 재무제표 주석 전문가",
+            "role": "Financial Statement Footnote Specialist",
+            "expertise": "재무제표 주석(footnote) 분석, 재무상태표 주석 해석, 숨겨진 재무정보 발굴",
+            "analysis_focus": "임의소비재 기업의 재무제표 주석(footnote)에 숨겨진 중요 재무정보와 위험요소를 전문적으로 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        }
+      },
+      "status": "success"
+    },
+    "CONSUMER_STAPLES": {
+      "team_name": "필수소비재 섹터 전문 분석팀",
+      "sector_name": "CONSUMER_STAPLES",
+      "expert_count": 6,
+      "expert_results": {
+        "Fundamental Analyst": {
+          "basic_info": {
+            "name": "필수소비재 펀더멘털 분석가",
+            "role": "Fundamental Analyst",
+            "expertise": "재무제표 분석, 기업가치 평가, 수익성 분석",
+            "analysis_focus": "필수소비재 섹터의 재무 건전성과 성장성 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0010068416595458984,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Technical Analyst": {
+          "basic_info": {
+            "name": "필수소비재 기술적 분석가",
+            "role": "Technical Analyst",
+            "expertise": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+            "analysis_focus": "필수소비재 섹터의 가격 움직임과 매매 신호 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Industry Expert": {
+          "basic_info": {
+            "name": "필수소비재 산업 전문가",
+            "role": "Industry Expert",
+            "expertise": "산업 분석, 경쟁 구조 분석, 트렌드 예측",
+            "analysis_focus": "필수소비재 산업의 구조적 변화와 성장 동력 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Valuation Specialist": {
+          "basic_info": {
+            "name": "필수소비재 밸류에이션 전문가",
+            "role": "Valuation Specialist",
+            "expertise": "기업가치 평가, 적정주가 산정, 투자지표 분석",
+            "analysis_focus": "필수소비재 기업의 내재가치와 투자 매력도 평가"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Risk Assessor": {
+          "basic_info": {
+            "name": "필수소비재 리스크 평가자",
+            "role": "Risk Assessor",
+            "expertise": "위험 요소 분석, 시나리오 분석, 리스크 관리",
+            "analysis_focus": "필수소비재 투자의 주요 리스크와 대응 전략 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Financial Statement Footnote Specialist": {
+          "basic_info": {
+            "name": "필수소비재 재무제표 주석 전문가",
+            "role": "Financial Statement Footnote Specialist",
+            "expertise": "재무제표 주석(footnote) 분석, 재무상태표 주석 해석, 숨겨진 재무정보 발굴",
+            "analysis_focus": "필수소비재 기업의 재무제표 주석(footnote)에 숨겨진 중요 재무정보와 위험요소를 전문적으로 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        }
+      },
+      "status": "success"
+    },
+    "HEALTH_CARE": {
+      "team_name": "헬스케어 섹터 전문 분석팀",
+      "sector_name": "HEALTH_CARE",
+      "expert_count": 6,
+      "expert_results": {
+        "Fundamental Analyst": {
+          "basic_info": {
+            "name": "헬스케어 펀더멘털 분석가",
+            "role": "Fundamental Analyst",
+            "expertise": "재무제표 분석, 기업가치 평가, 수익성 분석",
+            "analysis_focus": "헬스케어 섹터의 재무 건전성과 성장성 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0010027885437011719,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Technical Analyst": {
+          "basic_info": {
+            "name": "헬스케어 기술적 분석가",
+            "role": "Technical Analyst",
+            "expertise": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+            "analysis_focus": "헬스케어 섹터의 가격 움직임과 매매 신호 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Industry Expert": {
+          "basic_info": {
+            "name": "헬스케어 산업 전문가",
+            "role": "Industry Expert",
+            "expertise": "산업 분석, 경쟁 구조 분석, 트렌드 예측",
+            "analysis_focus": "헬스케어 산업의 구조적 변화와 성장 동력 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Valuation Specialist": {
+          "basic_info": {
+            "name": "헬스케어 밸류에이션 전문가",
+            "role": "Valuation Specialist",
+            "expertise": "기업가치 평가, 적정주가 산정, 투자지표 분석",
+            "analysis_focus": "헬스케어 기업의 내재가치와 투자 매력도 평가"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0010008811950683594,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Risk Assessor": {
+          "basic_info": {
+            "name": "헬스케어 리스크 평가자",
+            "role": "Risk Assessor",
+            "expertise": "위험 요소 분석, 시나리오 분석, 리스크 관리",
+            "analysis_focus": "헬스케어 투자의 주요 리스크와 대응 전략 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Financial Statement Footnote Specialist": {
+          "basic_info": {
+            "name": "헬스케어 재무제표 주석 전문가",
+            "role": "Financial Statement Footnote Specialist",
+            "expertise": "재무제표 주석(footnote) 분석, 재무상태표 주석 해석, 숨겨진 재무정보 발굴",
+            "analysis_focus": "헬스케어 기업의 재무제표 주석(footnote)에 숨겨진 중요 재무정보와 위험요소를 전문적으로 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        }
+      },
+      "status": "success"
+    },
+    "FINANCIALS": {
+      "team_name": "금융 섹터 전문 분석팀",
+      "sector_name": "FINANCIALS",
+      "expert_count": 6,
+      "expert_results": {
+        "Fundamental Analyst": {
+          "basic_info": {
+            "name": "금융 펀더멘털 분석가",
+            "role": "Fundamental Analyst",
+            "expertise": "재무제표 분석, 기업가치 평가, 수익성 분석",
+            "analysis_focus": "금융 섹터의 재무 건전성과 성장성 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.00500035285949707,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Technical Analyst": {
+          "basic_info": {
+            "name": "금융 기술적 분석가",
+            "role": "Technical Analyst",
+            "expertise": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+            "analysis_focus": "금융 섹터의 가격 움직임과 매매 신호 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.00099945068359375,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Industry Expert": {
+          "basic_info": {
+            "name": "금융 산업 전문가",
+            "role": "Industry Expert",
+            "expertise": "산업 분석, 경쟁 구조 분석, 트렌드 예측",
+            "analysis_focus": "금융 산업의 구조적 변화와 성장 동력 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0010128021240234375,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Valuation Specialist": {
+          "basic_info": {
+            "name": "금융 밸류에이션 전문가",
+            "role": "Valuation Specialist",
+            "expertise": "기업가치 평가, 적정주가 산정, 투자지표 분석",
+            "analysis_focus": "금융 기업의 내재가치와 투자 매력도 평가"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0009996891021728516,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Risk Assessor": {
+          "basic_info": {
+            "name": "금융 리스크 평가자",
+            "role": "Risk Assessor",
+            "expertise": "위험 요소 분석, 시나리오 분석, 리스크 관리",
+            "analysis_focus": "금융 투자의 주요 리스크와 대응 전략 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0013282299041748047,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Financial Statement Footnote Specialist": {
+          "basic_info": {
+            "name": "금융 재무제표 주석 전문가",
+            "role": "Financial Statement Footnote Specialist",
+            "expertise": "재무제표 주석(footnote) 분석, 재무상태표 주석 해석, 숨겨진 재무정보 발굴",
+            "analysis_focus": "금융 기업의 재무제표 주석(footnote)에 숨겨진 중요 재무정보와 위험요소를 전문적으로 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.003012418746948242,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        }
+      },
+      "status": "success"
+    },
+    "INFORMATION_TECHNOLOGY": {
+      "team_name": "정보기술 섹터 전문 분석팀",
+      "sector_name": "INFORMATION_TECHNOLOGY",
+      "expert_count": 6,
+      "expert_results": {
+        "Fundamental Analyst": {
+          "basic_info": {
+            "name": "정보기술 펀더멘털 분석가",
+            "role": "Fundamental Analyst",
+            "expertise": "재무제표 분석, 기업가치 평가, 수익성 분석",
+            "analysis_focus": "정보기술 섹터의 재무 건전성과 성장성 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0009925365447998047,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Technical Analyst": {
+          "basic_info": {
+            "name": "정보기술 기술적 분석가",
+            "role": "Technical Analyst",
+            "expertise": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+            "analysis_focus": "정보기술 섹터의 가격 움직임과 매매 신호 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Industry Expert": {
+          "basic_info": {
+            "name": "정보기술 산업 전문가",
+            "role": "Industry Expert",
+            "expertise": "산업 분석, 경쟁 구조 분석, 트렌드 예측",
+            "analysis_focus": "정보기술 산업의 구조적 변화와 성장 동력 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Valuation Specialist": {
+          "basic_info": {
+            "name": "정보기술 밸류에이션 전문가",
+            "role": "Valuation Specialist",
+            "expertise": "기업가치 평가, 적정주가 산정, 투자지표 분석",
+            "analysis_focus": "정보기술 기업의 내재가치와 투자 매력도 평가"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Risk Assessor": {
+          "basic_info": {
+            "name": "정보기술 리스크 평가자",
+            "role": "Risk Assessor",
+            "expertise": "위험 요소 분석, 시나리오 분석, 리스크 관리",
+            "analysis_focus": "정보기술 투자의 주요 리스크와 대응 전략 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Financial Statement Footnote Specialist": {
+          "basic_info": {
+            "name": "정보기술 재무제표 주석 전문가",
+            "role": "Financial Statement Footnote Specialist",
+            "expertise": "재무제표 주석(footnote) 분석, 재무상태표 주석 해석, 숨겨진 재무정보 발굴",
+            "analysis_focus": "정보기술 기업의 재무제표 주석(footnote)에 숨겨진 중요 재무정보와 위험요소를 전문적으로 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        }
+      },
+      "status": "success"
+    },
+    "COMMUNICATION_SERVICES": {
+      "team_name": "커뮤니케이션서비스 섹터 전문 분석팀",
+      "sector_name": "COMMUNICATION_SERVICES",
+      "expert_count": 6,
+      "expert_results": {
+        "Fundamental Analyst": {
+          "basic_info": {
+            "name": "커뮤니케이션서비스 펀더멘털 분석가",
+            "role": "Fundamental Analyst",
+            "expertise": "재무제표 분석, 기업가치 평가, 수익성 분석",
+            "analysis_focus": "커뮤니케이션서비스 섹터의 재무 건전성과 성장성 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.009517669677734375,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Technical Analyst": {
+          "basic_info": {
+            "name": "커뮤니케이션서비스 기술적 분석가",
+            "role": "Technical Analyst",
+            "expertise": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+            "analysis_focus": "커뮤니케이션서비스 섹터의 가격 움직임과 매매 신호 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0020008087158203125,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Industry Expert": {
+          "basic_info": {
+            "name": "커뮤니케이션서비스 산업 전문가",
+            "role": "Industry Expert",
+            "expertise": "산업 분석, 경쟁 구조 분석, 트렌드 예측",
+            "analysis_focus": "커뮤니케이션서비스 산업의 구조적 변화와 성장 동력 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0010006427764892578,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Valuation Specialist": {
+          "basic_info": {
+            "name": "커뮤니케이션서비스 밸류에이션 전문가",
+            "role": "Valuation Specialist",
+            "expertise": "기업가치 평가, 적정주가 산정, 투자지표 분석",
+            "analysis_focus": "커뮤니케이션서비스 기업의 내재가치와 투자 매력도 평가"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Risk Assessor": {
+          "basic_info": {
+            "name": "커뮤니케이션서비스 리스크 평가자",
+            "role": "Risk Assessor",
+            "expertise": "위험 요소 분석, 시나리오 분석, 리스크 관리",
+            "analysis_focus": "커뮤니케이션서비스 투자의 주요 리스크와 대응 전략 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.002056598663330078,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Financial Statement Footnote Specialist": {
+          "basic_info": {
+            "name": "커뮤니케이션서비스 재무제표 주석 전문가",
+            "role": "Financial Statement Footnote Specialist",
+            "expertise": "재무제표 주석(footnote) 분석, 재무상태표 주석 해석, 숨겨진 재무정보 발굴",
+            "analysis_focus": "커뮤니케이션서비스 기업의 재무제표 주석(footnote)에 숨겨진 중요 재무정보와 위험요소를 전문적으로 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.000997781753540039,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        }
+      },
+      "status": "success"
+    },
+    "UTILITIES": {
+      "team_name": "유틸리티 섹터 전문 분석팀",
+      "sector_name": "UTILITIES",
+      "expert_count": 6,
+      "expert_results": {
+        "Fundamental Analyst": {
+          "basic_info": {
+            "name": "유틸리티 펀더멘털 분석가",
+            "role": "Fundamental Analyst",
+            "expertise": "재무제표 분석, 기업가치 평가, 수익성 분석",
+            "analysis_focus": "유틸리티 섹터의 재무 건전성과 성장성 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.001010894775390625,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Technical Analyst": {
+          "basic_info": {
+            "name": "유틸리티 기술적 분석가",
+            "role": "Technical Analyst",
+            "expertise": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+            "analysis_focus": "유틸리티 섹터의 가격 움직임과 매매 신호 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Industry Expert": {
+          "basic_info": {
+            "name": "유틸리티 산업 전문가",
+            "role": "Industry Expert",
+            "expertise": "산업 분석, 경쟁 구조 분석, 트렌드 예측",
+            "analysis_focus": "유틸리티 산업의 구조적 변화와 성장 동력 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Valuation Specialist": {
+          "basic_info": {
+            "name": "유틸리티 밸류에이션 전문가",
+            "role": "Valuation Specialist",
+            "expertise": "기업가치 평가, 적정주가 산정, 투자지표 분석",
+            "analysis_focus": "유틸리티 기업의 내재가치와 투자 매력도 평가"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Risk Assessor": {
+          "basic_info": {
+            "name": "유틸리티 리스크 평가자",
+            "role": "Risk Assessor",
+            "expertise": "위험 요소 분석, 시나리오 분석, 리스크 관리",
+            "analysis_focus": "유틸리티 투자의 주요 리스크와 대응 전략 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0010037422180175781,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Financial Statement Footnote Specialist": {
+          "basic_info": {
+            "name": "유틸리티 재무제표 주석 전문가",
+            "role": "Financial Statement Footnote Specialist",
+            "expertise": "재무제표 주석(footnote) 분석, 재무상태표 주석 해석, 숨겨진 재무정보 발굴",
+            "analysis_focus": "유틸리티 기업의 재무제표 주석(footnote)에 숨겨진 중요 재무정보와 위험요소를 전문적으로 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        }
+      },
+      "status": "success"
+    },
+    "REAL_ESTATE": {
+      "team_name": "부동산 섹터 전문 분석팀",
+      "sector_name": "REAL_ESTATE",
+      "expert_count": 6,
+      "expert_results": {
+        "Fundamental Analyst": {
+          "basic_info": {
+            "name": "부동산 펀더멘털 분석가",
+            "role": "Fundamental Analyst",
+            "expertise": "재무제표 분석, 기업가치 평가, 수익성 분석",
+            "analysis_focus": "부동산 섹터의 재무 건전성과 성장성 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.003997325897216797,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Technical Analyst": {
+          "basic_info": {
+            "name": "부동산 기술적 분석가",
+            "role": "Technical Analyst",
+            "expertise": "차트 패턴 분석, 기술적 지표 해석, 시장 심리 분석",
+            "analysis_focus": "부동산 섹터의 가격 움직임과 매매 신호 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Industry Expert": {
+          "basic_info": {
+            "name": "부동산 산업 전문가",
+            "role": "Industry Expert",
+            "expertise": "산업 분석, 경쟁 구조 분석, 트렌드 예측",
+            "analysis_focus": "부동산 산업의 구조적 변화와 성장 동력 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.001001119613647461,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Valuation Specialist": {
+          "basic_info": {
+            "name": "부동산 밸류에이션 전문가",
+            "role": "Valuation Specialist",
+            "expertise": "기업가치 평가, 적정주가 산정, 투자지표 분석",
+            "analysis_focus": "부동산 기업의 내재가치와 투자 매력도 평가"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Risk Assessor": {
+          "basic_info": {
+            "name": "부동산 리스크 평가자",
+            "role": "Risk Assessor",
+            "expertise": "위험 요소 분석, 시나리오 분석, 리스크 관리",
+            "analysis_focus": "부동산 투자의 주요 리스크와 대응 전략 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        },
+        "Financial Statement Footnote Specialist": {
+          "basic_info": {
+            "name": "부동산 재무제표 주석 전문가",
+            "role": "Financial Statement Footnote Specialist",
+            "expertise": "재무제표 주석(footnote) 분석, 재무상태표 주석 해석, 숨겨진 재무정보 발굴",
+            "analysis_focus": "부동산 기업의 재무제표 주석(footnote)에 숨겨진 중요 재무정보와 위험요소를 전문적으로 분석"
+          },
+          "langchain_status": {
+            "enabled": true,
+            "chain_exists": true,
+            "memory_exists": true
+          },
+          "analysis_result": {
+            "success": true,
+            "analysis_time": 0.0,
+            "result_keys": [
+              "timestamp",
+              "input_data",
+              "result",
+              "analysis_time",
+              "agent_name",
+              "role",
+              "method"
+            ],
+            "has_error": false
+          },
+          "status": "success"
+        }
+      },
+      "status": "success"
+    }
+  },
+  "communication_results": {
+    "error": "'GICSSectorManager' object has no attribute 'get_sector_by_name'",
+    "collaboration_success": false
+  },
+  "summary": {
+    "total_experts": 66,
+    "successful_experts": 66,
+    "failed_experts": 0,
+    "success_rate": 100.0,
+    "communication_success": false
+  }
+}

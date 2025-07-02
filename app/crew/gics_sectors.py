@@ -186,7 +186,7 @@ class GICSSectorManager:
         섹터의 한국어 이름을 가져와요
 
         Args:
-            sector: GICS 섹터
+            sector: GICSSector
 
         Returns:
             str: 섹터 한국어 이름
@@ -205,6 +205,93 @@ class GICSSectorManager:
             GICSSector.REAL_ESTATE: "부동산",
         }
         return korean_names.get(sector, sector.name)
+
+    def get_sector_by_name(self, sector_name: str) -> GICSSector:
+        """
+        섹터 이름으로 GICSSector를 찾아요
+
+        Args:
+            sector_name: 섹터 이름 (영어 또는 한국어)
+
+        Returns:
+            GICSSector: 해당하는 섹터
+
+        Raises:
+            ValueError: 해당하는 섹터를 찾을 수 없을 때
+        """
+        # 영어 이름으로 매핑
+        english_to_sector = {
+            "ENERGY": GICSSector.ENERGY,
+            "MATERIALS": GICSSector.MATERIALS,
+            "INDUSTRIALS": GICSSector.INDUSTRIALS,
+            "CONSUMER_DISCRETIONARY": GICSSector.CONSUMER_DISCRETIONARY,
+            "CONSUMER_STAPLES": GICSSector.CONSUMER_STAPLES,
+            "HEALTH_CARE": GICSSector.HEALTH_CARE,
+            "FINANCIALS": GICSSector.FINANCIALS,
+            "INFORMATION_TECHNOLOGY": GICSSector.INFORMATION_TECHNOLOGY,
+            "COMMUNICATION_SERVICES": GICSSector.COMMUNICATION_SERVICES,
+            "UTILITIES": GICSSector.UTILITIES,
+            "REAL_ESTATE": GICSSector.REAL_ESTATE,
+            # 일반적인 영어 이름도 지원
+            "TECHNOLOGY": GICSSector.INFORMATION_TECHNOLOGY,
+            "TECH": GICSSector.INFORMATION_TECHNOLOGY,
+            "IT": GICSSector.INFORMATION_TECHNOLOGY,
+            "COMMUNICATIONS": GICSSector.COMMUNICATION_SERVICES,
+            "COMM": GICSSector.COMMUNICATION_SERVICES,
+            "CONSUMER": GICSSector.CONSUMER_DISCRETIONARY,
+            "CONSUMER_STAPLE": GICSSector.CONSUMER_STAPLES,
+            "HEALTHCARE": GICSSector.HEALTH_CARE,
+            "HEALTH": GICSSector.HEALTH_CARE,
+            "FINANCIAL": GICSSector.FINANCIALS,
+            "FINANCE": GICSSector.FINANCIALS,
+            "UTILITY": GICSSector.UTILITIES,
+            "REALESTATE": GICSSector.REAL_ESTATE,
+            "REAL_ESTATE": GICSSector.REAL_ESTATE,
+        }
+
+        # 한국어 이름으로 매핑
+        korean_to_sector = {
+            "에너지": GICSSector.ENERGY,
+            "소재": GICSSector.MATERIALS,
+            "산업재": GICSSector.INDUSTRIALS,
+            "임의소비재": GICSSector.CONSUMER_DISCRETIONARY,
+            "필수소비재": GICSSector.CONSUMER_STAPLES,
+            "헬스케어": GICSSector.HEALTH_CARE,
+            "금융": GICSSector.FINANCIALS,
+            "정보기술": GICSSector.INFORMATION_TECHNOLOGY,
+            "커뮤니케이션서비스": GICSSector.COMMUNICATION_SERVICES,
+            "유틸리티": GICSSector.UTILITIES,
+            "부동산": GICSSector.REAL_ESTATE,
+        }
+
+        # 대소문자 구분 없이 검색
+        sector_name_upper = sector_name.upper()
+        sector_name_lower = sector_name.lower()
+
+        # 영어 이름으로 검색
+        if sector_name_upper in english_to_sector:
+            return english_to_sector[sector_name_upper]
+
+        # 한국어 이름으로 검색
+        if sector_name in korean_to_sector:
+            return korean_to_sector[sector_name]
+
+        # 부분 매칭 시도
+        for name, sector in english_to_sector.items():
+            if sector_name_upper in name or name in sector_name_upper:
+                return sector
+
+        for name, sector in korean_to_sector.items():
+            if sector_name in name or name in sector_name:
+                return sector
+
+        # 기본값으로 정보기술 섹터 반환 (Technology 요청시)
+        if "tech" in sector_name_lower or "technology" in sector_name_lower:
+            return GICSSector.INFORMATION_TECHNOLOGY
+
+        raise ValueError(
+            f"섹터 '{sector_name}'을 찾을 수 없습니다. 사용 가능한 섹터: {list(english_to_sector.keys())}"
+        )
 
     def get_comprehensive_sector_guide(self, sector: GICSSector) -> Dict[str, str]:
         """
