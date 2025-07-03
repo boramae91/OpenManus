@@ -28,6 +28,7 @@ class FinancialDataCollector:
         Args:
             dart_api_key: DART API 키 (한국 기업 데이터용)
         """
+        self.logger = logging.getLogger(__name__)
         self.dart_api_key = dart_api_key
         self.session = requests.Session()
 
@@ -65,7 +66,9 @@ class FinancialDataCollector:
         try:
             # 1. yfinance로 기본 정보 수집
             yf_data = self._collect_yfinance_data(stock_code)
-            if yf_data["success"]:
+            if yf_data and yf_data.get(
+                "success", True
+            ):  # yfinance 데이터가 있으면 성공으로 간주
                 collected_data.update(yf_data)
                 collected_data["data_sources"].append("yfinance")
             else:
@@ -74,7 +77,7 @@ class FinancialDataCollector:
             # 2. DART API로 한국 기업 상세정보 수집 (한국 종목인 경우)
             if self._is_korean_stock(stock_code):
                 dart_data = self._collect_dart_data(stock_code, stock_name)
-                if dart_data["success"]:
+                if dart_data.get("success", False):
                     # DART 데이터와 yfinance 데이터 병합
                     self._merge_dart_data(collected_data, dart_data)
                     collected_data["data_sources"].append("DART")
@@ -104,17 +107,20 @@ class FinancialDataCollector:
 
         try:
             # 한국 주식의 경우 .KS 추가
-                ticker_symbol = f"{stock_code}.KS"
-                ticker = yf.Ticker(ticker_symbol)
+            ticker_symbol = f"{stock_code}.KS"
+            ticker = yf.Ticker(ticker_symbol)
 
             # 기본 정보 가져오기
-                info = ticker.info
+            info = ticker.info
 
             if not info:
                 self.logger.warning(
                     f"⚠️ yfinance에서 {stock_code} 정보를 가져올 수 없습니다"
                 )
-                return {}
+                return {
+                    "success": False,
+                    "errors": [f"yfinance에서 {stock_code} 정보를 가져올 수 없습니다"],
+                }
 
             # 샘플 데이터 감지
             sample_data_indicators = {
@@ -169,7 +175,7 @@ class FinancialDataCollector:
 
                         is_sample_data = False
                         self.logger.info("✅ 실제 데이터로 대체 완료")
-            except Exception as e:
+                except Exception as e:
                     self.logger.error(f"❌ 실제 데이터 계산 실패: {e}")
 
             # 현재가 정보
@@ -197,6 +203,7 @@ class FinancialDataCollector:
                 )
 
             return {
+                "success": True,
                 "current_price": current_price,
                 "market_cap": market_cap,
                 "earnings_growth": earnings_growth,
@@ -217,7 +224,7 @@ class FinancialDataCollector:
 
         except Exception as e:
             self.logger.error(f"❌ yfinance 데이터 수집 실패: {e}")
-            return {}
+            return {"success": False, "errors": [f"yfinance 데이터 수집 실패: {e}"]}
 
     def _collect_dart_data(
         self, stock_code: str, stock_name: str = None
