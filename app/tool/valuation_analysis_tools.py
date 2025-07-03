@@ -23,6 +23,35 @@ class ValuationAnalysisTools:
         """밸류에이션 분석 도구 초기화"""
         logger.info("💰 밸류에이션 분석 도구 초기화 완료!")
 
+    def perform_dcf_analysis(
+        self,
+        financial_data: Dict[str, Any],
+        growth_rate: float = 0.05,
+        discount_rate: float = 0.10,
+        terminal_growth: float = 0.02,
+        projection_years: int = 5,
+    ) -> Dict[str, Any]:
+        """
+        DCF 분석 수행 (perform_dcf_analysis는 calculate_dcf_valuation의 별칭)
+
+        Args:
+            financial_data: 재무데이터
+            growth_rate: 성장률 (기본값: 5%)
+            discount_rate: 할인율 (기본값: 10%)
+            terminal_growth: 터미널 성장률 (기본값: 2%)
+            projection_years: 예측 기간 (기본값: 5년)
+
+        Returns:
+            Dict: DCF 분석 결과
+        """
+        return self.calculate_dcf_valuation(
+            financial_data,
+            growth_rate,
+            discount_rate,
+            terminal_growth,
+            projection_years,
+        )
+
     def calculate_dcf_valuation(
         self,
         financial_data: Dict[str, Any],
@@ -526,6 +555,166 @@ class ValuationAnalysisTools:
             logger.error(f"❌ 내재가치 분석 실패: {e}")
             return {"success": False, "error": str(e)}
 
+    def perform_asset_based_valuation(
+        self, financial_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        자산가치 기반 기업가치 평가
+
+        Args:
+            financial_data: 재무데이터
+
+        Returns:
+            Dict: 자산가치 분석 결과
+        """
+        try:
+            logger.info("🔍 자산가치 기반 밸류에이션 분석 시작...")
+
+            # 기본 재무지표 추출
+            total_assets = financial_data.get("total_assets", 0)
+            total_liabilities = financial_data.get("total_liabilities", 0)
+            total_equity = financial_data.get("total_equity", 0)
+            current_price = financial_data.get("current_price", 0)
+
+            if total_assets <= 0:
+                return {"success": False, "error": "총자산이 0 이하입니다"}
+
+            # 자산가치 계산
+            asset_value = total_assets
+            net_asset_value = total_assets - total_liabilities
+            book_value_per_share = (
+                net_asset_value / self._estimate_shares_outstanding(financial_data)
+                if self._estimate_shares_outstanding(financial_data) > 0
+                else 0
+            )
+
+            # PBR 계산
+            pbr = (
+                current_price / book_value_per_share if book_value_per_share > 0 else 0
+            )
+
+            # 자산가치 기반 목표가 계산
+            target_price_asset = book_value_per_share * 1.5  # 보수적 가정
+            upside_potential = (
+                ((target_price_asset - current_price) / current_price * 100)
+                if current_price > 0
+                else 0
+            )
+
+            result = {
+                "success": True,
+                "asset_valuation": {
+                    "total_assets": round(total_assets, 0),
+                    "net_asset_value": round(net_asset_value, 0),
+                    "book_value_per_share": round(book_value_per_share, 2),
+                    "pbr": round(pbr, 2),
+                },
+                "target_price": {
+                    "asset_based_price": round(target_price_asset, 2),
+                    "current_price": current_price,
+                    "upside_potential": round(upside_potential, 2),
+                },
+                "interpretation": self._interpret_asset_valuation(
+                    pbr, upside_potential
+                ),
+            }
+
+            logger.info(f"✅ 자산가치 분석 완료: 목표가 {target_price_asset:.2f}원")
+            return result
+
+        except Exception as e:
+            logger.error(f"❌ 자산가치 분석 실패: {e}")
+            return {"success": False, "error": str(e)}
+
+    def perform_comprehensive_valuation(
+        self, financial_data: Dict[str, Any], market_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        종합 가치 평가 (DCF + 멀티플 + 자산가치)
+
+        Args:
+            financial_data: 재무데이터
+            market_data: 시장데이터
+
+        Returns:
+            Dict: 종합 가치 평가 결과
+        """
+        try:
+            logger.info("🔍 종합 가치 평가 시작...")
+
+            # 각각의 밸류에이션 방법 수행
+            dcf_result = self.calculate_dcf_valuation(financial_data)
+            multiple_result = self.calculate_multiple_valuation(financial_data)
+            asset_result = self.perform_asset_based_valuation(financial_data)
+
+            # 가중 평균 목표가 계산
+            target_prices = []
+            weights = []
+
+            if dcf_result.get("success"):
+                target_prices.append(dcf_result["valuation_results"]["target_price"])
+                weights.append(0.4)  # DCF 40% 가중치
+
+            if multiple_result.get("success"):
+                avg_target = multiple_result.get("average_target_price", 0)
+                if avg_target > 0:
+                    target_prices.append(avg_target)
+                    weights.append(0.4)  # 멀티플 40% 가중치
+
+            if asset_result.get("success"):
+                target_prices.append(asset_result["target_price"]["asset_based_price"])
+                weights.append(0.2)  # 자산가치 20% 가중치
+
+            # 가중 평균 계산
+            weighted_target_price = 0
+            if target_prices and weights:
+                weighted_target_price = sum(
+                    price * weight for price, weight in zip(target_prices, weights)
+                ) / sum(weights)
+
+            current_price = financial_data.get("current_price", 0)
+            overall_upside = (
+                ((weighted_target_price - current_price) / current_price * 100)
+                if current_price > 0
+                else 0
+            )
+
+            result = {
+                "success": True,
+                "valuation_methods": {
+                    "dcf": dcf_result,
+                    "multiple": multiple_result,
+                    "asset_based": asset_result,
+                },
+                "comprehensive_result": {
+                    "weighted_target_price": round(weighted_target_price, 2),
+                    "current_price": current_price,
+                    "overall_upside_potential": round(overall_upside, 2),
+                    "confidence_level": self._calculate_valuation_confidence(
+                        [dcf_result, multiple_result, asset_result]
+                    ),
+                },
+                "recommendation": self._get_final_recommendation(overall_upside),
+            }
+
+            logger.info(
+                f"✅ 종합 가치 평가 완료: 가중평균 목표가 {weighted_target_price:.2f}원"
+            )
+            return result
+
+        except Exception as e:
+            logger.error(f"❌ 종합 가치 평가 실패: {e}")
+            return {"success": False, "error": str(e)}
+
+    def _interpret_asset_valuation(self, pbr: float, upside_potential: float) -> str:
+        """자산가치 분석 결과 해석"""
+        if pbr < 1.0:
+            return f"PBR {pbr:.2f}로 자산 대비 저평가 상태입니다. 자산가치 기반으로 {upside_potential:.1f}% 상승 여력이 있습니다."
+        elif pbr < 1.5:
+            return f"PBR {pbr:.2f}로 적정 수준입니다. 자산가치 대비 합리적인 평가를 받고 있습니다."
+        else:
+            return f"PBR {pbr:.2f}로 자산 대비 고평가 상태입니다. 주의가 필요합니다."
+
     # ==================== 내부 헬퍼 메서드들 ====================
 
     def _calculate_fcf(self, financial_data: Dict[str, Any]) -> float:
@@ -864,3 +1053,290 @@ class ValuationAnalysisTools:
             risks.append("매출 성장 부족")
 
         return risks if risks else ["특별한 리스크 요소 없음"]
+
+    def perform_relative_valuation(
+        self, financial_data: Dict[str, Any], peer_data: List[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        상대가치 평가 (동종업계 비교)
+
+        Args:
+            financial_data: 대상 기업 재무데이터
+            peer_data: 동종업계 기업들의 재무데이터 리스트
+
+        Returns:
+            Dict: 상대가치 평가 결과
+        """
+        try:
+            logger.info("🔍 상대가치 평가 분석 시작...")
+
+            # 기본 재무지표 추출
+            revenue = financial_data.get("revenue", 0)
+            operating_income = financial_data.get("operating_income", 0)
+            net_income = financial_data.get("net_income", 0)
+            total_assets = financial_data.get("total_assets", 0)
+            total_equity = financial_data.get("total_equity", 0)
+            current_price = financial_data.get("current_price", 0)
+
+            if revenue <= 0 or net_income <= 0:
+                return {"success": False, "error": "매출액 또는 순이익이 0 이하입니다"}
+
+            # 대상 기업 멀티플 계산
+            target_multiples = {
+                "P/E": (
+                    current_price
+                    / (net_income / self._estimate_shares_outstanding(financial_data))
+                    if net_income > 0
+                    else 0
+                ),
+                "P/B": (
+                    current_price
+                    / (total_equity / self._estimate_shares_outstanding(financial_data))
+                    if total_equity > 0
+                    else 0
+                ),
+                "P/S": (
+                    current_price
+                    / (revenue / self._estimate_shares_outstanding(financial_data))
+                    if revenue > 0
+                    else 0
+                ),
+                "EV/EBITDA": self._calculate_ev_ebitda(financial_data),
+            }
+
+            # 동종업계 비교 분석
+            peer_comparison = {}
+            if peer_data and isinstance(peer_data, list) and len(peer_data) > 0:
+                # peer_data가 유효한 리스트인지 확인
+                valid_peer_data = []
+                for peer in peer_data:
+                    if isinstance(peer, dict):
+                        valid_peer_data.append(peer)
+                    else:
+                        logger.warning(f"⚠️ 잘못된 peer_data 형태 무시: {type(peer)}")
+
+                if valid_peer_data:
+                    peer_comparison = self._analyze_peer_comparison(
+                        financial_data, valid_peer_data, target_multiples
+                    )
+                else:
+                    peer_comparison = {
+                        "peer_count": 0,
+                        "message": "유효한 동종업계 데이터가 없습니다",
+                    }
+            else:
+                peer_comparison = {
+                    "peer_count": 0,
+                    "message": "동종업계 비교 데이터가 제공되지 않았습니다",
+                }
+
+            # 상대가치 평가 결과
+            relative_valuation = self._calculate_relative_valuation(
+                target_multiples, peer_comparison
+            )
+
+            # 투자 의견 생성
+            investment_opinion = self._generate_relative_valuation_opinion(
+                relative_valuation
+            )
+
+            result = {
+                "success": True,
+                "target_multiples": target_multiples,
+                "peer_comparison": peer_comparison,
+                "relative_valuation": relative_valuation,
+                "investment_opinion": investment_opinion,
+                "analysis_timestamp": datetime.now().isoformat(),
+            }
+
+            logger.info("✅ 상대가치 평가 분석 완료!")
+            return result
+
+        except Exception as e:
+            logger.error(f"❌ 상대가치 평가 분석 실패: {e}")
+            return {"success": False, "error": str(e)}
+
+    def _analyze_peer_comparison(
+        self,
+        target_data: Dict[str, Any],
+        peer_data: List[Dict[str, Any]],
+        target_multiples: Dict[str, float],
+    ) -> Dict[str, Any]:
+        """동종업계 기업들과의 비교 분석"""
+        try:
+            # 입력 데이터 유효성 검사
+            if not isinstance(peer_data, list):
+                logger.error(f"❌ peer_data가 리스트가 아닙니다: {type(peer_data)}")
+                return {
+                    "peer_count": 0,
+                    "message": "동종업계 데이터 형식이 올바르지 않습니다",
+                }
+
+            peer_multiples = []
+
+            for i, peer in enumerate(peer_data):
+                # 각 peer가 딕셔너리인지 확인
+                if not isinstance(peer, dict):
+                    logger.warning(
+                        f"⚠️ peer_data[{i}]가 딕셔너리가 아닙니다: {type(peer)}"
+                    )
+                    continue
+
+                peer_revenue = peer.get("revenue", 0)
+                peer_net_income = peer.get("net_income", 0)
+                peer_total_equity = peer.get("total_equity", 0)
+                peer_price = peer.get("current_price", 0)
+                peer_shares = self._estimate_shares_outstanding(peer)
+
+                if peer_net_income > 0 and peer_total_equity > 0 and peer_revenue > 0:
+                    peer_multiple = {
+                        "company": peer.get("company_name", "Unknown"),
+                        "P/E": (
+                            peer_price / (peer_net_income / peer_shares)
+                            if peer_shares > 0
+                            else 0
+                        ),
+                        "P/B": (
+                            peer_price / (peer_total_equity / peer_shares)
+                            if peer_shares > 0
+                            else 0
+                        ),
+                        "P/S": (
+                            peer_price / (peer_revenue / peer_shares)
+                            if peer_shares > 0
+                            else 0
+                        ),
+                    }
+                    peer_multiples.append(peer_multiple)
+
+            # 평균 멀티플 계산
+            if peer_multiples:
+                avg_multiples = {}
+                for key in ["P/E", "P/B", "P/S"]:
+                    values = [p[key] for p in peer_multiples if p[key] > 0]
+                    avg_multiples[key] = sum(values) / len(values) if values else 0
+
+                # 상대적 위치 분석
+                relative_position = {}
+                for key in ["P/E", "P/B", "P/S"]:
+                    target_val = target_multiples.get(key, 0)
+                    avg_val = avg_multiples.get(key, 0)
+
+                    if avg_val > 0:
+                        relative_position[key] = {
+                            "target": target_val,
+                            "average": avg_val,
+                            "ratio": target_val / avg_val,
+                            "position": (
+                                "고평가"
+                                if target_val > avg_val * 1.2
+                                else (
+                                    "저평가" if target_val < avg_val * 0.8 else "적정가"
+                                )
+                            ),
+                        }
+
+                return {
+                    "peer_count": len(peer_multiples),
+                    "average_multiples": avg_multiples,
+                    "relative_position": relative_position,
+                    "peer_details": peer_multiples,
+                }
+
+            return {
+                "peer_count": 0,
+                "message": "비교 가능한 동종업계 데이터가 없습니다",
+            }
+
+        except Exception as e:
+            logger.error(f"❌ 동종업계 비교 분석 실패: {e}")
+            return {"error": str(e)}
+
+    def _calculate_relative_valuation(
+        self, target_multiples: Dict[str, float], peer_comparison: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """상대가치 평가 계산"""
+        try:
+            avg_multiples = peer_comparison.get("average_multiples", {})
+            relative_position = peer_comparison.get("relative_position", {})
+
+            # 종합 평가 점수 계산
+            total_score = 0
+            valid_indicators = 0
+
+            for key in ["P/E", "P/B", "P/S"]:
+                if key in relative_position:
+                    position = relative_position[key]["position"]
+                    if position == "저평가":
+                        total_score += 1
+                    elif position == "적정가":
+                        total_score += 0.5
+                    valid_indicators += 1
+
+            overall_score = (
+                total_score / valid_indicators if valid_indicators > 0 else 0.5
+            )
+
+            # 종합 평가
+            if overall_score >= 0.7:
+                overall_assessment = "저평가"
+                recommendation = "매수"
+            elif overall_score >= 0.4:
+                overall_assessment = "적정가"
+                recommendation = "관망"
+            else:
+                overall_assessment = "고평가"
+                recommendation = "매도"
+
+            return {
+                "overall_score": round(overall_score, 3),
+                "overall_assessment": overall_assessment,
+                "recommendation": recommendation,
+                "assessment_details": relative_position,
+                "valid_indicators": valid_indicators,
+            }
+
+        except Exception as e:
+            logger.error(f"❌ 상대가치 평가 계산 실패: {e}")
+            return {"error": str(e)}
+
+    def _generate_relative_valuation_opinion(
+        self, relative_valuation: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """상대가치 평가 기반 투자 의견 생성"""
+        try:
+            assessment = relative_valuation.get("overall_assessment", "적정가")
+            recommendation = relative_valuation.get("recommendation", "관망")
+            score = relative_valuation.get("overall_score", 0.5)
+
+            # 의견 강도 결정
+            if score >= 0.8:
+                strength = "강한"
+            elif score >= 0.6:
+                strength = "중간"
+            else:
+                strength = "약한"
+
+            # 의견 근거 생성
+            if assessment == "저평가":
+                reasoning = (
+                    f"동종업계 평균 대비 {strength} 저평가 상태로 투자 가치가 높음"
+                )
+            elif assessment == "고평가":
+                reasoning = (
+                    f"동종업계 평균 대비 {strength} 고평가 상태로 투자 시 주의 필요"
+                )
+            else:
+                reasoning = f"동종업계 평균과 유사한 수준으로 적정가 평가"
+
+            return {
+                "assessment": assessment,
+                "recommendation": recommendation,
+                "strength": strength,
+                "reasoning": reasoning,
+                "confidence_level": "높음" if score >= 0.7 or score <= 0.3 else "중간",
+            }
+
+        except Exception as e:
+            logger.error(f"❌ 상대가치 평가 의견 생성 실패: {e}")
+            return {"error": str(e)}

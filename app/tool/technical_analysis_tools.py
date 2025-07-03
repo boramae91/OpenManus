@@ -198,33 +198,39 @@ class TechnicalAnalysisTools:
             troughs = self._find_troughs(price_data)
 
             # 상승 추세선 계산
-            uptrend_line = self._calculate_uptrend_line(peaks, price_data)
+            uptrend = self._calculate_uptrend_line(peaks, price_data)
 
             # 하락 추세선 계산
-            downtrend_line = self._calculate_downtrend_line(troughs, price_data)
+            downtrend = self._calculate_downtrend_line(troughs, price_data)
 
-            # 지지선과 저항선 계산
+            # 지지/저항선 계산
             support_resistance = self._calculate_support_resistance(price_data)
+
+            # 현재 위치 분석
+            current_position = self._analyze_current_position(
+                price_data[-1], support_resistance
+            )
+
+            # 돌파 신호 분석
+            breakout_signals = self._analyze_breakout_signals(
+                price_data, support_resistance
+            )
 
             # 추세 강도 분석
             trend_strength = self._analyze_trend_strength(
-                price_data, uptrend_line, downtrend_line
+                price_data, uptrend, downtrend
             )
 
             result = {
                 "success": True,
-                "uptrend_line": uptrend_line,
-                "downtrend_line": downtrend_line,
+                "uptrend": uptrend,
+                "downtrend": downtrend,
                 "support_resistance": support_resistance,
+                "current_position": current_position,
+                "breakout_signals": breakout_signals,
                 "trend_strength": trend_strength,
-                "peaks_count": len(peaks),
-                "troughs_count": len(troughs),
-                "current_position": self._analyze_current_position(
-                    price_data[-1], support_resistance
-                ),
-                "breakout_signals": self._analyze_breakout_signals(
-                    price_data, support_resistance
-                ),
+                "data_points": len(price_data),
+                "analysis_period": f"{len(price_data)}일",
             }
 
             logger.info("✅ 추세선 분석 완료!")
@@ -234,70 +240,292 @@ class TechnicalAnalysisTools:
             logger.error(f"❌ 추세선 분석 실패: {e}")
             return {"success": False, "error": str(e)}
 
-    def generate_trading_signals(
+    def analyze_technical_indicators(
         self, price_data: List[float], volume_data: List[float] = None
     ) -> Dict[str, Any]:
         """
-        종합 매매 신호 생성
+        종합 기술적 지표 분석
 
         Args:
             price_data: 가격 데이터 리스트
             volume_data: 거래량 데이터 리스트 (선택사항)
 
         Returns:
-            Dict: 종합 매매 신호
+            Dict: 종합 기술적 분석 결과
         """
         try:
-            logger.info("🔍 종합 매매 신호 생성 시작...")
+            logger.info("🔍 종합 기술적 지표 분석 시작...")
 
-            # 각종 기술적 지표 계산
+            # 이동평균 분석
+            ma_analysis = self.calculate_moving_averages(price_data)
+
+            # RSI 분석
+            rsi_analysis = self.calculate_rsi(price_data)
+
+            # 추세선 분석
+            trend_analysis = self.analyze_trend_lines(price_data)
+
+            # 거래량 분석 (제공된 경우)
+            volume_analysis = None
+            if volume_data:
+                volume_analysis = self._analyze_volume_patterns(price_data, volume_data)
+
+            # 매매 신호 생성
+            trading_signals = self.generate_trading_signals(price_data, volume_data)
+
+            result = {
+                "success": True,
+                "moving_averages": ma_analysis,
+                "rsi": rsi_analysis,
+                "trend_lines": trend_analysis,
+                "volume_analysis": volume_analysis,
+                "trading_signals": trading_signals,
+                "summary": self._generate_technical_summary(
+                    ma_analysis, rsi_analysis, trend_analysis, trading_signals
+                ),
+            }
+
+            logger.info("✅ 종합 기술적 지표 분석 완료!")
+            return result
+
+        except Exception as e:
+            logger.error(f"❌ 종합 기술적 지표 분석 실패: {e}")
+            return {"success": False, "error": str(e)}
+
+    def generate_trading_signals(
+        self, price_data: List[float], volume_data: List[float] = None
+    ) -> Dict[str, Any]:
+        """
+        매매 신호 생성
+
+        Args:
+            price_data: 가격 데이터 리스트
+            volume_data: 거래량 데이터 리스트 (선택사항)
+
+        Returns:
+            Dict: 매매 신호 분석 결과
+        """
+        try:
+            logger.info("🔍 매매 신호 생성 시작...")
+
+            # 각 지표별 분석
             ma_analysis = self.calculate_moving_averages(price_data)
             rsi_analysis = self.calculate_rsi(price_data)
             trend_analysis = self.analyze_trend_lines(price_data)
 
-            # 거래량 분석 (데이터가 있는 경우)
+            # 거래량 분석
             volume_analysis = None
             if volume_data:
-                volume_analysis = self.analyze_volume_patterns(price_data, volume_data)
+                volume_analysis = self._analyze_volume_patterns(price_data, volume_data)
 
-            # 신호 통합 분석
+            # 신호 통합
             integrated_signals = self._integrate_trading_signals(
-                ma_analysis,
-                rsi_analysis,
-                trend_analysis,
-                volume_analysis,
+                ma_analysis, rsi_analysis, trend_analysis, volume_analysis
             )
 
             # 신호 강도 계산
             signal_strength = self._calculate_signal_strength(integrated_signals)
 
-            # 매매 추천
+            # 매매 추천 생성
             trading_recommendation = self._generate_trading_recommendation(
                 integrated_signals, signal_strength
             )
 
+            # 리스크 평가
+            risk_assessment = self._assess_trading_risk(integrated_signals)
+
+            # 신뢰도 계산
+            confidence_level = self._calculate_confidence_level(integrated_signals)
+
             result = {
                 "success": True,
-                "technical_indicators": {
-                    "moving_averages": ma_analysis,
-                    "rsi": rsi_analysis,
-                    "trend_lines": trend_analysis,
-                    "volume": volume_analysis,
-                },
                 "integrated_signals": integrated_signals,
                 "signal_strength": signal_strength,
                 "trading_recommendation": trading_recommendation,
-                "risk_assessment": self._assess_trading_risk(integrated_signals),
-                "confidence_level": self._calculate_confidence_level(
-                    integrated_signals
-                ),
+                "risk_assessment": risk_assessment,
+                "confidence_level": confidence_level,
+                "timestamp": datetime.now().isoformat(),
             }
 
-            logger.info("✅ 종합 매매 신호 생성 완료!")
+            logger.info("✅ 매매 신호 생성 완료!")
             return result
 
         except Exception as e:
             logger.error(f"❌ 매매 신호 생성 실패: {e}")
+            return {"success": False, "error": str(e)}
+
+    def analyze_chart_patterns(self, price_data: List[float]) -> Dict[str, Any]:
+        """
+        차트 패턴 분석 (헤드앤숄더, 더블탑, 삼각형 등)
+
+        Args:
+            price_data: 가격 데이터 리스트
+
+        Returns:
+            Dict: 차트 패턴 분석 결과
+        """
+        try:
+            logger.info("🔍 차트 패턴 분석 시작...")
+
+            if len(price_data) < 30:
+                return {
+                    "success": False,
+                    "error": "차트 패턴 분석을 위해 최소 30개 데이터가 필요합니다.",
+                }
+
+            patterns = {}
+
+            # 헤드앤숄더 패턴 검출
+            head_shoulders = self._detect_head_and_shoulders(price_data)
+            if head_shoulders:
+                patterns["head_and_shoulders"] = head_shoulders
+
+            # 더블탑/더블바텀 패턴 검출
+            double_patterns = self._detect_double_patterns(price_data)
+            if double_patterns:
+                patterns["double_patterns"] = double_patterns
+
+            # 삼각형 패턴 검출
+            triangle_patterns = self._detect_triangle_patterns(price_data)
+            if triangle_patterns:
+                patterns["triangle_patterns"] = triangle_patterns
+
+            # 플래그/페넌트 패턴 검출
+            flag_patterns = self._detect_flag_patterns(price_data)
+            if flag_patterns:
+                patterns["flag_patterns"] = flag_patterns
+
+            result = {
+                "success": True,
+                "patterns": patterns,
+                "pattern_count": len(patterns),
+                "data_points": len(price_data),
+                "analysis_period": f"{len(price_data)}일",
+                "timestamp": datetime.now().isoformat(),
+            }
+
+            logger.info(f"✅ 차트 패턴 분석 완료: {len(patterns)}개 패턴 발견")
+            return result
+
+        except Exception as e:
+            logger.error(f"❌ 차트 패턴 분석 실패: {e}")
+            return {"success": False, "error": str(e)}
+
+    def analyze_trends(self, market_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        주가 추세 분석
+
+        Args:
+            market_data: 시장 데이터
+
+        Returns:
+            Dict: 추세 분석 결과
+        """
+        try:
+            logger.info("🔍 주가 추세 분석 시작...")
+
+            # 기본 데이터 추출
+            current_price = market_data.get("current_price", 0)
+            price_history = market_data.get("price_history", [])
+
+            if not price_history or len(price_history) < 2:
+                return {
+                    "success": False,
+                    "error": "가격 이력 데이터가 부족합니다",
+                    "trend": "분석 불가",
+                }
+
+            # 단기/중기/장기 추세 분석
+            short_term_trend = self._analyze_short_term_trend(
+                price_history[-20:]
+            )  # 최근 20일
+            medium_term_trend = self._analyze_medium_term_trend(
+                price_history[-60:]
+            )  # 최근 60일
+            long_term_trend = self._analyze_long_term_trend(price_history)  # 전체 기간
+
+            # 추세 강도 분석
+            trend_strength = self._calculate_trend_strength(price_history)
+
+            result = {
+                "success": True,
+                "trend_analysis": {
+                    "short_term": short_term_trend,
+                    "medium_term": medium_term_trend,
+                    "long_term": long_term_trend,
+                    "trend_strength": trend_strength,
+                },
+                "current_price": current_price,
+                "interpretation": self._interpret_trend_analysis(
+                    short_term_trend, medium_term_trend, long_term_trend
+                ),
+            }
+
+            logger.info(f"✅ 추세 분석 완료: {short_term_trend['direction']}")
+            return result
+
+        except Exception as e:
+            logger.error(f"❌ 추세 분석 실패: {e}")
+            return {"success": False, "error": str(e)}
+
+    def analyze_support_resistance(self, market_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        지지/저항선 분석
+
+        Args:
+            market_data: 시장 데이터
+
+        Returns:
+            Dict: 지지/저항선 분석 결과
+        """
+        try:
+            logger.info("🔍 지지/저항선 분석 시작...")
+
+            # 기본 데이터 추출
+            current_price = market_data.get("current_price", 0)
+            price_history = market_data.get("price_history", [])
+
+            if not price_history or len(price_history) < 20:
+                return {
+                    "success": False,
+                    "error": "가격 이력 데이터가 부족합니다",
+                    "support_resistance": "분석 불가",
+                }
+
+            # 지지선/저항선 계산
+            support_levels = self._find_support_levels(price_history)
+            resistance_levels = self._find_resistance_levels(price_history)
+
+            # 현재 가격과의 관계 분석
+            nearest_support = self._find_nearest_support(current_price, support_levels)
+            nearest_resistance = self._find_nearest_resistance(
+                current_price, resistance_levels
+            )
+
+            result = {
+                "success": True,
+                "support_resistance": {
+                    "support_levels": support_levels,
+                    "resistance_levels": resistance_levels,
+                    "nearest_support": nearest_support,
+                    "nearest_resistance": nearest_resistance,
+                    "current_position": self._analyze_current_position(
+                        current_price, nearest_support, nearest_resistance
+                    ),
+                },
+                "current_price": current_price,
+                "interpretation": self._interpret_support_resistance(
+                    nearest_support, nearest_resistance, current_price
+                ),
+            }
+
+            logger.info(
+                f"✅ 지지/저항선 분석 완료: 지지선 {nearest_support}, 저항선 {nearest_resistance}"
+            )
+            return result
+
+        except Exception as e:
+            logger.error(f"❌ 지지/저항선 분석 실패: {e}")
             return {"success": False, "error": str(e)}
 
     # ==================== 내부 헬퍼 메서드들 ====================
@@ -722,3 +950,593 @@ class TechnicalAnalysisTools:
             return "중간"
         else:
             return "낮음"
+
+    def _analyze_volume_patterns(
+        self, price_data: List[float], volume_data: List[float]
+    ) -> Dict[str, Any]:
+        """
+        거래량 패턴 분석
+
+        Args:
+            price_data: 가격 데이터
+            volume_data: 거래량 데이터
+
+        Returns:
+            Dict: 거래량 분석 결과
+        """
+        try:
+            if len(price_data) != len(volume_data):
+                return {
+                    "success": False,
+                    "error": "가격과 거래량 데이터 길이가 다릅니다.",
+                }
+
+            # 평균 거래량 계산
+            avg_volume = sum(volume_data) / len(volume_data)
+
+            # 현재 거래량
+            current_volume = volume_data[-1]
+
+            # 거래량 증가율
+            volume_change = ((current_volume - avg_volume) / avg_volume) * 100
+
+            # 가격 변화와 거래량 관계
+            price_change = (
+                ((price_data[-1] - price_data[-2]) / price_data[-2]) * 100
+                if len(price_data) > 1
+                else 0
+            )
+
+            result = {
+                "success": True,
+                "current_volume": current_volume,
+                "average_volume": avg_volume,
+                "volume_change_percent": round(volume_change, 2),
+                "price_change_percent": round(price_change, 2),
+                "volume_price_relationship": self._interpret_volume_price_relationship(
+                    price_change, volume_change
+                ),
+                "volume_trend": "증가" if volume_change > 0 else "감소",
+            }
+
+            return result
+
+        except Exception as e:
+            logger.error(f"❌ 거래량 패턴 분석 실패: {e}")
+            return {"success": False, "error": str(e)}
+
+    def _interpret_volume_price_relationship(
+        self, price_change: float, volume_change: float
+    ) -> str:
+        """
+        가격과 거래량 관계 해석
+
+        Args:
+            price_change: 가격 변화율
+            volume_change: 거래량 변화율
+
+        Returns:
+            str: 관계 해석
+        """
+        if price_change > 0 and volume_change > 0:
+            return "가격 상승 + 거래량 증가 = 강한 상승 신호"
+        elif price_change > 0 and volume_change < 0:
+            return "가격 상승 + 거래량 감소 = 약한 상승 신호"
+        elif price_change < 0 and volume_change > 0:
+            return "가격 하락 + 거래량 증가 = 강한 하락 신호"
+        elif price_change < 0 and volume_change < 0:
+            return "가격 하락 + 거래량 감소 = 약한 하락 신호"
+        else:
+            return "중립적 신호"
+
+    def _generate_technical_summary(
+        self,
+        ma_analysis: Dict,
+        rsi_analysis: Dict,
+        trend_analysis: Dict,
+        trading_signals: Dict,
+    ) -> Dict[str, Any]:
+        """
+        기술적 분석 요약 생성
+
+        Args:
+            ma_analysis: 이동평균 분석 결과
+            rsi_analysis: RSI 분석 결과
+            trend_analysis: 추세선 분석 결과
+            trading_signals: 거래 신호 결과
+
+        Returns:
+            Dict: 종합 요약
+        """
+        try:
+            summary = {
+                "overall_sentiment": "중립",
+                "key_signals": [],
+                "risk_level": "보통",
+                "recommendation": "관망",
+            }
+
+            # 전반적 감정 분석
+            bullish_signals = 0
+            bearish_signals = 0
+
+            # 이동평균 신호 분석
+            if ma_analysis.get("success"):
+                ma_signals = ma_analysis.get("crossover_signals", {})
+                for signal in ma_signals.get("bullish_signals", []):
+                    bullish_signals += 1
+                for signal in ma_signals.get("bearish_signals", []):
+                    bearish_signals += 1
+
+            # RSI 신호 분석
+            if rsi_analysis.get("success"):
+                current_rsi = rsi_analysis.get("current_rsi", 50)
+                if current_rsi < 30:
+                    bullish_signals += 1
+                elif current_rsi > 70:
+                    bearish_signals += 1
+
+            # 추세선 신호 분석
+            if trend_analysis.get("success"):
+                trend_strength = trend_analysis.get("trend_strength", "중립")
+                if "상승" in trend_strength:
+                    bullish_signals += 1
+                elif "하락" in trend_strength:
+                    bearish_signals += 1
+
+            # 전반적 감정 결정
+            if bullish_signals > bearish_signals:
+                summary["overall_sentiment"] = "매수"
+                summary["recommendation"] = "매수 고려"
+            elif bearish_signals > bullish_signals:
+                summary["overall_sentiment"] = "매도"
+                summary["recommendation"] = "매도 고려"
+            else:
+                summary["overall_sentiment"] = "중립"
+                summary["recommendation"] = "관망"
+
+            # 주요 신호 추출
+            if ma_analysis.get("success"):
+                summary["key_signals"].append("이동평균 분석 완료")
+            if rsi_analysis.get("success"):
+                summary["key_signals"].append(
+                    f"RSI: {rsi_analysis.get('current_rsi', 0):.1f}"
+                )
+            if trend_analysis.get("success"):
+                summary["key_signals"].append(
+                    f"추세: {trend_analysis.get('trend_strength', '중립')}"
+                )
+
+            return summary
+
+        except Exception as e:
+            logger.error(f"❌ 기술적 분석 요약 생성 실패: {e}")
+            return {
+                "overall_sentiment": "중립",
+                "key_signals": ["분석 오류"],
+                "risk_level": "높음",
+                "recommendation": "관망",
+            }
+
+    def _detect_head_and_shoulders(
+        self, price_data: List[float]
+    ) -> Optional[Dict[str, Any]]:
+        """헤드앤숄더 패턴 검출"""
+        try:
+            if len(price_data) < 20:
+                return None
+
+            # 고점들 찾기
+            peaks = self._find_peaks(price_data)
+            if len(peaks) < 3:
+                return None
+
+            # 최근 3개 고점 분석
+            recent_peaks = peaks[-3:]
+            peak_values = [price_data[i] for i in recent_peaks]
+
+            # 헤드앤숄더 조건 확인
+            left_shoulder = peak_values[0]
+            head = peak_values[1]
+            right_shoulder = peak_values[2]
+
+            # 조건: 헤드가 양쪽 어깨보다 높고, 어깨들이 비슷한 높이
+            shoulder_tolerance = 0.05  # 5% 허용 오차
+
+            if (
+                head > left_shoulder
+                and head > right_shoulder
+                and abs(left_shoulder - right_shoulder) / left_shoulder
+                < shoulder_tolerance
+            ):
+
+                return {
+                    "type": "head_and_shoulders",
+                    "pattern": "bearish",
+                    "left_shoulder": left_shoulder,
+                    "head": head,
+                    "right_shoulder": right_shoulder,
+                    "neckline": min(left_shoulder, right_shoulder),
+                    "target": min(left_shoulder, right_shoulder)
+                    - (head - min(left_shoulder, right_shoulder)),
+                    "confidence": (
+                        "high"
+                        if abs(left_shoulder - right_shoulder) / left_shoulder < 0.02
+                        else "medium"
+                    ),
+                }
+
+            return None
+
+        except Exception as e:
+            logger.error(f"❌ 헤드앤숄더 패턴 검출 실패: {e}")
+            return None
+
+    def _detect_double_patterns(
+        self, price_data: List[float]
+    ) -> Optional[Dict[str, Any]]:
+        """더블탑/더블바텀 패턴 검출"""
+        try:
+            if len(price_data) < 15:
+                return None
+
+            # 고점과 저점들 찾기
+            peaks = self._find_peaks(price_data)
+            troughs = self._find_troughs(price_data)
+
+            patterns = []
+
+            # 더블탑 검출
+            if len(peaks) >= 2:
+                recent_peaks = peaks[-2:]
+                peak_values = [price_data[i] for i in recent_peaks]
+
+                # 두 고점이 비슷한 높이인지 확인
+                if (
+                    abs(peak_values[0] - peak_values[1]) / peak_values[0] < 0.03
+                ):  # 3% 허용 오차
+                    patterns.append(
+                        {
+                            "type": "double_top",
+                            "pattern": "bearish",
+                            "peaks": peak_values,
+                            "support": min(
+                                price_data[recent_peaks[0] : recent_peaks[1]]
+                            ),
+                            "target": min(price_data[recent_peaks[0] : recent_peaks[1]])
+                            - (
+                                max(peak_values)
+                                - min(price_data[recent_peaks[0] : recent_peaks[1]])
+                            ),
+                            "confidence": "medium",
+                        }
+                    )
+
+            # 더블바텀 검출
+            if len(troughs) >= 2:
+                recent_troughs = troughs[-2:]
+                trough_values = [price_data[i] for i in recent_troughs]
+
+                # 두 저점이 비슷한 높이인지 확인
+                if (
+                    abs(trough_values[0] - trough_values[1]) / trough_values[0] < 0.03
+                ):  # 3% 허용 오차
+                    patterns.append(
+                        {
+                            "type": "double_bottom",
+                            "pattern": "bullish",
+                            "troughs": trough_values,
+                            "resistance": max(
+                                price_data[recent_troughs[0] : recent_troughs[1]]
+                            ),
+                            "target": max(
+                                price_data[recent_troughs[0] : recent_troughs[1]]
+                            )
+                            + (
+                                max(price_data[recent_troughs[0] : recent_troughs[1]])
+                                - min(trough_values)
+                            ),
+                            "confidence": "medium",
+                        }
+                    )
+
+            return {"patterns": patterns} if patterns else None
+
+        except Exception as e:
+            logger.error(f"❌ 더블 패턴 검출 실패: {e}")
+            return None
+
+    def _detect_triangle_patterns(
+        self, price_data: List[float]
+    ) -> Optional[Dict[str, Any]]:
+        """삼각형 패턴 검출"""
+        try:
+            if len(price_data) < 20:
+                return None
+
+            # 고점과 저점들의 추세 분석
+            peaks = self._find_peaks(price_data)
+            troughs = self._find_troughs(price_data)
+
+            if len(peaks) < 3 or len(troughs) < 3:
+                return None
+
+            # 고점과 저점의 추세 계산
+            peak_trend = self._calculate_trend([price_data[i] for i in peaks[-3:]])
+            trough_trend = self._calculate_trend([price_data[i] for i in troughs[-3:]])
+
+            patterns = []
+
+            # 대칭 삼각형
+            if abs(peak_trend) < 0.01 and abs(trough_trend) < 0.01:
+                patterns.append(
+                    {
+                        "type": "symmetrical_triangle",
+                        "pattern": "neutral",
+                        "breakout_direction": "unknown",
+                        "confidence": "medium",
+                    }
+                )
+
+            # 상승 삼각형
+            elif abs(peak_trend) < 0.01 and trough_trend > 0.01:
+                patterns.append(
+                    {
+                        "type": "ascending_triangle",
+                        "pattern": "bullish",
+                        "breakout_direction": "upward",
+                        "confidence": "medium",
+                    }
+                )
+
+            # 하락 삼각형
+            elif abs(trough_trend) < 0.01 and peak_trend < -0.01:
+                patterns.append(
+                    {
+                        "type": "descending_triangle",
+                        "pattern": "bearish",
+                        "breakout_direction": "downward",
+                        "confidence": "medium",
+                    }
+                )
+
+            return {"patterns": patterns} if patterns else None
+
+        except Exception as e:
+            logger.error(f"❌ 삼각형 패턴 검출 실패: {e}")
+            return None
+
+    def _detect_flag_patterns(
+        self, price_data: List[float]
+    ) -> Optional[Dict[str, Any]]:
+        """플래그/페이넌트 패턴 검출"""
+        try:
+            if len(price_data) < 15:
+                return None
+
+            # 최근 가격 움직임 분석
+            recent_prices = price_data[-10:]
+            price_trend = self._calculate_trend(recent_prices)
+
+            patterns = []
+
+            # 강한 상승 후 횡보 (플래그)
+            if price_trend > 0.02:  # 2% 이상 상승
+                patterns.append(
+                    {
+                        "type": "flag",
+                        "pattern": "bullish",
+                        "continuation": True,
+                        "confidence": "medium",
+                    }
+                )
+
+            # 강한 하락 후 횡보 (페이넌트)
+            elif price_trend < -0.02:  # 2% 이상 하락
+                patterns.append(
+                    {
+                        "type": "pennant",
+                        "pattern": "bearish",
+                        "continuation": True,
+                        "confidence": "medium",
+                    }
+                )
+
+            return {"patterns": patterns} if patterns else None
+
+        except Exception as e:
+            logger.error(f"❌ 플래그 패턴 검출 실패: {e}")
+            return None
+
+    def _calculate_trend(self, values: List[float]) -> float:
+        """값들의 추세 계산"""
+        try:
+            if len(values) < 2:
+                return 0.0
+
+            # 선형 회귀를 통한 추세 계산
+            x = list(range(len(values)))
+            y = values
+
+            n = len(x)
+            sum_x = sum(x)
+            sum_y = sum(y)
+            sum_xy = sum(x[i] * y[i] for i in range(n))
+            sum_x2 = sum(x[i] ** 2 for i in range(n))
+
+            if n * sum_x2 - sum_x**2 == 0:
+                return 0.0
+
+            slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x**2)
+            return slope
+
+        except Exception as e:
+            logger.error(f"❌ 추세 계산 실패: {e}")
+            return 0.0
+
+    def _analyze_short_term_trend(self, price_data: List[float]) -> Dict[str, Any]:
+        """단기 추세 분석"""
+        if len(price_data) < 2:
+            return {"direction": "불명확", "strength": "약함", "slope": 0}
+
+        # 선형 회귀로 기울기 계산
+        x = list(range(len(price_data)))
+        y = price_data
+
+        n = len(x)
+        sum_x = sum(x)
+        sum_y = sum(y)
+        sum_xy = sum(x[i] * y[i] for i in range(n))
+        sum_x2 = sum(x[i] ** 2 for i in range(n))
+
+        slope = (
+            (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x**2)
+            if (n * sum_x2 - sum_x**2) != 0
+            else 0
+        )
+
+        # 추세 방향 결정
+        if slope > 0.1:
+            direction = "상승"
+            strength = "강함" if slope > 0.5 else "보통"
+        elif slope < -0.1:
+            direction = "하락"
+            strength = "강함" if slope < -0.5 else "보통"
+        else:
+            direction = "횡보"
+            strength = "약함"
+
+        return {
+            "direction": direction,
+            "strength": strength,
+            "slope": round(slope, 4),
+            "price_change": round(price_data[-1] - price_data[0], 2),
+        }
+
+    def _analyze_medium_term_trend(self, price_data: List[float]) -> Dict[str, Any]:
+        """중기 추세 분석"""
+        return self._analyze_short_term_trend(price_data)
+
+    def _analyze_long_term_trend(self, price_data: List[float]) -> Dict[str, Any]:
+        """장기 추세 분석"""
+        return self._analyze_short_term_trend(price_data)
+
+    def _calculate_trend_strength(self, price_data: List[float]) -> str:
+        """추세 강도 계산"""
+        if len(price_data) < 10:
+            return "약함"
+
+        # 변동성 계산
+        returns = [
+            (price_data[i] - price_data[i - 1]) / price_data[i - 1]
+            for i in range(1, len(price_data))
+        ]
+        volatility = sum(abs(r) for r in returns) / len(returns)
+
+        if volatility > 0.03:
+            return "강함"
+        elif volatility > 0.015:
+            return "보통"
+        else:
+            return "약함"
+
+    def _find_support_levels(self, price_data: List[float]) -> List[float]:
+        """지지선 찾기"""
+        if len(price_data) < 10:
+            return []
+
+        # 최근 10일간의 최저점들을 지지선으로 간주
+        support_levels = []
+        for i in range(1, len(price_data) - 1):
+            if price_data[i] < price_data[i - 1] and price_data[i] < price_data[i + 1]:
+                support_levels.append(price_data[i])
+
+        return sorted(list(set(support_levels)))[-3:]  # 최근 3개 지지선
+
+    def _find_resistance_levels(self, price_data: List[float]) -> List[float]:
+        """저항선 찾기"""
+        if len(price_data) < 10:
+            return []
+
+        # 최근 10일간의 최고점들을 저항선으로 간주
+        resistance_levels = []
+        for i in range(1, len(price_data) - 1):
+            if price_data[i] > price_data[i - 1] and price_data[i] > price_data[i + 1]:
+                resistance_levels.append(price_data[i])
+
+        return sorted(list(set(resistance_levels)))[-3:]  # 최근 3개 저항선
+
+    def _find_nearest_support(
+        self, current_price: float, support_levels: List[float]
+    ) -> float:
+        """가장 가까운 지지선 찾기"""
+        if not support_levels:
+            return 0
+
+        # 현재 가격보다 낮은 지지선 중 가장 가까운 것
+        valid_supports = [s for s in support_levels if s < current_price]
+        if not valid_supports:
+            return min(support_levels)
+
+        return max(valid_supports)
+
+    def _find_nearest_resistance(
+        self, current_price: float, resistance_levels: List[float]
+    ) -> float:
+        """가장 가까운 저항선 찾기"""
+        if not resistance_levels:
+            return 0
+
+        # 현재 가격보다 높은 저항선 중 가장 가까운 것
+        valid_resistances = [r for r in resistance_levels if r > current_price]
+        if not valid_resistances:
+            return max(resistance_levels)
+
+        return min(valid_resistances)
+
+    def _analyze_current_position(
+        self, current_price: float, support: float, resistance: float
+    ) -> str:
+        """현재 가격 위치 분석"""
+        if support == 0 or resistance == 0:
+            return "분석 불가"
+
+        support_distance = current_price - support
+        resistance_distance = resistance - current_price
+
+        if support_distance < resistance_distance:
+            return "지지선 근처"
+        else:
+            return "저항선 근처"
+
+    def _interpret_trend_analysis(
+        self, short_term: Dict, medium_term: Dict, long_term: Dict
+    ) -> str:
+        """추세 분석 결과 해석"""
+        short_direction = short_term.get("direction", "불명확")
+        medium_direction = medium_term.get("direction", "불명확")
+        long_direction = long_term.get("direction", "불명확")
+
+        if short_direction == medium_direction == long_direction:
+            return f"모든 기간에서 {short_direction} 추세가 일관되게 나타납니다."
+        elif short_direction == medium_direction:
+            return f"단기와 중기에서 {short_direction} 추세, 장기에서는 {long_direction} 추세입니다."
+        else:
+            return f"추세가 혼재되어 있습니다: 단기 {short_direction}, 중기 {medium_direction}, 장기 {long_direction}"
+
+    def _interpret_support_resistance(
+        self, support: float, resistance: float, current_price: float
+    ) -> str:
+        """지지/저항선 분석 결과 해석"""
+        if support == 0 or resistance == 0:
+            return "지지/저항선 분석이 어렵습니다."
+
+        support_distance = current_price - support
+        resistance_distance = resistance - current_price
+
+        if support_distance < resistance_distance:
+            return (
+                f"지지선({support:.0f}원) 근처에서 거래되고 있어 하락 위험이 있습니다."
+            )
+        else:
+            return f"저항선({resistance:.0f}원) 근처에서 거래되고 있어 상승 가능성이 있습니다."

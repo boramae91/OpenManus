@@ -35,6 +35,11 @@ from streamlit_option_menu import option_menu
 
 # 🤖 OpenManus 시스템 연결
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# 대시보드 모드 환경 변수 설정 (ask_human 도구 비활성화)
+os.environ["DASHBOARD_MODE"] = "true"
+os.environ["STREAMLIT_MODE"] = "true"
+
 from app.tool.expert_analysis_integration import ExpertAnalysisIntegration
 from app.utils.performance_monitor import get_performance_monitor
 from enhanced_main import EnhancedStockAnalysisSystem
@@ -491,14 +496,23 @@ def show_expert_collaboration_diagram():
 
 def show_enhanced_analysis_result(result: Dict[str, Any]):
     """
-    개선된 분석 결과 표시
+    개선된 분석 결과 표시 (탭 없이 한 페이지에 모든 정보 표시)
 
     Args:
         result: 분석 결과 딕셔너리
     """
+    # coroutine 객체인지 확인하고 처리
+    if hasattr(result, "__await__"):
+        st.error("❌ 비동기 함수가 제대로 처리되지 않았습니다. 다시 시도해주세요.")
+        return
+
     if not result or not result.get("success"):
         st.error("❌ 분석 결과를 불러올 수 없습니다.")
         return
+
+    # 새로운 결과 구조 처리
+    basic_analysis = result.get("basic_analysis", {})
+    expert_analysis = result.get("expert_analysis", {})
 
     # 1️⃣ 성능 경고 알림 표시
     # 분석이 끝난 후, 성능 모니터에서 최신 분석 리포트를 가져와요
@@ -526,7 +540,7 @@ def show_enhanced_analysis_result(result: Dict[str, Any]):
 
     # 2️⃣ 전문가 위험 신호 실시간 알림
     # 리스크, 주석, 산업 전문가의 위험 신호를 찾아서 경고로 보여줘요
-    expert_analyses = result.get("expert_analyses", {})
+    expert_analyses = expert_analysis.get("expert_analyses", {})
     # 리스크 전문가
     if "risk" in expert_analyses and expert_analyses["risk"].get("extra_risks"):
         for risk in expert_analyses["risk"]["extra_risks"]:
@@ -546,27 +560,208 @@ def show_enhanced_analysis_result(result: Dict[str, Any]):
     st.title("🎯 전문가 종합 분석 결과")
 
     # 기본 정보 표시
-    if "user_prompt" in result:
-        st.info(f"**분석 요청:** {result['user_prompt']}")
+    if "user_prompt" in basic_analysis:
+        st.info(f"**분석 요청:** {basic_analysis['user_prompt']}")
 
-    # 전문가 협력 구조 표시
-    show_expert_collaboration_diagram()
-
-    # 위험 신호 강조 표시
-    if "expert_analyses" in result:
-        show_risk_warnings(result["expert_analyses"])
-
-    # 전문가별 분석 결과 카드 표시
-    if "expert_analyses" in result:
-        show_expert_analysis_cards(result["expert_analyses"])
+    # 3️⃣ 종합 전문가 분석 결과 (가장 먼저 표시)
+    st.markdown("## 🧠 종합 전문가 분석")
+    show_integrated_investment_opinion(expert_analysis)
 
     # 종합 추천 메시지 표시
-    if "recommendations" in result:
-        show_comprehensive_recommendations(result["recommendations"])
+    if "integrated_recommendations" in expert_analysis:
+        show_comprehensive_recommendations(
+            expert_analysis["integrated_recommendations"]
+        )
 
-    # 상세 결과 접기/펼치기
-    with st.expander("📋 상세 분석 결과 보기"):
-        st.json(result)
+    # 4️⃣ 개별 전문가 분석 결과들
+    st.markdown("## 🎯 개별 전문가 분석 결과")
+    if "expert_analyses" in expert_analysis:
+        show_expert_analysis_cards(expert_analysis["expert_analyses"])
+    else:
+        st.info("전문가 분석 결과가 없습니다.")
+
+    # 5️⃣ 위험 신호 분석
+    st.markdown("## ⚠️ 위험 신호 분석")
+    if "expert_analyses" in expert_analysis:
+        show_risk_warnings(expert_analysis["expert_analyses"])
+    else:
+        st.info("위험 분석 결과가 없습니다.")
+
+    # 6️⃣ 전문가 협력 구조 표시
+    st.markdown("## 🤝 전문가 협력 구조")
+    show_expert_collaboration_diagram()
+
+    # 7️⃣ 기본 분석 결과 요약
+    st.markdown("## 📊 기본 분석 결과 요약")
+    if basic_analysis:
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("분석 시간", basic_analysis.get("total_analysis_time", "N/A"))
+        with col2:
+            cost_savings = basic_analysis.get("cost_savings", {})
+            if cost_savings:
+                st.metric(
+                    "비용 절감", f"{cost_savings.get('savings_percentage', 0):.1f}%"
+                )
+        with col3:
+            data_quality = basic_analysis.get("data_integration_quality", {})
+            st.metric("데이터 품질", data_quality.get("quality_grade", "N/A"))
+
+    # 8️⃣ 상세 데이터 (접을 수 있는 형태로)
+    with st.expander("📋 상세 분석 데이터 보기"):
+        show_detailed_data(result)
+
+
+# 이 함수들은 더 이상 사용하지 않으므로 제거
+
+
+def show_detailed_data(result: Dict):
+    """상세 데이터 표시"""
+    st.subheader("📋 상세 분석 데이터")
+    st.json(result)
+
+
+def show_integrated_investment_opinion(expert_analysis: Dict):
+    """종합 투자 의견 생성 및 표시"""
+    st.subheader("💡 종합 투자 의견")
+
+    expert_analyses = expert_analysis.get("expert_analyses", {})
+
+    # 각 전문가의 의견 수집
+    opinions = {}
+
+    # 펀더멘털 전문가 의견
+    if "fundamental" in expert_analyses:
+        fundamental = expert_analyses["fundamental"]
+        if fundamental.get("success"):
+            opinions["펀더멘털"] = {
+                "status": (
+                    "긍정적"
+                    if "건전" in str(fundamental) or "양호" in str(fundamental)
+                    else "중립적"
+                ),
+                "summary": fundamental.get("summary", "재무 건전성 분석 완료"),
+                "key_points": extract_key_points(fundamental),
+            }
+
+    # 기술적 전문가 의견
+    if "technical" in expert_analyses:
+        technical = expert_analyses["technical"]
+        if technical.get("success"):
+            opinions["기술적"] = {
+                "status": (
+                    "긍정적"
+                    if "상승" in str(technical) or "매수" in str(technical)
+                    else "중립적"
+                ),
+                "summary": technical.get("summary", "기술적 분석 완료"),
+                "key_points": extract_key_points(technical),
+            }
+
+    # 밸류에이션 전문가 의견
+    if "valuation" in expert_analyses:
+        valuation = expert_analyses["valuation"]
+        if valuation.get("success"):
+            opinions["밸류에이션"] = {
+                "status": (
+                    "긍정적"
+                    if "저평가" in str(valuation) or "매수" in str(valuation)
+                    else "중립적"
+                ),
+                "summary": valuation.get("summary", "가치 평가 완료"),
+                "key_points": extract_key_points(valuation),
+            }
+
+    # 산업 전문가 의견
+    if "industry" in expert_analyses:
+        industry = expert_analyses["industry"]
+        if industry.get("success"):
+            opinions["산업"] = {
+                "status": (
+                    "긍정적"
+                    if "성장" in str(industry) or "유리" in str(industry)
+                    else "중립적"
+                ),
+                "summary": industry.get("summary", "산업 분석 완료"),
+                "key_points": extract_key_points(industry),
+            }
+
+    # 리스크 전문가 의견
+    if "risk" in expert_analyses:
+        risk = expert_analyses["risk"]
+        if risk.get("success"):
+            risk_level = "높음" if risk.get("extra_risks") else "보통"
+            opinions["리스크"] = {
+                "status": "주의" if risk_level == "높음" else "안정적",
+                "summary": f"위험도: {risk_level}",
+                "key_points": risk.get("extra_risks", []),
+            }
+
+    # 종합 의견 생성
+    positive_count = sum(
+        1 for op in opinions.values() if op["status"] in ["긍정적", "안정적"]
+    )
+    total_count = len(opinions)
+
+    if total_count > 0:
+        positive_ratio = positive_count / total_count
+
+        if positive_ratio >= 0.7:
+            overall_opinion = "매수"
+            confidence = "높음"
+            color = "success"
+        elif positive_ratio >= 0.5:
+            overall_opinion = "관망"
+            confidence = "보통"
+            color = "info"
+        else:
+            overall_opinion = "매도"
+            confidence = "높음"
+            color = "error"
+
+        # 종합 의견 표시
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("종합 의견", overall_opinion)
+        with col2:
+            st.metric("신뢰도", confidence)
+        with col3:
+            st.metric("긍정적 의견 비율", f"{positive_ratio:.1%}")
+
+        # 각 전문가별 의견 요약
+        st.markdown("### 📋 전문가별 의견 요약")
+        for expert_name, opinion in opinions.items():
+            with st.expander(f"{expert_name} 전문가 의견"):
+                st.write(f"**상태:** {opinion['status']}")
+                st.write(f"**요약:** {opinion['summary']}")
+                if opinion["key_points"]:
+                    st.write("**주요 포인트:**")
+                    for point in opinion["key_points"][:3]:  # 상위 3개만 표시
+                        st.write(f"• {point}")
+    else:
+        st.info("전문가 의견을 수집할 수 없습니다.")
+
+
+def extract_key_points(analysis_result: Dict) -> List[str]:
+    """분석 결과에서 주요 포인트 추출"""
+    key_points = []
+
+    # summary에서 키워드 추출
+    summary = analysis_result.get("summary", "")
+    if summary:
+        key_points.append(summary)
+
+    # 주요 지표들 추출
+    for key, value in analysis_result.items():
+        if isinstance(value, dict) and key in [
+            "roic_analysis",
+            "roe_analysis",
+            "dcf_analysis",
+        ]:
+            if value.get("success"):
+                key_points.append(f"{key}: 분석 완료")
+
+    return key_points[:5]  # 최대 5개만 반환
 
 
 def evaluate_quality(result: Dict[str, Any]) -> int:
@@ -616,19 +811,29 @@ def run_ab_test(user_input: str, options: Dict):
     Returns:
         Dict: A/B 결과와 품질 점수
     """
-    # A안: 기존 방식 (예시로 기존 프롬프트 버전)
-    result_A = run_enhanced_analysis(user_input, options)
-    # B안: 개선 방식 (예시로 옵션에 'improved' 추가)
-    improved_options = dict(options)
-    improved_options["prompt_version"] = "improved"
-    result_B = run_enhanced_analysis(user_input, improved_options)
-    # 품질 평가
-    score_A = evaluate_quality(result_A)
-    score_B = evaluate_quality(result_B)
-    return {
-        "A": {"result": result_A, "score": score_A},
-        "B": {"result": result_B, "score": score_B},
-    }
+    try:
+        # A안: 기존 방식 (예시로 기존 프롬프트 버전)
+        result_A = run_enhanced_analysis(user_input, options)
+        # B안: 개선 방식 (예시로 옵션에 'improved' 추가)
+        improved_options = dict(options)
+        improved_options["prompt_version"] = "improved"
+        result_B = run_enhanced_analysis(user_input, improved_options)
+
+        # 결과가 None인지 확인
+        if result_A is None or result_B is None:
+            st.error("❌ A/B 테스트 중 하나 이상의 분석이 실패했습니다.")
+            return None
+
+        # 품질 평가
+        score_A = evaluate_quality(result_A)
+        score_B = evaluate_quality(result_B)
+        return {
+            "A": {"result": result_A, "score": score_A},
+            "B": {"result": result_B, "score": score_B},
+        }
+    except Exception as e:
+        st.error(f"❌ A/B 테스트 실행 중 오류가 발생했습니다: {str(e)}")
+        return None
 
 
 def show_ab_test_results(ab_results: Dict[str, Any]):
@@ -637,6 +842,10 @@ def show_ab_test_results(ab_results: Dict[str, Any]):
     Args:
         ab_results: A/B 결과와 점수
     """
+    if ab_results is None:
+        st.error("❌ A/B 테스트 결과가 없습니다.")
+        return
+
     st.markdown("## 🆚 A/B 테스트 결과 비교")
     colA, colB = st.columns(2)
     with colA:
@@ -670,6 +879,7 @@ def run_enhanced_analysis(user_input: str, options: Dict):
     try:
         # 기존 분석 시스템으로 기본 분석 실행
         with st.spinner("🔍 기본 분석을 실행하고 있어요..."):
+            # enhanced_main의 run_enhanced_analysis는 async 함수이므로 asyncio.run으로 실행
             result = asyncio.run(
                 dashboard.analysis_system.run_enhanced_analysis(user_input)
             )
@@ -680,74 +890,87 @@ def run_enhanced_analysis(user_input: str, options: Dict):
 
         # 전문가 통합 분석 실행
         with st.spinner("🎯 전문가 종합 분석을 실행하고 있어요..."):
-            # 샘플 데이터 준비 (실제로는 result에서 추출)
-            sample_data = {
-                "financial_data": {
-                    "net_income": 1000,
-                    "total_equity": 5000,
-                    "total_liabilities": 3000,
-                    "revenue": 12000,
-                    "total_assets": 8000,
-                    "debt_ratio": 120,
-                    "current_ratio": 150,
-                    "interest_coverage": 4,
-                },
-                "market_data": {
-                    "market_share": 0.2,
-                    "volatility": 18,
-                    "exchange_rate": 1250,
-                    "interest_rate": 3.5,
-                    "price": 50000,
-                    "volume": 100000,
-                },
-                "company_data": {"name": "샘플회사", "market_share": 0.2},
-                "industry_data": {
-                    "market_shares": [0.2, 0.15, 0.1, 0.05],
-                    "average_roa": 8,
-                    "average_roe": 12,
-                    "average_margin": 15,
-                    "competitors": [
-                        {"name": "경쟁사1", "market_share": 0.15},
-                        {"name": "경쟁사2", "market_share": 0.1},
-                    ],
-                    "historical_data": [
-                        {"revenue": 10000},
-                        {"revenue": 11000},
-                        {"revenue": 12000},
-                    ],
-                    "market_penetration": 60,
-                    "growth_rate": 5,
-                    "consolidation_level": 30,
-                    "rd_intensity": 6,
-                    "patent_growth": 12,
-                    "technology_cycle": "중간",
-                    "disruption_risk": "낮음",
-                },
-                "operation_data": {
-                    "supply_chain": "정상",
-                    "workforce": "안정",
-                    "it_system": "안정",
-                },
-                "footnotes": [
-                    {
-                        "title": "회계정책 변경",
-                        "content": "회계정책이 2024년부터 변경되었습니다.",
-                    },
-                    {"title": "소송", "content": "현재 진행 중인 소송이 있습니다."},
-                    {"title": "일반사항", "content": "특별한 위험은 없습니다."},
-                ],
+            # 실제 분석 결과에서 데이터 추출 (실제 수집된 데이터 사용)
+            analysis_data = {
+                "financial_data": result.get("steps", {}).get(
+                    "step2_financial_data", {}
+                ),
+                "market_data": result.get("steps", {}).get(
+                    "step2_technical_analysis_data", {}
+                ),
+                "company_data": result.get("steps", {}).get(
+                    "step2_enhanced_dart_data", {}
+                ),
+                "industry_data": result.get("steps", {}).get(
+                    "step2_enhanced_dart_data", {}
+                ),
+                "operation_data": result.get("steps", {}).get(
+                    "step3_information_collection", {}
+                ),
+                "footnotes": result.get("steps", {})
+                .get("pdf_large_analysis", {})
+                .get("pdf_content", {}),
                 "timestamp": datetime.now().isoformat(),
             }
 
-            expert_result = dashboard.expert_integration.perform_comprehensive_analysis(
-                sample_data
+            # 샘플 데이터 사용 여부 확인 및 경고 표시
+            sample_data_warnings = []
+
+            # yfinance 샘플 데이터 확인
+            financial_data = analysis_data.get("financial_data", {})
+            if financial_data.get("is_sample_data", False):
+                sample_data_warnings.append(
+                    "⚠️ yfinance에서 일부 샘플 데이터가 사용되었습니다. DART 데이터를 우선 참고하세요."
+                )
+
+            # 성장 지표 샘플 데이터 확인
+            earnings_growth = financial_data.get("earnings_growth")
+            revenue_growth = financial_data.get("revenue_growth")
+
+            if earnings_growth == -0.999 or revenue_growth == 0.1:
+                sample_data_warnings.append(
+                    "⚠️ 성장 지표에서 샘플 데이터가 감지되었습니다. 실제 성장률은 DART 데이터를 참고하세요."
+                )
+
+            # 경고 메시지 표시
+            if sample_data_warnings:
+                st.warning("### 📊 데이터 품질 경고")
+                for warning in sample_data_warnings:
+                    st.warning(warning)
+                st.info(
+                    "💡 **해결 방법**: DART API 데이터가 우선적으로 사용되며, 더 정확한 분석을 위해 DART 데이터를 참고하세요."
+                )
+
+            # 샘플 데이터 사용 여부 확인 및 경고
+            financial_data = analysis_data.get("financial_data", {})
+            yfinance_data = financial_data.get("yfinance_data", {})
+            if yfinance_data.get("is_sample_data", False):
+                st.warning(
+                    "⚠️ **주의**: yfinance에서 샘플 데이터가 사용되었습니다. DART 데이터를 우선 참고하세요."
+                )
+                st.info(
+                    "💡 **해결방법**: yfinance API 연결 문제로 인해 일부 성장 지표가 샘플 값으로 표시됩니다."
+                )
+
+            expert_result = asyncio.run(
+                dashboard.expert_integration.perform_comprehensive_analysis(
+                    analysis_data
+                )
             )
 
         # 결과를 세션에 저장
         st.session_state.current_analysis_result = result
         st.session_state.expert_analysis_result = expert_result
 
-        return expert_result
+        # 통합 결과 반환
+        integrated_result = {
+            "success": True,
+            "basic_analysis": result,
+            "expert_analysis": expert_result,
+            "timestamp": datetime.now().isoformat(),
+        }
+
+        return integrated_result
 
     except Exception as e:
         st.error(f"❌ 분석 실행 중 오류가 발생했습니다: {str(e)}")
@@ -848,7 +1071,10 @@ def show_analysis_page():
         options = {"analysis_depth": analysis_depth, "include_pdf": include_pdf}
         ab_results = run_ab_test(user_input, options)
         st.session_state.analysis_in_progress = False
-        show_ab_test_results(ab_results)
+        if ab_results:
+            show_ab_test_results(ab_results)
+        else:
+            st.error("❌ A/B 테스트에 실패했습니다.")
 
 
 def show_results_page():

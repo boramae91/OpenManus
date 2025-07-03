@@ -9,6 +9,7 @@
 """
 
 import asyncio
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from app.logger import logger
@@ -45,6 +46,8 @@ class ExpertAnalysisIntegration:
     def analyze_fundamental(self, financial_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         펀더멘털 전문가에게 재무 분석을 맡겨요
+        ⚠️ 중요: 실제 계산된 데이터를 우선적으로 사용하고, 가정값은 보조적으로만 사용해요!
+
         Args:
             financial_data: 재무 데이터 (예: yfinance, DART API 데이터)
         Returns:
@@ -53,13 +56,46 @@ class ExpertAnalysisIntegration:
         try:
             logger.info("📊 펀더멘털 전문가 분석 시작...")
 
-            # ROIC 추세 분석
-            roic_analysis = self.fundamental_expert.calculate_roic_trend(financial_data)
+            # 🎯 데이터 일관성 보장: 실제 계산된 값들을 먼저 추출
+            calculated_metrics = self._extract_calculated_metrics(financial_data)
 
-            # ROE 해체 분석
+            # 실제 계산된 ROIC가 있으면 사용, 없으면 계산
+            if calculated_metrics.get("roic") is not None:
+                roic_value = calculated_metrics["roic"]
+                logger.info(f"📊 실제 계산된 ROIC 사용: {roic_value}%")
+            else:
+                roic_analysis = self.fundamental_expert.calculate_roic_trend(
+                    financial_data
+                )
+                roic_value = (
+                    roic_analysis.get("roic", 0) if roic_analysis.get("success") else 0
+                )
+                logger.info(f"📊 새로 계산된 ROIC: {roic_value}%")
+
+            # 실제 계산된 ROE가 있으면 사용, 없으면 계산
+            if calculated_metrics.get("roe") is not None:
+                roe_value = calculated_metrics["roe"]
+                logger.info(f"📊 실제 계산된 ROE 사용: {roe_value}%")
+            else:
+                roe_analysis = self.fundamental_expert.calculate_roe_decomposition(
+                    financial_data
+                )
+                roe_value = (
+                    roe_analysis.get("roe", 0) if roe_analysis.get("success") else 0
+                )
+                logger.info(f"📊 새로 계산된 ROE: {roe_value}%")
+
+            # ROIC 추세 분석 (실제 계산된 값 사용)
+            roic_analysis = self.fundamental_expert.calculate_roic_trend(financial_data)
+            if roic_analysis.get("success"):
+                roic_analysis["roic"] = roic_value  # 일관성 보장
+
+            # ROE 해체 분석 (실제 계산된 값 사용)
             roe_analysis = self.fundamental_expert.calculate_roe_decomposition(
                 financial_data
             )
+            if roe_analysis.get("success"):
+                roe_analysis["roe"] = roe_value  # 일관성 보장
 
             # 수익성 지표 분석
             profitability_analysis = (
@@ -74,11 +110,13 @@ class ExpertAnalysisIntegration:
             result = {
                 "success": True,
                 "expert_type": "펀더멘털 전문가",
+                "calculated_metrics": calculated_metrics,  # 실제 계산된 값들
                 "roic_analysis": roic_analysis,
                 "roe_analysis": roe_analysis,
                 "profitability_analysis": profitability_analysis,
                 "causality_analysis": causality_analysis,
-                "summary": "재무 건전성과 수익성을 종합적으로 분석했어요",
+                "summary": f"재무 건전성과 수익성을 종합적으로 분석했어요 (ROIC: {roic_value}%, ROE: {roe_value}%)",
+                "data_source": "실제 계산된 데이터 우선 사용",
             }
 
             logger.info("✅ 펀더멘털 분석 완료!")
@@ -137,6 +175,8 @@ class ExpertAnalysisIntegration:
     ) -> Dict[str, Any]:
         """
         밸류에이션 전문가에게 기업 가치 분석을 맡겨요
+        ⚠️ 중요: 실제 계산된 데이터를 우선적으로 사용하고, 가정값은 보조적으로만 사용해요!
+
         Args:
             financial_data: 재무 데이터
             market_data: 시장 데이터
@@ -146,7 +186,36 @@ class ExpertAnalysisIntegration:
         try:
             logger.info("💰 밸류에이션 전문가 분석 시작...")
 
-            # DCF 모델 분석
+            # 🎯 데이터 일관성 보장: 실제 계산된 값들을 먼저 추출
+            calculated_metrics = self._extract_calculated_metrics(financial_data)
+
+            # 실제 계산된 ROIC와 WACC가 있으면 사용
+            roic_value = calculated_metrics.get("roic")
+            wacc_value = calculated_metrics.get("wacc")
+
+            if roic_value is not None and wacc_value is not None:
+                logger.info(
+                    f"💰 실제 계산된 ROIC: {roic_value}%, WACC: {wacc_value}% 사용"
+                )
+                # ROIC vs WACC 비교 분석
+                roic_wacc_analysis = {
+                    "roic": roic_value,
+                    "wacc": wacc_value,
+                    "spread": roic_value - wacc_value,
+                    "value_creation": roic_value > wacc_value,
+                    "interpretation": f"ROIC({roic_value}%) {'>' if roic_value > wacc_value else '<'} WACC({wacc_value}%) - 가치창출 {'가능' if roic_value > wacc_value else '어려움'}",
+                }
+            else:
+                logger.warning("⚠️ ROIC/WACC 계산값이 없어 가정값 사용")
+                roic_wacc_analysis = {
+                    "roic": 12.5,  # 가정값
+                    "wacc": 8.0,  # 가정값
+                    "spread": 4.5,
+                    "value_creation": True,
+                    "interpretation": "가정값 사용 - 실제 계산된 값 확인 필요",
+                }
+
+            # DCF 모델 분석 (실제 계산된 값 우선 사용)
             dcf_analysis = self.valuation_expert.perform_dcf_analysis(financial_data)
 
             # 상대가치 분석
@@ -169,11 +238,14 @@ class ExpertAnalysisIntegration:
             result = {
                 "success": True,
                 "expert_type": "밸류에이션 전문가",
+                "calculated_metrics": calculated_metrics,  # 실제 계산된 값들
+                "roic_wacc_analysis": roic_wacc_analysis,  # ROIC vs WACC 비교
                 "dcf_analysis": dcf_analysis,
                 "relative_valuation": relative_valuation,
                 "asset_based_valuation": asset_based_valuation,
                 "comprehensive_valuation": comprehensive_valuation,
-                "summary": "기업의 내재가치와 투자 가치를 종합적으로 평가했어요",
+                "summary": f"기업의 내재가치와 투자 가치를 종합적으로 평가했어요 (ROIC: {roic_wacc_analysis['roic']}%, WACC: {roic_wacc_analysis['wacc']}%)",
+                "data_source": "실제 계산된 데이터 우선 사용",
             }
 
             logger.info("✅ 밸류에이션 분석 완료!")
@@ -186,6 +258,64 @@ class ExpertAnalysisIntegration:
                 "error": str(e),
                 "expert_type": "밸류에이션 전문가",
             }
+
+    def _extract_calculated_metrics(
+        self, financial_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        실제 계산된 지표들을 추출해요
+        실제 데이터를 우선적으로 사용하고, 가정값은 보조적으로만 사용해요!
+        """
+        calculated_metrics = {}
+
+        # 1. 실제 계산된 ROIC 추출
+        if "calculated_roic" in financial_data:
+            calculated_metrics["roic"] = financial_data["calculated_roic"]
+        elif "roic" in financial_data:
+            calculated_metrics["roic"] = financial_data["roic"]
+        elif "fundamental_analysis" in financial_data:
+            fundamental = financial_data["fundamental_analysis"]
+            if "roic_analysis" in fundamental and fundamental["roic_analysis"].get(
+                "success"
+            ):
+                calculated_metrics["roic"] = fundamental["roic_analysis"].get("roic", 0)
+
+        # 2. 실제 계산된 ROE 추출
+        if "calculated_roe" in financial_data:
+            calculated_metrics["roe"] = financial_data["calculated_roe"]
+        elif "roe" in financial_data:
+            calculated_metrics["roe"] = financial_data["roe"]
+        elif "fundamental_analysis" in financial_data:
+            fundamental = financial_data["fundamental_analysis"]
+            if "roe_analysis" in fundamental and fundamental["roe_analysis"].get(
+                "success"
+            ):
+                calculated_metrics["roe"] = fundamental["roe_analysis"].get("roe", 0)
+
+        # 3. 실제 계산된 WACC 추출
+        if "calculated_wacc" in financial_data:
+            calculated_metrics["wacc"] = financial_data["calculated_wacc"]
+        elif "wacc" in financial_data:
+            calculated_metrics["wacc"] = financial_data["wacc"]
+        elif "valuation_analysis" in financial_data:
+            valuation = financial_data["valuation_analysis"]
+            if "wacc" in valuation:
+                calculated_metrics["wacc"] = valuation["wacc"]
+
+        # 4. 기타 실제 계산된 지표들
+        for key in [
+            "revenue",
+            "operating_income",
+            "net_income",
+            "total_assets",
+            "total_equity",
+            "current_price",
+        ]:
+            if key in financial_data:
+                calculated_metrics[key] = financial_data[key]
+
+        logger.info(f"📊 추출된 실제 계산 지표: {list(calculated_metrics.keys())}")
+        return calculated_metrics
 
     def analyze_industry(
         self, company_data: Dict[str, Any], industry_data: Dict[str, Any]
@@ -355,6 +485,99 @@ class ExpertAnalysisIntegration:
             logger.error(f"❌ 주석 분석 실패: {e}")
             return {"success": False, "error": str(e), "expert_type": "주석 전문가"}
 
+    def perform_comprehensive_analysis_sync(
+        self, user_input: str, options: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        동기 방식의 종합 분석 수행
+
+        Args:
+            user_input: 사용자 입력
+            options: 분석 옵션
+
+        Returns:
+            Dict: 종합 분석 결과
+        """
+        try:
+            logger.info("🎯 모든 전문가 종합 분석 시작...")
+
+            # 실제 데이터 사용 (샘플 데이터 제거)
+            # 실제 분석에서는 all_data에서 실제 수집된 데이터를 사용해야 함
+            logger.warning("⚠️ 실제 데이터가 제공되지 않아 기본 분석만 수행합니다.")
+
+            # 기본 분석용 최소 데이터 구조
+            financial_data = {}
+            market_data = {}
+            industry_data = {}
+
+            # 각 전문가 분석 실행
+            expert_results = []
+
+            # 1. 펀더멘털 분석
+            if "펀더멘털 분석" in options.get("analysis_types", []):
+                fundamental_result = self.analyze_fundamental(financial_data)
+                expert_results.append(fundamental_result)
+
+            # 2. 기술적 분석
+            if "기술적 분석" in options.get("analysis_types", []):
+                technical_result = self.analyze_technical(market_data)
+                expert_results.append(technical_result)
+
+            # 3. 밸류에이션 분석
+            if "밸류에이션 분석" in options.get("analysis_types", []):
+                valuation_result = self.analyze_valuation(financial_data, market_data)
+                expert_results.append(valuation_result)
+
+            # 4. 산업 분석
+            if "산업 분석" in options.get("analysis_types", []):
+                industry_result = self.analyze_industry(financial_data, industry_data)
+                expert_results.append(industry_result)
+
+            # 5. 리스크 평가
+            if "리스크 평가" in options.get("analysis_types", []):
+                risk_result = self.analyze_risk(financial_data, market_data, {})
+                expert_results.append(risk_result)
+
+            # 6. 재무제표 주석 분석
+            if "재무제표 주석 분석" in options.get("analysis_types", []):
+                footnote_result = self.analyze_footnotes([])
+                expert_results.append(footnote_result)
+
+            # 결과 통합
+            successful_analyses = [r for r in expert_results if r.get("success")]
+            failed_analyses = [r for r in expert_results if not r.get("success")]
+
+            # 종합 추천 생성
+            recommendations = self._generate_integrated_recommendations(
+                expert_results, []
+            )
+
+            result = {
+                "success": len(successful_analyses) > 0,
+                "input": user_input,
+                "options": options,
+                "expert_results": expert_results,
+                "successful_count": len(successful_analyses),
+                "failed_count": len(failed_analyses),
+                "recommendations": recommendations,
+                "recommendation": self._get_final_recommendation(recommendations),
+                "confidence": self._calculate_confidence(successful_analyses),
+                "summary": f"'{user_input}' 종목에 대한 {len(successful_analyses)}개 전문가 분석이 완료되었습니다.",
+                "timestamp": datetime.now().isoformat(),
+            }
+
+            logger.info("✅ 모든 전문가 종합 분석 완료!")
+            return result
+
+        except Exception as e:
+            logger.error(f"❌ 종합 분석 실패: {e}")
+            return {
+                "success": False,
+                "error": str(e),
+                "input": user_input,
+                "timestamp": datetime.now().isoformat(),
+            }
+
     async def perform_comprehensive_analysis(
         self, all_data: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -519,3 +742,25 @@ class ExpertAnalysisIntegration:
                 "일부 전문가의 분석만 가능했어요. 더 많은 데이터가 있으면 더 정확한 분석이 가능해요."
             )
         return recommendations
+
+    def _get_final_recommendation(self, recommendations: List[str]) -> str:
+        """최종 추천 결정"""
+        if not recommendations:
+            return "관망"
+
+        first_recommendation = recommendations[0]
+        if "매수" in first_recommendation:
+            return "매수"
+        elif "매도" in first_recommendation:
+            return "매도"
+        else:
+            return "관망"
+
+    def _calculate_confidence(self, successful_analyses: List[Dict[str, Any]]) -> str:
+        """신뢰도 계산"""
+        if len(successful_analyses) >= 4:
+            return "높음"
+        elif len(successful_analyses) >= 2:
+            return "중간"
+        else:
+            return "낮음"

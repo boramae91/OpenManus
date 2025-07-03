@@ -35,7 +35,8 @@ import pandas as pd
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # 모듈 import
-from app.agent.manus import Manus
+# 임시로 Manus import 주석 처리 - python_execute 오류 해결 후 활성화
+# from app.agent.manus import Manus
 
 # 종목 분류 기능 제거 - from app.agent.stock_classifier import StockClassifier
 from app.agent.stock_name_extractor import StockNameExtractor
@@ -88,7 +89,9 @@ class EnhancedStockAnalysisSystem:
         # 에이전트들 초기화
         self.llm = LLM()
         # 종목 분류 기능 제거 - self.stock_classifier = StockClassifier(llm=self.llm)
-        self.manus_agent = Manus(llm=self.llm)
+        # 임시로 Manus 초기화 주석 처리 - python_execute 오류 해결 후 활성화
+        # self.manus_agent = Manus(llm=self.llm)
+        self.manus_agent = None
 
         # 🤖 종목 감지용 AI 에이전트들 초기화
         self.stock_name_extractor = StockNameExtractor()
@@ -583,37 +586,47 @@ class EnhancedStockAnalysisSystem:
 
             # Manus 에이전트 실행 (안전한 방식)
             try:
-                if (
-                    hasattr(self.manus_agent, "memory")
-                    and self.manus_agent.memory is not None
-                ):
-                    self.manus_agent.memory.clear()
+                if self.manus_agent is None:
+                    logger.warning(
+                        "⚠️ Manus Agent가 비활성화되어 있습니다 - 기본 정보만 수집"
+                    )
+                    collection_response = (
+                        "Manus Agent가 비활성화되어 있어 기본 정보만 수집됩니다."
+                    )
                 else:
-                    logger.warning("⚠️ Manus Agent 메모리가 초기화되지 않음")
+                    if (
+                        hasattr(self.manus_agent, "memory")
+                        and self.manus_agent.memory is not None
+                    ):
+                        self.manus_agent.memory.clear()
+                    else:
+                        logger.warning("⚠️ Manus Agent 메모리가 초기화되지 않음")
 
-                if hasattr(self.manus_agent, "update_memory"):
-                    self.manus_agent.update_memory("user", collection_prompt)
-                else:
-                    logger.warning("⚠️ Manus Agent update_memory 메서드 없음")
+                    if hasattr(self.manus_agent, "update_memory"):
+                        self.manus_agent.update_memory("user", collection_prompt)
+                    else:
+                        logger.warning("⚠️ Manus Agent update_memory 메서드 없음")
+
+                    collection_response = ""
+                    try:
+                        run_result = await self.manus_agent.run()
+
+                        if run_result is not None:
+                            if hasattr(run_result, "__aiter__"):
+                                async for response in run_result:
+                                    collection_response += response + "\n"
+                            else:
+                                collection_response = str(run_result)
+                        else:
+                            collection_response = "정보 수집 에이전트 실행 실패"
+                    except Exception as collection_error:
+                        logger.error(f"❌ 정보 수집 중 오류: {collection_error}")
+                        collection_response = (
+                            f"정보 수집 중 오류 발생: {str(collection_error)}"
+                        )
             except Exception as memory_error:
                 logger.error(f"❌ Manus Agent 메모리 처리 오류: {memory_error}")
-                # 메모리 오류가 있어도 계속 진행
-
-            collection_response = ""
-            try:
-                run_result = await self.manus_agent.run()
-
-                if run_result is not None:
-                    if hasattr(run_result, "__aiter__"):
-                        async for response in run_result:
-                            collection_response += response + "\n"
-                    else:
-                        collection_response = str(run_result)
-                else:
-                    collection_response = "정보 수집 에이전트 실행 실패"
-            except Exception as collection_error:
-                logger.error(f"❌ 정보 수집 중 오류: {collection_error}")
-                collection_response = f"정보 수집 중 오류 발생: {str(collection_error)}"
+                collection_response = "Manus Agent 오류로 인해 기본 정보만 수집됩니다."
 
             # 📄 PDF 감지 및 자동 분석
             pdf_analysis_result = await self._detect_and_analyze_pdf_from_response(
@@ -874,28 +887,34 @@ class EnhancedStockAnalysisSystem:
 
             # 메모리 초기화 (안전한 방식)
             try:
-                if (
-                    hasattr(self.manus_agent, "memory")
-                    and self.manus_agent.memory is not None
-                ):
-                    self.manus_agent.memory.clear()
+                if self.manus_agent is None:
+                    logger.warning(
+                        "⚠️ Manus Agent가 비활성화되어 있습니다 - 다른 방법으로 종목 감지"
+                    )
+                    search_result = None
                 else:
-                    logger.warning("⚠️ Manus Agent 메모리가 초기화되지 않음")
+                    if (
+                        hasattr(self.manus_agent, "memory")
+                        and self.manus_agent.memory is not None
+                    ):
+                        self.manus_agent.memory.clear()
+                    else:
+                        logger.warning("⚠️ Manus Agent 메모리가 초기화되지 않음")
 
-                if hasattr(self.manus_agent, "update_memory"):
-                    self.manus_agent.update_memory("user", search_prompt)
-                else:
-                    logger.warning("⚠️ Manus Agent update_memory 메서드 없음")
+                    if hasattr(self.manus_agent, "update_memory"):
+                        self.manus_agent.update_memory("user", search_prompt)
+                    else:
+                        logger.warning("⚠️ Manus Agent update_memory 메서드 없음")
+
+                    # AI 에이전트 실행 (안전한 방식)
+                    try:
+                        search_result = await self.manus_agent.run()
+                    except Exception as run_error:
+                        logger.error(f"❌ Manus Agent 실행 오류: {run_error}")
+                        # 에이전트 실행 실패 시 폴백 처리
+                        search_result = None
             except Exception as memory_error:
                 logger.error(f"❌ Manus Agent 메모리 처리 오류: {memory_error}")
-                # 메모리 오류가 있어도 계속 진행
-
-            # AI 에이전트 실행 (안전한 방식)
-            try:
-                search_result = await self.manus_agent.run()
-            except Exception as run_error:
-                logger.error(f"❌ Manus Agent 실행 오류: {run_error}")
-                # 에이전트 실행 실패 시 폴백 처리
                 search_result = None
 
             # 결과 처리 (안전한 방식)

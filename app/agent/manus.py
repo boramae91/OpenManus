@@ -1,3 +1,4 @@
+import os
 from typing import Dict, List, Optional
 
 from pydantic import Field, model_validator
@@ -19,7 +20,9 @@ class Manus(ToolCallAgent):
     """A versatile general-purpose agent with support for both local and MCP tools."""
 
     name: str = "Manus"
-    description: str = "A versatile agent that can solve various tasks using multiple tools including MCP-based tools"
+    description: str = (
+        "A versatile agent that can solve various tasks using multiple tools including MCP-based tools"
+    )
 
     system_prompt: str = SYSTEM_PROMPT.format(directory=config.workspace_root)
     next_step_prompt: str = NEXT_STEP_PROMPT
@@ -36,7 +39,6 @@ class Manus(ToolCallAgent):
             PythonExecute(),
             BrowserUseTool(),
             StrReplaceEditor(),
-            AskHuman(),
             Terminate(),
         )
     )
@@ -54,6 +56,14 @@ class Manus(ToolCallAgent):
     def initialize_helper(self) -> "Manus":
         """Initialize basic components synchronously."""
         self.browser_context_helper = BrowserContextHelper(self)
+
+        # 대시보드 모드가 아닐 때만 AskHuman 도구 추가
+        dashboard_mode = os.getenv("DASHBOARD_MODE", "false").lower() == "true"
+        streamlit_mode = os.getenv("STREAMLIT_MODE", "false").lower() == "true"
+
+        if not (dashboard_mode or streamlit_mode):
+            self.available_tools.add_tools(AskHuman())
+
         return self
 
     @classmethod

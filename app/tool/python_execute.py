@@ -1,5 +1,6 @@
-import multiprocessing
 import sys
+import threading
+import time
 from io import StringIO
 from typing import Dict
 
@@ -10,7 +11,9 @@ class PythonExecute(BaseTool):
     """A tool for executing Python code with timeout and safety restrictions."""
 
     name: str = "python_execute"
-    description: str = "Executes Python code string. Note: Only print outputs are visible, function return values are not captured. Use print statements to see results."
+    description: str = (
+        "Executes Python code string. Note: Only print outputs are visible, function return values are not captured. Use print statements to see results."
+    )
     parameters: dict = {
         "type": "object",
         "properties": {
@@ -39,37 +42,59 @@ class PythonExecute(BaseTool):
     async def execute(
         self,
         code: str,
-        timeout: int = 5,
+        timeout: int = 30,  # 타임아웃을 30초로 증가
     ) -> Dict:
         """
         Executes the provided Python code with a timeout.
 
         Args:
             code (str): The Python code to execute.
-            timeout (int): Execution timeout in seconds.
+            timeout (int): Execution timeout in seconds (기본값: 30초).
 
         Returns:
             Dict: Contains 'output' with execution output or error message and 'success' status.
         """
 
-        with multiprocessing.Manager() as manager:
-            result = manager.dict({"observation": "", "success": False})
+        try:
+            # 스레드 기반 실행으로 변경
+            result = {"observation": "", "success": False}
+
+            # 안전한 글로벌 환경 설정
             if isinstance(__builtins__, dict):
                 safe_globals = {"__builtins__": __builtins__}
             else:
                 safe_globals = {"__builtins__": __builtins__.__dict__.copy()}
-            proc = multiprocessing.Process(
+
+            # 추가 안전 모듈 허용
+            safe_globals.update(
+                {
+                    "math": __import__("math"),
+                    "datetime": __import__("datetime"),
+                    "json": __import__("json"),
+                    "re": __import__("re"),
+                    "collections": __import__("collections"),
+                }
+            )
+
+            # 스레드에서 코드 실행
+            thread = threading.Thread(
                 target=self._run_code, args=(code, result, safe_globals)
             )
-            proc.start()
-            proc.join(timeout)
+            thread.daemon = True
+            thread.start()
+            thread.join(timeout)
 
-            # timeout process
-            if proc.is_alive():
-                proc.terminate()
-                proc.join(1)
+            # 타임아웃 처리
+            if thread.is_alive():
                 return {
-                    "observation": f"Execution timeout after {timeout} seconds",
+                    "observation": f"코드 실행이 {timeout}초 후 타임아웃되었습니다. 복잡한 계산이나 무한 루프를 확인해주세요.",
                     "success": False,
                 }
-            return dict(result)
+
+            return result
+
+        except Exception as e:
+            return {
+                "observation": f"코드 실행 중 오류 발생: {str(e)}",
+                "success": False,
+            }

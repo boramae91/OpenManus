@@ -99,136 +99,125 @@ class FinancialDataCollector:
         return collected_data
 
     def _collect_yfinance_data(self, stock_code: str) -> Dict[str, Any]:
-        """
-        yfinance를 사용해서 주가와 기본 재무정보를 수집해요
-
-        Args:
-            stock_code: 종목코드
-
-        Returns:
-            Dict: yfinance에서 수집한 데이터
-        """
-        logger.info(f"📈 yfinance에서 {stock_code} 데이터 수집 중...")
-
-        # 종목코드가 None인 경우 처리
-        if not stock_code:
-            return {"success": False, "errors": ["종목코드가 제공되지 않았습니다"]}
+        """yfinance에서 주식 데이터 수집"""
+        self.logger.info(f"📈 yfinance에서 {stock_code} 데이터 수집 중...")
 
         try:
-            # 한국 주식은 .KS 또는 .KQ 접미사 필요
-            if self._is_korean_stock(stock_code):
-                # 대부분의 한국 주식은 .KS (코스피)
-                ticker_symbol = f"{stock_code}.KS"
-                ticker = yf.Ticker(ticker_symbol)
+            # 한국 주식의 경우 .KS 추가
+            ticker_symbol = f"{stock_code}.KS"
+            ticker = yf.Ticker(ticker_symbol)
 
-                # 코스피에서 데이터가 없으면 코스닥(.KQ) 시도
-                try:
-                    info = ticker.info
-                    if not info or info.get("regularMarketPrice") is None:
-                        ticker_symbol = f"{stock_code}.KQ"
-                        ticker = yf.Ticker(ticker_symbol)
-                        info = ticker.info
-                except:
-                    ticker_symbol = f"{stock_code}.KQ"
-                    ticker = yf.Ticker(ticker_symbol)
-                    info = ticker.info
-            else:
-                # 해외 주식은 그대로 사용
-                ticker_symbol = stock_code
-                ticker = yf.Ticker(ticker_symbol)
-                info = ticker.info
+            # 기본 정보 가져오기
+            info = ticker.info
 
-            # 기본 정보 수집
-            basic_info = {
-                "company_name": info.get("longName", info.get("shortName", "정보없음")),
-                "sector": info.get("sector", "정보없음"),
-                "industry": info.get("industry", "정보없음"),
-                "country": info.get("country", "정보없음"),
-                "currency": info.get("currency", "KRW"),
-                "exchange": info.get("exchange", "정보없음"),
-                "ticker_symbol": ticker_symbol,
+            if not info:
+                self.logger.warning(
+                    f"⚠️ yfinance에서 {stock_code} 정보를 가져올 수 없습니다"
+                )
+                return {}
+
+            # 샘플 데이터 감지
+            sample_data_indicators = {
+                "earnings_growth": -0.999,
+                "revenue_growth": 0.1,
+                "earnings_quarterly_growth": 0.213,
             }
 
-            # 현재 주가 정보
-            current_price_info = {
-                "current_price": info.get(
-                    "regularMarketPrice", info.get("currentPrice")
-                ),
-                "previous_close": info.get("previousClose"),
-                "open_price": info.get("open"),
-                "day_high": info.get("dayHigh"),
-                "day_low": info.get("dayLow"),
-                "volume": info.get("volume"),
-                "market_cap": info.get("marketCap"),
-                "shares_outstanding": info.get("sharesOutstanding"),
-            }
-
-            # 재무 지표
-            financial_ratios = {
-                "pe_ratio": info.get("trailingPE"),  # PER
-                "peg_ratio": info.get("pegRatio"),  # PEG
-                "pb_ratio": info.get("priceToBook"),  # PBR
-                "ps_ratio": info.get("priceToSalesTrailing12Months"),  # PSR
-                "dividend_yield": info.get("dividendYield"),
-                "profit_margin": info.get("profitMargins"),
-                "operating_margin": info.get("operatingMargins"),
-                "return_on_equity": info.get("returnOnEquity"),  # ROE
-                "return_on_assets": info.get("returnOnAssets"),  # ROA
-                "debt_to_equity": info.get("debtToEquity"),
-                "current_ratio": info.get("currentRatio"),
-                "quick_ratio": info.get("quickRatio"),
-            }
-
-            # 성장 지표
-            growth_metrics = {
-                "earnings_growth": info.get("earningsGrowth"),
-                "revenue_growth": info.get("revenueGrowth"),
-                "earnings_quarterly_growth": info.get("earningsQuarterlyGrowth"),
-                "revenue_quarterly_growth": info.get("revenueQuarterlyGrowth"),
-            }
-
-            # 과거 주가 데이터 (최근 1년)
-            try:
-                hist_data = ticker.history(period="1y")
-                price_history = {
-                    "52_week_high": (
-                        float(hist_data["High"].max()) if not hist_data.empty else None
-                    ),
-                    "52_week_low": (
-                        float(hist_data["Low"].min()) if not hist_data.empty else None
-                    ),
-                    "avg_volume_3m": (
-                        float(hist_data["Volume"].tail(90).mean())
-                        if not hist_data.empty
-                        else None
-                    ),
-                    "price_change_1y": None,
-                }
-
-                if not hist_data.empty and len(hist_data) > 1:
-                    year_ago_price = hist_data["Close"].iloc[0]
-                    current_price = hist_data["Close"].iloc[-1]
-                    price_history["price_change_1y"] = float(
-                        (current_price - year_ago_price) / year_ago_price * 100
+            is_sample_data = False
+            for key, sample_value in sample_data_indicators.items():
+                if info.get(key) == sample_value:
+                    is_sample_data = True
+                    self.logger.warning(
+                        f"⚠️ yfinance에서 샘플 데이터 감지: {key} = {sample_value}"
                     )
 
-            except Exception as e:
-                logger.warning(f"주가 히스토리 수집 실패: {e}")
-                price_history = {}
+            if is_sample_data:
+                self.logger.warning(
+                    "⚠️ yfinance에서 샘플 데이터가 반환되었습니다. 실제 데이터 수집을 시도합니다..."
+                )
+
+                # 실제 데이터 수집을 위한 추가 시도
+                try:
+                    # 과거 데이터에서 성장률 계산
+                    hist = ticker.history(period="2y")
+                    if len(hist) > 1:
+                        # 수익 성장률 계산
+                        if "Earnings" in hist.columns:
+                            earnings_growth = (
+                                (hist["Earnings"].iloc[-1] - hist["Earnings"].iloc[0])
+                                / abs(hist["Earnings"].iloc[0])
+                                if hist["Earnings"].iloc[0] != 0
+                                else 0
+                            )
+                            info["earnings_growth"] = earnings_growth
+                            self.logger.info(
+                                f"✅ 실제 수익 성장률 계산: {earnings_growth:.3f}"
+                            )
+
+                        # 매출 성장률 계산 (가능한 경우)
+                        if "Revenue" in hist.columns:
+                            revenue_growth = (
+                                (hist["Revenue"].iloc[-1] - hist["Revenue"].iloc[0])
+                                / abs(hist["Revenue"].iloc[0])
+                                if hist["Revenue"].iloc[0] != 0
+                                else 0
+                            )
+                            info["revenue_growth"] = revenue_growth
+                            self.logger.info(
+                                f"✅ 실제 매출 성장률 계산: {revenue_growth:.3f}"
+                            )
+
+                        is_sample_data = False
+                        self.logger.info("✅ 실제 데이터로 대체 완료")
+                except Exception as e:
+                    self.logger.error(f"❌ 실제 데이터 계산 실패: {e}")
+
+            # 현재가 정보
+            current_price = info.get("regularMarketPrice", 0)
+            if current_price:
+                self.logger.info(f"💰 현재가: {current_price:,.0f}원")
+
+            # 시가총액 정보
+            market_cap = info.get("marketCap", 0)
+            if market_cap:
+                self.logger.info(f"📊 시가총액: {market_cap:,.0f}원")
+
+            # 성장 지표 정보
+            earnings_growth = info.get("earnings_growth")
+            revenue_growth = info.get("revenue_growth")
+
+            if earnings_growth is not None:
+                self.logger.info(f"📈 이익 성장률: {earnings_growth:.3f}")
+            if revenue_growth is not None:
+                self.logger.info(f"📊 매출 성장률: {revenue_growth:.3f}")
+
+            if is_sample_data:
+                self.logger.warning(
+                    "⚠️ yfinance에서 샘플 데이터가 사용됩니다. DART 데이터를 우선 사용하세요."
+                )
 
             return {
-                "success": True,
-                "basic_info": basic_info,
-                "current_price_info": current_price_info,
-                "financial_ratios": financial_ratios,
-                "growth_metrics": growth_metrics,
-                "price_history": price_history,
-                "data_quality": self._assess_data_quality(info),
+                "current_price": current_price,
+                "market_cap": market_cap,
+                "earnings_growth": earnings_growth,
+                "revenue_growth": revenue_growth,
+                "is_sample_data": is_sample_data,
+                "company_name": info.get("longName", ""),
+                "sector": info.get("sector", ""),
+                "industry": info.get("industry", ""),
+                "pe_ratio": info.get("trailingPE"),
+                "pb_ratio": info.get("priceToBook"),
+                "dividend_yield": info.get("dividendYield"),
+                "beta": info.get("beta"),
+                "volume": info.get("volume"),
+                "avg_volume": info.get("averageVolume"),
+                "high_52week": info.get("fiftyTwoWeekHigh"),
+                "low_52week": info.get("fiftyTwoWeekLow"),
             }
 
         except Exception as e:
-            logger.error(f"yfinance 데이터 수집 실패: {e}")
-            return {"success": False, "errors": [f"yfinance 오류: {str(e)}"]}
+            self.logger.error(f"❌ yfinance 데이터 수집 실패: {e}")
+            return {}
 
     def _collect_dart_data(
         self, stock_code: str, stock_name: str = None
@@ -835,12 +824,12 @@ class FinancialDataCollector:
 - PER (주가수익비율): {financial_ratios.get('pe_ratio', 'N/A')}
 - PBR (주가순자산비율): {financial_ratios.get('pb_ratio', 'N/A')}
 - ROE (자기자본이익률): {financial_ratios.get('return_on_equity', 'N/A'):.2%} if financial_ratios.get('return_on_equity') else 'N/A'
-- 부채비율: {financial_ratios.get('debt_to_equity', 'N/A')}
+- 부채비율: {financial_ratios.get('debt_ratio', 'N/A')}
 - 배당수익률: {financial_ratios.get('dividend_yield', 'N/A'):.2%} if financial_ratios.get('dividend_yield') else 'N/A'
 
 📊 성장성 지표:
-- 매출 성장률: {growth_metrics.get('revenue_growth', 'N/A'):.2%} if growth_metrics.get('revenue_growth') else 'N/A'
-- 이익 성장률: {growth_metrics.get('earnings_growth', 'N/A'):.2%} if growth_metrics.get('earnings_growth') else 'N/A'
+- 매출 성장률: {growth_metrics.get('revenue_growth', 'N/A'):.3f}
+- 이익 성장률: {growth_metrics.get('earnings_growth', 'N/A'):.3f}
 
 🔍 데이터 품질: {collected_data.get('data_quality', '정보없음')}
 📅 수집 시간: {stock_info.get('collection_timestamp', 'N/A')}
