@@ -64,6 +64,9 @@ except ImportError as e:
 
 from app.utils.large_pdf_analyzer import LargePDFAnalyzer
 
+# 성능 모니터링 도구를 불러와요
+from app.utils.performance_monitor import get_performance_monitor, monitor_performance
+
 # 🔢 토큰 계산기 import (섹션별 토큰 수 계산용)
 from app.utils.token_calculator import SectionTokenCalculator
 
@@ -157,6 +160,11 @@ class EnhancedStockAnalysisSystem:
         """
         logger.info(f"🔍 개선된 분석 시작 (수정된 워크플로우): {user_prompt}")
 
+        # 분석마다 고유 ID를 만들어서 성능 모니터링을 시작해요
+        analysis_id = f"analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        perf_monitor = get_performance_monitor()
+        perf_monitor.start_monitoring(analysis_id)
+
         results = {
             "user_prompt": user_prompt,
             "timestamp": datetime.now().isoformat(),
@@ -168,7 +176,7 @@ class EnhancedStockAnalysisSystem:
         try:
             # 🚀 Step 0: 질문 의도 분석
             logger.info("🎯 Step 0: 사용자 질문 의도 분석")
-            intent_analysis = await self.analyze_user_intent(user_prompt)
+            intent_analysis = await self._timed_analyze_user_intent(user_prompt)
             results["steps"]["step0_intent_analysis"] = intent_analysis
             logger.info(
                 f"✅ 의도 분석 완료: {intent_analysis['primary_intent']} (신뢰도: {intent_analysis['confidence']})"
@@ -176,12 +184,13 @@ class EnhancedStockAnalysisSystem:
 
             # Step 1: 종목 및 종목코드 감지
             logger.info("📋 Step 1: 종목 및 종목코드 감지")
-            stock_info = await self.extract_stock_info(user_prompt)
+            stock_info = await self._timed_extract_stock_info(user_prompt)
             results["steps"]["step1_stock_detection"] = stock_info
 
             if not stock_info["detected"]:
                 results["error"] = "종목이나 종목코드를 감지할 수 없습니다"
                 logger.warning("⚠️ 종목 감지 실패")
+                perf_monitor.stop_monitoring()
                 return results
 
             logger.info(
@@ -455,8 +464,20 @@ class EnhancedStockAnalysisSystem:
         except Exception as e:
             logger.error(f"❌ 분석 중 오류 발생: {e}")
             results["error"] = str(e)
+        finally:
+            # 분석이 끝나면 성능 모니터링도 꼭 종료해요!
+            perf_monitor.stop_monitoring()
 
         return results
+
+    # 각 주요 단계에 성능 측정 데코레이터를 적용한 래퍼 함수들을 추가해요
+    @monitor_performance("의도분석")
+    async def _timed_analyze_user_intent(self, user_prompt):
+        return await self.analyze_user_intent(user_prompt)
+
+    @monitor_performance("종목감지")
+    async def _timed_extract_stock_info(self, user_prompt):
+        return await self.extract_stock_info(user_prompt)
 
     async def perform_information_collection_first(
         self,
