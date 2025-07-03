@@ -104,11 +104,11 @@ class FinancialDataCollector:
 
         try:
             # 한국 주식의 경우 .KS 추가
-            ticker_symbol = f"{stock_code}.KS"
-            ticker = yf.Ticker(ticker_symbol)
+                ticker_symbol = f"{stock_code}.KS"
+                ticker = yf.Ticker(ticker_symbol)
 
             # 기본 정보 가져오기
-            info = ticker.info
+                info = ticker.info
 
             if not info:
                 self.logger.warning(
@@ -169,7 +169,7 @@ class FinancialDataCollector:
 
                         is_sample_data = False
                         self.logger.info("✅ 실제 데이터로 대체 완료")
-                except Exception as e:
+            except Exception as e:
                     self.logger.error(f"❌ 실제 데이터 계산 실패: {e}")
 
             # 현재가 정보

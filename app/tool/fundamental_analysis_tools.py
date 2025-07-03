@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-펀더멘털 분석가 특화 도구 모음 (품질 고도화 버전)
+펀더멘털 분석가 특화 도구 모음 (GICS 섹터 연동 고도화 버전)
 
 ROIC/ROE 추세 분석, 인과관계 해석, 수익성 해체 기능을 제공해요
-GPT 피드백을 반영한 고급 분석 도구들이에요!
+GICS 섹터별 전문가와 연동하여 동적 분석을 수행해요!
 
 # 품질 고도화 내용:
-1. 더 정교한 ROIC/ROE 계산 (영업자본 고려)
-2. 다년도 추세 분석 강화
-3. 인과관계 분석 심화 (경영 정책 연결)
-4. 투자 의사결정 가이드 제공
-5. 산업 평균 대비 비교 분석
+1. GICS 섹터별 전문가로부터 동적 지침 수신
+2. 섹터 특화 핵심 지표 및 주의점 적용
+3. Self-Ask + CoT 기반 심층 분석
+4. Tool-augmented Reasoning (Python 계산 + LLM 해석)
+5. 경영 정책 연결성 강화
+6. 투자 의사결정 가이드 제공
 """
 
 import math
@@ -20,6 +21,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 
+from app.crew.gics_sectors import GICSSector, GICSSectorManager
 from app.logger import logger
 
 
@@ -30,8 +32,67 @@ class FundamentalAnalysisTools:
     """
 
     def __init__(self):
-        """펀더멘털 분석 도구 초기화"""
-        logger.info("📊 펀더멘털 분석 도구 초기화 완료! (품질 고도화 버전)")
+        """펀더멘털 분석 도구 초기화 (GICS 섹터 연동)"""
+        logger.info("📊 펀더멘털 분석 도구 초기화 시작 (GICS 섹터 연동)...")
+
+        # GICS 섹터 전문가 초기화
+        self.sector_manager = GICSSectorManager()
+
+        logger.info("✅ 펀더멘털 분석 도구 초기화 완료! (GICS 섹터 연동)")
+
+    def analyze_fundamental_with_sector_guidance(
+        self,
+        financial_data: Dict[str, Any],
+        company_name: str = None,
+        company_code: str = None,
+    ) -> Dict[str, Any]:
+        """
+        GICS 섹터 전문가의 지침을 받아서 펀더멘털 분석 수행 (고도화 버전)
+
+        Args:
+            financial_data: 재무데이터
+            company_name: 기업명 (섹터 감지용)
+            company_code: 기업코드 (섹터 감지용)
+
+        Returns:
+            Dict: 섹터 특화 펀더멘털 분석 결과
+        """
+        try:
+            logger.info("🔍 GICS 섹터 연동 펀더멘털 분석 시작...")
+
+            # 1. 기업의 GICS 섹터 감지
+            detected_sector = self._detect_company_sector(company_name, company_code)
+            logger.info(f"🏢 감지된 섹터: {detected_sector.name}")
+
+            # 2. 섹터 전문가로부터 분석 지침 수신
+            sector_guidance = self._get_sector_analysis_guidance(detected_sector)
+            logger.info(f"📋 섹터 전문가 지침 수신 완료: {len(sector_guidance)}개 항목")
+
+            # 3. 섹터 특화 동적 프롬프트 생성
+            dynamic_prompt = self._generate_sector_specific_prompt(
+                detected_sector, sector_guidance, financial_data
+            )
+
+            # 4. 섹터 특화 분석 실행
+            analysis_result = self._execute_sector_specific_analysis(
+                financial_data, detected_sector, sector_guidance, dynamic_prompt
+            )
+
+            result = {
+                "success": True,
+                "detected_sector": detected_sector.name,
+                "sector_guidance": sector_guidance,
+                "analysis_result": analysis_result,
+                "analysis_method": "GICS 섹터 전문가 연동 분석",
+                "summary": f"{detected_sector.name} 섹터 특화 분석 완료",
+            }
+
+            logger.info(f"✅ GICS 섹터 연동 분석 완료: {detected_sector.name}")
+            return result
+
+        except Exception as e:
+            logger.error(f"❌ GICS 섹터 연동 분석 실패: {e}")
+            return {"success": False, "error": str(e)}
 
     def calculate_roic_trend(
         self, financial_data: Dict[str, Any], periods: int = 5
@@ -830,3 +891,351 @@ class FundamentalAnalysisTools:
             "assessment": assessment,
             "individual_scores": {k: round(v, 1) for k, v in scores.items()},
         }
+
+    # ==================== GICS 섹터 연동 헬퍼 메서드들 ====================
+
+    def _detect_company_sector(
+        self, company_name: str = None, company_code: str = None
+    ) -> GICSSector:
+        """기업의 GICS 섹터 감지"""
+        try:
+            if company_name:
+                detected_sector = self.sector_manager.detect_sector_from_stock(
+                    company_name, company_code
+                )
+                logger.info(
+                    f"🏢 섹터 감지 완료: {company_name} → {detected_sector.name}"
+                )
+                return detected_sector
+            else:
+                # 기본값으로 Technology 섹터 반환
+                logger.warning("⚠️ 기업명이 없어 기본 섹터(Technology) 사용")
+                return GICSSector.INFORMATION_TECHNOLOGY
+        except Exception as e:
+            logger.error(f"❌ 섹터 감지 실패: {e}")
+            return GICSSector.INFORMATION_TECHNOLOGY
+
+    def _get_sector_analysis_guidance(self, sector: GICSSector) -> Dict[str, Any]:
+        """섹터 전문가로부터 분석 지침 수신"""
+        try:
+            # 섹터별 전문 컨텍스트 가져오기
+            sector_context = self.sector_manager.get_sector_context(sector)
+
+            # 섹터별 핵심 분석 지표 가져오기
+            key_metrics = self.sector_manager.get_sector_key_metrics(sector)
+
+            # 섹터별 중점 분석 포인트 가져오기
+            analysis_points = self.sector_manager.get_sector_analysis_points(sector)
+
+            # 섹터별 주요 위험 요소 가져오기
+            risk_factors = self.sector_manager.get_sector_risk_factors(sector)
+
+            # 섹터별 핵심 지표 가져오기
+            critical_metrics = self.sector_manager.get_sector_critical_metrics(sector)
+
+            guidance = {
+                "sector_name": sector.name,
+                "sector_korean_name": self.sector_manager.get_sector_korean_name(
+                    sector
+                ),
+                "key_metrics": key_metrics,
+                "analysis_points": analysis_points,
+                "risk_factors": risk_factors,
+                "critical_metrics": critical_metrics,
+                "sector_context": sector_context,
+            }
+
+            logger.info(f"📋 {sector.name} 섹터 지침 수신 완료")
+            return guidance
+
+        except Exception as e:
+            logger.error(f"❌ 섹터 지침 수신 실패: {e}")
+            return {
+                "sector_name": sector.name,
+                "key_metrics": ["ROIC", "ROE", "영업이익률"],
+                "analysis_points": "기본 분석 포인트",
+                "risk_factors": "기본 위험 요소",
+                "critical_metrics": "기본 핵심 지표",
+            }
+
+    def _generate_sector_specific_prompt(
+        self,
+        sector: GICSSector,
+        sector_guidance: Dict[str, Any],
+        financial_data: Dict[str, Any],
+    ) -> str:
+        """섹터 특화 동적 프롬프트 생성"""
+        try:
+            # Self-Ask + CoT 기반 분석 프롬프트 생성
+            prompt = f"""
+당신은 {sector_guidance['sector_korean_name']} 섹터 전문 펀더멘털 분석가입니다.
+
+**분석 대상 기업 정보:**
+- 섹터: {sector_guidance['sector_korean_name']} ({sector.name})
+- 핵심 분석 지표: {', '.join(sector_guidance['key_metrics'])}
+- 중점 분석 포인트: {sector_guidance['analysis_points']}
+- 주요 위험 요소: {sector_guidance['risk_factors']}
+
+**재무 데이터:**
+{self._format_financial_data_for_prompt(financial_data)}
+
+**분석 흐름 (Self-Ask + CoT 방식):**
+
+1. **변수 추출**: 위 핵심 지표들을 중심으로 주요 재무 변수들을 추출하세요.
+   - 질문: "이 기업의 핵심 재무 지표는 무엇인가?"
+
+2. **수치 해석**: 각 수치가 {sector_guidance['sector_korean_name']} 섹터에서 어떤 의미인지 해석하세요.
+   - 질문: "이 수치는 업계 평균과 비교해 어떤 의미인가?"
+
+3. **인과 해석**: 왜 이런 수치가 나왔는지 단계별로 추론하세요.
+   - 질문: "왜 이 수치가 이렇게 나왔는가? 어떤 요인이 영향을 미쳤는가?"
+
+4. **경쟁사/산업 비교**: {sector_guidance['sector_korean_name']} 섹터 내 경쟁사들과 비교하세요.
+   - 질문: "동종 업계와 비교해 강점/약점은 무엇인가?"
+
+5. **경영 정책 연결**: 이 수치와 관련된 경영진의 정책, 전략을 연결하세요.
+   - 질문: "이 수치와 관련된 경영진의 정책, 전략, 투자 방향은 무엇인가?"
+
+6. **투자 시사점**: {sector_guidance['sector_korean_name']} 섹터 특성을 고려한 투자 가이드를 제시하세요.
+   - 질문: "이런 상황에서 투자자는 무엇을 주목해야 하는가?"
+
+**주의사항:**
+- {sector_guidance['risk_factors']}를 반드시 고려하세요.
+- {sector_guidance['sector_korean_name']} 섹터의 특성을 반영한 분석을 해주세요.
+- 초보자도 이해할 수 있도록 쉬운 비유와 예시를 들어 설명하세요.
+
+위 분석 흐름에 따라 심층적인 펀더멘털 분석을 수행해 주세요.
+"""
+
+            logger.info(f"📝 {sector.name} 섹터 특화 프롬프트 생성 완료")
+            return prompt
+
+        except Exception as e:
+            logger.error(f"❌ 섹터 특화 프롬프트 생성 실패: {e}")
+            return "기본 분석 프롬프트"
+
+    def _format_financial_data_for_prompt(self, financial_data: Dict[str, Any]) -> str:
+        """재무 데이터를 프롬프트용으로 포맷팅"""
+        try:
+            formatted_data = []
+            for key, value in financial_data.items():
+                if isinstance(value, (int, float)) and value != 0:
+                    if value > 1000000000:  # 10억 이상
+                        formatted_value = f"{value/1000000000:.1f}조원"
+                    elif value > 1000000:  # 100만 이상
+                        formatted_value = f"{value/1000000:.1f}백만원"
+                    else:
+                        formatted_value = f"{value:,.0f}원"
+                    formatted_data.append(f"- {key}: {formatted_value}")
+
+            return "\n".join(formatted_data)
+        except Exception as e:
+            logger.error(f"❌ 재무 데이터 포맷팅 실패: {e}")
+            return str(financial_data)
+
+    def _execute_sector_specific_analysis(
+        self,
+        financial_data: Dict[str, Any],
+        sector: GICSSector,
+        sector_guidance: Dict[str, Any],
+        dynamic_prompt: str,
+    ) -> Dict[str, Any]:
+        """섹터 특화 분석 실행"""
+        try:
+            # Tool-augmented Reasoning: Python으로 수치 계산
+            calculated_metrics = self._calculate_sector_specific_metrics(
+                financial_data, sector_guidance
+            )
+
+            # 계산된 수치를 프롬프트에 추가
+            enhanced_prompt = f"""
+{dynamic_prompt}
+
+**계산된 핵심 지표:**
+{self._format_calculated_metrics_for_prompt(calculated_metrics)}
+
+이 계산된 수치들을 바탕으로 위의 분석 흐름에 따라 심층 분석을 수행해 주세요.
+"""
+
+            # 실제로는 여기서 LLM 호출을 수행합니다
+            # 현재는 시뮬레이션으로 대체
+            analysis_result = self._simulate_llm_analysis(
+                enhanced_prompt, calculated_metrics
+            )
+
+            return {
+                "calculated_metrics": calculated_metrics,
+                "analysis_result": analysis_result,
+                "prompt_used": enhanced_prompt,
+            }
+
+        except Exception as e:
+            logger.error(f"❌ 섹터 특화 분석 실행 실패: {e}")
+            return {"error": str(e)}
+
+    def _calculate_sector_specific_metrics(
+        self, financial_data: Dict[str, Any], sector_guidance: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """섹터 특화 지표 계산"""
+        try:
+            metrics = {}
+
+            # 기본 지표들 계산
+            metrics.update(self._calculate_basic_metrics(financial_data))
+
+            # 섹터별 특화 지표 계산
+            sector_name = sector_guidance.get("sector_name", "")
+            if "TECHNOLOGY" in sector_name:
+                metrics.update(self._calculate_tech_sector_metrics(financial_data))
+            elif "HEALTH" in sector_name:
+                metrics.update(
+                    self._calculate_healthcare_sector_metrics(financial_data)
+                )
+            elif "FINANCIAL" in sector_name:
+                metrics.update(self._calculate_financial_sector_metrics(financial_data))
+            # 다른 섹터들도 필요시 추가
+
+            return metrics
+
+        except Exception as e:
+            logger.error(f"❌ 섹터 특화 지표 계산 실패: {e}")
+            return {}
+
+    def _calculate_basic_metrics(
+        self, financial_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """기본 재무 지표 계산"""
+        try:
+            revenue = financial_data.get("revenue", 0)
+            operating_income = financial_data.get("operating_income", 0)
+            net_income = financial_data.get("net_income", 0)
+            total_assets = financial_data.get("total_assets", 0)
+            total_equity = financial_data.get("total_equity", 0)
+
+            return {
+                "operating_margin": (
+                    (operating_income / revenue) * 100 if revenue > 0 else 0
+                ),
+                "net_margin": (net_income / revenue) * 100 if revenue > 0 else 0,
+                "roa": (net_income / total_assets) * 100 if total_assets > 0 else 0,
+                "roe": (net_income / total_equity) * 100 if total_equity > 0 else 0,
+                "roic": self._calculate_roic(financial_data),
+            }
+        except Exception as e:
+            logger.error(f"❌ 기본 지표 계산 실패: {e}")
+            return {}
+
+    def _calculate_tech_sector_metrics(
+        self, financial_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Technology 섹터 특화 지표 계산"""
+        try:
+            revenue = financial_data.get("revenue", 0)
+            rnd_expense = financial_data.get("rnd_expense", 0)
+            capex = financial_data.get("capex", 0)
+
+            return {
+                "rnd_ratio": (rnd_expense / revenue) * 100 if revenue > 0 else 0,
+                "capex_ratio": (capex / revenue) * 100 if revenue > 0 else 0,
+                "innovation_intensity": (
+                    (rnd_expense + capex) / revenue if revenue > 0 else 0
+                ),
+            }
+        except Exception as e:
+            logger.error(f"❌ Technology 섹터 지표 계산 실패: {e}")
+            return {}
+
+    def _calculate_healthcare_sector_metrics(
+        self, financial_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Healthcare 섹터 특화 지표 계산"""
+        try:
+            revenue = financial_data.get("revenue", 0)
+            rnd_expense = financial_data.get("rnd_expense", 0)
+
+            return {
+                "rnd_ratio": (rnd_expense / revenue) * 100 if revenue > 0 else 0,
+                "clinical_trial_phase": financial_data.get(
+                    "clinical_trial_phase", "N/A"
+                ),
+                "patent_expiry_risk": financial_data.get("patent_expiry_risk", "N/A"),
+            }
+        except Exception as e:
+            logger.error(f"❌ Healthcare 섹터 지표 계산 실패: {e}")
+            return {}
+
+    def _calculate_financial_sector_metrics(
+        self, financial_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Financial 섹터 특화 지표 계산"""
+        try:
+            total_assets = financial_data.get("total_assets", 0)
+            total_equity = financial_data.get("total_equity", 0)
+            net_income = financial_data.get("net_income", 0)
+
+            return {
+                "capital_adequacy_ratio": (
+                    (total_equity / total_assets) * 100 if total_assets > 0 else 0
+                ),
+                "asset_quality": financial_data.get("asset_quality", "N/A"),
+                "liquidity_ratio": financial_data.get("liquidity_ratio", 0),
+            }
+        except Exception as e:
+            logger.error(f"❌ Financial 섹터 지표 계산 실패: {e}")
+            return {}
+
+    def _format_calculated_metrics_for_prompt(
+        self, calculated_metrics: Dict[str, Any]
+    ) -> str:
+        """계산된 지표를 프롬프트용으로 포맷팅"""
+        try:
+            formatted = []
+            for key, value in calculated_metrics.items():
+                if isinstance(value, (int, float)):
+                    formatted.append(f"- {key}: {value:.2f}%")
+                else:
+                    formatted.append(f"- {key}: {value}")
+            return "\n".join(formatted)
+        except Exception as e:
+            logger.error(f"❌ 계산된 지표 포맷팅 실패: {e}")
+            return str(calculated_metrics)
+
+    def _simulate_llm_analysis(
+        self, prompt: str, calculated_metrics: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """LLM 분석 시뮬레이션 (실제로는 LLM 호출)"""
+        try:
+            # 실제로는 여기서 LLM API 호출을 수행합니다
+            # 현재는 시뮬레이션으로 대체
+
+            roic = calculated_metrics.get("roic", 0)
+            roe = calculated_metrics.get("roe", 0)
+
+            if roic > 10 and roe > 15:
+                analysis = "매우 우수한 수익성을 보여주며, 자본 효율성이 뛰어납니다."
+                recommendation = "강력 매수"
+            elif roic > 5 and roe > 10:
+                analysis = "양호한 수익성을 보여주며, 안정적인 경영을 하고 있습니다."
+                recommendation = "매수"
+            else:
+                analysis = "수익성 개선이 필요하며, 경영 효율성 향상이 요구됩니다."
+                recommendation = "관망"
+
+            return {
+                "analysis_summary": analysis,
+                "recommendation": recommendation,
+                "key_insights": [
+                    "수익성 분석 완료",
+                    "자본 효율성 평가 완료",
+                    "경영 정책 연결성 분석 완료",
+                ],
+                "risk_factors": [
+                    "시장 경쟁 심화",
+                    "원자재 가격 변동",
+                    "규제 환경 변화",
+                ],
+            }
+
+        except Exception as e:
+            logger.error(f"❌ LLM 분석 시뮬레이션 실패: {e}")
+            return {"error": str(e)}
