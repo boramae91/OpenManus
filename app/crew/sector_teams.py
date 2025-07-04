@@ -13,10 +13,12 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 
+from langchain.agents import AgentExecutor, create_openai_functions_agent
+
 # LangChain imports
 from langchain.chains import LLMChain, SequentialChain
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import PromptTemplate
+from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 from langchain.schema import BaseMemory
 from langchain.tools import Tool
 from langchain_openai import ChatOpenAI
@@ -1368,12 +1370,10 @@ class SectorTeamFactory:
             llm = ChatOpenAI(
                 model="gpt-4o",
                 temperature=0.1,  # 분석의 일관성을 위해 낮은 값
-                max_tokens=4000,
+                max_tokens=8000,  # 2명 체제에 맞게 증가 (기존 4K → 8K)
             )
 
             # 🚀 웹 검색 도구를 포함한 LangChain Chain 생성
-            # from langchain.agents import AgentExecutor, create_openai_functions_agent
-            # from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 
             # 웹 검색 도구 생성
             web_search_tool = self.web_search_tool.create_langchain_tool()
@@ -1948,7 +1948,7 @@ class SectorTeamFactory:
             llm = ChatOpenAI(
                 model="gpt-4o",
                 temperature=0.1,
-                max_tokens=4000,
+                max_tokens=8000,  # 2명 체제에 맞게 증가 (기존 4K → 8K)
             )
             technical_analysis_prompt = PromptTemplate(
                 input_variables=["price_data", "sector_name", "company_name"],

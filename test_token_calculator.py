@@ -346,6 +346,104 @@ async def test_token_calculator():
     return analysis, expert_analysis
 
 
+def test_real_dart_data_simulation():
+    """실제 DART 데이터 크기를 시뮬레이션하여 토큰 사용량을 계산해요"""
+    print("\n" + "=" * 60)
+    print("🔍 실제 DART 데이터 토큰 사용량 시뮬레이션")
+    print("=" * 60)
+
+    calculator = SectionTokenCalculator()
+
+    # 실제 DART 데이터 크기 시뮬레이션
+    dart_data_sizes = {
+        "사업보고서_기본": 50000,  # 5만자 (기본 사업보고서)
+        "사업보고서_상세": 200000,  # 20만자 (상세 사업보고서)
+        "분기보고서_기본": 100000,  # 10만자 (기본 분기보고서)
+        "분기보고서_상세": 500000,  # 50만자 (상세 분기보고서)
+        "분기보고서_최대": 2000000,  # 200만자 (최대 분기보고서)
+    }
+
+    # yfinance 데이터 크기
+    yfinance_data_size = 15000  # 1.5만자 (yfinance 기본 데이터)
+
+    # 웹 검색 결과 크기
+    web_search_size = 25000  # 2.5만자 (웹 검색 결과)
+
+    print("📊 데이터 소스별 토큰 사용량:")
+    print("-" * 40)
+
+    total_tokens = 0
+
+    for data_type, char_count in dart_data_sizes.items():
+        tokens = calculator.count_tokens("A" * char_count)  # 시뮬레이션용 텍스트
+        total_tokens += tokens
+        print(f"• {data_type}: {char_count:,}자 → {tokens:,}토큰")
+
+    yfinance_tokens = calculator.count_tokens("A" * yfinance_data_size)
+    web_search_tokens = calculator.count_tokens("A" * web_search_size)
+    total_tokens += yfinance_tokens + web_search_tokens
+
+    print(f"• yfinance 데이터: {yfinance_data_size:,}자 → {yfinance_tokens:,}토큰")
+    print(f"• 웹 검색 결과: {web_search_size:,}자 → {web_search_tokens:,}토큰")
+
+    print("\n📈 토큰 사용량 분석:")
+    print("-" * 40)
+    print(f"• 총 토큰 수: {total_tokens:,}토큰")
+    print(f"• GPT-4o 최대: {calculator.get_max_tokens():,}토큰")
+    print(f"• 사용 가능: {calculator.get_available_tokens():,}토큰")
+    print(f"• 사용률: {(total_tokens/calculator.get_available_tokens())*100:.1f}%")
+
+    # 2명 체제에서 각 전문가별 토큰 분배
+    print("\n👥 2명 체제 전문가별 토큰 분배:")
+    print("-" * 40)
+
+    # 통합 재무분석가 (펀더멘털 + 밸류에이션)
+    fundamental_tokens = total_tokens * 0.6  # 60% (더 많은 데이터 처리)
+    technical_tokens = total_tokens * 0.4  # 40%
+
+    print(f"• 통합 재무분석가: {fundamental_tokens:,.0f}토큰 (60%)")
+    print(f"• 기술적 분석가: {technical_tokens:,.0f}토큰 (40%)")
+
+    # LangChain Chain max_tokens=8,000 검증
+    print("\n🔍 LangChain Chain 토큰 제한 검증:")
+    print("-" * 40)
+
+    chain_max_tokens = 8000
+    print(f"• Chain max_tokens: {chain_max_tokens:,}토큰")
+    print(f"• 통합 재무분석가 입력: {fundamental_tokens:,.0f}토큰")
+    print(f"• 기술적 분석가 입력: {technical_tokens:,.0f}토큰")
+
+    if fundamental_tokens > chain_max_tokens:
+        print("⚠️ 통합 재무분석가: 입력 토큰이 Chain 제한을 초과합니다!")
+        print(f"   초과량: {fundamental_tokens - chain_max_tokens:,.0f}토큰")
+    else:
+        print("✅ 통합 재무분석가: Chain 제한 내에서 처리 가능")
+
+    if technical_tokens > chain_max_tokens:
+        print("⚠️ 기술적 분석가: 입력 토큰이 Chain 제한을 초과합니다!")
+        print(f"   초과량: {technical_tokens - chain_max_tokens:,.0f}토큰")
+    else:
+        print("✅ 기술적 분석가: Chain 제한 내에서 처리 가능")
+
+    # 최적화 제안
+    print("\n💡 최적화 제안:")
+    print("-" * 40)
+
+    if fundamental_tokens > chain_max_tokens or technical_tokens > chain_max_tokens:
+        print("🚨 문제: 입력 토큰이 Chain 제한을 초과합니다!")
+        print("🔧 해결방안:")
+        print("1. LangChain Chain의 max_tokens를 입력 토큰에 맞게 조정")
+        print("2. 데이터 압축 및 요약 강화")
+        print("3. 전문가별 데이터 분할 최적화")
+        print("4. 토큰 계산기 기반 동적 조정")
+    else:
+        print("✅ 현재 설정으로 충분히 처리 가능합니다!")
+        print("📝 추가 최적화:")
+        print("1. 토큰 사용량 모니터링")
+        print("2. 데이터 품질과 양의 균형 조정")
+
+
 if __name__ == "__main__":
     # 비동기 실행
     asyncio.run(test_token_calculator())
+    test_real_dart_data_simulation()

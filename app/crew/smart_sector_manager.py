@@ -21,14 +21,14 @@ from .sector_teams import SectorTeamFactory
 
 class AnalysisDepth(Enum):
     """
-    분석 깊이 수준 정의
+    분석 깊이 수준 정의 (2명 체제로 단순화)
 
-    사용자의 니즈에 따라 비용과 품질의 균형을 맞춰요!
+    현재는 분석 깊이와 무관하게 항상 2명의 핵심 전문가(통합 재무분석가 + 기술적 분석가)만 사용합니다.
     """
 
-    QUICK = "quick"  # 빠른 분석 (2명, $0.20, 12시간 캐시)
-    STANDARD = "standard"  # 표준 분석 (5명, $0.50, 24시간 캐시)
-    DEEP = "deep"  # 심화 분석 (5명+검증, $1.00, 48시간 캐시)
+    QUICK = "quick"  # 빠른 분석 (2명 체제, $0.20, 24시간 캐시)
+    STANDARD = "standard"  # 표준 분석 (2명 체제, $0.20, 24시간 캐시)
+    DEEP = "deep"  # 심화 분석 (2명 체제, $0.20, 24시간 캐시)
 
 
 @dataclass
@@ -408,51 +408,64 @@ class SmartSectorManager:
         return self.current_active_team
 
     def _select_experts_by_depth(self, team, depth: AnalysisDepth, prompt: str) -> List:
-        """분석 깊이에 따른 전문가 선택"""
+        """분석 깊이와 무관하게 항상 2명의 핵심 전문가만 선택 (통합 재무분석가 + 기술적 분석가)"""
         all_experts = team.experts
 
-        if depth == AnalysisDepth.QUICK:
-            # QUICK: 프롬프트 키워드 기반 2명 선택
-            selected = self._select_by_keywords(all_experts, prompt, 2)
-            logger.info(f"⚡ QUICK 모드: {len(selected)}명 전문가 선택")
+        # 분석 깊이와 무관하게 항상 통합 재무분석가와 기술적 분석가 2명만 선택
+        selected = []
 
-        elif depth == AnalysisDepth.DEEP:
-            # DEEP: 전체 5명 + 검증 단계
-            selected = all_experts
-            logger.info(f"🔍 DEEP 모드: {len(selected)}명 전문가 + 검증")
+        # 통합 재무분석가 찾기
+        integrated_financial_analyst = next(
+            (expert for expert in all_experts if "통합 재무분석가" in expert.name), None
+        )
+        if integrated_financial_analyst:
+            selected.append(integrated_financial_analyst)
 
-        else:  # STANDARD
-            # STANDARD: 전체 5명
-            selected = all_experts
-            logger.info(f"📊 STANDARD 모드: {len(selected)}명 전문가")
+        # 기술적 분석가 찾기
+        technical_analyst = next(
+            (expert for expert in all_experts if "기술적 분석가" in expert.name), None
+        )
+        if technical_analyst:
+            selected.append(technical_analyst)
+
+        # 2명이 모두 없으면 기본적으로 처음 2명 선택
+        if len(selected) < 2:
+            for expert in all_experts:
+                if expert not in selected and len(selected) < 2:
+                    selected.append(expert)
+
+        logger.info(f"🎯 2명 체제: {len(selected)}명 전문가 선택 (분석 깊이 무관)")
+        logger.info(f"   선택된 전문가: {[expert.name for expert in selected]}")
 
         return selected
 
     def _select_by_keywords(self, experts: List, prompt: str, count: int) -> List:
-        """키워드 기반 전문가 선택"""
-        keyword_mapping = {
-            "재무": "Fundamental Analyst",
-            "차트": "Technical Analyst",
-            "산업": "Industry Expert",
-            "밸류에이션": "Valuation Specialist",
-            "리스크": "Risk Assessor",
-        }
-
+        """키워드 기반 전문가 선택 (2명 체제로 단순화)"""
+        # 2명 체제에서는 키워드와 무관하게 항상 통합 재무분석가와 기술적 분석가 선택
         selected = []
-        prompt_lower = prompt.lower()
 
-        for keyword, role in keyword_mapping.items():
-            if keyword in prompt_lower and len(selected) < count:
-                expert = next((e for e in experts if e.role == role), None)
-                if expert:
-                    selected.append(expert)
+        # 통합 재무분석가 찾기
+        integrated_financial_analyst = next(
+            (expert for expert in experts if "통합 재무분석가" in expert.name), None
+        )
+        if integrated_financial_analyst:
+            selected.append(integrated_financial_analyst)
 
-        # 부족하면 기본 전문가들로 채우기
-        while len(selected) < count and len(selected) < len(experts):
+        # 기술적 분석가 찾기
+        technical_analyst = next(
+            (expert for expert in experts if "기술적 분석가" in expert.name), None
+        )
+        if technical_analyst:
+            selected.append(technical_analyst)
+
+        # 2명이 모두 없으면 기본적으로 처음 2명 선택
+        if len(selected) < 2:
             for expert in experts:
-                if expert not in selected:
+                if expert not in selected and len(selected) < 2:
                     selected.append(expert)
-                    break
+
+        logger.info(f"🎯 키워드 선택: {len(selected)}명 전문가 선택 (2명 체제)")
+        logger.info(f"   선택된 전문가: {[expert.name for expert in selected]}")
 
         return selected[:count]
 
@@ -847,32 +860,30 @@ class SmartSectorManager:
     def _calculate_cost_savings(
         self, activated_agents: int, depth: AnalysisDepth
     ) -> Dict[str, Any]:
-        """비용 절감 계산"""
+        """비용 절감 계산 (2명 체제로 단순화)"""
 
-        # 깊이별 기본 비용
-        depth_costs = {
-            AnalysisDepth.QUICK: 0.20,
-            AnalysisDepth.STANDARD: 0.50,
-            AnalysisDepth.DEEP: 1.00,
-        }
+        # 2명 체제에서는 분석 깊이와 무관하게 항상 2명만 사용
+        base_cost_per_agent = 0.10  # 1명당 기본 비용
 
-        # 기존 방식: 55개 에이전트 모두 활성화
-        traditional_cost = 55 * depth_costs[depth]
+        # 2명 체제 비용 (통합 재무분석가 + 기술적 분석가)
+        two_agent_cost = 2 * base_cost_per_agent  # $0.20
 
-        # One-Hot 방식: 선택된 에이전트만 활성화
-        one_hot_cost = activated_agents * (
-            depth_costs[depth] / 5
-        )  # 5명 기준으로 정규화
+        # 실제 활성화된 에이전트 비용
+        actual_cost = activated_agents * base_cost_per_agent
 
-        savings_amount = traditional_cost - one_hot_cost
-        savings_percentage = (savings_amount / traditional_cost) * 100
+        # 절약 계산 (기존 5명 체제 대비)
+        traditional_five_agent_cost = 5 * base_cost_per_agent  # $0.50
+        savings_amount = traditional_five_agent_cost - actual_cost
+        savings_percentage = (savings_amount / traditional_five_agent_cost) * 100
 
         return {
-            "traditional_cost": traditional_cost,
-            "one_hot_cost": one_hot_cost,
+            "traditional_cost": traditional_five_agent_cost,
+            "two_agent_cost": two_agent_cost,
+            "actual_cost": actual_cost,
             "savings_amount": savings_amount,
             "savings_percentage": savings_percentage,
             "activated_agents": activated_agents,
+            "analysis_mode": "2명 체제 (통합 재무분석가 + 기술적 분석가)",
             "depth": depth.value,
         }
 
@@ -962,13 +973,9 @@ class SmartSectorManager:
         return hashlib.md5(full_content.encode()).hexdigest()
 
     def _get_cache_ttl(self, depth: AnalysisDepth) -> int:
-        """분석 깊이별 캐시 TTL"""
-        ttl_mapping = {
-            AnalysisDepth.QUICK: 12,
-            AnalysisDepth.STANDARD: 24,
-            AnalysisDepth.DEEP: 48,
-        }
-        return ttl_mapping[depth]
+        """캐시 TTL (2명 체제로 단순화 - 분석 깊이 무관)"""
+        # 2명 체제에서는 분석 깊이와 무관하게 표준 캐시 시간 사용
+        return 24  # 24시간 (표준)
 
     def _update_stats(self, sector: GICSSector, cost_savings: Dict[str, Any]):
         """성능 통계 업데이트"""
@@ -3943,7 +3950,7 @@ class SmartSectorManager:
         financial_data: Dict,
         enhanced_dart_data: Dict = None,
         manus_collected_data: Dict = None,
-        target_token_limit: int = 100000,
+        target_token_limit: int = 120000,  # 2명 체제에 맞게 증가 (기존 100K → 120K)
     ) -> Dict[str, Any]:
         """
         🎯 토큰 제한에 맞춰 데이터를 최적화합니다.

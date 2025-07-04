@@ -421,7 +421,9 @@ class LangChainWebSearchAgent:
         """
         self.api_key = api_key
         self.web_search_tool = LangChainWebSearchTool(api_key)
-        self.llm = ChatOpenAI(model="gpt-4o", temperature=0.1, max_tokens=4000)
+        self.llm = ChatOpenAI(
+            model="gpt-4o", temperature=0.1, max_tokens=8000
+        )  # 2명 체제에 맞게 증가
 
         print("🤖 LangChain 웹 검색 Agent 초기화 완료!")
 

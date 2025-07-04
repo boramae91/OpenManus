@@ -46,7 +46,7 @@ class SectionTokenCalculator:
             self.tokenizer = tiktoken.get_encoding("cl100k_base")
             logger.warning(f"⚠️ {model_name} 토크나이저 미발견, cl100k_base 사용")
 
-        # 모델별 토큰 제한 설정
+        # 모델별 토큰 제한 설정 (2명 체제 최적화)
         self.token_limits = {
             "gpt-4o": 128000,  # GPT-4o 최대 토큰 수
             "gpt-4": 8192,  # GPT-4 기본
@@ -54,8 +54,8 @@ class SectionTokenCalculator:
             "gpt-3.5-turbo": 4096,  # GPT-3.5 기본
         }
 
-        # 안전 여유분 (응답 생성용 토큰 확보)
-        self.safety_margin = 4000  # 응답 생성용 4K 토큰 확보
+        # 안전 여유분 (응답 생성용 토큰 확보) - 2명 체제에 맞게 조정
+        self.safety_margin = 8000  # 응답 생성용 8K 토큰 확보 (기존 4K에서 증가)
 
         logger.info(f"📏 모델 토큰 제한: {self.get_max_tokens():,}토큰")
         logger.info(f"🛡️ 안전 여유분: {self.safety_margin:,}토큰")
