@@ -1059,10 +1059,63 @@ class SmartSectorManager:
                     dart_reports_dictionary,  # 🚀 DART 보고서 딕셔너리 추가!
                 )
 
-                # 전문가별 분석 수행
-                analysis_result = await self._call_llm_for_analysis(
-                    comprehensive_prompt
-                )
+                # 🚀 LangChain Chain을 사용한 전문가별 분석 수행
+                if expert.langchain_enabled and expert.langchain_chain:
+                    logger.info(f"🔗 {expert.name} LangChain Chain 사용")
+
+                    # LangChain Chain에 전달할 입력 데이터 구성
+                    chain_input = {
+                        "financial_data": comprehensive_prompt,
+                        "sector_name": (
+                            expert.sector_context.split()[0]
+                            if expert.sector_context
+                            else "정보기술"
+                        ),
+                        "company_name": stock_name,
+                    }
+
+                    # LangChain Chain 실행 (AgentExecutor 방식)
+                    try:
+                        # AgentExecutor는 invoke 메서드를 사용
+                        if hasattr(expert.langchain_chain, "invoke"):
+                            # AgentExecutor의 invoke 메서드 사용
+                            chain_result = expert.langchain_chain.invoke(
+                                {"input": comprehensive_prompt, "chat_history": []}
+                            )
+
+                            # AgentExecutor 결과에서 output 추출
+                            if (
+                                isinstance(chain_result, dict)
+                                and "output" in chain_result
+                            ):
+                                analysis_result = chain_result["output"]
+                            elif hasattr(chain_result, "content"):
+                                analysis_result = chain_result.content
+                            elif isinstance(chain_result, str):
+                                analysis_result = chain_result
+                            else:
+                                analysis_result = str(chain_result)
+                        else:
+                            # 구버전 호환성
+                            chain_result = expert.langchain_chain.run(chain_input)
+                            analysis_result = str(chain_result)
+
+                        logger.info(f"✅ {expert.name} LangChain Chain 분석 완료")
+
+                    except Exception as chain_error:
+                        logger.error(
+                            f"❌ {expert.name} LangChain Chain 실패: {chain_error}"
+                        )
+                        # 폴백: 기존 방식 사용
+                        analysis_result = await self._call_llm_for_analysis(
+                            comprehensive_prompt
+                        )
+                else:
+                    # LangChain Chain이 없는 경우 기존 방식 사용
+                    logger.info(f"📝 {expert.name} 기존 LLM 방식 사용")
+                    analysis_result = await self._call_llm_for_analysis(
+                        comprehensive_prompt
+                    )
 
                 expert_results.append(
                     {
