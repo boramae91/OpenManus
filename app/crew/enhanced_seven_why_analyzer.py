@@ -614,30 +614,106 @@ class EnhancedSevenWhyAnalyzer:
                 (
                     "system",
                     """
-// 이 프롬프트는 전문가의 분석 내용을 7Why로 심층 분석하는 역할을 해요
-// (예: 분석 내용 = "삼성전자의 영업이익이 감소한 것은 반도체 부문의 수익성 악화 때문이다.")
-
 당신은 7Why 분석 전문가입니다.
-아래의 통합된 데이터에서 전문가 분석 내용을 '현상'으로 삼아 7Why 기법으로 근본 원인을 단계별로 분석하세요.
+CoT와 5Why 분석 이력을 참고하여 전문가 분석 내용을 '현상'으로 삼아 7Why 기법으로 근본 원인을 단계별로 분석하세요.
 
-{integrated_data}
+**🧠 분석 연속성 유지**
+- CoT 분석에서 도출된 핵심 인사이트를 기반으로 7Why 분석 수행
+- 5Why 분석에서 발견된 근본 원인을 7Why의 Why 5-7에서 확장
+- 이전 분석 결과와의 논리적 일관성 유지
+
+**🔍 7Why 분석 프레임워크**
+
+**Why 1: 직접적 원인**
+- 관찰된 현상의 직접적 원인은 무엇인가?
+- 즉시 확인 가능한 요인들
+
+**Why 2: 시스템적 원인**
+- Why 1의 원인은 무엇 때문인가?
+- 프로세스, 시스템, 구조적 요인
+
+**Why 3: 조직적 원인**
+- Why 2의 원인은 무엇 때문인가?
+- 경영진, 조직문화, 의사결정 구조
+
+**Why 4: 전략적 원인**
+- Why 3의 원인은 무엇 때문인가?
+- 비즈니스 모델, 전략적 선택, 시장 포지셔닝
+
+**Why 5: 구조적 원인**
+- Why 4의 원인은 무엇 때문인가?
+- 산업 구조, 시장 환경, 규제, 기술 변화 등
+
+**Why 6: 환경적 원인**
+- Why 5의 원인은 무엇 때문인가?
+- 거시경제, 글로벌 환경, 정치적 요인 등
+
+**Why 7: 근본적 원인**
+- Why 6의 원인은 무엇 때문인가?
+- 사회적 변화, 기술적 변화, 인구학적 변화 등
+
+**📋 7Why 분석 형식**
 
 각 단계별로 반드시 실제 데이터에서 구체적인 수치, 지표, 뉴스, 리포트 등을 근거로 들어주세요.
 
-[출력 예시]
-Why 1: (현상, 원인, 근거, 데이터 소스)
-Why 2: ...
-...
-Why 7: ...
+**Why 1: 직접적 원인**
+- 현상: [구체적 현상]
+- 원인: [직접적 원인]
+- 근거: [증거와 데이터]
+- 데이터 소스: [재무, 시장, 경쟁사, 웹 등]
+
+**Why 2: 시스템적 원인**
+- 현상: [Why 1의 원인]
+- 원인: [시스템적 원인]
+- 근거: [증거와 데이터]
+- 데이터 소스: [재무, 시장, 경쟁사, 웹 등]
+
+**Why 3: 조직적 원인**
+- 현상: [Why 2의 원인]
+- 원인: [조직적 원인]
+- 근거: [증거와 데이터]
+- 데이터 소스: [재무, 시장, 경쟁사, 웹 등]
+
+**Why 4: 전략적 원인**
+- 현상: [Why 3의 원인]
+- 원인: [전략적 원인]
+- 근거: [증거와 데이터]
+- 데이터 소스: [재무, 시장, 경쟁사, 웹 등]
+
+**Why 5: 구조적 원인**
+- 현상: [Why 4의 원인]
+- 원인: [구조적 원인]
+- 근거: [증거와 데이터]
+- 데이터 소스: [재무, 시장, 경쟁사, 웹 등]
+
+**Why 6: 환경적 원인**
+- 현상: [Why 5의 원인]
+- 원인: [환경적 원인]
+- 근거: [증거와 데이터]
+- 데이터 소스: [재무, 시장, 경쟁사, 웹 등]
+
+**Why 7: 근본적 원인**
+- 현상: [Why 6의 원인]
+- 원인: [근본적 원인]
+- 근거: [증거와 데이터]
+- 데이터 소스: [재무, 시장, 경쟁사, 웹 등]
 """,
                 ),
                 MessagesPlaceholder(variable_name="seven_why_history"),
                 (
                     "human",
                     """
-아래 통합된 데이터를 바탕으로 7Why 분석을 해주세요.
+다음 통합된 데이터를 바탕으로 7Why 분석을 해주세요.
 
-{integrated_data}
+전문가 분석 내용: {expert_analysis_text}
+
+재무 데이터: {financial_data}
+
+시장 데이터: {market_data}
+
+경쟁사 데이터: {competitor_data}
+
+웹 검색 데이터: {web_search_data}
 
 **7Why 분석 요청:**
 1. 전문가 분석 내용을 현상으로 삼아 Why 1부터 Why 7까지 단계별로 원인 분석
@@ -662,6 +738,8 @@ Why 7: ...
         market_data: str,
         competitor_data: str,
         web_search_data: str = "",
+        cot_analysis_history: str = "",
+        five_why_analysis_history: str = "",
     ) -> Dict[str, Any]:
         """
         전문가 분석 텍스트와 실제 데이터를 통합해서 7Why 분석을 실행하는 함수에요
@@ -671,6 +749,8 @@ Why 7: ...
             market_data: 시장 데이터
             competitor_data: 경쟁사 데이터
             web_search_data: 웹 검색 데이터(선택)
+            cot_analysis_history: CoT 분석 이력 (Memory 연결용)
+            five_why_analysis_history: 5Why 분석 이력 (Memory 연결용)
         Returns:
             Dict: 7Why 분석 결과
         """
@@ -679,21 +759,27 @@ Why 7: ...
         try:
             integrated_7why_chain = self._create_integrated_7why_analyzer()
 
-            # LangChain Memory 오류 해결: 여러 입력 변수를 하나의 통합된 문자열로 합쳐요
-            # (Memory는 하나의 입력 변수만 처리할 수 있어서 이런 방식으로 해결해요)
-            integrated_input = f"""
-전문가 분석 내용: {expert_analysis_text}
+            # CoT와 5Why 분석 이력을 Memory에 저장 (연속성 확보)
+            if cot_analysis_history:
+                self.analysis_memory.save_context(
+                    {"input": "CoT 분석 이력"}, {"output": cot_analysis_history}
+                )
 
-재무 데이터: {financial_data}
+            if five_why_analysis_history:
+                self.analysis_memory.save_context(
+                    {"input": "5Why 분석 이력"}, {"output": five_why_analysis_history}
+                )
 
-시장 데이터: {market_data}
-
-경쟁사 데이터: {competitor_data}
-
-웹 검색 데이터: {web_search_data}
-"""
-
-            result = integrated_7why_chain.run({"integrated_data": integrated_input})
+            # 개별 변수들을 직접 전달
+            result = integrated_7why_chain.run(
+                {
+                    "expert_analysis_text": expert_analysis_text,
+                    "financial_data": financial_data,
+                    "market_data": market_data,
+                    "competitor_data": competitor_data,
+                    "web_search_data": web_search_data,
+                }
+            )
             print("🎉 전문가 분석 텍스트 기반 7Why 분석 완료!")
             print("=" * 60)
             return {
