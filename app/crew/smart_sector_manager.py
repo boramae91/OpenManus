@@ -1449,19 +1449,19 @@ class SmartSectorManager:
 
                 # 전문가 타입에 맞는 섹션 추출 (수동 구현)
                 expert_type_mapping = {
-                    "fundamental": "fundamental_analyst",
-                    "펀더멘털": "fundamental_analyst",
-                    "재무": "fundamental_analyst",
+                    # "fundamental": "fundamental_analyst",  # 🚫 비활성화 (통합 재무분석가로 대체)
+                    # "펀더멘털": "fundamental_analyst",  # 🚫 비활성화 (통합 재무분석가로 대체)
+                    # "재무": "fundamental_analyst",  # 🚫 비활성화 (통합 재무분석가로 대체)
                     "technical": "technical_analyst",
                     "기술적": "technical_analyst",
-                    "industry": "industry_analyst",
-                    "산업": "industry_analyst",
-                    "valuation": "valuation_expert",
-                    "밸류에이션": "valuation_expert",
-                    "risk": "risk_assessor",
-                    "리스크": "risk_assessor",
-                    "footnote": "footnote_specialist",
-                    "주석": "footnote_specialist",
+                    # "industry": "industry_analyst",  # 🚫 비활성화 (개발 시간 절약)
+                    # "산업": "industry_analyst",  # 🚫 비활성화 (개발 시간 절약)
+                    # "valuation": "valuation_expert",  # 🚫 비활성화 (통합 재무분석가로 대체)
+                    # "밸류에이션": "valuation_expert",  # 🚫 비활성화 (통합 재무분석가로 대체)
+                    # "risk": "risk_assessor",  # 🚫 비활성화 (개발 시간 절약)
+                    # "리스크": "risk_assessor",  # 🚫 비활성화 (개발 시간 절약)
+                    # "footnote": "footnote_specialist",  # 🚫 비활성화 (개발 시간 절약)
+                    # "주석": "footnote_specialist",  # 🚫 비활성화 (개발 시간 절약)
                 }
 
                 # 전문가 타입 결정
@@ -1517,7 +1517,7 @@ class SmartSectorManager:
                 # 주석 전문가 특별 처리
                 if "주석" in expert.name or "Footnote" in expert.role:
                     footnote_sections = pdf_interface.get_sections_by_expert_type(
-                        "footnote_specialist"
+                        # "footnote_specialist"  # 🚫 비활성화 (개발 시간 절약)
                     )
                     if footnote_sections:
                         context_parts.append(
@@ -1601,39 +1601,39 @@ class SmartSectorManager:
             if business_report_dict or quarterly_report_dict:
                 # 전문가별 키워드 매핑
                 expert_keywords = {
-                    "fundamental_analyst": [
-                        "재무",
-                        "손익",
-                        "매출",
-                        "순이익",
-                        "자산",
-                        "부채",
-                        "자본",
-                        "현금흐름",
-                        "수익성",
-                        "안정성",
-                    ],
-                    "industry_analyst": [
-                        "사업",
-                        "업종",
-                        "시장",
-                        "경쟁",
-                        "산업",
-                        "업계",
-                        "매출구성",
-                        "사업현황",
-                        "영업현황",
-                    ],
-                    "valuation_expert": [
-                        "가치",
-                        "평가",
-                        "적정가",
-                        "목표가",
-                        "DCF",
-                        "밸류에이션",
-                        "투자",
-                        "배당",
-                    ],
+                    # "fundamental_analyst": [  # 🚫 비활성화 (통합 재무분석가로 대체)
+                    #     "재무",
+                    #     "손익",
+                    #     "매출",
+                    #     "순이익",
+                    #     "자산",
+                    #     "부채",
+                    #     "자본",
+                    #     "현금흐름",
+                    #     "수익성",
+                    #     "안정성",
+                    # ],
+                    # "industry_analyst": [  # 🚫 비활성화 (개발 시간 절약)
+                    #     "사업",
+                    #     "업종",
+                    #     "시장",
+                    #     "경쟁",
+                    #     "산업",
+                    #     "업계",
+                    #     "매출구성",
+                    #     "사업현황",
+                    #     "영업현황",
+                    # ],
+                    # "valuation_expert": [  # 🚫 비활성화 (통합 재무분석가로 대체)
+                    #     "가치",
+                    #     "평가",
+                    #     "적정가",
+                    #     "목표가",
+                    #     "DCF",
+                    #     "밸류에이션",
+                    #     "투자",
+                    #     "배당",
+                    # ],
                     "technical_analyst": [
                         "기술적",
                         "차트",
@@ -1642,47 +1642,47 @@ class SmartSectorManager:
                         "거래량",
                         "변동성",
                     ],
-                    "risk_assessor": [
-                        "위험",
-                        "리스크",
-                        "부채",
-                        "유동성",
-                        "신용",
-                        "경영진",
-                        "지배구조",
-                    ],
+                    # "risk_assessor": [  # 🚫 비활성화 (개발 시간 절약)
+                    #     "위험",
+                    #     "리스크",
+                    #     "부채",
+                    #     "유동성",
+                    #     "신용",
+                    #     "경영진",
+                    #     "지배구조",
+                    # ],
                 }
 
                 # 전문가 타입 결정 (더 정확한 매칭)
-                expert_type = "fundamental_analyst"  # 기본값
+                expert_type = "technical_analyst"  # 기본값 (기술적 분석가로 변경)
+                # if any(
+                #     keyword in expert.name.lower() or keyword in expert.role.lower()
+                #     for keyword in ["fundamental", "재무", "펀더멘털"]
+                # ):
+                #     expert_type = "fundamental_analyst"  # 🚫 비활성화 (통합 재무분석가로 대체)
+                # elif any(
+                #     keyword in expert.name.lower() or keyword in expert.role.lower()
+                #     for keyword in ["industry", "산업", "업계"]
+                # ):
+                #     expert_type = "industry_analyst"  # 🚫 비활성화 (개발 시간 절약)
+                # elif any(
+                #     keyword in expert.name.lower() or keyword in expert.role.lower()
+                #     for keyword in ["valuation", "밸류에이션", "가치"]
+                # ):
+                #     expert_type = "valuation_expert"  # 🚫 비활성화 (통합 재무분석가로 대체)
+                # elif any(
+                #     keyword in expert.name.lower() or keyword in expert.role.lower()
+                #     for keyword in ["risk", "리스크", "위험"]
+                # ):
+                #     expert_type = "risk_assessor"  # 🚫 비활성화 (개발 시간 절약)
                 if any(
-                    keyword in expert.name.lower() or keyword in expert.role.lower()
-                    for keyword in ["fundamental", "재무", "펀더멘털"]
-                ):
-                    expert_type = "fundamental_analyst"
-                elif any(
-                    keyword in expert.name.lower() or keyword in expert.role.lower()
-                    for keyword in ["industry", "산업", "업계"]
-                ):
-                    expert_type = "industry_analyst"
-                elif any(
-                    keyword in expert.name.lower() or keyword in expert.role.lower()
-                    for keyword in ["valuation", "밸류에이션", "가치"]
-                ):
-                    expert_type = "valuation_expert"
-                elif any(
-                    keyword in expert.name.lower() or keyword in expert.role.lower()
-                    for keyword in ["risk", "리스크", "위험"]
-                ):
-                    expert_type = "risk_assessor"
-                elif any(
                     keyword in expert.name.lower() or keyword in expert.role.lower()
                     for keyword in ["technical", "기술적"]
                 ):
                     expert_type = "technical_analyst"
 
                 keywords = expert_keywords.get(
-                    expert_type, expert_keywords["fundamental_analyst"]
+                    expert_type, expert_keywords["technical_analyst"]
                 )
 
                 # 🎯 사업보고서에서 관련 섹션 찾기

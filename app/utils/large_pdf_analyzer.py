@@ -2233,12 +2233,12 @@ class PDFDictionaryInterface:
         섹션 제목을 보고 어떤 전문가가 관심 있어 할지 자동으로 분류합니다.
         """
         categories = {
-            "fundamental_analyst": [],  # 펀더멘털 분석가
+            # "fundamental_analyst": [],  # 펀더멘털 분석가 (비활성화됨 - 통합 재무분석가로 대체)
             "technical_analyst": [],  # 기술적 분석가
-            "industry_analyst": [],  # 산업 분석가
-            "valuation_expert": [],  # 밸류에이션 전문가
-            "risk_assessor": [],  # 리스크 평가자
-            "footnote_specialist": [],  # 주석 전문가
+            # "industry_analyst": [],  # 산업 분석가 (비활성화됨)
+            # "valuation_expert": [],  # 밸류에이션 전문가 (비활성화됨 - 통합 재무분석가로 대체)
+            # "risk_assessor": [],  # 리스크 평가자 (비활성화됨)
+            # "footnote_specialist": [],  # 주석 전문가 (비활성화됨)
             "general": [],  # 일반 (여러 전문가 공통)
         }
 
@@ -2246,64 +2246,64 @@ class PDFDictionaryInterface:
         for section_title in self.pdf_dictionary.keys():
             title_lower = section_title.lower()
 
-            # 주석 관련
-            if any(
-                keyword in title_lower
-                for keyword in ["주석", "footnote", "note", "부록"]
-            ):
-                categories["footnote_specialist"].append(section_title)
-            # 재무/펀더멘털 관련
-            elif any(
-                keyword in title_lower
-                for keyword in [
-                    "재무",
-                    "손익",
-                    "대차대조표",
-                    "현금흐름",
-                    "매출",
-                    "이익",
-                    "financial",
-                    "revenue",
-                    "profit",
-                ]
-            ):
-                categories["fundamental_analyst"].append(section_title)
-            # 리스크 관련
-            elif any(
-                keyword in title_lower
-                for keyword in ["리스크", "위험", "risk", "위기", "불확실성"]
-            ):
-                categories["risk_assessor"].append(section_title)
-            # 밸류에이션 관련
-            elif any(
-                keyword in title_lower
-                for keyword in [
-                    "가치",
-                    "평가",
-                    "valuation",
-                    "dcf",
-                    "per",
-                    "pbr",
-                    "목표가",
-                ]
-            ):
-                categories["valuation_expert"].append(section_title)
-            # 산업/시장 관련
-            elif any(
-                keyword in title_lower
-                for keyword in [
-                    "시장",
-                    "산업",
-                    "경쟁",
-                    "업계",
-                    "market",
-                    "industry",
-                    "competitive",
-                ]
-            ):
-                categories["industry_analyst"].append(section_title)
+            # 주석 관련 (비활성화됨)
+            # if any(
+            #     keyword in title_lower
+            #     for keyword in ["주석", "footnote", "note", "부록"]
+            # ):
+            #     categories["footnote_specialist"].append(section_title)
+            # 재무/펀더멘털 관련 (비활성화됨 - 통합 재무분석가로 대체)
+            # if any(
+            #     keyword in title_lower
+            #     for keyword in [
+            #         "재무",
+            #         "손익",
+            #         "대차대조표",
+            #         "현금흐름",
+            #         "매출",
+            #         "이익",
+            #         "financial",
+            #         "revenue",
+            #         "profit",
+            #     ]
+            # ):
+            #     categories["fundamental_analyst"].append(section_title)
+            # 리스크 관련 (비활성화됨)
+            # elif any(
+            #     keyword in title_lower
+            #     for keyword in ["리스크", "위험", "risk", "위기", "불확실성"]
+            # ):
+            #     categories["risk_assessor"].append(section_title)
+            # 밸류에이션 관련 (비활성화됨 - 통합 재무분석가로 대체)
+            # elif any(
+            #     keyword in title_lower
+            #     for keyword in [
+            #         "가치",
+            #         "평가",
+            #         "valuation",
+            #         "dcf",
+            #         "per",
+            #         "pbr",
+            #         "목표가",
+            #     ]
+            # ):
+            #     categories["valuation_expert"].append(section_title)
+            # 산업/시장 관련 (비활성화됨)
+            # elif any(
+            #     keyword in title_lower
+            #     for keyword in [
+            #         "시장",
+            #         "산업",
+            #         "경쟁",
+            #         "업계",
+            #         "market",
+            #         "industry",
+            #         "competitive",
+            #     ]
+            # ):
+            #     categories["industry_analyst"].append(section_title)
             # 기술적 분석 관련
-            elif any(
+            if any(
                 keyword in title_lower
                 for keyword in ["차트", "기술적", "technical", "pattern", "trend"]
             ):
@@ -2329,30 +2329,30 @@ class PDFDictionaryInterface:
         """
         # 전문가 타입 매핑 (다양한 형태의 전문가명 지원)
         expert_mapping = {
-            "fundamental": "fundamental_analyst",
-            "fundamental_analyst": "fundamental_analyst",
-            "펀더멘털": "fundamental_analyst",
-            "재무": "fundamental_analyst",
+            # "fundamental": "fundamental_analyst",  # 🚫 비활성화 (통합 재무분석가로 대체)
+            # "fundamental_analyst": "fundamental_analyst",  # 🚫 비활성화 (통합 재무분석가로 대체)
+            # "펀더멘털": "fundamental_analyst",  # 🚫 비활성화 (통합 재무분석가로 대체)
+            # "재무": "fundamental_analyst",  # 🚫 비활성화 (통합 재무분석가로 대체)
             "technical": "technical_analyst",
             "technical_analyst": "technical_analyst",
             "기술적": "technical_analyst",
             "차트": "technical_analyst",
-            "industry": "industry_analyst",
-            "industry_analyst": "industry_analyst",
-            "산업": "industry_analyst",
-            "시장": "industry_analyst",
-            "valuation": "valuation_expert",
-            "valuation_expert": "valuation_expert",
-            "밸류에이션": "valuation_expert",
-            "가치평가": "valuation_expert",
-            "risk": "risk_assessor",
-            "risk_assessor": "risk_assessor",
-            "리스크": "risk_assessor",
-            "위험": "risk_assessor",
-            "footnote": "footnote_specialist",
-            "footnote_specialist": "footnote_specialist",
-            "주석": "footnote_specialist",
-            "부록": "footnote_specialist",
+            # "industry": "industry_analyst",  # 🚫 비활성화 (개발 시간 절약)
+            # "industry_analyst": "industry_analyst",  # 🚫 비활성화 (개발 시간 절약)
+            # "산업": "industry_analyst",  # 🚫 비활성화 (개발 시간 절약)
+            # "시장": "industry_analyst",  # 🚫 비활성화 (개발 시간 절약)
+            # "valuation": "valuation_expert",  # 🚫 비활성화 (통합 재무분석가로 대체)
+            # "valuation_expert": "valuation_expert",  # 🚫 비활성화 (통합 재무분석가로 대체)
+            # "밸류에이션": "valuation_expert",  # 🚫 비활성화 (통합 재무분석가로 대체)
+            # "가치평가": "valuation_expert",  # 🚫 비활성화 (통합 재무분석가로 대체)
+            # "risk": "risk_assessor",  # 🚫 비활성화 (개발 시간 절약)
+            # "risk_assessor": "risk_assessor",  # 🚫 비활성화 (개발 시간 절약)
+            # "리스크": "risk_assessor",  # 🚫 비활성화 (개발 시간 절약)
+            # "위험": "risk_assessor",  # 🚫 비활성화 (개발 시간 절약)
+            # "footnote": "footnote_specialist",  # 🚫 비활성화 (개발 시간 절약)
+            # "footnote_specialist": "footnote_specialist",  # 🚫 비활성화 (개발 시간 절약)
+            # "주석": "footnote_specialist",  # 🚫 비활성화 (개발 시간 절약)
+            # "부록": "footnote_specialist",  # 🚫 비활성화 (개발 시간 절약)
         }
 
         # 전문가 타입 정규화

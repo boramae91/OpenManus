@@ -47,12 +47,12 @@ try:
     print("=" * 50)
 
     test_files = [
-        "test_fundamental_analyst_langchain.py",
-        "test_valuation_specialist_langchain.py",
-        "test_risk_assessor_langchain.py",
-        "test_industry_expert_langchain.py",
+        # "test_fundamental_analyst_langchain.py",  # 🚫 비활성화 (통합 재무분석가로 대체)
+        # "test_valuation_specialist_langchain.py",  # 🚫 비활성화 (통합 재무분석가로 대체)
+        # "test_risk_assessor_langchain.py",  # 🚫 비활성화 (개발 시간 절약)
+        # "test_industry_expert_langchain.py",  # 🚫 비활성화 (개발 시간 절약)
         "test_technical_analyst_langchain.py",
-        "test_footnote_specialist_langchain.py",
+        # "test_footnote_specialist_langchain.py",  # 🚫 비활성화 (개발 시간 절약)
     ]
 
     for test_file in test_files:
