@@ -161,13 +161,25 @@ def test_enhanced_analysis_system():
             f"   - 통합 요약 메모리 크기: {memory_summary['integrated_summary_size']}"
         )
 
+        # LangChain 메시지 객체를 문자열로 변환하는 함수
+        def convert_to_serializable(obj):
+            """LangChain 메시지 객체를 JSON 직렬화 가능한 형태로 변환"""
+            if hasattr(obj, "content"):
+                return str(obj.content)
+            elif isinstance(obj, dict):
+                return {k: convert_to_serializable(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [convert_to_serializable(item) for item in obj]
+            else:
+                return str(obj)
+
         # 각 단계별 분석 결과 길이
         print(f"\n📝 분석 결과 길이:")
         print(
-            f"   - 심층 분석: {len(json.dumps(analysis_result['deep_analysis'], ensure_ascii=False))} 문자"
+            f"   - 심층 분석: {len(json.dumps(convert_to_serializable(analysis_result['deep_analysis']), ensure_ascii=False))} 문자"
         )
         print(
-            f"   - 품질 향상: {len(json.dumps(analysis_result['quality_enhancement'], ensure_ascii=False))} 문자"
+            f"   - 품질 향상: {len(json.dumps(convert_to_serializable(analysis_result['quality_enhancement']), ensure_ascii=False))} 문자"
         )
         print(f"   - 통합 분석: {len(analysis_result['integration_analysis'])} 문자")
         print(f"   - 최종 보고서: {len(analysis_result['final_report'])} 문자")

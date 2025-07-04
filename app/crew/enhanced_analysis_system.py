@@ -474,8 +474,23 @@ CoT + 5Why 분석 결과와 품질 향상 피드백을 종합해서
     def save_enhanced_analysis_result(self, filepath: str, result: Dict[str, Any]):
         """향상된 분석 결과를 파일로 저장"""
         try:
+            # LangChain 메시지 객체를 문자열로 변환하는 함수
+            def convert_to_serializable(obj):
+                """LangChain 메시지 객체를 JSON 직렬화 가능한 형태로 변환"""
+                if hasattr(obj, "content"):
+                    return str(obj.content)
+                elif isinstance(obj, dict):
+                    return {k: convert_to_serializable(v) for k, v in obj.items()}
+                elif isinstance(obj, list):
+                    return [convert_to_serializable(item) for item in obj]
+                else:
+                    return str(obj)
+
+            # 결과를 JSON 직렬화 가능한 형태로 변환
+            serializable_result = convert_to_serializable(result)
+
             with open(filepath, "w", encoding="utf-8") as f:
-                json.dump(result, f, ensure_ascii=False, indent=2)
+                json.dump(serializable_result, f, ensure_ascii=False, indent=2)
             print(f"✅ 향상된 분석 결과 저장 완료: {filepath}")
         except Exception as e:
             print(f"❌ 향상된 분석 결과 저장 실패: {e}")
