@@ -1191,7 +1191,10 @@ class FundamentalAnalysisTools:
         try:
             formatted = []
             for key, value in calculated_metrics.items():
-                if isinstance(value, (int, float)):
+                # 🔧 None 값 안전 처리
+                if value is None:
+                    formatted.append(f"- {key}: N/A")
+                elif isinstance(value, (int, float)):
                     formatted.append(f"- {key}: {value:.2f}%")
                 else:
                     formatted.append(f"- {key}: {value}")

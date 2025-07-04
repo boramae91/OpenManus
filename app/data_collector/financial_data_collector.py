@@ -812,10 +812,10 @@ class FinancialDataCollector:
         price_history = collected_data.get("price_history", {})
 
         summary = f"""
-=== {basic_info.get('company_name', stock_info.get('stock_name', '알 수 없는 기업'))} 재무 데이터 요약 ===
+📊 **{stock_info.get('stock_name', '분석대상')} ({stock_info.get('stock_code', 'N/A')}) 재무 분석 요약**
 
-📊 기본 정보:
-- 종목코드: {stock_info.get('stock_code')}
+🏢 기본 정보:
+- 회사명: {basic_info.get('company_name', '정보없음')}
 - 섹터: {basic_info.get('sector', '정보없음')}
 - 산업: {basic_info.get('industry', '정보없음')}
 - 거래소: {basic_info.get('exchange', '정보없음')}
@@ -825,18 +825,18 @@ class FinancialDataCollector:
 - 시가총액: {current_price_info.get('market_cap', 'N/A'):,}
 - 52주 최고가: {price_history.get('52_week_high', 'N/A')}
 - 52주 최저가: {price_history.get('52_week_low', 'N/A')}
-- 1년 수익률: {price_history.get('price_change_1y', 'N/A'):.2f}%
+- 1년 수익률: {price_history.get('price_change_1y', 'N/A'):.2f if price_history.get('price_change_1y') is not None else 'N/A'}%
 
 📈 주요 재무 지표:
 - PER (주가수익비율): {financial_ratios.get('pe_ratio', 'N/A')}
 - PBR (주가순자산비율): {financial_ratios.get('pb_ratio', 'N/A')}
-- ROE (자기자본이익률): {financial_ratios.get('return_on_equity', 'N/A'):.2%} if financial_ratios.get('return_on_equity') else 'N/A'
+- ROE (자기자본이익률): {financial_ratios.get('return_on_equity', 'N/A'):.2% if financial_ratios.get('return_on_equity') is not None else 'N/A'}
 - 부채비율: {financial_ratios.get('debt_ratio', 'N/A')}
-- 배당수익률: {financial_ratios.get('dividend_yield', 'N/A'):.2%} if financial_ratios.get('dividend_yield') else 'N/A'
+- 배당수익률: {financial_ratios.get('dividend_yield', 'N/A'):.2% if financial_ratios.get('dividend_yield') is not None else 'N/A'}
 
 📊 성장성 지표:
-- 매출 성장률: {growth_metrics.get('revenue_growth', 'N/A'):.3f}
-- 이익 성장률: {growth_metrics.get('earnings_growth', 'N/A'):.3f}
+- 매출 성장률: {growth_metrics.get('revenue_growth', 'N/A'):.3f if growth_metrics.get('revenue_growth') is not None else 'N/A'}
+- 이익 성장률: {growth_metrics.get('earnings_growth', 'N/A'):.3f if growth_metrics.get('earnings_growth') is not None else 'N/A'}
 
 🔍 데이터 품질: {collected_data.get('data_quality', '정보없음')}
 📅 수집 시간: {stock_info.get('collection_timestamp', 'N/A')}

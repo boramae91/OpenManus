@@ -517,8 +517,11 @@ class EnhancedStockAnalysisSystem:
             data_priority = intent_analysis.get("data_priority", "기본")
             confidence = intent_analysis.get("confidence", 0.0)
 
+            # 🔧 안전한 confidence 포맷팅 (None 값 처리)
+            confidence_str = f"{confidence:.2f}" if confidence is not None else "0.00"
+
             logger.info(
-                f"🎯 정보 수집 - 의도: {primary_intent}, 포커스: {analysis_focus}, 신뢰도: {confidence:.2f}"
+                f"🎯 정보 수집 - 의도: {primary_intent}, 포커스: {analysis_focus}, 신뢰도: {confidence_str}"
             )
 
             # 🔧 안전한 프롬프트 구성 (None 값 처리)
@@ -1439,7 +1442,7 @@ class EnhancedStockAnalysisSystem:
                 intent_result["secondary_intents"] = secondary_intents
 
                 logger.info(
-                    f"🎯 의도 분석 완료: {primary_intent} (점수: {max_score}, 신뢰도: {confidence:.2f})"
+                    f"🎯 의도 분석 완료: {primary_intent} (점수: {max_score}, 신뢰도: {confidence:.2f if confidence is not None else 0.0:.2f})"
                 )
                 if secondary_intents:
                     logger.info(f"🔍 2차 의도: {', '.join(secondary_intents)}")

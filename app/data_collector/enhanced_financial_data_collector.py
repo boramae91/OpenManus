@@ -815,7 +815,20 @@ class EnhancedDartDataCollector:
 
             # HTML 태그 제거 (BeautifulSoup 사용)
             try:
-                soup = BeautifulSoup(content, "html.parser")
+                # XML 파싱 경고를 무시하는 설정 추가 (사용자 요청에 따라 한국어 주석 포함)
+                # 이 부분은 XML 문서를 안전하게 처리하기 위한 경고 필터링이에요
+                import warnings
+
+                from bs4 import XMLParsedAsHTMLWarning
+
+                warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
+
+                # XML 전용 파서 사용 (lxml이 있으면 사용, 없으면 기본 XML 파서 사용)
+                try:
+                    soup = BeautifulSoup(content, features="xml")
+                except Exception:
+                    # XML 파서가 없으면 html.parser 사용 (경고 필터링 적용됨)
+                    soup = BeautifulSoup(content, "html.parser")
 
                 # 스크립트와 스타일 태그 제거
                 for script in soup(["script", "style"]):
