@@ -136,18 +136,21 @@ async def test_langchain_chain_execution():
         }
 
         try:
-            # LangChain Chain 실행
-            print("🔗 LangChain Chain 실행 중...")
-            result = fundamental_analyst.langchain_chain.invoke(test_input)
+            # LangChain Chain 실행 (향상된 분석 시스템 사용)
+            print("🔗 향상된 분석 시스템 실행 중... (CoT + 5Why + 7Why)")
+            result = fundamental_analyst.run_langchain_analysis(test_input)
 
-            print("✅ LangChain Chain 실행 성공!")
+            print("✅ 향상된 분석 시스템 실행 성공!")
             print(f"결과 타입: {type(result)}")
 
             if isinstance(result, dict):
-                if "output" in result:
+                if "result" in result:
+                    print(f"출력 결과: {result['result'][:500]}...")
+                elif "output" in result:
                     print(f"출력 결과: {result['output'][:500]}...")
                 else:
                     print(f"결과 키: {list(result.keys())}")
+                print(f"분석 방법: {result.get('analysis_method', '기본 분석')}")
             else:
                 print(f"결과: {str(result)[:500]}...")
 

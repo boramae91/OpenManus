@@ -108,10 +108,11 @@ SK이노베이션(096770)의 재무 분석을 수행해주세요.
                 "chat_history": [],
             }
 
-            # 분석 실행
-            result = fundamental_expert.langchain_chain.invoke(test_data)
-            print("✅ 펀더멘털 분석 완료!")
-            print(f"결과 길이: {len(str(result))} 문자")
+            # 분석 실행 (향상된 분석 시스템 사용)
+            result = fundamental_expert.run_langchain_analysis(test_data)
+            print("✅ 펀더멘털 분석 완료! (CoT + 5Why + 7Why 포함)")
+            print(f"결과 길이: {len(str(result.get('result', '')))} 문자")
+            print(f"분석 방법: {result.get('analysis_method', '기본 분석')}")
 
         # 리스크 평가자 테스트
         risk_expert = factory.get_expert_by_role(team, "Risk Assessor")
@@ -139,9 +140,10 @@ SK이노베이션(096770)의 리스크 분석을 수행해주세요.
                 "chat_history": [],
             }
 
-            result = risk_expert.langchain_chain.invoke(test_data)
-            print("✅ 리스크 분석 완료!")
-            print(f"결과 길이: {len(str(result))} 문자")
+            result = risk_expert.run_langchain_analysis(test_data)
+            print("✅ 리스크 분석 완료! (CoT + 5Why + 7Why 포함)")
+            print(f"결과 길이: {len(str(result.get('result', '')))} 문자")
+            print(f"분석 방법: {result.get('analysis_method', '기본 분석')}")
 
     except Exception as e:
         print(f"❌ 에너지 섹터 테스트 실패: {e}")

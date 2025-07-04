@@ -85,7 +85,7 @@ class AnalystAgent:
 
     def run_langchain_analysis(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        LangChain을 사용한 고급 분석 수행
+        LangChain을 사용한 고급 분석 수행 (CoT + 5Why + 7Why 포함)
 
         Args:
             input_data: 분석에 필요한 입력 데이터
@@ -100,13 +100,96 @@ class AnalystAgent:
             # 분석 시작 시간 기록
             start_time = datetime.now()
 
-            # LangChain Chain 실행 (최신 API 사용)
-            if hasattr(self.langchain_chain, "invoke"):
-                # 최신 LangChain API
-                result = self.langchain_chain.invoke(input_data)
-            else:
-                # 구버전 호환성
-                result = self.langchain_chain.run(input_data)
+            # 🚀 향상된 분석 시스템 (CoT + 5Why + 7Why) 사용
+            try:
+                # 향상된 분석 시스템 초기화 및 실행
+                from .enhanced_analysis_system import EnhancedAnalysisSystem
+                from .enhanced_seven_why_analyzer import EnhancedSevenWhyAnalyzer
+
+                enhanced_analysis = EnhancedAnalysisSystem()
+                seven_why_analyzer = EnhancedSevenWhyAnalyzer()
+
+                # 통합 데이터 준비
+                company_name = input_data.get("company_name", "분석대상")
+                sector_name = input_data.get("sector_name", "정보기술")
+                financial_data = input_data.get("financial_data", "재무 데이터 없음")
+                market_data = input_data.get("market_data", "시장 데이터 없음")
+                competitor_data = input_data.get(
+                    "competitor_data", "경쟁사 데이터 없음"
+                )
+
+                # 1단계: CoT + 5Why 심층 분석
+                print(f"🧠 {self.name} CoT + 5Why 심층 분석 시작...")
+                deep_analysis_result = (
+                    enhanced_analysis.deep_analysis.perform_deep_analysis(
+                        company_name=company_name,
+                        sector_name=sector_name,
+                        financial_data=str(financial_data),
+                        market_data=market_data,
+                        competitor_data=competitor_data,
+                    )
+                )
+
+                if "error" in deep_analysis_result:
+                    print(
+                        f"⚠️ {self.name} 심층 분석 실패, 기본 LangChain Chain으로 진행"
+                    )
+                    # 폴백: 기존 LangChain Chain 사용
+                    if hasattr(self.langchain_chain, "invoke"):
+                        result = self.langchain_chain.invoke(input_data)
+                    else:
+                        result = self.langchain_chain.run(input_data)
+                else:
+                    # 2단계: 7Why 분석 (전문가 분석 텍스트 기반)
+                    print(f"🔍 {self.name} 7Why 분석 시작...")
+
+                    # CoT 분석 결과를 7Why 분석의 입력으로 사용
+                    cot_analysis_text = deep_analysis_result.get("cot_analysis", "")
+
+                    seven_why_result = (
+                        seven_why_analyzer.perform_integrated_7why_analysis(
+                            expert_analysis_text=cot_analysis_text,
+                            financial_data=str(financial_data),
+                            market_data=market_data,
+                            competitor_data=competitor_data,
+                            web_search_data=input_data.get("web_search_data", ""),
+                        )
+                    )
+
+                    # 3단계: 통합 분석 결과 생성
+                    print(f"🔗 {self.name} 통합 분석 결과 생성...")
+
+                    result = f"""
+**🎯 {self.name} 향상된 분석 결과 (CoT + 5Why + 7Why)**
+
+**1️⃣ CoT (Chain of Thought) 분석:**
+{deep_analysis_result.get('cot_analysis', 'CoT 분석 결과 없음')}
+
+**2️⃣ 5Why 근본 원인 분석:**
+{deep_analysis_result.get('five_why_analysis', '5Why 분석 결과 없음')}
+
+**3️⃣ 7Why 확장 분석:**
+{seven_why_result.get('integrated_7why_analysis', '7Why 분석 결과 없음')}
+
+**4️⃣ 근본 원인 종합 분석:**
+{deep_analysis_result.get('root_cause_analysis', '근본 원인 분석 결과 없음')}
+
+**5️⃣ 투자 시사점 분석:**
+{deep_analysis_result.get('implication_analysis', '시사점 분석 결과 없음')}
+
+**📊 종합 투자 의견:**
+위의 다층적 분석을 종합하여 {self.name}의 전문적 투자 의견을 제시합니다.
+"""
+
+                    print(f"✅ {self.name} 향상된 분석 완료 (CoT + 5Why + 7Why)")
+
+            except Exception as enhanced_error:
+                print(f"❌ {self.name} 향상된 분석 실패: {enhanced_error}")
+                # 폴백: 기존 LangChain Chain 사용
+                if hasattr(self.langchain_chain, "invoke"):
+                    result = self.langchain_chain.invoke(input_data)
+                else:
+                    result = self.langchain_chain.run(input_data)
 
             # 분석 시간 계산
             analysis_time = (datetime.now() - start_time).total_seconds()
@@ -119,6 +202,7 @@ class AnalystAgent:
                 "analysis_time": analysis_time,
                 "agent_name": self.name,
                 "role": self.role,
+                "analysis_method": "Enhanced Analysis (CoT + 5Why + 7Why)",
             }
 
             # 분석 이력에 저장
@@ -134,7 +218,7 @@ class AnalystAgent:
                 )
 
             print(
-                f"✅ {self.name} LangChain 분석 완료 (소요시간: {analysis_time:.2f}초)"
+                f"✅ {self.name} 향상된 LangChain 분석 완료 (소요시간: {analysis_time:.2f}초)"
             )
             return analysis_result
 
@@ -428,13 +512,96 @@ class AnalystAgent:
 
             start_time = datetime.now()
 
-            # 5단계 전체 실행 (함수 호출)
-            chain_result = self.langchain_chain(input_data)
+            # 🚀 향상된 분석 시스템 (CoT + 5Why + 7Why) 사용
+            try:
+                # 향상된 분석 시스템 초기화 및 실행
+                from .enhanced_analysis_system import EnhancedAnalysisSystem
+                from .enhanced_seven_why_analyzer import EnhancedSevenWhyAnalyzer
+
+                enhanced_analysis = EnhancedAnalysisSystem()
+                seven_why_analyzer = EnhancedSevenWhyAnalyzer()
+
+                # 통합 데이터 준비
+                company_name = input_data.get("company_name", "분석대상")
+                sector_name = input_data.get("sector_name", "정보기술")
+                financial_data = input_data.get("financial_data", "재무 데이터 없음")
+                market_data = input_data.get("market_data", "시장 데이터 없음")
+                competitor_data = input_data.get(
+                    "competitor_data", "경쟁사 데이터 없음"
+                )
+
+                # 1단계: CoT + 5Why 심층 분석
+                print(f"🧠 {self.name} CoT + 5Why 심층 분석 시작...")
+                deep_analysis_result = (
+                    enhanced_analysis.deep_analysis.perform_deep_analysis(
+                        company_name=company_name,
+                        sector_name=sector_name,
+                        financial_data=str(financial_data),
+                        market_data=market_data,
+                        competitor_data=competitor_data,
+                    )
+                )
+
+                if "error" in deep_analysis_result:
+                    print(
+                        f"⚠️ {self.name} 심층 분석 실패, 기본 LangChain Chain으로 진행"
+                    )
+                    # 폴백: 기존 LangChain Chain 사용
+                    chain_result = self.langchain_chain(input_data)
+                else:
+                    # 2단계: 7Why 분석 (전문가 분석 텍스트 기반)
+                    print(f"🔍 {self.name} 7Why 분석 시작...")
+
+                    # CoT 분석 결과를 7Why 분석의 입력으로 사용
+                    cot_analysis_text = deep_analysis_result.get("cot_analysis", "")
+
+                    seven_why_result = (
+                        seven_why_analyzer.perform_integrated_7why_analysis(
+                            expert_analysis_text=cot_analysis_text,
+                            financial_data=str(financial_data),
+                            market_data=market_data,
+                            competitor_data=competitor_data,
+                            web_search_data=input_data.get("web_search_data", ""),
+                        )
+                    )
+
+                    # 3단계: 통합 분석 결과 생성
+                    print(f"🔗 {self.name} 통합 분석 결과 생성...")
+
+                    # 기존 LangChain Chain 결과와 향상된 분석 결과를 통합
+                    basic_chain_result = self.langchain_chain(input_data)
+
+                    # 향상된 분석 결과를 기존 결과에 추가
+                    chain_result = {
+                        **basic_chain_result,
+                        "enhanced_cot_analysis": deep_analysis_result.get(
+                            "cot_analysis", ""
+                        ),
+                        "enhanced_five_why_analysis": deep_analysis_result.get(
+                            "five_why_analysis", ""
+                        ),
+                        "enhanced_seven_why_analysis": seven_why_result.get(
+                            "integrated_7why_analysis", ""
+                        ),
+                        "enhanced_root_cause_analysis": deep_analysis_result.get(
+                            "root_cause_analysis", ""
+                        ),
+                        "enhanced_implication_analysis": deep_analysis_result.get(
+                            "implication_analysis", ""
+                        ),
+                    }
+
+                    print(f"✅ {self.name} 향상된 분석 완료 (CoT + 5Why + 7Why)")
+
+            except Exception as enhanced_error:
+                print(f"❌ {self.name} 향상된 분석 실패: {enhanced_error}")
+                # 폴백: 기존 LangChain Chain 사용
+                chain_result = self.langchain_chain(input_data)
 
             # 분석 시간 계산
             analysis_time = (datetime.now() - start_time).total_seconds()
 
-            # 단계별 결과를 dict로 정리 (6가지 핵심 전략 반영)
+            # 단계별 결과를 dict로 정리 (6가지 핵심 전략 반영 + 향상된 분석 포함)
             result_dict = {
                 "step1_result": chain_result.get(
                     "step1_result"
@@ -451,9 +618,23 @@ class AnalystAgent:
                 "step5_result": chain_result.get(
                     "step5_result"
                 ),  # 종합 투자 의견 (통합 템플릿 적용)
+                "enhanced_cot_analysis": chain_result.get("enhanced_cot_analysis", ""),
+                "enhanced_five_why_analysis": chain_result.get(
+                    "enhanced_five_why_analysis", ""
+                ),
+                "enhanced_seven_why_analysis": chain_result.get(
+                    "enhanced_seven_why_analysis", ""
+                ),
+                "enhanced_root_cause_analysis": chain_result.get(
+                    "enhanced_root_cause_analysis", ""
+                ),
+                "enhanced_implication_analysis": chain_result.get(
+                    "enhanced_implication_analysis", ""
+                ),
                 "analysis_time": analysis_time,
                 "agent_name": self.name,
                 "role": self.role,
+                "analysis_method": "Enhanced Integrated Analysis (CoT + 5Why + 7Why)",
                 "analysis_quality_metrics": {
                     "interpretation_depth": "Chain of Thought 기반 깊이 있는 해석",
                     "logical_consistency": "논리구조 틀 적용으로 일관성 확보",
@@ -495,22 +676,118 @@ class AnalystAgent:
 
             start_time = datetime.now()
 
-            # 5단계 전체 실행 (함수 호출)
-            chain_result = self.langchain_chain(input_data)
+            # 🚀 향상된 분석 시스템 (CoT + 5Why + 7Why) 사용
+            try:
+                # 향상된 분석 시스템 초기화 및 실행
+                from .enhanced_analysis_system import EnhancedAnalysisSystem
+                from .enhanced_seven_why_analyzer import EnhancedSevenWhyAnalyzer
+
+                enhanced_analysis = EnhancedAnalysisSystem()
+                seven_why_analyzer = EnhancedSevenWhyAnalyzer()
+
+                # 통합 데이터 준비
+                company_name = input_data.get("company_name", "분석대상")
+                sector_name = input_data.get("sector_name", "정보기술")
+                price_data = input_data.get("price_data", "가격 데이터 없음")
+                market_data = input_data.get("market_data", "시장 데이터 없음")
+
+                # 1단계: CoT + 5Why 심층 분석
+                print(f"🧠 {self.name} CoT + 5Why 심층 분석 시작...")
+                deep_analysis_result = (
+                    enhanced_analysis.deep_analysis.perform_deep_analysis(
+                        company_name=company_name,
+                        sector_name=sector_name,
+                        financial_data=str(
+                            price_data
+                        ),  # 가격 데이터를 재무 데이터로 사용
+                        market_data=market_data,
+                        competitor_data={},
+                    )
+                )
+
+                if "error" in deep_analysis_result:
+                    print(
+                        f"⚠️ {self.name} 심층 분석 실패, 기본 LangChain Chain으로 진행"
+                    )
+                    # 폴백: 기존 LangChain Chain 사용
+                    chain_result = self.langchain_chain(input_data)
+                else:
+                    # 2단계: 7Why 분석 (전문가 분석 텍스트 기반)
+                    print(f"🔍 {self.name} 7Why 분석 시작...")
+
+                    # CoT 분석 결과를 7Why 분석의 입력으로 사용
+                    cot_analysis_text = deep_analysis_result.get("cot_analysis", "")
+
+                    seven_why_result = (
+                        seven_why_analyzer.perform_integrated_7why_analysis(
+                            expert_analysis_text=cot_analysis_text,
+                            financial_data=str(price_data),
+                            market_data=market_data,
+                            competitor_data={},
+                            web_search_data=input_data.get("web_search_data", ""),
+                        )
+                    )
+
+                    # 3단계: 통합 분석 결과 생성
+                    print(f"🔗 {self.name} 통합 분석 결과 생성...")
+
+                    # 기존 LangChain Chain 결과와 향상된 분석 결과를 통합
+                    basic_chain_result = self.langchain_chain(input_data)
+
+                    # 향상된 분석 결과를 기존 결과에 추가
+                    chain_result = {
+                        **basic_chain_result,
+                        "enhanced_cot_analysis": deep_analysis_result.get(
+                            "cot_analysis", ""
+                        ),
+                        "enhanced_five_why_analysis": deep_analysis_result.get(
+                            "five_why_analysis", ""
+                        ),
+                        "enhanced_seven_why_analysis": seven_why_result.get(
+                            "integrated_7why_analysis", ""
+                        ),
+                        "enhanced_root_cause_analysis": deep_analysis_result.get(
+                            "root_cause_analysis", ""
+                        ),
+                        "enhanced_implication_analysis": deep_analysis_result.get(
+                            "implication_analysis", ""
+                        ),
+                    }
+
+                    print(f"✅ {self.name} 향상된 분석 완료 (CoT + 5Why + 7Why)")
+
+            except Exception as enhanced_error:
+                print(f"❌ {self.name} 향상된 분석 실패: {enhanced_error}")
+                # 폴백: 기존 LangChain Chain 사용
+                chain_result = self.langchain_chain(input_data)
 
             # 분석 시간 계산
             analysis_time = (datetime.now() - start_time).total_seconds()
 
-            # 단계별 결과를 dict로 정리
+            # 단계별 결과를 dict로 정리 (향상된 분석 포함)
             result_dict = {
                 "step1_result": chain_result.get("step1_result"),
                 "step2_result": chain_result.get("step2_result"),
                 "step3_result": chain_result.get("step3_result"),
                 "step4_result": chain_result.get("step4_result"),
                 "step5_result": chain_result.get("step5_result"),
+                "enhanced_cot_analysis": chain_result.get("enhanced_cot_analysis", ""),
+                "enhanced_five_why_analysis": chain_result.get(
+                    "enhanced_five_why_analysis", ""
+                ),
+                "enhanced_seven_why_analysis": chain_result.get(
+                    "enhanced_seven_why_analysis", ""
+                ),
+                "enhanced_root_cause_analysis": chain_result.get(
+                    "enhanced_root_cause_analysis", ""
+                ),
+                "enhanced_implication_analysis": chain_result.get(
+                    "enhanced_implication_analysis", ""
+                ),
                 "analysis_time": analysis_time,
                 "agent_name": self.name,
                 "role": self.role,
+                "analysis_method": "Enhanced Technical Analysis (CoT + 5Why + 7Why)",
             }
             # 분석 이력에 저장
             self.analysis_history.append(result_dict)

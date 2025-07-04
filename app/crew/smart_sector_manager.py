@@ -1066,57 +1066,154 @@ class SmartSectorManager:
                     dart_reports_dictionary,  # 🚀 DART 보고서 딕셔너리 추가!
                 )
 
-                # 🚀 LangChain Chain을 사용한 전문가별 분석 수행
+                # 🚀 향상된 분석 시스템 (CoT + 5Why + 7Why) 사용
                 if expert.langchain_enabled and expert.langchain_chain:
-                    logger.info(f"🔗 {expert.name} LangChain Chain 사용")
+                    logger.info(
+                        f"🔗 {expert.name} 향상된 분석 시스템 사용 (CoT + 5Why + 7Why)"
+                    )
 
-                    # LangChain Chain에 전달할 입력 데이터 구성
-                    chain_input = {
-                        "financial_data": comprehensive_prompt,
-                        "sector_name": (
-                            expert.sector_context.split()[0]
-                            if expert.sector_context
-                            else "정보기술"
-                        ),
-                        "company_name": stock_name,
-                    }
-
-                    # LangChain Chain 실행 (AgentExecutor 방식)
                     try:
-                        # AgentExecutor는 invoke 메서드를 사용
-                        if hasattr(expert.langchain_chain, "invoke"):
-                            # AgentExecutor의 invoke 메서드 사용
-                            chain_result = expert.langchain_chain.invoke(
-                                {"input": comprehensive_prompt, "chat_history": []}
+                        # 향상된 분석 시스템 초기화 및 실행
+                        from .enhanced_analysis_system import EnhancedAnalysisSystem
+                        from .enhanced_seven_why_analyzer import (
+                            EnhancedSevenWhyAnalyzer,
+                        )
+
+                        enhanced_analysis = EnhancedAnalysisSystem()
+                        seven_why_analyzer = EnhancedSevenWhyAnalyzer()
+
+                        # 통합 데이터 준비
+                        integrated_data = f"""
+**기업명:** {stock_name}
+**섹터:** {expert.sector_context.split()[0] if expert.sector_context else "정보기술"}
+**재무 데이터:** {financial_data}
+**시장 데이터:** {market_data if 'market_data' in locals() else "시장 데이터 없음"}
+**경쟁사 데이터:** {competitor_data if 'competitor_data' in locals() else "경쟁사 데이터 없음"}
+**웹 검색 데이터:** {web_search_data if 'web_search_data' in locals() else "웹 검색 데이터 없음"}
+**전문가 분석 요청:** {comprehensive_prompt}
+"""
+
+                        # 1단계: CoT + 5Why 심층 분석
+                        logger.info(f"🧠 {expert.name} CoT + 5Why 심층 분석 시작...")
+                        deep_analysis_result = (
+                            enhanced_analysis.deep_analysis.perform_deep_analysis(
+                                company_name=stock_name,
+                                sector_name=(
+                                    expert.sector_context.split()[0]
+                                    if expert.sector_context
+                                    else "정보기술"
+                                ),
+                                financial_data=str(financial_data),
+                                market_data=(
+                                    market_data
+                                    if "market_data" in locals()
+                                    else "시장 데이터 없음"
+                                ),
+                                competitor_data=(
+                                    competitor_data
+                                    if "competitor_data" in locals()
+                                    else "경쟁사 데이터 없음"
+                                ),
+                            )
+                        )
+
+                        if "error" in deep_analysis_result:
+                            logger.warning(
+                                f"⚠️ {expert.name} 심층 분석 실패, 기본 분석으로 진행"
+                            )
+                            analysis_result = await self._call_llm_for_analysis(
+                                comprehensive_prompt
+                            )
+                        else:
+                            # 2단계: 7Why 분석 (전문가 분석 텍스트 기반)
+                            logger.info(f"🔍 {expert.name} 7Why 분석 시작...")
+
+                            # CoT 분석 결과를 7Why 분석의 입력으로 사용
+                            cot_analysis_text = deep_analysis_result.get(
+                                "cot_analysis", ""
                             )
 
-                            # AgentExecutor 결과에서 output 추출
-                            if (
-                                isinstance(chain_result, dict)
-                                and "output" in chain_result
-                            ):
-                                analysis_result = chain_result["output"]
-                            elif hasattr(chain_result, "content"):
-                                analysis_result = chain_result.content
-                            elif isinstance(chain_result, str):
-                                analysis_result = chain_result
-                            else:
-                                analysis_result = str(chain_result)
-                        else:
-                            # 구버전 호환성
-                            chain_result = expert.langchain_chain.run(chain_input)
-                            analysis_result = str(chain_result)
+                            seven_why_result = (
+                                seven_why_analyzer.perform_integrated_7why_analysis(
+                                    expert_analysis_text=cot_analysis_text,
+                                    financial_data=str(financial_data),
+                                    market_data=(
+                                        market_data
+                                        if "market_data" in locals()
+                                        else "시장 데이터 없음"
+                                    ),
+                                    competitor_data=(
+                                        competitor_data
+                                        if "competitor_data" in locals()
+                                        else "경쟁사 데이터 없음"
+                                    ),
+                                    web_search_data=(
+                                        web_search_data
+                                        if "web_search_data" in locals()
+                                        else ""
+                                    ),
+                                )
+                            )
 
-                        logger.info(f"✅ {expert.name} LangChain Chain 분석 완료")
+                            # 3단계: 통합 분석 결과 생성
+                            logger.info(f"🔗 {expert.name} 통합 분석 결과 생성...")
 
-                    except Exception as chain_error:
+                            analysis_result = f"""
+**🎯 {expert.name} 향상된 분석 결과 (CoT + 5Why + 7Why)**
+
+**1️⃣ CoT (Chain of Thought) 분석:**
+{deep_analysis_result.get('cot_analysis', 'CoT 분석 결과 없음')}
+
+**2️⃣ 5Why 근본 원인 분석:**
+{deep_analysis_result.get('five_why_analysis', '5Why 분석 결과 없음')}
+
+**3️⃣ 7Why 확장 분석:**
+{seven_why_result.get('integrated_7why_analysis', '7Why 분석 결과 없음')}
+
+**4️⃣ 근본 원인 종합 분석:**
+{deep_analysis_result.get('root_cause_analysis', '근본 원인 분석 결과 없음')}
+
+**5️⃣ 투자 시사점 분석:**
+{deep_analysis_result.get('implication_analysis', '시사점 분석 결과 없음')}
+
+**📊 종합 투자 의견:**
+위의 다층적 분석을 종합하여 {expert.name}의 전문적 투자 의견을 제시합니다.
+"""
+
+                            logger.info(
+                                f"✅ {expert.name} 향상된 분석 완료 (CoT + 5Why + 7Why)"
+                            )
+
+                    except Exception as enhanced_error:
                         logger.error(
-                            f"❌ {expert.name} LangChain Chain 실패: {chain_error}"
+                            f"❌ {expert.name} 향상된 분석 실패: {enhanced_error}"
                         )
-                        # 폴백: 기존 방식 사용
-                        analysis_result = await self._call_llm_for_analysis(
-                            comprehensive_prompt
-                        )
+                        # 폴백: 기존 LangChain Chain 사용
+                        try:
+                            if hasattr(expert.langchain_chain, "invoke"):
+                                chain_result = expert.langchain_chain.invoke(
+                                    {"input": comprehensive_prompt, "chat_history": []}
+                                )
+                                if (
+                                    isinstance(chain_result, dict)
+                                    and "output" in chain_result
+                                ):
+                                    analysis_result = chain_result["output"]
+                                elif hasattr(chain_result, "content"):
+                                    analysis_result = chain_result.content
+                                else:
+                                    analysis_result = str(chain_result)
+                            else:
+                                analysis_result = expert.langchain_chain.run(
+                                    {"input": comprehensive_prompt}
+                                )
+                        except Exception as chain_error:
+                            logger.error(
+                                f"❌ {expert.name} LangChain Chain도 실패: {chain_error}"
+                            )
+                            analysis_result = await self._call_llm_for_analysis(
+                                comprehensive_prompt
+                            )
                 else:
                     # LangChain Chain이 없는 경우 기존 방식 사용
                     logger.info(f"📝 {expert.name} 기존 LLM 방식 사용")
