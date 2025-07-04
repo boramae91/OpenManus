@@ -455,6 +455,11 @@ class EnhancedStockAnalysisSystem:
             final_summary = self.create_comprehensive_summary_v2(results)
             results["final_summary"] = final_summary
 
+            # Step 5.5: 시니어 리포트 스타일 통합 보고서 생성
+            logger.info("📋 Step 5.5: 시니어 애널리스트 리포트 생성")
+            senior_report = self.create_senior_report_from_analysis(results)
+            results["final_senior_report"] = senior_report
+
             # Step 6: JSON 파일 저장
             logger.info("💾 Step 6: 결과 저장")
             saved_file = self.save_enhanced_results(results, stock_info)
@@ -2774,6 +2779,40 @@ class EnhancedStockAnalysisSystem:
             completeness_score += 20
 
         return min(completeness_score, 100.0)
+
+    def create_senior_report_from_analysis(self, results: Dict[str, Any]) -> str:
+        """
+        CoT/5Why/통합 분석 결과를 바탕으로 시니어 애널리스트 스타일의 최종 투자 리포트를 생성합니다.
+        """
+        # 통합 분석 결과를 문자열로 합침
+        integration_result = json.dumps(results, ensure_ascii=False, indent=2)
+        senior_report_prompt = f"""
+당신은 20년 경력의 시니어 애널리스트입니다.
+아래의 통합 분석 결과를 바탕으로 실제 투자 은행이나 증권사에서 사용하는 전문적인 기업 분석 보고서를 작성해주세요.
+
+**통합 분석 결과:**
+{integration_result}
+
+**전문 보고서 작성 요청:**
+1. **EXECUTIVE SUMMARY**: 투자 의견, 목표가, 핵심 논리, 주요 리스크를 한눈에 파악할 수 있도록 작성
+2. **INVESTMENT HIGHLIGHTS**: 매수/중립/매도 판단의 핵심 근거와 현재 주가 대비 목표가 상승/하락 폭 명시
+3. **COMPANY OVERVIEW**: 사업 구조, 시장 점유율, 경쟁 우위를 구체적 수치와 함께 분석
+4. **FINANCIAL ANALYSIS**: 최근 3년간 재무 실적 추이와 수익성/성장성/안정성 지표를 객관적으로 분석
+5. **INDUSTRY & MARKET ANALYSIS**: 산업 규모, 성장 전망, 경쟁 구도를 구체적 데이터로 분석
+6. **VALUATION ANALYSIS**: DCF 모델과 멀티플 분석을 통한 목표가 설정 근거를 상세히 설명
+7. **INVESTMENT THESIS**: 투자 의견의 핵심 논리와 시나리오별 전망을 구체적으로 제시
+8. **RISK FACTORS**: 주요 리스크 요인별 상세 분석과 리스크 완화 방안 제시
+9. **CONCLUSION & RECOMMENDATIONS**: 종합적 투자 의견과 실제 실행 가능한 투자 전략 제시
+
+**작성 스타일:**
+- 모든 수치는 구체적 수치로 표현 (예: "매출 1,000억원", "PER 15배")
+- 투자 의견은 BUY/HOLD/SELL로 명확히 표기
+- 목표가는 12개월 기준으로 설정
+- 리스크 등급은 LOW/MEDIUM/HIGH로 표기
+- 실제 투자자가 바로 활용할 수 있는 실용적 내용으로 작성
+"""
+        # 실제 LLM 호출 (여기서는 self.llm.run 사용)
+        return self.llm.run(senior_report_prompt)
 
 
 async def main():

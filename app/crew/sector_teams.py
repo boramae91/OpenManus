@@ -140,21 +140,26 @@ class AnalystAgent:
                     else:
                         result = self.langchain_chain.run(input_data)
                 else:
-                    # 2단계: 7Why 분석 (전문가 분석 텍스트 기반)
-                    print(f"🔍 {self.name} 7Why 분석 시작...")
+                    # 2단계: 7Why 분석 (전문가 분석 텍스트 기반) - 비활성화됨
+                    # print(f"🔍 {self.name} 7Why 분석 시작...")
 
                     # CoT 분석 결과를 7Why 분석의 입력으로 사용
                     cot_analysis_text = deep_analysis_result.get("cot_analysis", "")
 
-                    seven_why_result = (
-                        seven_why_analyzer.perform_integrated_7why_analysis(
-                            expert_analysis_text=cot_analysis_text,
-                            financial_data=str(financial_data),
-                            market_data=market_data,
-                            competitor_data=competitor_data,
-                            web_search_data=input_data.get("web_search_data", ""),
-                        )
-                    )
+                    # seven_why_result = (
+                    #     seven_why_analyzer.perform_integrated_7why_analysis(
+                    #         expert_analysis_text=cot_analysis_text,
+                    #         financial_data=str(financial_data),
+                    #         market_data=market_data,
+                    #         competitor_data=competitor_data,
+                    #         web_search_data=input_data.get("web_search_data", ""),
+                    #     )
+                    # )
+
+                    # 7Why 분석 비활성화로 인한 더미 결과
+                    seven_why_result = {
+                        "integrated_7why_analysis": "7Why 분석이 현재 비활성화되어 있습니다. CoT + 5Why 분석만 수행됩니다."
+                    }
 
                     # 3단계: 통합 분석 결과 생성
                     print(f"🔗 {self.name} 통합 분석 결과 생성...")
@@ -549,21 +554,26 @@ class AnalystAgent:
                     # 폴백: 기존 LangChain Chain 사용
                     chain_result = self.langchain_chain(input_data)
                 else:
-                    # 2단계: 7Why 분석 (전문가 분석 텍스트 기반)
-                    print(f"🔍 {self.name} 7Why 분석 시작...")
+                    # 2단계: 7Why 분석 (전문가 분석 텍스트 기반) - 비활성화됨
+                    # print(f"🔍 {self.name} 7Why 분석 시작...")
 
                     # CoT 분석 결과를 7Why 분석의 입력으로 사용
                     cot_analysis_text = deep_analysis_result.get("cot_analysis", "")
 
-                    seven_why_result = (
-                        seven_why_analyzer.perform_integrated_7why_analysis(
-                            expert_analysis_text=cot_analysis_text,
-                            financial_data=str(financial_data),
-                            market_data=market_data,
-                            competitor_data=competitor_data,
-                            web_search_data=input_data.get("web_search_data", ""),
-                        )
-                    )
+                    # seven_why_result = (
+                    #     seven_why_analyzer.perform_integrated_7why_analysis(
+                    #         expert_analysis_text=cot_analysis_text,
+                    #         financial_data=str(financial_data),
+                    #         market_data=market_data,
+                    #         competitor_data=competitor_data,
+                    #         web_search_data=input_data.get("web_search_data", ""),
+                    #     )
+                    # )
+
+                    # 7Why 분석 비활성화로 인한 더미 결과
+                    seven_why_result = {
+                        "integrated_7why_analysis": "7Why 분석이 현재 비활성화되어 있습니다. CoT + 5Why 분석만 수행됩니다."
+                    }
 
                     # 3단계: 통합 분석 결과 생성
                     print(f"🔗 {self.name} 통합 분석 결과 생성...")
