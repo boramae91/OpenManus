@@ -1951,7 +1951,6 @@ class SectorTeamFactory:
                 max_tokens=8000,  # 2명 체제에 맞게 증가 (기존 4K → 8K)
             )
             technical_analysis_prompt = PromptTemplate(
-                input_variables=["price_data", "sector_name", "company_name"],
                 template="""
 당신은 {sector_name} 섹터 전문 기술적 분석가입니다.
 

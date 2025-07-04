@@ -35,8 +35,8 @@ import pandas as pd
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # 모듈 import
-# 임시로 Manus import 주석 처리 - python_execute 오류 해결 후 활성화
-# from app.agent.manus import Manus
+# Manus 에이전트를 다시 활성화해요 - 웹 검색과 다양한 도구 사용을 위해 필요해요
+from app.agent.manus import Manus
 
 # 종목 분류 기능 제거 - from app.agent.stock_classifier import StockClassifier
 from app.agent.stock_name_extractor import StockNameExtractor
@@ -89,9 +89,8 @@ class EnhancedStockAnalysisSystem:
         # 에이전트들 초기화
         self.llm = LLM()
         # 종목 분류 기능 제거 - self.stock_classifier = StockClassifier(llm=self.llm)
-        # 임시로 Manus 초기화 주석 처리 - python_execute 오류 해결 후 활성화
-        # self.manus_agent = Manus(llm=self.llm)
-        self.manus_agent = None
+        # Manus 에이전트를 다시 활성화해요 - 웹 검색과 다양한 도구 사용을 위해 필요해요
+        self.manus_agent = Manus(llm=self.llm)
 
         # 🤖 종목 감지용 AI 에이전트들 초기화
         self.stock_name_extractor = StockNameExtractor()

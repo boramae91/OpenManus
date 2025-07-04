@@ -40,13 +40,13 @@ class AnalysisQualityEnhancer:
             max_tokens=4000,
         )
 
-        # 분석 품질 평가 체인
+        # 분석 품질 평가 체인 (단일 입력 변수 사용)
         self.quality_evaluator = self._create_quality_evaluator()
 
-        # 분석 보완 체인
+        # 분석 보완 체인 (단일 입력 변수 사용)
         self.analysis_enhancer = self._create_analysis_enhancer()
 
-        # 최종 검증 체인
+        # 최종 검증 체인 (단일 입력 변수 사용)
         self.final_validator = self._create_final_validator()
 
         print("✅ 분석 품질 향상 시스템 초기화 완료!")
@@ -54,7 +54,7 @@ class AnalysisQualityEnhancer:
     def _create_quality_evaluator(self) -> LLMChain:
         """분석 품질 평가 체인 생성"""
 
-        # 시니어 애널리스트 관점에서 분석 품질을 평가하는 프롬프트
+        # 시니어 애널리스트 관점에서 분석 품질을 평가하는 프롬프트 (단일 입력 변수)
         evaluation_prompt = ChatPromptTemplate.from_messages(
             [
                 (
@@ -112,29 +112,9 @@ class AnalysisQualityEnhancer:
                 MessagesPlaceholder(variable_name="analysis_history"),
                 (
                     "human",
-                    """
-다음 분석 보고서를 시니어 애널리스트 관점에서 평가해주세요:
-
-**분석 대상:** {company_name}
-**섹터:** {sector_name}
-**분석 전문가:** {analyst_name}
-
-**분석 내용:**
-{analysis_content}
-
-**평가 요청:**
-1. 시니어 애널리스트의 분석 보조자료로 사용하기에 부족한 점
-2. 구체적인 개선 방향과 추가 필요 분석
-3. 우선순위별 개선 제안
-""",
+                    "{input_text}",
                 ),
-            ],
-            input_variables=[
-                "company_name",
-                "sector_name",
-                "analyst_name",
-                "analysis_content",
-            ],
+            ]
         )
 
         return LLMChain(
@@ -144,7 +124,7 @@ class AnalysisQualityEnhancer:
     def _create_analysis_enhancer(self) -> LLMChain:
         """분석 보완 체인 생성"""
 
-        # 피드백을 바탕으로 분석을 보완하는 프롬프트
+        # 피드백을 바탕으로 분석을 보완하는 프롬프트 (단일 입력 변수)
         enhancement_prompt = ChatPromptTemplate.from_messages(
             [
                 (
@@ -211,21 +191,9 @@ class AnalysisQualityEnhancer:
                 MessagesPlaceholder(variable_name="analysis_history"),
                 (
                     "human",
-                    """
-다음 피드백을 바탕으로 분석을 보완해주세요:
-
-**원본 분석:**
-{original_analysis}
-
-**시니어 애널리스트 피드백:**
-{senior_feedback}
-
-**보완 요청:**
-피드백에서 지적된 부족한 점들을 구체적으로 보완해서 시니어 애널리스트 수준의 분석을 만들어주세요.
-""",
+                    "{input_text}",
                 ),
-            ],
-            input_variables=["original_analysis", "senior_feedback"],
+            ]
         )
 
         return LLMChain(
@@ -291,28 +259,9 @@ class AnalysisQualityEnhancer:
                 MessagesPlaceholder(variable_name="analysis_history"),
                 (
                     "human",
-                    """
-다음 보완된 분석을 최종 검증해주세요:
-
-**원본 분석:**
-{original_analysis}
-
-**시니어 애널리스트 피드백:**
-{senior_feedback}
-
-**보완된 분석:**
-{enhanced_analysis}
-
-**검증 요청:**
-보완된 분석이 시니어 애널리스트의 분석 보조자료로 사용하기에 적합한지 최종 검증해주세요.
-""",
+                    "{input_text}",
                 ),
-            ],
-            input_variables=[
-                "original_analysis",
-                "senior_feedback",
-                "enhanced_analysis",
-            ],
+            ]
         )
 
         return LLMChain(
@@ -346,14 +295,22 @@ class AnalysisQualityEnhancer:
             # 1단계: 분석 품질 평가 및 피드백 생성
             print("📊 1단계: 시니어 애널리스트 관점에서 분석 품질 평가 중...")
 
-            evaluation_result = self.quality_evaluator.run(
-                {
-                    "company_name": company_name,
-                    "sector_name": sector_name,
-                    "analyst_name": analyst_name,
-                    "analysis_content": analysis_content,
-                }
-            )
+            # 여러 입력 변수를 하나의 통합된 문자열로 합치기
+            evaluation_input = f"""
+**분석 대상:** {company_name}
+**섹터:** {sector_name}
+**분석 전문가:** {analyst_name}
+
+**분석 내용:**
+{analysis_content}
+
+**평가 요청:**
+1. 시니어 애널리스트의 분석 보조자료로 사용하기에 부족한 점
+2. 구체적인 개선 방향과 추가 필요 분석
+3. 우선순위별 개선 제안
+"""
+
+            evaluation_result = self.quality_evaluator.run(evaluation_input)
 
             print("✅ 1단계 완료: 분석 품질 평가 및 피드백 생성")
             print("-" * 40)
@@ -361,12 +318,19 @@ class AnalysisQualityEnhancer:
             # 2단계: 피드백 기반 분석 보완
             print("🔧 2단계: 피드백 기반 분석 보완 중...")
 
-            enhancement_result = self.analysis_enhancer.run(
-                {
-                    "original_analysis": analysis_content,
-                    "senior_feedback": evaluation_result,
-                }
-            )
+            # 여러 입력 변수를 하나의 통합된 문자열로 합치기
+            enhancement_input = f"""
+**원본 분석:**
+{analysis_content}
+
+**시니어 애널리스트 피드백:**
+{evaluation_result}
+
+**보완 요청:**
+피드백에서 지적된 부족한 점들을 구체적으로 보완해서 시니어 애널리스트 수준의 분석을 만들어주세요.
+"""
+
+            enhancement_result = self.analysis_enhancer.run(enhancement_input)
 
             print("✅ 2단계 완료: 분석 보완")
             print("-" * 40)
@@ -374,13 +338,22 @@ class AnalysisQualityEnhancer:
             # 3단계: 최종 검증
             print("🔍 3단계: 최종 품질 검증 중...")
 
-            validation_result = self.final_validator.run(
-                {
-                    "original_analysis": analysis_content,
-                    "senior_feedback": evaluation_result,
-                    "enhanced_analysis": enhancement_result,
-                }
-            )
+            # 여러 입력 변수를 하나의 통합된 문자열로 합치기
+            validation_input = f"""
+**원본 분석:**
+{analysis_content}
+
+**시니어 애널리스트 피드백:**
+{evaluation_result}
+
+**보완된 분석:**
+{enhancement_result}
+
+**검증 요청:**
+보완된 분석이 시니어 애널리스트의 분석 보조자료로 사용하기에 적합한지 최종 검증해주세요.
+"""
+
+            validation_result = self.final_validator.run(validation_input)
 
             print("✅ 3단계 완료: 최종 검증")
             print("-" * 40)
