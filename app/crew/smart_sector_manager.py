@@ -2152,7 +2152,7 @@ class SmartSectorManager:
 
             if available_sources:
                 context_parts.append(
-                    f"**�� 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
+                    f"** 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
                 )
             else:
                 context_parts.append("**⚠️ 사용 가능한 데이터 소스 없음**")
@@ -2187,12 +2187,8 @@ class SmartSectorManager:
                 )
                 context_parts.append("- 민감도 분석 (WACC, 성장률 변동 시 영향도)")
                 context_parts.append("- DART 데이터를 활용한 현금흐름 분석")
-                context_parts.append(
-                    "- 웹검색 데이터를 활용한 시장 동향 및 멀티플 비교"
-                )
-                context_parts.append(
-                    "- DART 보고서 딕셔너리에서 상세 현금흐름 정보 활용"
-                )
+            context_parts.append("- 웹검색 데이터를 활용한 시장 동향 및 멀티플 비교")
+            context_parts.append("- DART 보고서 딕셔너리에서 상세 현금흐름 정보 활용")
 
             context_parts.append("")
 
@@ -2205,9 +2201,7 @@ class SmartSectorManager:
                 )
                 context_parts.append("- 민감도 분석 (WACC, 성장률 변동 시 영향도)")
                 context_parts.append("- DART 데이터를 활용한 현금흐름 분석")
-                context_parts.append(
-                    "- 웹검색 데이터를 활용한 시장 동향 및 멀티플 비교"
-                )
+            context_parts.append("- 웹검색 데이터를 활용한 시장 동향 및 멀티플 비교")
 
             context_parts.append("")
             context_parts.append("**⚠️ 밸류에이션 분석 주의사항**:")
@@ -2258,7 +2252,7 @@ class SmartSectorManager:
 
             if available_sources:
                 context_parts.append(
-                    f"**�� 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
+                    f"** 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
                 )
             else:
                 context_parts.append("**⚠️ 사용 가능한 데이터 소스 없음**")
@@ -2371,7 +2365,7 @@ class SmartSectorManager:
                 # 기타 타입은 문자열로 변환
                 safe_context_parts.append(str(part))
 
-                # 🎯 모든 GICS 섹터별 전문가에게 공통 적용되는 데이터 출처 명시 규칙 추가
+        # 🎯 모든 GICS 섹터별 전문가에게 공통 적용되는 데이터 출처 명시 규칙 추가
         data_source_guidelines = """
 
 📊 **데이터 출처 명시 규칙** (모든 수치에 필수 적용):
