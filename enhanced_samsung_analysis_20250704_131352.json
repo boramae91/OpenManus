@@ -1,3 +1,0 @@
-{
-  "error": "One input key expected got ['sector_name', 'analyst_name', 'company_name', 'analysis_content']"
-}

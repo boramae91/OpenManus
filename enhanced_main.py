@@ -2780,7 +2780,7 @@ class EnhancedStockAnalysisSystem:
 
         return min(completeness_score, 100.0)
 
-    def create_senior_report_from_analysis(self, results: Dict[str, Any]) -> str:
+    async def create_senior_report_from_analysis(self, results: Dict[str, Any]) -> str:
         """
         CoT/5Why/통합 분석 결과를 바탕으로 시니어 애널리스트 스타일의 최종 투자 리포트를 생성합니다.
         """
@@ -2811,8 +2811,8 @@ class EnhancedStockAnalysisSystem:
 - 리스크 등급은 LOW/MEDIUM/HIGH로 표기
 - 실제 투자자가 바로 활용할 수 있는 실용적 내용으로 작성
 """
-        # 실제 LLM 호출 (여기서는 self.llm.run 사용)
-        return self.llm.run(senior_report_prompt)
+        # 실제 LLM 호출 (self.llm.ask 사용)
+        return await self.llm.ask([{"role": "user", "content": senior_report_prompt}])
 
 
 async def main():
