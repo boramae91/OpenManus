@@ -256,12 +256,16 @@ class SmartSectorManager:
                 financial_data=financial_data,
                 enhanced_dart_data=enhanced_dart_data,
                 manus_collected_data=manus_collected_data,
+                dart_reports_dictionary=dart_reports_dictionary,  # 🚀 DART 딕셔너리 추가!
             )
 
             # 최적화된 데이터 사용
             optimized_financial = optimization_result["financial_data"]
             optimized_dart = optimization_result["enhanced_dart_data"]
             optimized_manus = optimization_result["manus_collected_data"]
+            optimized_dart_dict = optimization_result[
+                "dart_reports_dictionary"
+            ]  # 🚀 최적화된 DART 딕셔너리
 
             if optimization_result["optimization_applied"]:
                 logger.info("🎯 토큰 최적화 적용됨")
@@ -327,7 +331,7 @@ class SmartSectorManager:
                 optimized_dart,  # 🔢 최적화된 DART 데이터
                 optimized_manus,  # 🔢 최적화된 Manus 데이터
                 technical_analysis_data,  # 🎯 기술적 분석 데이터 추가!
-                dart_reports_dictionary,  # 🚀 DART 보고서 딕셔너리 추가!
+                optimized_dart_dict,  # 🚀 최적화된 DART 딕셔너리 사용!
             )
 
             # 6. 비용 절감 계산
@@ -3349,15 +3353,21 @@ class SmartSectorManager:
         if not text:
             return 0
 
-        # 한국어와 영어가 혼재된 텍스트를 고려한 토큰 추정
-        # 일반적으로 한국어는 2-3자당 1토큰, 영어는 4자당 1토큰
-        return max(1, len(text) // 3)
+        # 더 정확한 토큰 추정 (GPT-4o 기준)
+        # 한국어: 약 2.5자당 1토큰, 영어: 약 4자당 1토큰
+        # 혼재된 텍스트를 고려하여 3자당 1토큰으로 계산
+        estimated_tokens = len(text) // 3
+
+        # 실제 토큰 수는 보통 추정치보다 10-20% 많을 수 있음
+        # 안전 마진을 위해 15% 추가
+        return max(1, int(estimated_tokens * 1.15))
 
     def _optimize_data_for_token_limit(
         self,
         financial_data: Dict,
         enhanced_dart_data: Dict = None,
         manus_collected_data: Dict = None,
+        dart_reports_dictionary: Dict = None,  # 🚀 DART 딕셔너리 추가!
         target_token_limit: int = 120000,  # 2명 체제에 맞게 증가 (기존 100K → 120K)
     ) -> Dict[str, Any]:
         """
@@ -3367,6 +3377,7 @@ class SmartSectorManager:
             financial_data: 재무 데이터
             enhanced_dart_data: Enhanced DART 데이터
             manus_collected_data: Manus 수집 데이터
+            dart_reports_dictionary: DART 보고서 딕셔너리
             target_token_limit: 목표 토큰 제한
 
         Returns:
@@ -3378,6 +3389,7 @@ class SmartSectorManager:
             "financial_data": financial_data,
             "enhanced_dart_data": enhanced_dart_data,
             "manus_collected_data": manus_collected_data,
+            "dart_reports_dictionary": dart_reports_dictionary,  # 🚀 DART 딕셔너리 추가!
             "optimization_applied": False,
             "original_token_estimate": 0,
             "optimized_token_estimate": 0,
@@ -3398,6 +3410,11 @@ class SmartSectorManager:
             if manus_collected_data:
                 manus_text = str(manus_collected_data)
                 current_tokens += self._estimate_tokens(manus_text)
+
+            # 🚀 DART 딕셔너리 토큰 계산 추가!
+            if dart_reports_dictionary:
+                dart_dict_text = str(dart_reports_dictionary)
+                current_tokens += self._estimate_tokens(dart_dict_text)
 
             optimized_data["original_token_estimate"] = current_tokens
 
@@ -3428,6 +3445,14 @@ class SmartSectorManager:
                         manus_collected_data, compression_ratio * 0.6
                     )
 
+                # 🚀 DART 딕셔너리 압축 (50% 유지 - 가장 큰 데이터)
+                if dart_reports_dictionary:
+                    optimized_data["dart_reports_dictionary"] = (
+                        self._compress_dart_dictionary(
+                            dart_reports_dictionary, compression_ratio * 0.5
+                        )
+                    )
+
                 optimized_data["optimization_applied"] = True
 
                 # 최적화 후 토큰 수 재계산
@@ -3436,6 +3461,7 @@ class SmartSectorManager:
                     "financial_data",
                     "enhanced_dart_data",
                     "manus_collected_data",
+                    "dart_reports_dictionary",  # 🚀 DART 딕셔너리 추가!
                 ]:
                     if optimized_data[key]:
                         optimized_tokens += self._estimate_tokens(
@@ -3530,6 +3556,116 @@ class SmartSectorManager:
                 "analysis_method": pdf_info.get("analysis_method"),
                 "pdf_dictionary_interface": pdf_info.get("pdf_dictionary_interface"),
             }
+
+        return compressed
+
+    def _compress_dart_dictionary(self, dart_dict: Dict, ratio: float) -> Dict:
+        """DART 딕셔너리를 스마트 압축합니다."""
+        if not dart_dict or ratio >= 1.0:
+            return dart_dict
+
+        compressed = {}
+
+        # 사업보고서와 분기보고서를 각각 압축
+        if "business_report_dictionary" in dart_dict:
+            business_report = dart_dict["business_report_dictionary"]
+            compressed_business = {}
+
+            # 🎯 스마트 섹션 선택: 중요도 기반
+            section_importance = {
+                "01_회사개요_및_사업내용": 10,  # 최고 중요도
+                "02_재무정보": 9,
+                "03_사업내용": 8,
+                "04_재무상태표": 9,
+                "05_손익계산서": 9,
+                "06_현금흐름표": 8,
+                "07_주요재무비율": 8,
+                "08_재무상태": 7,
+                "09_경영진": 6,
+                "10_지배구조": 6,
+                "11_리스크": 7,
+                "12_투자": 6,
+                "13_기타": 4,
+                "14_부속명세서": 5,
+            }
+
+            # 중요도 순으로 정렬
+            sorted_sections = sorted(
+                business_report.items(),
+                key=lambda x: section_importance.get(x[0], 0),
+                reverse=True,
+            )
+
+            # 🎯 토큰 제한에 맞춰 스마트 선택
+            available_tokens = int(100000 * ratio)  # 사업보고서용 토큰 할당
+            used_tokens = 0
+
+            for section_name, section_content in sorted_sections:
+                if used_tokens >= available_tokens:
+                    break
+
+                # 🎯 섹션별 적응적 압축
+                importance = section_importance.get(section_name, 5)
+
+                if importance >= 8:  # 고중요도 섹션
+                    max_chars = 50000  # 50,000자 유지
+                elif importance >= 6:  # 중중요도 섹션
+                    max_chars = 30000  # 30,000자 유지
+                else:  # 저중요도 섹션
+                    max_chars = 15000  # 15,000자 유지
+
+                # 🎯 스마트 자르기: 문장 단위로 자르기
+                if len(section_content) > max_chars:
+                    # 마지막 완전한 문장까지 유지
+                    truncated = section_content[:max_chars]
+                    last_period = truncated.rfind(".")
+                    last_exclamation = truncated.rfind("!")
+                    last_question = truncated.rfind("?")
+
+                    cut_point = max(last_period, last_exclamation, last_question)
+                    if cut_point > max_chars * 0.8:  # 80% 이상이면 문장 단위로 자르기
+                        compressed_content = section_content[: cut_point + 1]
+                    else:
+                        compressed_content = truncated
+
+                    compressed_content += f"\n...[중요도 {importance}/10 섹션, {len(section_content):,}자 중 {len(compressed_content):,}자 표시]..."
+                else:
+                    compressed_content = section_content
+
+                compressed_business[section_name] = compressed_content
+                used_tokens += self._estimate_tokens(compressed_content)
+
+            compressed["business_report_dictionary"] = compressed_business
+
+        if "quarterly_report_dictionary" in dart_dict:
+            quarterly_report = dart_dict["quarterly_report_dictionary"]
+            compressed_quarterly = {}
+
+            # 분기보고서는 더 적극적으로 압축 (최신 정보 우선)
+            available_tokens = int(50000 * ratio)  # 분기보고서용 토큰 할당
+            used_tokens = 0
+
+            for section_name, section_content in quarterly_report.items():
+                if used_tokens >= available_tokens:
+                    break
+
+                # 분기보고서는 20,000자로 제한
+                if len(section_content) > 20000:
+                    truncated = section_content[:20000]
+                    last_period = truncated.rfind(".")
+                    if last_period > 16000:  # 80% 이상이면 문장 단위로 자르기
+                        compressed_content = section_content[: last_period + 1]
+                    else:
+                        compressed_content = truncated
+
+                    compressed_content += f"\n...[분기보고서 섹션, {len(section_content):,}자 중 {len(compressed_content):,}자 표시]..."
+                else:
+                    compressed_content = section_content
+
+                compressed_quarterly[section_name] = compressed_content
+                used_tokens += self._estimate_tokens(compressed_content)
+
+            compressed["quarterly_report_dictionary"] = compressed_quarterly
 
         return compressed
 
