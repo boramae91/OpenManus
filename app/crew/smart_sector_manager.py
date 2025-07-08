@@ -1082,14 +1082,42 @@ class SmartSectorManager:
                         enhanced_analysis = EnhancedAnalysisSystem()
                         seven_why_analyzer = EnhancedSevenWhyAnalyzer()
 
+                        # 🚀 데이터 소스별 변수 정의 및 준비
+                        # 시장 데이터: 기술적 분석 데이터에서 추출
+                        market_data = (
+                            self._extract_market_data_from_technical_analysis(
+                                technical_analysis_data
+                            )
+                            if technical_analysis_data
+                            else "시장 데이터 없음"
+                        )
+
+                        # 경쟁사 데이터: Manus 수집 데이터에서 추출
+                        competitor_data = (
+                            self._extract_competitor_data_from_manus(
+                                manus_collected_data
+                            )
+                            if manus_collected_data
+                            else "경쟁사 데이터 없음"
+                        )
+
+                        # 웹 검색 데이터: Manus 수집 데이터에서 추출
+                        web_search_data = (
+                            self._extract_web_search_data_from_manus(
+                                manus_collected_data
+                            )
+                            if manus_collected_data
+                            else ""
+                        )
+
                         # 통합 데이터 준비
                         integrated_data = f"""
 **기업명:** {stock_name}
 **섹터:** {expert.sector_context.split()[0] if expert.sector_context else "정보기술"}
 **재무 데이터:** {financial_data}
-**시장 데이터:** {market_data if 'market_data' in locals() else "시장 데이터 없음"}
-**경쟁사 데이터:** {competitor_data if 'competitor_data' in locals() else "경쟁사 데이터 없음"}
-**웹 검색 데이터:** {web_search_data if 'web_search_data' in locals() else "웹 검색 데이터 없음"}
+**시장 데이터:** {market_data}
+**경쟁사 데이터:** {competitor_data}
+**웹 검색 데이터:** {web_search_data}
 **전문가 분석 요청:** {comprehensive_prompt}
 """
 
@@ -1104,11 +1132,7 @@ class SmartSectorManager:
                                     else "정보기술"
                                 ),
                                 financial_data=str(financial_data),
-                                market_data=(
-                                    market_data
-                                    if "market_data" in locals()
-                                    else "시장 데이터 없음"
-                                ),
+                                market_data=market_data,
                                 competitor_data=(
                                     competitor_data
                                     if "competitor_data" in locals()
@@ -1137,21 +1161,9 @@ class SmartSectorManager:
                                 seven_why_analyzer.perform_integrated_7why_analysis(
                                     expert_analysis_text=cot_analysis_text,
                                     financial_data=str(financial_data),
-                                    market_data=(
-                                        market_data
-                                        if "market_data" in locals()
-                                        else "시장 데이터 없음"
-                                    ),
-                                    competitor_data=(
-                                        competitor_data
-                                        if "competitor_data" in locals()
-                                        else "경쟁사 데이터 없음"
-                                    ),
-                                    web_search_data=(
-                                        web_search_data
-                                        if "web_search_data" in locals()
-                                        else ""
-                                    ),
+                                    market_data=market_data,
+                                    competitor_data=competitor_data,
+                                    web_search_data=web_search_data,
                                 )
                             )
 
@@ -1907,344 +1919,90 @@ class SmartSectorManager:
                     context_parts.append("🚀 상세 재무정보 (DART):")
                     context_parts.append(dart_financial)
 
-            # 🎯 시니어 펀더멘털 애널리스트 분석 지침 (Chat GPT 피드백 7가지 핵심 보완 포인트 반영)
-            context_parts.append(
-                "\n🎯 펀더멘털 분석 필수 수행사항 (Chat GPT 피드백 완전 적용):"
-            )
+            # 🎯 재무 분석을 위한 실제 데이터 기반 지침 생성
+            context_parts.append("\n🎯 재무 분석 데이터 출처:")
 
-            # 🚀 Chat GPT 최신 피드백 1: 경쟁사 벤치마킹 및 산업 내 위치 분석 강화 (필수)
-            context_parts.append(
-                "🏆 **1. 경쟁사 벤치마킹 및 산업 내 위치 분석** (시니어 애널리스트 필수):"
-            )
-            context_parts.append(
-                "   - **경쟁사 재무비율 비교**: 동일 업종 Top 3 기업과 ROE, ROIC, 마진율 정량 비교 **[웹검색]**"
-            )
-            context_parts.append(
-                "   - **시장점유율 추이**: 최근 3년간 주요 사업부문별 시장점유율 변화와 순위 변동 **[웹검색]**"
-            )
-            context_parts.append(
-                "   - **상대적 밸류에이션**: 경쟁사 대비 PER, PBR, EV/EBITDA 프리미엄/디스카운트율 **[웹검색]**"
-            )
-            context_parts.append(
-                "   - **경쟁우위 지속성**: 경쟁사 대비 차별화 요소의 지속 가능성과 모방 가능성 평가 **[사업보고서]**"
-            )
-            context_parts.append(
-                "   - **산업 내 위치 변화**: 5년간 업계 순위 변동, 시장점유율 증감 원인 분석 **[웹검색]**"
-            )
+            # 실제 사용 가능한 데이터 소스 명시
+            available_sources = []
+            if financial_data and financial_data.get("success"):
+                available_sources.append("재무데이터 (재무제표)")
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                available_sources.append("DART 사업보고서")
+            if dart_reports_dictionary:
+                available_sources.append("DART 보고서 딕셔너리")
+            if manus_collected_data and manus_collected_data.get("performed"):
+                available_sources.append("웹검색 데이터")
+            if technical_analysis_data:
+                available_sources.append("기술적 분석 데이터")
+
+            if available_sources:
+                context_parts.append(
+                    f"**📊 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
+                )
+            else:
+                context_parts.append("**⚠️ 사용 가능한 데이터 소스 없음**")
+
             context_parts.append("")
 
-            # 🚀 Chat GPT 최신 피드백 2: ROIC vs WACC 장기 추세 분석 (필수)
-            context_parts.append(
-                "📈 **2. ROIC vs WACC 장기 추세 분석** (가치창출 지속성 핵심):"
-            )
-            context_parts.append(
-                "   - **5년 ROIC 추세**: 연도별 ROIC 변화 패턴과 개선/악화 요인 구체적 분석 **[재무데이터 기반 계산]**"
-            )
-            context_parts.append(
-                "   - **WACC 변동성**: 시장 환경(금리, 신용스프레드) 변화에 따른 WACC 변동 패턴 **[재무데이터 기반 계산]**"
-            )
-            context_parts.append(
-                "   - **스프레드 분석**: (ROIC - WACC) 스프레드의 지속성과 향후 3년 개선 가능성 **[재무데이터 기반 계산]**"
-            )
-            context_parts.append(
-                "   - **가치창출 지속성**: ROIC > WACC 달성 연수와 경쟁사 대비 우위 지속 가능성 **[재무데이터 기반 계산]**"
-            )
-            context_parts.append(
-                "   - **자본효율성 개선**: ROIC 개선을 위한 구체적 전략(자산 경량화, 마진 개선 등) **[사업보고서]**"
-            )
-            context_parts.append("")
+            # 실제 데이터 기반 재무 분석 지침
+            context_parts.append("**📊 실제 데이터 기반 재무 분석 지침**:")
+            if financial_data and financial_data.get("success"):
+                context_parts.append("- 재무데이터를 활용한 ROE, ROIC, 재무비율 분석")
+                context_parts.append("- 수익성, 안정성, 활동성 지표 계산 및 평가")
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                context_parts.append(
+                    "- DART 사업보고서에서 경영진 리더십 및 지배구조 평가"
+                )
+            if dart_reports_dictionary:
+                context_parts.append(
+                    "- DART 보고서 딕셔너리에서 현금흐름표 계정과목 분석"
+                )
+            if manus_collected_data and manus_collected_data.get("performed"):
+                context_parts.append(
+                    "- 웹검색 데이터에서 경쟁사 벤치마킹 및 시장점유율 분석"
+                )
+            if technical_analysis_data:
+                context_parts.append("- 기술적 분석 데이터에서 시장 동향 및 성과 분석")
 
-            # 🚀 Chat GPT 최신 피드백 3: 비재무 요인 정성적 평가 강화 (필수)
-            context_parts.append(
-                "👥 **3. 비재무 요인 정성적 평가** (ESG 및 지배구조 포함):"
-            )
-            context_parts.append(
-                "   - **경영진 리더십**: CEO/CFO 교체 이력, 전략 실행력, 주주친화 정책 실적 **[사업보고서]**"
-            )
-            context_parts.append(
-                "   - **조직문화 지표**: 직원 만족도, 이직률, 혁신 문화 지수, R&D 인력 비중 **[웹검색]**"
-            )
-            context_parts.append(
-                "   - **지배구조 평가**: 이사회 독립성, 감사위원회 효율성, 내부통제 시스템 **[사업보고서]**"
-            )
-            context_parts.append(
-                "   - **전략적 방향성**: 중장기 전략의 일관성, 실행 가능성, 시장 적합성 **[사업보고서]**"
-            )
-            context_parts.append(
-                "   - **이해관계자 관계**: 노조, 정부, 지역사회, 공급업체와의 관계 품질 **[웹검색]**"
-            )
-            context_parts.append("")
-
-            # 🚀 Chat GPT 피드백 2: 산업별 특화 지표 추가
-            context_parts.append("🏭 **2. 산업별 특화 KPI 분석**:")
-            context_parts.append(
-                "   **반도체/IT**: R&D집약도, 신제품 출시 사이클, IP 포트폴리오 가치"
-            )
-            context_parts.append(
-                "   **금융**: 순이자마진(NIM), 대손충당금비율, BIS자기자본비율, 예대마진"
-            )
-            context_parts.append(
-                "   **제조업**: 자산회전율, 재고회전일수, 설비가동률, 품질지표(PPM)"
-            )
-            context_parts.append(
-                "   **유통/서비스**: 매장당 매출, 고객당 평균구매액, 동일매장 성장률"
-            )
-            context_parts.append(
-                "   **바이오/제약**: 파이프라인 가치, 임상시험 성공률, 특허 만료 일정"
-            )
-            context_parts.append(
-                "   **에너지**: 매장량 대비 생산비용, 정제마진, 탄소배출 효율성"
-            )
-            context_parts.append("")
-
-            # 🚀 Chat GPT 피드백 3: 재무비율 심화분석 (기존 내용 강화)
-            context_parts.append("📈 **3. 재무비율 종합분석 (정량적 계산식)**:")
-            context_parts.append("   **수익성 지표**:")
-            context_parts.append(
-                "   - ROE = 순이익/평균자기자본 (3년 트렌드와 동종업계 상위 25%, 50%, 75% 분위)"
-            )
-            context_parts.append(
-                "   - DuPont 5단계 분해: ROE = (순이익/세전이익) × (세전이익/EBIT) × (EBIT/매출) × (매출/총자산) × (총자산/자기자본)"
-            )
-            context_parts.append(
-                "   - ROIC = NOPAT/(차입금+자기자본) vs WACC 스프레드 (가치창출 여부)"
-            )
-            context_parts.append("   - ROIC > WACC 지속년수 (경쟁우위 지속성 평가)")
-            context_parts.append("   **안정성 지표**:")
-            context_parts.append("   - 유동비율 = 유동자산/유동부채 (1.5배 이상 안전)")
-            context_parts.append(
-                "   - 당좌비율 = (유동자산-재고)/유동부채 (1.0배 이상 안전)"
-            )
-            context_parts.append("   - 자기자본비율 = 자기자본/총자산 (40% 이상 안전)")
-            context_parts.append("   **활동성 지표**:")
-            context_parts.append(
-                "   - 총자산회전율 = 매출/평균총자산 (업종별 벤치마크 비교)"
-            )
-            context_parts.append(
-                "   - 매출채권회전율 = 매출/평균매출채권 (회수기간 = 365일/회전율)"
-            )
-            context_parts.append(
-                "   - 재고자산회전율 = 매출원가/평균재고 (재고보유기간 = 365일/회전율)"
-            )
             context_parts.append("")
 
             # 🚀 NEW: 현금흐름표 직접 계산 지침 추가
-            context_parts.append(
-                "🚀 **핵심: 현금흐름표 계정과목 직접 계산 (사업보고서/분기보고서 딕셔너리 활용)**:"
-            )
-            context_parts.append(
-                "   ⭐ 위에 제공된 사업보고서/분기보고서 딕셔너리에서 다음 계정과목들을 직접 찾아서 계산하세요:"
-            )
-            context_parts.append("")
-            context_parts.append(
-                "   **영업활동 현금흐름 (Operating Cash Flow) 관련 계정과목:**"
-            )
-            context_parts.append("   - 당기순이익 (순이익, Net Income, 당기순손익)")
-            context_parts.append("   - 감가상각비 (Depreciation, 유형자산상각비)")
-            context_parts.append(
-                "   - 무형자산상각비 (Amortization, 무형자산감가상각비)"
-            )
-            context_parts.append("   - 운전자본 변동 (Working Capital Changes):")
-            context_parts.append(
-                "     * 매출채권 증감 (Trade Receivables, 매출채권및기타채권)"
-            )
-            context_parts.append("     * 재고자산 증감 (Inventory, 재고자산)")
-            context_parts.append(
-                "     * 매입채무 증감 (Trade Payables, 매입채무및기타채무)"
-            )
-            context_parts.append(
-                "   - 기타 영업활동 현금흐름 (충당부채, 이연법인세 등)"
-            )
-            context_parts.append("")
-            context_parts.append(
-                "   **투자활동 현금흐름 (Investing Cash Flow) 관련 계정과목:**"
-            )
-            context_parts.append(
-                "   - 유형자산 취득 (Property, Plant & Equipment 취득, 설비투자)"
-            )
-            context_parts.append("   - 유형자산 처분 (Fixed Assets 처분, 자산매각)")
-            context_parts.append("   - 무형자산 취득/처분 (Intangible Assets)")
-            context_parts.append("   - 투자자산 취득/처분 (Investment Securities)")
-            context_parts.append("   - 사업결합 (Business Combination, 인수합병)")
-            context_parts.append("")
-            context_parts.append(
-                "   **재무활동 현금흐름 (Financing Cash Flow) 관련 계정과목:**"
-            )
-            context_parts.append(
-                "   - 차입금 차입/상환 (Borrowings, 단기차입금, 장기차입금)"
-            )
-            context_parts.append("   - 배당금 지급 (Dividend Payments)")
-            context_parts.append(
-                "   - 주식 발행/자사주 취득 (Stock Issuance/Repurchase)"
-            )
-            context_parts.append("   - 사채 발행/상환 (Bond Issuance/Redemption)")
-            context_parts.append("")
-            context_parts.append("   **📊 계산 방법:**")
-            context_parts.append(
-                "   1. 위 딕셔너리 섹션에서 '재무제표', '현금흐름표', '연결재무제표' 등의 섹션을 찾으세요"
-            )
-            context_parts.append(
-                "   2. 각 계정과목의 실제 금액을 추출하여 현금흐름표를 재구성하세요"
-            )
-            context_parts.append(
-                "   3. 영업현금흐름 = 당기순이익 + 비현금비용 + 운전자본변동 + 기타영업활동"
-            )
-            context_parts.append(
-                "   4. 투자현금흐름 = -자본적지출 + 자산처분 + 기타투자활동"
-            )
-            context_parts.append(
-                "   5. 재무현금흐름 = 차입금순증가 - 배당금지급 + 기타재무활동"
-            )
-            context_parts.append(
-                "   6. 현금및현금성자산 순증가 = 영업CF + 투자CF + 재무CF"
-            )
-            context_parts.append("")
-            context_parts.append("   **🔴 중요한 원칙:**")
-            context_parts.append(
-                "   - 실제 딕셔너리에서 찾은 수치만 사용하고, 가정값 사용시 반드시 '(가정)' 표시"
-            )
-            context_parts.append("   - 연결재무제표 > 개별재무제표 우선순위")
-            context_parts.append(
-                "   - 사업보고서(연간) > 분기보고서(최신분기) 우선순위"
-            )
-            context_parts.append(
-                "   - 계정과목명이 다를 수 있으니 유사한 용어도 검색하세요"
-            )
-            context_parts.append("")
+            # DART 보고서 딕셔너리가 있을 때만 현금흐름표 분석 지침 추가
+            if dart_reports_dictionary:
+                context_parts.append("**🚀 현금흐름표 분석 지침**:")
+                context_parts.append(
+                    "- DART 보고서 딕셔너리에서 현금흐름표 계정과목 직접 추출"
+                )
+                context_parts.append("- 영업활동, 투자활동, 재무활동 현금흐름 분석")
+                context_parts.append("- 실제 수치 기반 현금흐름 품질 평가")
+                context_parts.append("")
+            else:
+                context_parts.append(
+                    "**⚠️ 현금흐름표 분석**: DART 보고서 딕셔너리가 없어 상세 분석이 제한됩니다."
+                )
+                context_parts.append("")
 
-            # 🚀 Chat GPT 피드백 4: 성장성 분석 심화 - 매출 증동력 분해
-            context_parts.append("🚀 **4. 성장 동력 분해 분석**:")
-            context_parts.append("   **매출 성장률 분해**:")
-            context_parts.append(
-                "   - 매출 성장률 = (당기매출-전기매출)/전기매출 × 100"
-            )
-            context_parts.append(
-                "   - 가격 효과 vs 물량 효과 분리 (Price-Volume Mix 분석)"
-            )
-            context_parts.append("   - 기존 제품 vs 신제품 기여도 분석")
-            context_parts.append("   - 지역별 매출 성장률 분해 (국내 vs 해외)")
-            context_parts.append("   **운영 레버리지 분석**:")
-            context_parts.append("   - 영업레버리지 = 영업이익 증가율/매출 증가율")
-            context_parts.append(
-                "   - 고정비/변동비 구조 분석 (Operating Leverage 계산)"
-            )
-            context_parts.append(
-                "   - 손익분기점 분석: BEP = 고정비/(단위당매출-단위당변동비)"
-            )
-            context_parts.append("   - 한계기여율 = (매출-변동비)/매출 × 100")
-            context_parts.append("")
+            # 실제 데이터 기반 추가 분석 지침
+            context_parts.append("**📈 추가 분석 지침**:")
+            if financial_data and financial_data.get("success"):
+                context_parts.append(
+                    "- 재무데이터를 활용한 성장성, 현금흐름, 재무건전성 분석"
+                )
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                context_parts.append("- DART 데이터를 활용한 ESG 및 지배구조 평가")
+            if manus_collected_data and manus_collected_data.get("performed"):
+                context_parts.append(
+                    "- 웹검색 데이터를 활용한 경영진 효율성 및 자본배분 정책 분석"
+                )
 
-            # 🚀 Chat GPT 피드백 5: 현금흐름 분석 강화
-            context_parts.append("💰 **5. 현금흐름 품질 정밀분석**:")
-            context_parts.append("   **자유현금흐름 품질 평가**:")
-            context_parts.append(
-                "   - FCF = 영업CF - 자본적지출 (3년 평균과 최근년도 비교)"
-            )
-            context_parts.append("   - FCF Yield = FCF/시가총액 × 100 (5% 이상 우수)")
-            context_parts.append("   - FCF/순이익 비율 (1.0 이상이 건전)")
-            context_parts.append("   - FCF 변동성: 3년간 FCF 표준편차/평균 (CV 계수)")
-            context_parts.append("   **운전자본 효율성**:")
-            context_parts.append("   - Cash Conversion Cycle = DIO + DSO - DPO")
-            context_parts.append(
-                "   - DIO = 평균재고/일평균매출원가 × 365 (재고보유일수)"
-            )
-            context_parts.append(
-                "   - DSO = 평균매출채권/일평균매출 × 365 (매출채권회수일수)"
-            )
-            context_parts.append(
-                "   - DPO = 평균매입채무/일평균매출원가 × 365 (매입채무지급일수)"
-            )
-            context_parts.append(
-                "   - Working Capital 변동이 OCF에 미치는 영향 정량화 (%)"
-            )
             context_parts.append("")
-
-            # 🚀 Chat GPT 피드백 6: 경영진 효율성 및 배분 정책
-            context_parts.append("👔 **6. 경영진 효율성 및 자본배분 정책**:")
-            context_parts.append("   **경영진 의사결정 품질**:")
+            context_parts.append("**⚠️ 분석 시 주의사항**:")
+            context_parts.append("- 모든 수치는 실제 데이터 기반으로 계산")
             context_parts.append(
-                "   - 투자효율성: 신규투자 대비 실제 수익률 vs 계획 수익률"
+                "- 데이터 출처를 명시하고 가정값 사용 시 '(가정)' 표시"
             )
-            context_parts.append("   - M&A 성과: 인수 후 통합효과(Synergy) 실현 정도")
-            context_parts.append("   - 구조조정 효과: 비용절감 목표 대비 실제 달성률")
-            context_parts.append("   **자본배분 정책 분석**:")
-            context_parts.append(
-                "   - 배당정책: 배당성향, 배당수익률, 배당증가율 3년 추이"
-            )
-            context_parts.append(
-                "   - 자사주 매입: 자사주 취득규모, 주당가치 증대 효과"
-            )
-            context_parts.append(
-                "   - 재투자율 = (CapEx + R&D + 운전자본 증가) / 영업현금흐름"
-            )
-            context_parts.append(
-                "   - 자본배분 우선순위: 성장투자 vs 주주환원 균형 평가"
-            )
+            context_parts.append("- 정량적 분석과 정성적 평가의 균형 유지")
             context_parts.append("")
-
-            # 🚀 Chat GPT 피드백 7: ESG 리스크 통합
-            context_parts.append("🌱 **7. ESG 리스크 및 기회 분석**:")
-            context_parts.append("   **환경(E) 리스크**:")
-            context_parts.append(
-                "   - 탄소집약도: 온실가스 배출량/매출 (산업대비 벤치마크)"
-            )
-            context_parts.append("   - 환경투자: 환경설비 투자액/총 CapEx 비율")
-            context_parts.append(
-                "   - 규제 리스크: 탄소세, 환경규제 강화시 비용 영향도"
-            )
-            context_parts.append("   **사회(S) 리스크**:")
-            context_parts.append("   - 인력 안정성: 직원 이직률, 평균 근속연수")
-            context_parts.append("   - 안전 지표: 산업재해율, 안전사고 빈도")
-            context_parts.append("   - 공급망 리스크: 협력업체 ESG 수준, 인권 이슈")
-            context_parts.append("   **지배구조(G) 리스크**:")
-            context_parts.append(
-                "   - 이사회 독립성: 사외이사 비율, 이사회 운영 투명성"
-            )
-            context_parts.append("   - 주주권리 보호: 소액주주 권익 보호 수준")
-            context_parts.append(
-                "   - ESG 경영 통합도: ESG 목표의 경영진 성과급 연동 여부"
-            )
-            context_parts.append("")
-
-            context_parts.append("📊 **8. 재무건전성 스트레스 테스트**:")
-            context_parts.append("   **안정성 지표 심화분석**:")
-            context_parts.append(
-                "   - Interest Coverage = EBIT/이자비용 (3.0배 이상 안전)"
-            )
-            context_parts.append("   - Debt Service Coverage = OCF/(원금상환+이자지급)")
-            context_parts.append("   - Net Debt/EBITDA 비율 (3.0배 이하 안전)")
-            context_parts.append(
-                "   - Cash Runway = 현금잔액/월평균 현금소모액 (12개월 이상 안전)"
-            )
-            context_parts.append("   **스트레스 시나리오 분석**:")
-            context_parts.append("   - 매출 20% 감소시 현금흐름 및 부채상환능력")
-            context_parts.append("   - 금리 200bp 상승시 이자비용 증가 영향")
-            context_parts.append("   - 주요 고객 상실시 재무 영향도")
-            context_parts.append("   - 경기침체 시나리오 하에서 생존 가능성")
-            context_parts.append("")
-
-            context_parts.append("⚠️ **분석 시 주의사항 (Chat GPT 피드백 반영)**:")
-            context_parts.append(
-                "✅ **정량 + 정성 균형**: 수치 분석과 사업모델 이해 병행"
-            )
-            context_parts.append(
-                "✅ **산업 특화**: 해당 산업 고유의 KPI와 벤치마크 적용"
-            )
-            context_parts.append(
-                "✅ **시계열 분석**: 모든 비율은 반드시 3년 트렌드로 분석"
-            )
-            context_parts.append(
-                "✅ **동종업계 비교**: 상위 25%, 50%, 75% 분위 대비 위치 명시"
-            )
-            context_parts.append(
-                "✅ **정상화 조정**: 계절성/일회성 요인 제거한 정상화 수치 병기"
-            )
-            context_parts.append(
-                "✅ **ESG 통합**: ESG 리스크가 재무성과에 미치는 영향 정량화"
-            )
-            context_parts.append(
-                "✅ **데이터 근거**: 연결재무제표 기준, 모든 수치에 출처 명시"
-            )
 
         elif "기술" in expert.expertise or "Technical" in expert.role:
             # 기술 분석 전문가 - 🎯 실제 계산된 지표 데이터 우선 제공!
@@ -2321,148 +2079,83 @@ class SmartSectorManager:
 
             # 🎯 시니어 기술적 애널리스트 분석 지침 (Chat GPT 피드백 완전 반영)
             if technical_analysis_data and technical_analysis_data.get("success"):
-                context_parts.append(
-                    "\n🎯 **기술적 분석 필수 수행사항 (시니어 애널리스트 수준 고도화)**:"
-                )
-                context_parts.append(
-                    "✅ 위에 제공된 실제 계산된 지표 값들을 반드시 활용하세요!"
-                )
-                context_parts.append(
-                    "❌ 지표 정의나 일반론 설명은 생략하고, 구체적 수치 기반 분석에 집중하세요!"
-                )
+                # 🎯 기술적 분석을 위한 실제 데이터 기반 지침 생성
+                context_parts.append("\n🎯 기술적 분석 데이터 출처:")
+
+                # 실제 사용 가능한 데이터 소스 명시
+                available_sources = []
+                if technical_analysis_data and technical_analysis_data.get("success"):
+                    available_sources.append("기술적 분석 데이터")
+                if financial_data and financial_data.get("success"):
+                    available_sources.append("재무데이터 (가격 정보)")
+                if manus_collected_data and manus_collected_data.get("performed"):
+                    available_sources.append("웹검색 데이터")
+
+                if available_sources:
+                    context_parts.append(
+                        f"**📊 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
+                    )
+                else:
+                    context_parts.append("**⚠️ 사용 가능한 데이터 소스 없음**")
+
                 context_parts.append("")
 
-                # 🚀 Chat GPT 피드백 1: 이벤트 기반 분석 추가
-                context_parts.append(
-                    "📅 **1. 이벤트 기반 분석** (Chat GPT 피드백 반영):"
-                )
-                context_parts.append(
-                    "   - **배당락일 전후**: 배당락일 ±5일간 주가 패턴과 거래량 변화 분석 **[웹검색]**"
-                )
-                context_parts.append(
-                    "   - **IR 발표일 영향**: 실적발표, 컨퍼런스콜 전후 기술적 신호 변화 **[웹검색]**"
-                )
-                context_parts.append(
-                    "   - **공시 이벤트**: 주요 공시 발표 전후 차트 패턴 변화와 신뢰도 **[웹검색]**"
-                )
-                context_parts.append(
-                    "   - **계절성 패턴**: 월별, 분기별 주가 패턴과 현재 시점의 계절적 요인 **[재무데이터 기반 계산]**"
-                )
-                context_parts.append("")
+                # 실제 데이터 기반 기술적 분석 지침
+                context_parts.append("**📈 실제 데이터 기반 기술적 분석 지침**:")
+                if technical_analysis_data and technical_analysis_data.get("success"):
+                    context_parts.append(
+                        "- 계산된 기술적 지표(RSI, MACD, 볼린저밴드 등) 기반 분석"
+                    )
+                    context_parts.append("- 이동평균선 배열과 현재가 위치 관계 분석")
+                    context_parts.append("- 지지/저항선 레벨에서의 매매 전략")
+                if financial_data and financial_data.get("success"):
+                    context_parts.append(
+                        "- 재무데이터의 가격 정보를 활용한 차트 패턴 분석"
+                    )
+                if manus_collected_data and manus_collected_data.get("performed"):
+                    context_parts.append("- 웹검색 데이터를 활용한 이벤트 기반 분석")
 
-                # 🚀 Chat GPT 피드백 2: 수급 분석 강화
-                context_parts.append("💹 **2. 수급 분석 (기관/외국인 매매 동향)**:")
-                context_parts.append(
-                    "   - **기관 매매 패턴**: 최근 20일간 기관 순매수/순매도 추이와 주가 상관관계 **[웹검색]**"
-                )
-                context_parts.append(
-                    "   - **외국인 매매 동향**: 외국인 지분율 변화와 주가 모멘텀 분석 **[웹검색]**"
-                )
-                context_parts.append(
-                    "   - **개인 투자자 심리**: 개인 매매 비중과 시장 센티먼트 지표 **[웹검색]**"
-                )
-                context_parts.append(
-                    "   - **대량거래 분석**: 대량거래 발생 시점과 주가 반응 패턴 **[재무데이터]**"
-                )
                 context_parts.append("")
-
-                # 🚀 Chat GPT 피드백 3: 퀀트 지표 통합
-                context_parts.append("🔢 **3. 퀀트 지표 통합 분석**:")
-                context_parts.append(
-                    "   - **VIX 상관관계**: 변동성 지수와 개별 주식 변동성 비교 **[웹검색]**"
-                )
-                context_parts.append(
-                    "   - **섹터 로테이션**: 섹터별 자금 흐름과 개별 종목 상대강도 **[재무데이터 기반 계산]**"
-                )
-                context_parts.append(
-                    "   - **모멘텀 팩터**: 가격 모멘텀, 수익 모멘텀 통합 점수 **[재무데이터 기반 계산]**"
-                )
-                context_parts.append(
-                    "   - **평균회귀 신호**: 장기 평균 대비 이탈 정도와 회귀 가능성 **[재무데이터 기반 계산]**"
-                )
-                context_parts.append("")
-
-                context_parts.append("4. **현재 시점 정밀 분석** (기존 강화):")
-                context_parts.append(
-                    "   - 제공된 RSI, MACD, 볼린저밴드 실제 값으로 현재 상태 진단"
-                )
-                context_parts.append("   - 이동평균선 배열과 현재가 위치 관계 분석")
-                context_parts.append("   - 종합 매매 신호의 신뢰도와 근거 평가")
-                context_parts.append("")
-                context_parts.append("2. **지지/저항선 활용 전략**:")
-                context_parts.append("   - 계산된 지지/저항선 레벨에서의 매매 전략")
-                context_parts.append("   - 돌파/이탈 시나리오별 목표가 제시")
-                context_parts.append("   - 리스크 관리를 위한 손절매 레벨 설정")
-                context_parts.append("")
-                context_parts.append("3. **거래량 분석과 확인**:")
-                context_parts.append("   - OBV 추세와 주가 Divergence 여부")
-                context_parts.append("   - 현재 거래량의 20일 평균 대비 비율 해석")
-                context_parts.append("   - 신호 확인을 위한 거래량 조건 제시")
-                context_parts.append("")
-                context_parts.append("4. **투자 시나리오 및 목표가**:")
-                context_parts.append("   - 단기(1-3개월), 중기(3-6개월) 목표가 제시")
-                context_parts.append("   - 상승/하락/횡보 시나리오별 대응 전략")
-                context_parts.append("   - 진입/청산 타이밍과 구체적 가격대")
             else:
-                context_parts.append("\n🎯 기술적 분석 필수 수행사항:")
-                context_parts.append("⚠️ 계산된 기술적 지표가 제공되지 않았습니다.")
-                context_parts.append("📊 기본 가격 데이터를 활용한 분석을 수행하세요:")
-                context_parts.append("1. 주요 이동평균선 분석:")
-                context_parts.append(
-                    "   - 5일선 vs 20일선 Golden/Dead Cross 여부와 시점"
-                )
-                context_parts.append("   - 20일선 vs 60일선 중기 추세 전환 신호")
-                context_parts.append("   - 60일선 vs 120일선 장기 추세 방향성")
-                context_parts.append(
-                    "   - 현재가의 이평선 배열 상태 (정배열/역배열/혼재)"
-                )
-                context_parts.append("")
-                context_parts.append("2. 모멘텀 지표 정밀분석:")
-                context_parts.append(
-                    "   - MACD(12,26,9): Signal Line 교차와 히스토그램 변화율"
-                )
-                context_parts.append(
-                    "   - RSI(14): 과매수(70이상)/과매도(30이하) 구간과 Divergence"
-                )
-                context_parts.append(
-                    "   - Stochastic(%K,%D): 80이상 과매수, 20이하 과매도"
-                )
-                context_parts.append("   - Williams %R: -20이상 과매수, -80이하 과매도")
-                context_parts.append("")
-                context_parts.append("3. 지지저항 및 목표가 산출:")
-                context_parts.append(
-                    "   - 주요 지지선/저항선 레벨 식별 (최근 6개월 기준)"
-                )
-                context_parts.append(
-                    "   - Fibonacci Retracement: 38.2%, 50%, 61.8% 되돌림"
-                )
-                context_parts.append(
-                    "   - 돌파시 목표가 = 저항선 + (저항선-지지선) [측정이론]"
-                )
-                context_parts.append("   - 하락시 목표가 = 지지선 - (저항선-지지선)")
-                context_parts.append("")
-                context_parts.append("4. 거래량 및 섹터 분석:")
-                context_parts.append(
-                    "   - 거래량 동반 여부 (20일 평균 대비 150% 이상시 유의미)"
-                )
-                context_parts.append(
-                    "   - OBV (On Balance Volume) 추세와 주가 Divergence"
-                )
-                context_parts.append(
-                    "   - 섹터 상대강도 = (개별주/섹터지수) / (전일 개별주/전일 섹터지수)"
-                )
-                context_parts.append("   - 시장 대비 Beta 계수와 변동성 비교")
+                # 🎯 기술적 분석을 위한 실제 데이터 기반 지침 생성 (기술적 지표 없음)
+                context_parts.append("\n🎯 기술적 분석 데이터 출처:")
 
-            context_parts.append("")
-            context_parts.append("⚠️ 기술적 분석 주의사항:")
-            context_parts.append("- 모든 신호는 거래량 동반 여부 필수 확인")
-            context_parts.append(
-                "- False Breakout 가능성 (저항선 돌파 후 3일 지속성 관찰)"
-            )
-            context_parts.append("- 공시나 이벤트 전후 기술적 신호 신뢰도 하락")
-            context_parts.append(
-                "- 단기(1주), 중기(1개월), 장기(3개월) 시계열 종합 판단"
-            )
+                # 실제 사용 가능한 데이터 소스 명시
+                available_sources = []
+                if financial_data and financial_data.get("success"):
+                    available_sources.append("재무데이터 (가격 정보)")
+                if manus_collected_data and manus_collected_data.get("performed"):
+                    available_sources.append("웹검색 데이터")
+
+                if available_sources:
+                    context_parts.append(
+                        f"**📊 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
+                    )
+                else:
+                    context_parts.append("**⚠️ 사용 가능한 데이터 소스 없음**")
+
+                context_parts.append("")
+
+                # 실제 데이터 기반 기술적 분석 지침 (기술적 지표 없음)
+                context_parts.append("**📈 실제 데이터 기반 기술적 분석 지침**:")
+                if financial_data and financial_data.get("success"):
+                    context_parts.append(
+                        "- 재무데이터의 가격 정보를 활용한 기본 차트 분석"
+                    )
+                    context_parts.append("- 이동평균선과 현재가 위치 관계 분석")
+                if manus_collected_data and manus_collected_data.get("performed"):
+                    context_parts.append(
+                        "- 웹검색 데이터를 활용한 시장 동향 및 이벤트 분석"
+                    )
+
+                context_parts.append("")
+                context_parts.append("**⚠️ 기술적 분석 주의사항**:")
+                context_parts.append("- 모든 분석은 실제 데이터 기반으로 수행")
+                context_parts.append(
+                    "- 데이터 출처를 명시하고 가정값 사용 시 '(가정)' 표시"
+                )
+                context_parts.append("- 단기, 중기, 장기 시계열 종합 판단")
+                context_parts.append("")
 
         # 기타 전문가별 데이터 처리
         if "산업" in expert.expertise or "Industry" in expert.role:
@@ -2484,120 +2177,42 @@ class SmartSectorManager:
                     logger.warning(f"⚠️ DART 사업 정보 추출 실패: {e}")
                     pass
 
-            # 🎯 시니어 산업 애널리스트 분석 지침 (Chat GPT 피드백 완전 반영)
-            context_parts.append(
-                "\n🎯 산업 분석 필수 수행사항 (시니어 애널리스트 수준 고도화):"
-            )
+            # 🎯 산업 분석을 위한 실제 데이터 기반 지침 생성
+            context_parts.append("\n🎯 산업 분석 데이터 출처:")
 
-            context_parts.append("**📊 데이터 우선순위 (반드시 준수)**:")
-            context_parts.append(
-                "1순위: **[재무데이터]** - 제공된 재무제표에서 직접 추출"
-            )
-            context_parts.append(
-                "2순위: **[사업보고서]** - DART 사업보고서에서 직접 확인"
-            )
-            context_parts.append(
-                "3순위: **[재무데이터 기반 계산]** - 1,2순위 데이터로 계산"
-            )
-            context_parts.append("4순위: **[웹검색]** - 외부 데이터 (최후 수단)")
-            context_parts.append("5순위: **[추정]** - 분석가 가정 (반드시 근거 명시)")
-            context_parts.append("")
+            # 실제 사용 가능한 데이터 소스 명시
+            available_sources = []
+            if financial_data and financial_data.get("success"):
+                available_sources.append("재무데이터 (재무제표)")
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                available_sources.append("DART 사업보고서")
+            if manus_collected_data and manus_collected_data.get("performed"):
+                available_sources.append("웹검색 데이터")
+            if technical_analysis_data:
+                available_sources.append("기술적 분석 데이터")
 
-            # 🚀 Chat GPT 피드백 1: 향후 기술 로드맵 분석 추가
-            context_parts.append(
-                "🚀 **1. 향후 기술 로드맵 분석** (Chat GPT 피드백 반영):"
-            )
-            context_parts.append(
-                "   - **반도체 공정 발전**: 현재 공정 대비 차세대 기술 도입 시점과 경쟁력 **[웹검색]**"
-            )
-            context_parts.append(
-                "   - **기술 혁신 주기**: 업계 기술 혁신 주기와 회사의 기술 로드맵 부합성 **[사업보고서]**"
-            )
-            context_parts.append(
-                "   - **특허 포트폴리오**: 핵심 기술 특허 만료 일정과 신규 특허 출원 현황 **[웹검색]**"
-            )
-            context_parts.append(
-                "   - **기술 표준화**: 업계 표준 기술 변화와 회사의 대응 전략 **[사업보고서]**"
-            )
+            if available_sources:
+                context_parts.append(
+                    f"**📊 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
+                )
+            else:
+                context_parts.append("**⚠️ 사용 가능한 데이터 소스 없음**")
+
             context_parts.append("")
 
-            # 🚀 Chat GPT 피드백 2: 정부 정책 및 지정학 리스크 분석
-            context_parts.append("🏛️ **2. 정부 정책 및 지정학 리스크 분석**:")
-            context_parts.append(
-                "   - **정부 정책 변화**: 반도체 지원 정책, 규제 변화가 산업에 미치는 영향 **[웹검색]**"
-            )
-            context_parts.append(
-                "   - **지정학적 리스크**: 미중 무역분쟁, 공급망 재편이 업계에 미치는 영향 **[웹검색]**"
-            )
-            context_parts.append(
-                "   - **국가별 정책**: 주요 국가별 반도체 육성 정책과 경쟁 구도 변화 **[웹검색]**"
-            )
-            context_parts.append(
-                "   - **규제 리스크**: 환경 규제, 데이터 보안 규제 등이 사업에 미치는 영향 **[웹검색]**"
-            )
-            context_parts.append("")
+            # 실제 데이터 기반 분석 지침
+            context_parts.append("**🔍 실제 데이터 기반 분석 지침**:")
+            if financial_data and financial_data.get("success"):
+                context_parts.append("- 재무데이터에서 산업 평균 대비 수익성 지표 분석")
+                context_parts.append("- 경쟁사 대비 재무비율 비교 분석")
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                context_parts.append("- DART 사업보고서에서 산업 동향 및 전략 분석")
+            if manus_collected_data and manus_collected_data.get("performed"):
+                context_parts.append("- 웹검색 데이터에서 최신 산업 동향 및 뉴스 분석")
+            if technical_analysis_data:
+                context_parts.append("- 기술적 분석 데이터에서 시장 동향 분석")
 
-            # 🚀 Chat GPT 피드백 3: 서브섹터별 경쟁 구도 분석
-            context_parts.append("🏭 **3. 서브섹터별 경쟁 구도 분석**:")
-            context_parts.append(
-                "   - **메모리 vs 파운드리**: 각 서브섹터별 경쟁 구도와 회사의 포지셔닝 **[웹검색]**"
-            )
-            context_parts.append(
-                "   - **시장 점유율 변화**: 서브섹터별 시장 점유율 추이와 경쟁사 분석 **[웹검색]**"
-            )
-            context_parts.append(
-                "   - **수익성 차이**: 서브섹터별 수익성 차이와 회사의 포트폴리오 최적화 **[재무데이터 기반 계산]**"
-            )
-            context_parts.append(
-                "   - **전략 변화**: 회사의 서브섹터별 투자 전략과 자원 배분 변화 **[사업보고서]**"
-            )
             context_parts.append("")
-            context_parts.append("1. Porter 5 Forces 정량평가:")
-            context_parts.append(
-                "   - 신규진입 위협도 (1-5점): 진입장벽, 자본요구, 규제환경"
-            )
-            context_parts.append(
-                "   - 공급업체 교섭력 (1-5점): 공급업체 집중도, 전환비용"
-            )
-            context_parts.append("   - 구매자 교섭력 (1-5점): 고객 집중도, 가격민감도")
-            context_parts.append(
-                "   - 대체재 위협도 (1-5점): 대체재 성능-가격, 전환 가능성"
-            )
-            context_parts.append(
-                "   - 기존 경쟁강도 (1-5점): 경쟁사 수, 시장성장률, 차별화"
-            )
-            context_parts.append("   - 종합 점수 = 각 Force별 점수 합계 (최대 25점)")
-            context_parts.append("")
-            context_parts.append("2. 시장구조 분석:")
-            context_parts.append("   - HHI 지수 = Σ(시장점유율%)² (독과점 정도 측정)")
-            context_parts.append("   - Top 3 집중도 = 상위 3사 시장점유율 합계")
-            context_parts.append(
-                "   - 시장 성장률 = (당기 시장규모 - 전기) / 전기 × 100"
-            )
-            context_parts.append(
-                "   - 시장 포화도 = 현재 시장규모 / 잠재 시장규모 × 100"
-            )
-            context_parts.append("")
-            context_parts.append("3. 경쟁우위 지속성 (Economic Moat):")
-            context_parts.append("   - 네트워크 효과: 사용자 증가 → 가치 증가 선순환")
-            context_parts.append("   - 전환비용: 고객이 타사로 변경시 발생 비용")
-            context_parts.append("   - 무형자산: 브랜드, 특허, 라이선스 가치")
-            context_parts.append("   - 비용우위: 규모의 경제, 독점적 자원")
-            context_parts.append("   - R&D 집약도 = R&D비용 / 매출 × 100 (%)")
-            context_parts.append("")
-            context_parts.append("4. 산업 라이프사이클 진단:")
-            context_parts.append(
-                "   - 도입기: 높은 성장률(30%+), 높은 변동성, 적자 가능"
-            )
-            context_parts.append("   - 성장기: 중간 성장률(10-30%), 수익성 개선")
-            context_parts.append("   - 성숙기: 낮은 성장률(5-10%), 안정적 수익성")
-            context_parts.append("   - 쇠퇴기: 마이너스 성장률, 구조조정 필요")
-            context_parts.append("")
-            context_parts.append("⚠️ 산업 분석 주의사항:")
-            context_parts.append("- 글로벌 vs 국내 시장 분리 분석")
-            context_parts.append("- 정부 정책 변화가 산업에 미치는 영향도 정량화")
-            context_parts.append("- 기술 혁신 주기와 산업 내 위치 매핑")
-            context_parts.append("- ESG 규제 강화가 산업 구조에 미치는 영향")
 
         elif "밸류에이션" in expert.expertise or "Valuation" in expert.role:
             # 밸류에이션 전문가 - 🎯 시니어 애널리스트 수준 지침 추가
@@ -2612,154 +2227,93 @@ class SmartSectorManager:
                     logger.warning(f"⚠️ 밸류에이션 데이터 추출 실패: {e}")
                     pass
 
-            # 🎯 시니어 밸류에이션 애널리스트 구체적 분석 지침 (데이터 우선순위 적용)
-            context_parts.append("\n🎯 밸류에이션 분석 필수 수행사항:")
+            # 🎯 밸류에이션 분석을 위한 실제 데이터 기반 지침 생성
+            context_parts.append("\n🎯 밸류에이션 분석 데이터 출처:")
 
-            context_parts.append("**📊 데이터 우선순위 (반드시 준수)**:")
-            context_parts.append(
-                "1순위: **[재무데이터]** - 제공된 재무제표에서 직접 추출"
-            )
-            context_parts.append(
-                "2순위: **[사업보고서]** - DART 사업보고서에서 직접 확인"
-            )
-            context_parts.append(
-                "3순위: **[재무데이터 기반 계산]** - 1,2순위 데이터로 계산"
-            )
-            context_parts.append("4순위: **[웹검색]** - 외부 데이터 (최후 수단)")
-            context_parts.append("5순위: **[추정]** - 분석가 가정 (반드시 근거 명시)")
-            context_parts.append("")
+            # 실제 사용 가능한 데이터 소스 명시
+            available_sources = []
+            if financial_data and financial_data.get("success"):
+                available_sources.append("재무데이터 (재무제표)")
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                available_sources.append("DART 사업보고서")
+            if dart_reports_dictionary:
+                available_sources.append("DART 보고서 딕셔너리")
+            if manus_collected_data and manus_collected_data.get("performed"):
+                available_sources.append("웹검색 데이터")
 
-            # 🚀 NEW: 현금흐름표 직접 계산 지침 추가 (밸류에이션 전문가용)
-            context_parts.append(
-                "🚀 **핵심: DCF 분석을 위한 현금흐름표 직접 계산 (사업보고서/분기보고서 딕셔너리 활용)**:"
-            )
-            context_parts.append(
-                "   ⭐ DCF 분석의 기초가 되는 자유현금흐름(FCF) 계산을 위해 딕셔너리에서 다음을 찾으세요:"
-            )
-            context_parts.append("")
-            context_parts.append("   **자유현금흐름(FCF) 계산 요소:**")
-            context_parts.append(
-                "   - 영업현금흐름 (Operating Cash Flow) = 위 딕셔너리의 '영업활동으로인한현금흐름' 섹션에서 추출"
-            )
-            context_parts.append(
-                "   - 자본적지출 (CapEx) = 위 딕셔너리의 '투자활동으로인한현금흐름' 섹션에서:"
-            )
-            context_parts.append(
-                "     * 유형자산 취득액 (설비투자, Property Plant Equipment)"
-            )
-            context_parts.append("     * 무형자산 취득액 (소프트웨어, 특허권 등)")
-            context_parts.append("   - FCF = 영업현금흐름 - 자본적지출")
-            context_parts.append("")
-            context_parts.append("   **Working Capital 변동 분석:**")
-            context_parts.append("   - 매출채권 변동: (당기말 - 전기말) 매출채권")
-            context_parts.append("   - 재고자산 변동: (당기말 - 전기말) 재고자산")
-            context_parts.append("   - 매입채무 변동: (당기말 - 전기말) 매입채무")
-            context_parts.append(
-                "   - Working Capital 변동 = 매출채권증가 + 재고증가 - 매입채무증가"
-            )
-            context_parts.append("")
-            context_parts.append("   **📊 FCF 품질 평가:**")
-            context_parts.append("   1. FCF/순이익 비율 (1.0 이상이 이상적)")
-            context_parts.append("   2. FCF 성장률 vs 매출 성장률 비교")
-            context_parts.append("   3. 3년 평균 FCF vs 최근년도 FCF 안정성")
-            context_parts.append("   4. 계절성 조정: 분기별 FCF 패턴 분석")
-            context_parts.append("")
-            context_parts.append("   **🔴 중요한 원칙:**")
-            context_parts.append("   - 실제 딕셔너리에서 찾은 현금흐름 수치만 사용")
-            context_parts.append("   - FCF 예측시 가정 사용하되 반드시 '(가정)' 표시")
-            context_parts.append("   - 연결재무제표 현금흐름표 > 개별재무제표 우선순위")
-            context_parts.append(
-                "   - 사업보고서(연간 실적) > 분기보고서(최신분기) 우선순위"
-            )
+            if available_sources:
+                context_parts.append(
+                    f"**📊 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
+                )
+            else:
+                context_parts.append("**⚠️ 사용 가능한 데이터 소스 없음**")
+
             context_parts.append("")
 
-            # 🚀 Chat GPT 피드백 1: 민감도 분석 강화 및 가정 값 타당성 평가
-            context_parts.append(
-                "📊 **1. 민감도 분석 및 가정 값 타당성 평가** (Chat GPT 피드백 반영):"
-            )
-            context_parts.append(
-                "   - **WACC 민감도**: WACC ±0.5%, ±1.0% 변동 시 목표가 변화율 **[재무데이터 기반 계산]**"
-            )
-            context_parts.append(
-                "   - **영구성장률 민감도**: g ±0.5%, ±1.0% 변동 시 목표가 변화율 **[재무데이터 기반 계산]**"
-            )
-            context_parts.append(
-                "   - **FCF 성장률 민감도**: 5년 평균 FCF 성장률 ±5%, ±10% 변동 시 영향 **[재무데이터 기반 계산]**"
-            )
-            context_parts.append(
-                "   - **가정 값 타당성**: 각 가정의 과거 실적 대비 합리성과 경쟁사 대비 비교 **[웹검색]**"
-            )
-            context_parts.append(
-                "   - **시나리오별 확률**: Bull(30%), Base(40%), Bear(30%) 시나리오 확률가중 목표가 **[재무데이터 기반 계산]**"
-            )
+            # 실제 데이터 기반 밸류에이션 지침
+            context_parts.append("**💰 실제 데이터 기반 밸류에이션 지침**:")
+            if financial_data and financial_data.get("success"):
+                context_parts.append(
+                    "- 재무데이터에서 FCF 계산을 위한 영업현금흐름 및 자본적지출 추출"
+                )
+                context_parts.append(
+                    "- 재무비율을 통한 멀티플 분석 (PER, PBR, EV/EBITDA)"
+                )
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                context_parts.append("- DART 데이터에서 현금흐름표 정보 추출")
+            if dart_reports_dictionary:
+                context_parts.append(
+                    "- DART 보고서 딕셔너리에서 상세 현금흐름 정보 활용"
+                )
+            if manus_collected_data and manus_collected_data.get("performed"):
+                context_parts.append(
+                    "- 웹검색 데이터에서 시장 동향 및 분석가 의견 참고"
+                )
+
             context_parts.append("")
 
-            # 🚀 Chat GPT 피드백 2: 밸류에이션 방법론 타당성 정량 평가
-            context_parts.append("🎯 **2. 밸류에이션 방법론 타당성 정량 평가**:")
-            context_parts.append(
-                "   - **DCF vs 멀티플 괴리도**: DCF 목표가와 멀티플 목표가 차이 분석과 원인 **[재무데이터 기반 계산]**"
-            )
-            context_parts.append(
-                "   - **WACC 적정성**: 업종 평균 WACC 대비 편차와 합리성 **[웹검색]**"
-            )
-            context_parts.append(
-                "   - **멀티플 근거**: 사용된 PER, PBR의 과거 밴드 대비 현재 위치 **[웹검색]**"
-            )
-            context_parts.append(
-                "   - **방법론별 신뢰도**: 업종 특성상 가장 적합한 밸류에이션 방법론 선택 근거 **[사업보고서]**"
-            )
+            # 실제 데이터 기반 밸류에이션 분석 방법론
+            context_parts.append("**💰 실제 데이터 기반 밸류에이션 분석 방법론**:")
+            if financial_data and financial_data.get("success"):
+                context_parts.append("- 재무데이터를 활용한 DCF 분석 (현금흐름 할인)")
+                context_parts.append(
+                    "- 재무비율을 통한 멀티플 분석 (PER, PBR, EV/EBITDA)"
+                )
+                context_parts.append("- 민감도 분석 (WACC, 성장률 변동 시 영향도)")
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                context_parts.append("- DART 데이터를 활용한 현금흐름 분석")
+            if manus_collected_data and manus_collected_data.get("performed"):
+                context_parts.append(
+                    "- 웹검색 데이터를 활용한 시장 동향 및 멀티플 비교"
+                )
+            if dart_reports_dictionary:
+                context_parts.append(
+                    "- DART 보고서 딕셔너리에서 상세 현금흐름 정보 활용"
+                )
+
             context_parts.append("")
 
-            # 🚀 Chat GPT 피드백 3: 가치 평가 적정 시점 명확화
-            context_parts.append("⏰ **3. 가치 평가 적정 시점 명확화**:")
-            context_parts.append(
-                "   - **12개월 목표가**: 향후 12개월 기준 목표가와 달성 시점 **[재무데이터 기반 계산]**"
-            )
-            context_parts.append(
-                "   - **현재 시점 적정가**: 현재 시점 기준 이론적 적정가치 **[재무데이터 기반 계산]**"
-            )
-            context_parts.append(
-                "   - **시점별 밸류에이션**: 3개월, 6개월, 12개월, 24개월 목표가 제시 **[재무데이터 기반 계산]**"
-            )
-            context_parts.append(
-                "   - **카탈리스트 반영**: 주요 이벤트(실적발표, 신제품 출시 등) 반영 시점 **[사업보고서]**"
-            )
-            context_parts.append("")
+            # 실제 데이터 기반 밸류에이션 분석 방법론
+            context_parts.append("**💰 실제 데이터 기반 밸류에이션 분석 방법론**:")
+            if financial_data and financial_data.get("success"):
+                context_parts.append("- 재무데이터를 활용한 DCF 분석 (현금흐름 할인)")
+                context_parts.append(
+                    "- 재무비율을 통한 멀티플 분석 (PER, PBR, EV/EBITDA)"
+                )
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                context_parts.append("- DART 데이터를 활용한 현금흐름 분석")
+            if manus_collected_data and manus_collected_data.get("performed"):
+                context_parts.append(
+                    "- 웹검색 데이터를 활용한 시장 동향 및 멀티플 비교"
+                )
 
-            context_parts.append("4. DCF 분석 (구체적 산출식 제시):")
-            context_parts.append("   - 자유현금흐름(FCF) 5년 예측값과 근거")
+            context_parts.append("")
+            context_parts.append("**⚠️ 밸류에이션 분석 주의사항**:")
             context_parts.append(
-                "   - 할인율(WACC) 산출 과정: WACC = (E/V)×Re + (D/V)×Rd×(1-T)"
+                "- 모든 가정과 계산 과정을 명시하여 검증 가능하도록 함"
             )
-            context_parts.append(
-                "   - 영구성장률 가정과 근거 (GDP성장률 + 인플레이션 고려)"
-            )
-            context_parts.append("   - 잔존가치 = FCF₅×(1+g)/(WACC-g)")
-            context_parts.append("   - 최종 내재가치 = Σ(FCF_t/(1+WACC)^t) + 잔존가치")
-            context_parts.append("")
-            context_parts.append("2. 멀티플 분석 (동종업계 비교):")
-            context_parts.append("   - 동종업계 평균 PER, PBR, EV/EBITDA 데이터 제시")
-            context_parts.append(
-                "   - 프리미엄/디스카운트 근거 (성장성, 수익성, 안정성)"
-            )
-            context_parts.append("   - 멀티플 × 해당지표 = 목표가 (계산과정 상세)")
-            context_parts.append("")
-            context_parts.append("3. 종합 목표가 산출 (가중평균):")
-            context_parts.append("   - DCF 목표가 (가중치 40%)")
-            context_parts.append("   - PER 목표가 (가중치 30%)")
-            context_parts.append("   - PBR 목표가 (가중치 30%)")
-            context_parts.append("   - 최종 목표가 = (DCF×0.4 + PER×0.3 + PBR×0.3)")
-            context_parts.append("")
-            context_parts.append("4. 시나리오 분석 (확률 배정):")
-            context_parts.append("   - 낙관 시나리오 (확률 25%): 최고 실적 가정")
-            context_parts.append("   - 기본 시나리오 (확률 50%): 컨센서스 기반")
-            context_parts.append("   - 비관 시나리오 (확률 25%): 악재 반영")
-            context_parts.append("   - 확률가중 목표가 = Σ(시나리오별 목표가 × 확률)")
-            context_parts.append("")
-            context_parts.append("⚠️ 밸류에이션 주의사항:")
-            context_parts.append("- 모든 가정과 계산 과정 명시 (검증 가능하도록)")
-            context_parts.append("- 민감도 분석: 핵심 변수 ±10% 변동 시 목표가 변화")
-            context_parts.append("- 과거 멀티플 밴드와 현재 수준 비교")
+            context_parts.append("- 민감도 분석을 통한 핵심 변수 영향도 평가")
+            context_parts.append("- 과거 멀티플 밴드와 현재 수준 비교 분석")
             context_parts.append("- 배당할인모델(DDM) 병행 검증 (배당주의 경우)")
 
         elif "리스크" in expert.expertise or "Risk" in expert.role:
@@ -2786,145 +2340,44 @@ class SmartSectorManager:
                     logger.warning(f"⚠️ Manus 리스크 데이터 추출 실패: {e}")
                     pass
 
-            # 🎯 시니어 리스크 애널리스트 정량적 분석 지침 (데이터 우선순위 적용)
-            context_parts.append("\n🎯 리스크 분석 필수 수행사항:")
+            # 🎯 리스크 분석을 위한 실제 데이터 기반 지침 생성
+            context_parts.append("\n🎯 리스크 분석 데이터 출처:")
 
-            context_parts.append("**📊 데이터 우선순위 (반드시 준수)**:")
-            context_parts.append(
-                "1순위: **[재무데이터]** - 제공된 재무제표에서 직접 추출"
-            )
-            context_parts.append(
-                "2순위: **[사업보고서]** - DART 사업보고서에서 직접 확인"
-            )
-            context_parts.append(
-                "3순위: **[재무데이터 기반 계산]** - 1,2순위 데이터로 계산"
-            )
-            context_parts.append("4순위: **[웹검색]** - 외부 데이터 (최후 수단)")
-            context_parts.append("5순위: **[추정]** - 분석가 가정 (반드시 근거 명시)")
-            context_parts.append("")
+            # 실제 사용 가능한 데이터 소스 명시
+            available_sources = []
+            if financial_data and financial_data.get("success"):
+                available_sources.append("재무데이터 (재무제표)")
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                available_sources.append("DART 사업보고서")
+            if manus_collected_data and manus_collected_data.get("performed"):
+                available_sources.append("웹검색 데이터")
+            if technical_analysis_data:
+                available_sources.append("기술적 분석 데이터")
 
-            # 🚀 NEW: 현금흐름표 직접 계산 지침 추가 (리스크 평가자용)
-            context_parts.append(
-                "🚀 **핵심: 재무 리스크 평가를 위한 현금흐름표 직접 계산 (사업보고서/분기보고서 딕셔너리 활용)**:"
-            )
-            context_parts.append(
-                "   ⭐ 유동성 위험과 재무 안정성 평가를 위해 딕셔너리에서 다음 현금흐름 항목들을 찾으세요:"
-            )
-            context_parts.append("")
-            context_parts.append("   **현금흐름 리스크 지표 계산:**")
-            context_parts.append(
-                "   - 영업현금흐름 변동성: 3년간 영업CF 표준편차/평균 (CV 계수)"
-            )
-            context_parts.append("   - 자유현금흐름 안정성: FCF가 음수인 연도 빈도")
-            context_parts.append(
-                "   - 현금흐름 커버리지: 영업CF / (자본적지출 + 배당금 + 원금상환)"
-            )
-            context_parts.append("   - 현금 소진률: 현재 현금잔액 / 월평균 현금소모액")
-            context_parts.append("")
-            context_parts.append("   **부채 상환 능력 평가:**")
-            context_parts.append("   - 영업CF/총부채 비율 (0.15 이상 안전)")
-            context_parts.append("   - 순부채/영업CF 비율 (3.0 이하 안전)")
-            context_parts.append("   - EBITDA/이자비용 비율 (3.0 이상 안전)")
-            context_parts.append("   - 운전자본 변동성: 3년간 운전자본 변동의 표준편차")
-            context_parts.append("")
-            context_parts.append("   **현금흐름 품질 진단:**")
-            context_parts.append(
-                "   - 영업CF vs 순이익 괴리도: (영업CF - 순이익) / 순이익"
-            )
-            context_parts.append(
-                "   - 매출채권/매출 비율 증가 추세 (매출 품질 저하 신호)"
-            )
-            context_parts.append("   - 재고자산/매출 비율 증가 추세 (재고 과적 위험)")
-            context_parts.append("   - 현금전환주기(CCC) 연장 위험도")
-            context_parts.append("")
-            context_parts.append("   **🔴 리스크 임계점:**")
-            context_parts.append("   - 영업CF 2분기 연속 감소: 주의 (Yellow Flag)")
-            context_parts.append("   - 자유현금흐름 음수 전환: 경고 (Orange Flag)")
-            context_parts.append("   - 현금잔액 6개월분 미만: 위험 (Red Flag)")
-            context_parts.append(
-                "   - 실제 딕셔너리 수치만 사용, 가정시 반드시 '(가정)' 표시"
-            )
+            if available_sources:
+                context_parts.append(
+                    f"**📊 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
+                )
+            else:
+                context_parts.append("**⚠️ 사용 가능한 데이터 소스 없음**")
+
             context_parts.append("")
 
-            # 🚀 Chat GPT 피드백 1: 비재무 리스크 항목 강화
-            context_parts.append(
-                "🛡️ **1. 비재무 리스크 항목 강화** (Chat GPT 피드백 반영):"
-            )
-            context_parts.append(
-                "   - **사이버 보안 리스크**: 데이터 유출, 시스템 해킹 위험도와 대응 체계 **[웹검색]**"
-            )
-            context_parts.append(
-                "   - **반도체 공급 과잉/부족**: 메모리 사이클, 공급망 불안정성 리스크 **[웹검색]**"
-            )
-            context_parts.append(
-                "   - **ESG 규제 변화**: 탄소중립, 환경 규제 강화가 사업에 미치는 영향 **[웹검색]**"
-            )
-            context_parts.append(
-                "   - **지정학적 리스크**: 미중 갈등, 공급망 재편 리스크 정량화 **[웹검색]**"
-            )
-            context_parts.append(
-                "   - **기술 혁신 리스크**: 차세대 기술 전환 실패 시 시장점유율 손실 **[사업보고서]**"
-            )
-            context_parts.append("")
+            # 실제 데이터 기반 리스크 분석 지침
+            context_parts.append("**🚨 실제 데이터 기반 리스크 분석 지침**:")
+            if financial_data and financial_data.get("success"):
+                context_parts.append(
+                    "- 재무데이터에서 유동성 및 부채 상환 능력 지표 분석"
+                )
+                context_parts.append("- 현금흐름 변동성 및 안정성 평가")
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                context_parts.append("- DART 데이터에서 재무 리스크 관련 정보 추출")
+            if manus_collected_data and manus_collected_data.get("performed"):
+                context_parts.append("- 웹검색 데이터에서 비재무 리스크 요인 분석")
+            if technical_analysis_data:
+                context_parts.append("- 기술적 분석 데이터에서 시장 리스크 지표 분석")
 
-            # 🚀 Chat GPT 피드백 2: VaR, CVaR 분석 도입
-            context_parts.append(
-                "📊 **2. VaR, CVaR 분석 및 리스크-리턴 트레이드오프**:"
-            )
-            context_parts.append(
-                "   - **VaR 분석**: 95%, 99% 신뢰구간에서 1일, 10일, 1개월 VaR 계산 **[재무데이터 기반 계산]**"
-            )
-            context_parts.append(
-                "   - **CVaR 분석**: VaR 초과 손실의 평균(Expected Shortfall) **[재무데이터 기반 계산]**"
-            )
-            context_parts.append(
-                "   - **리스크-리턴 트레이드오프**: 샤프비율, 트레이너비율, 정보비율 분석 **[재무데이터 기반 계산]**"
-            )
-            context_parts.append(
-                "   - **Maximum Drawdown**: 고점 대비 최대 하락률과 회복 기간 **[재무데이터 기반 계산]**"
-            )
-            context_parts.append(
-                "   - **베타 안정성**: 시장 대비 베타 변동성과 하방 베타 분석 **[재무데이터 기반 계산]**"
-            )
             context_parts.append("")
-
-            context_parts.append("3. 정량적 리스크 지표 산출 (기존 강화):")
-            context_parts.append("   - Sharpe Ratio = (수익률-무위험수익률)/표준편차")
-            context_parts.append("   - Information Ratio = 초과수익률/추적오차")
-            context_parts.append("   - Sortino Ratio = (수익률-무위험수익률)/하방편차")
-            context_parts.append("")
-            context_parts.append("2. 시나리오 분석 및 확률 산정:")
-            context_parts.append("   - Base Case (50% 확률): 현재 추세 연장")
-            context_parts.append("   - Bull Case (25% 확률): 긍정적 변화 시나리오")
-            context_parts.append("   - Bear Case (25% 확률): 부정적 변화 시나리오")
-            context_parts.append("   - Black Swan (5% 확률): 극단적 위기 시나리오")
-            context_parts.append("   - 확률가중 기댓값 = Σ(시나리오별 손실 × 확률)")
-            context_parts.append("")
-            context_parts.append("3. 민감도 분석 (핵심 변수 영향도):")
-            context_parts.append("   - 매출성장률 ±10%, ±20% 변화시 목표가 영향도")
-            context_parts.append("   - 마진 ±10%, ±20% 변화시 수익성 영향도")
-            context_parts.append("   - 할인율 ±1%, ±2% 변화시 밸류에이션 영향도")
-            context_parts.append("   - 시장 베타 변화시 주가 변동성 영향도")
-            context_parts.append("")
-            context_parts.append("4. 스트레스 테스트:")
-            context_parts.append("   - 2008년 금융위기급 시나리오 (예상 손실률)")
-            context_parts.append("   - 2020년 팬데믹급 시나리오 (예상 손실률)")
-            context_parts.append("   - 섹터별 특화 스트레스 (기술혁신 실패 등)")
-            context_parts.append("   - 유동성 위기: 매도 가능 시간, 슬리피지 추정")
-            context_parts.append("")
-            context_parts.append("5. ESG 및 기타 리스크:")
-            context_parts.append("   - ESG Score 하락시 주가 영향도 (정량화)")
-            context_parts.append("   - Altman Z-Score: 신용위험 평가")
-            context_parts.append("   - 집중도 리스크: 고객, 지역, 제품 다변화 수준")
-            context_parts.append("   - 지정학적 리스크: 공급망, 수출의존도 영향")
-            context_parts.append("")
-            context_parts.append("⚠️ 리스크 분석 주의사항:")
-            context_parts.append("- 모든 리스크 시나리오에 확률과 손실규모 정량화")
-            context_parts.append("- 상관관계 고려: 동시 발생 가능한 리스크 조합")
-            context_parts.append("- 시점별 리스크: 단기(3개월), 중기(1년), 장기(3년)")
-            context_parts.append(
-                "- 헤지 가능성: 파생상품, 보험 등을 통한 리스크 완화 방안"
-            )
 
         elif "주석" in expert.expertise or "Footnote" in expert.role:
             # 재무제표 주석 전문가 - 🎯 시니어 애널리스트 수준 지침 추가
@@ -2941,107 +2394,67 @@ class SmartSectorManager:
                     logger.warning(f"⚠️ DART 투자정보 추출 실패: {e}")
                     pass
 
-            # 🎯 시니어 재무제표 주석 전문가 상세 분석 지침 (Chat GPT 피드백 완전 반영)
-            context_parts.append(
-                "\n🎯 재무제표 주석 분석 필수 수행사항 (시니어 애널리스트 수준 고도화):"
-            )
+            # 🎯 재무제표 주석 분석을 위한 실제 데이터 기반 지침 생성
+            context_parts.append("\n🎯 재무제표 주석 분석 데이터 출처:")
 
-            # 🚀 Chat GPT 피드백 1: IFRS 관련 주요 리스크 분석 추가
-            context_parts.append(
-                "📋 **1. IFRS 관련 주요 리스크 분석** (Chat GPT 피드백 반영):"
-            )
-            context_parts.append(
-                "   - **IFRS 16 리스 영향**: 운용리스의 자산/부채 인식이 재무비율에 미치는 영향 **[사업보고서]**"
-            )
-            context_parts.append(
-                "   - **IFRS 9 금융상품**: 기대신용손실 모델 적용으로 인한 손실충당금 변화 **[사업보고서]**"
-            )
-            context_parts.append(
-                "   - **IFRS 15 수익인식**: 수익인식 시점 변경이 매출 패턴에 미치는 영향 **[사업보고서]**"
-            )
-            context_parts.append(
-                "   - **IFRS 17 보험계약**: 보험부채 측정 변경(해당시)이 재무상태에 미치는 영향 **[사업보고서]**"
-            )
+            # 실제 사용 가능한 데이터 소스 명시
+            available_sources = []
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                available_sources.append("DART 사업보고서")
+            if dart_reports_dictionary:
+                available_sources.append("DART 보고서 딕셔너리")
+            if financial_data and financial_data.get("success"):
+                available_sources.append("재무데이터 (재무제표)")
+
+            if available_sources:
+                context_parts.append(
+                    f"**📊 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
+                )
+            else:
+                context_parts.append("**⚠️ 사용 가능한 데이터 소스 없음**")
+
             context_parts.append("")
 
-            # 🚀 Chat GPT 피드백 2: 영속성 가정 및 감사의견 분석
-            context_parts.append(
-                "🔍 **2. 영속성 가정(Going Concern) 및 감사의견 분석**:"
-            )
-            context_parts.append(
-                "   - **영속성 가정**: 계속기업 가정에 대한 경영진 평가와 불확실성 **[사업보고서]**"
-            )
-            context_parts.append(
-                "   - **감사의견 분석**: 적정의견, 한정의견, 부적정의견, 의견거절 사유 **[사업보고서]**"
-            )
-            context_parts.append(
-                "   - **핵심감사사항(KAM)**: 감사인이 식별한 주요 위험 영역과 대응 방안 **[사업보고서]**"
-            )
-            context_parts.append(
-                "   - **내부통제 결함**: 재무보고 내부통제의 중요한 결함 여부 **[사업보고서]**"
-            )
+            # 실제 데이터 기반 주석 분석 지침
+            context_parts.append("**📋 실제 데이터 기반 주석 분석 지침**:")
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                context_parts.append(
+                    "- DART 사업보고서에서 IFRS 적용 현황 및 영향 분석"
+                )
+                context_parts.append("- 감사의견 및 핵심감사사항(KAM) 분석")
+            if dart_reports_dictionary:
+                context_parts.append("- DART 보고서 딕셔너리에서 상세 주석 정보 활용")
+            if financial_data and financial_data.get("success"):
+                context_parts.append("- 재무데이터에서 회계 정책 및 추정치 분석")
+
+            context_parts.append("")
             context_parts.append("")
 
-            # 🚀 Chat GPT 피드백 3: 회계추정 관련 리스크 강화
-            context_parts.append("💰 **3. 회계추정 관련 리스크 분석 강화**:")
-            context_parts.append(
-                "   - **비유동자산 손상차손**: 손상 테스트 가정의 합리성과 민감도 분석 **[사업보고서]**"
-            )
-            context_parts.append(
-                "   - **충당부채 적정성**: 충당부채 설정 기준과 과거 실제 지출 대비 정확도 **[사업보고서]**"
-            )
-            context_parts.append(
-                "   - **이연법인세 자산**: 미래 과세소득 발생 가능성과 회수 가능성 **[사업보고서]**"
-            )
-            context_parts.append(
-                "   - **퇴직급여채무**: 보험수리적 가정(할인율, 임금상승률 등)의 합리성 **[사업보고서]**"
-            )
-            context_parts.append(
-                "   - **금융상품 공정가치**: 공정가치 측정 기법과 관측 불가능한 투입변수 **[사업보고서]**"
-            )
-            context_parts.append("")
+            # 실제 데이터 기반 주석 분석 세부 지침
+            context_parts.append("**📋 실제 데이터 기반 주석 분석 세부 지침**:")
+            if enhanced_dart_data and enhanced_dart_data.get("success"):
+                context_parts.append("- DART 사업보고서에서 회계추정 관련 리스크 분석")
+                context_parts.append("- 우발채무 및 보증채무 정밀분석")
+                context_parts.append("- 관계회사 거래 투명성 평가")
+            if dart_reports_dictionary:
+                context_parts.append(
+                    "- DART 보고서 딕셔너리에서 금융상품 및 파생상품 위험 평가"
+                )
+                context_parts.append("- 리스 및 약정사항 영향도 분석")
+            if financial_data and financial_data.get("success"):
+                context_parts.append(
+                    "- 재무데이터에서 회계정책 변경 및 추정변경 영향 분석"
+                )
+                context_parts.append("- 연결범위 변동 및 지배력 분석")
 
-            context_parts.append("4. 우발채무 및 보증채무 정밀분석 (기존 강화):")
-            context_parts.append("   - 우발채무 총액과 발생가능성 평가")
-            context_parts.append("   - 우발채무/총자산 비율 (5% 이상시 주의)")
-            context_parts.append("   - 보증채무 잔액과 대상 (관계회사, 임직원 등)")
-            context_parts.append("   - 보증채무/자기자본 비율 (15% 이상시 위험)")
             context_parts.append("")
-            context_parts.append("2. 관계회사 거래 투명성:")
-            context_parts.append("   - 관계회사 매출/총매출 비율 (내부거래 의존도)")
-            context_parts.append("   - 관계회사 매입/총매입 비율")
-            context_parts.append("   - 관계회사 대여금, 차입금 규모")
-            context_parts.append("   - 거래조건의 제3자 거래 대비 공정성")
+            context_parts.append("**⚠️ 주석 분석 주의사항**:")
+            context_parts.append("- 모든 분석은 실제 데이터 기반으로 수행")
+            context_parts.append(
+                "- 데이터 출처를 명시하고 가정값 사용 시 '(가정)' 표시"
+            )
+            context_parts.append("- 숨겨진 부채나 위험요소 발굴에 집중")
             context_parts.append("")
-            context_parts.append("3. 금융상품 및 파생상품 위험 평가:")
-            context_parts.append("   - 파생상품 공정가치 변동손익 3년 추이")
-            context_parts.append("   - 헤지회계 효과성 (80-125% 기준 준수 여부)")
-            context_parts.append("   - 외환위험: 외화자산/부채 규모와 헤지비율")
-            context_parts.append("   - 금리위험: 변동금리 부채 비중과 민감도")
-            context_parts.append("")
-            context_parts.append("4. 리스 및 약정사항 영향도:")
-            context_parts.append("   - 운용리스 미래 최소 지급액의 현재가치")
-            context_parts.append("   - 리스부채/총부채 비율 (K-IFRS 1116 적용)")
-            context_parts.append("   - 약정 미실행 한도 (신용한도, 투자약정 등)")
-            context_parts.append("   - Sale & Leaseback 거래의 손익 영향")
-            context_parts.append("")
-            context_parts.append("5. 회계정책 변경 및 추정변경 영향:")
-            context_parts.append("   - 회계정책 변경으로 인한 손익 조정액")
-            context_parts.append("   - 회계추정 변경 (내용연수, 잔존가치 등)")
-            context_parts.append("   - 손상차손 인식과 환입 이력")
-            context_parts.append("   - 충당부채 설정과 사용 내역")
-            context_parts.append("")
-            context_parts.append("6. 연결범위 변동 및 지배력 분석:")
-            context_parts.append("   - 신규 연결 자회사 편입으로 인한 재무 영향")
-            context_parts.append("   - 지배력 상실로 인한 연결 제외 영향")
-            context_parts.append("   - 지분법 적용 투자주식의 손익 기여도")
-            context_parts.append("   - 소수주주 지분 변동과 자본 거래")
-            context_parts.append("")
-            context_parts.append("⚠️ 주석 분석 주의사항:")
-            context_parts.append("- 숨겨진 부채나 위험요소 발굴이 핵심")
-            context_parts.append("- 정량적 임계치 초과시 반드시 리스크 등급 상향")
-            context_parts.append("- 3년 추이 분석으로 패턴과 변화 방향 파악")
-            context_parts.append("- 감사인 의견과 핵심감사사항(KAM) 교차 검증")
 
         # 컨텍스트를 문자열로 결합하기 전 검증
         # 🔧 안전한 문자열 변환
@@ -4429,3 +3842,217 @@ class SmartSectorManager:
             f"⚠️ GICS 섹터 매핑 실패: '{gics_sector_clean}' → 기본값(IT) 사용"
         )
         return GICSSector.INFORMATION_TECHNOLOGY
+
+    def _extract_market_data_from_technical_analysis(
+        self, technical_analysis_data: Dict
+    ) -> str:
+        """
+        기술적 분석 데이터에서 시장 데이터를 추출하는 메서드
+
+        Args:
+            technical_analysis_data: 기술적 분석 데이터 딕셔너리
+
+        Returns:
+            str: 추출된 시장 데이터 문자열
+        """
+        if not technical_analysis_data:
+            return "시장 데이터 없음"
+
+        try:
+            market_info = []
+
+            # 주가 정보 추출
+            if "price_data" in technical_analysis_data:
+                price_data = technical_analysis_data["price_data"]
+                if isinstance(price_data, dict):
+                    market_info.append(f"**주가 정보:**")
+                    if "current_price" in price_data:
+                        market_info.append(f"- 현재가: {price_data['current_price']}")
+                    if "change" in price_data:
+                        market_info.append(f"- 등락: {price_data['change']}")
+                    if "change_rate" in price_data:
+                        market_info.append(f"- 등락률: {price_data['change_rate']}")
+                    if "volume" in price_data:
+                        market_info.append(f"- 거래량: {price_data['volume']}")
+
+            # 기술적 지표 추출
+            if "technical_indicators" in technical_analysis_data:
+                indicators = technical_analysis_data["technical_indicators"]
+                if isinstance(indicators, dict):
+                    market_info.append(f"**기술적 지표:**")
+                    for indicator, value in indicators.items():
+                        market_info.append(f"- {indicator}: {value}")
+
+            # 시장 동향 정보 추출
+            if "market_trends" in technical_analysis_data:
+                trends = technical_analysis_data["market_trends"]
+                if isinstance(trends, dict):
+                    market_info.append(f"**시장 동향:**")
+                    for trend, description in trends.items():
+                        market_info.append(f"- {trend}: {description}")
+
+            # 거래량 분석 추출
+            if "volume_analysis" in technical_analysis_data:
+                volume_analysis = technical_analysis_data["volume_analysis"]
+                if isinstance(volume_analysis, dict):
+                    market_info.append(f"**거래량 분석:**")
+                    for key, value in volume_analysis.items():
+                        market_info.append(f"- {key}: {value}")
+
+            if market_info:
+                return "\n".join(market_info)
+            else:
+                return "시장 데이터 없음"
+
+        except Exception as e:
+            logger.error(f"시장 데이터 추출 실패: {e}")
+            return "시장 데이터 추출 오류"
+
+    def _extract_competitor_data_from_manus(self, manus_collected_data: Dict) -> str:
+        """
+        Manus 수집 데이터에서 경쟁사 데이터를 추출하는 메서드
+
+        Args:
+            manus_collected_data: Manus가 수집한 데이터 딕셔너리
+
+        Returns:
+            str: 추출된 경쟁사 데이터 문자열
+        """
+        if not manus_collected_data:
+            return "경쟁사 데이터 없음"
+
+        try:
+            competitor_info = []
+
+            # 경쟁사 정보 추출
+            if "competitor_analysis" in manus_collected_data:
+                competitor_analysis = manus_collected_data["competitor_analysis"]
+                if isinstance(competitor_analysis, dict):
+                    competitor_info.append(f"**경쟁사 분석:**")
+                    for company, data in competitor_analysis.items():
+                        competitor_info.append(f"**{company}:**")
+                        if isinstance(data, dict):
+                            for key, value in data.items():
+                                competitor_info.append(f"- {key}: {value}")
+                        else:
+                            competitor_info.append(f"- {data}")
+
+            # 시장 점유율 정보 추출
+            if "market_share" in manus_collected_data:
+                market_share = manus_collected_data["market_share"]
+                if isinstance(market_share, dict):
+                    competitor_info.append(f"**시장 점유율:**")
+                    for company, share in market_share.items():
+                        competitor_info.append(f"- {company}: {share}")
+
+            # 경쟁 구도 분석 추출
+            if "competitive_landscape" in manus_collected_data:
+                landscape = manus_collected_data["competitive_landscape"]
+                if isinstance(landscape, dict):
+                    competitor_info.append(f"**경쟁 구도:**")
+                    for aspect, description in landscape.items():
+                        competitor_info.append(f"- {aspect}: {description}")
+
+            # 경쟁사 재무 비교 추출
+            if "competitor_financials" in manus_collected_data:
+                financials = manus_collected_data["competitor_financials"]
+                if isinstance(financials, dict):
+                    competitor_info.append(f"**경쟁사 재무 비교:**")
+                    for company, financial_data in financials.items():
+                        competitor_info.append(f"**{company} 재무:**")
+                        if isinstance(financial_data, dict):
+                            for metric, value in financial_data.items():
+                                competitor_info.append(f"- {metric}: {value}")
+                        else:
+                            competitor_info.append(f"- {financial_data}")
+
+            if competitor_info:
+                return "\n".join(competitor_info)
+            else:
+                return "경쟁사 데이터 없음"
+
+        except Exception as e:
+            logger.error(f"경쟁사 데이터 추출 실패: {e}")
+            return "경쟁사 데이터 추출 오류"
+
+    def _extract_web_search_data_from_manus(self, manus_collected_data: Dict) -> str:
+        """
+        Manus 수집 데이터에서 웹 검색 데이터를 추출하는 메서드
+
+        Args:
+            manus_collected_data: Manus가 수집한 데이터 딕셔너리
+
+        Returns:
+            str: 추출된 웹 검색 데이터 문자열
+        """
+        if not manus_collected_data:
+            return ""
+
+        try:
+            web_search_info = []
+
+            # 뉴스 기사 정보 추출
+            if "news_articles" in manus_collected_data:
+                news_articles = manus_collected_data["news_articles"]
+                if isinstance(news_articles, list) and news_articles:
+                    web_search_info.append(f"**최신 뉴스 기사:**")
+                    for i, article in enumerate(news_articles[:5], 1):  # 최대 5개 기사
+                        if isinstance(article, dict):
+                            title = article.get("title", "제목 없음")
+                            summary = article.get("summary", "요약 없음")
+                            date = article.get("date", "날짜 없음")
+                            web_search_info.append(f"{i}. **{title}** ({date})")
+                            web_search_info.append(f"   {summary}")
+                        else:
+                            web_search_info.append(f"{i}. {article}")
+
+            # 분석가 리포트 정보 추출
+            if "analyst_reports" in manus_collected_data:
+                analyst_reports = manus_collected_data["analyst_reports"]
+                if isinstance(analyst_reports, list) and analyst_reports:
+                    web_search_info.append(f"**분석가 리포트:**")
+                    for i, report in enumerate(
+                        analyst_reports[:3], 1
+                    ):  # 최대 3개 리포트
+                        if isinstance(report, dict):
+                            title = report.get("title", "제목 없음")
+                            rating = report.get("rating", "평가 없음")
+                            target_price = report.get("target_price", "목표가 없음")
+                            web_search_info.append(
+                                f"{i}. **{title}** - {rating} (목표가: {target_price})"
+                            )
+                        else:
+                            web_search_info.append(f"{i}. {report}")
+
+            # 산업 동향 정보 추출
+            if "industry_trends" in manus_collected_data:
+                industry_trends = manus_collected_data["industry_trends"]
+                if isinstance(industry_trends, dict):
+                    web_search_info.append(f"**산업 동향:**")
+                    for trend, description in industry_trends.items():
+                        web_search_info.append(f"- {trend}: {description}")
+
+            # 시장 동향 정보 추출
+            if "market_sentiment" in manus_collected_data:
+                market_sentiment = manus_collected_data["market_sentiment"]
+                if isinstance(market_sentiment, dict):
+                    web_search_info.append(f"**시장 심리:**")
+                    for aspect, sentiment in market_sentiment.items():
+                        web_search_info.append(f"- {aspect}: {sentiment}")
+
+            # 글로벌 시장 정보 추출
+            if "global_market_data" in manus_collected_data:
+                global_data = manus_collected_data["global_market_data"]
+                if isinstance(global_data, dict):
+                    web_search_info.append(f"**글로벌 시장:**")
+                    for market, data in global_data.items():
+                        web_search_info.append(f"- {market}: {data}")
+
+            if web_search_info:
+                return "\n".join(web_search_info)
+            else:
+                return ""
+
+        except Exception as e:
+            logger.error(f"웹 검색 데이터 추출 실패: {e}")
+            return ""
