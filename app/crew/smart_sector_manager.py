@@ -1558,39 +1558,70 @@ class SmartSectorManager:
             if business_report_dict or quarterly_report_dict:
                 # 전문가별 키워드 매핑
                 expert_keywords = {
-                    # "fundamental_analyst": [  # 🚫 비활성화 (통합 재무분석가로 대체)
-                    #     "재무",
-                    #     "손익",
-                    #     "매출",
-                    #     "순이익",
-                    #     "자산",
-                    #     "부채",
-                    #     "자본",
-                    #     "현금흐름",
-                    #     "수익성",
-                    #     "안정성",
-                    # ],
-                    # "industry_analyst": [  # 🚫 비활성화 (개발 시간 절약)
-                    #     "사업",
-                    #     "업종",
-                    #     "시장",
-                    #     "경쟁",
-                    #     "산업",
-                    #     "업계",
-                    #     "매출구성",
-                    #     "사업현황",
-                    #     "영업현황",
-                    # ],
-                    # "valuation_expert": [  # 🚫 비활성화 (통합 재무분석가로 대체)
-                    #     "가치",
-                    #     "평가",
-                    #     "적정가",
-                    #     "목표가",
-                    #     "DCF",
-                    #     "밸류에이션",
-                    #     "투자",
-                    #     "배당",
-                    # ],
+                    "integrated_financial_analyst": [
+                        # 펀더멘털 관련
+                        "재무",
+                        "손익",
+                        "매출",
+                        "순이익",
+                        "자산",
+                        "부채",
+                        "자본",
+                        "현금흐름",
+                        "수익성",
+                        "안정성",
+                        "회사개요",
+                        "사업내용",
+                        "재무제표",
+                        "손익계산서",
+                        "재무상태표",
+                        "현금흐름표",
+                        "ROE",
+                        "ROA",
+                        "ROIC",
+                        "유동비율",
+                        "부채비율",
+                        # 밸류에이션 관련
+                        "가치",
+                        "평가",
+                        "적정가",
+                        "목표가",
+                        "DCF",
+                        "밸류에이션",
+                        "투자",
+                        "배당",
+                        "내재가치",
+                        "멀티플",
+                        "PER",
+                        "PBR",
+                        "EV/EBITDA",
+                        "WACC",
+                        "FCF",
+                        "할인율",
+                        "성장률",
+                        # 통합 분석 관련
+                        "종합",
+                        "통합",
+                        "분석",
+                        "투자의견",
+                        "매수",
+                        "매도",
+                        "보유",
+                        "시나리오",
+                        "리스크",
+                        "성장성",
+                        "안정성",
+                        "수익성",
+                        # 회사개요/사업내용 관련 (하이브리드 방식 추가)
+                        "사업",
+                        "개요",
+                        "기업",
+                        "회사",
+                        "업종",
+                        "산업",
+                        "시장",
+                        "경쟁",
+                    ],
                     "technical_analyst": [
                         "기술적",
                         "차트",
@@ -1598,48 +1629,37 @@ class SmartSectorManager:
                         "추세",
                         "거래량",
                         "변동성",
+                        "이동평균",
+                        "RSI",
+                        "MACD",
+                        "볼린저밴드",
+                        "스토캐스틱",
                     ],
-                    # "risk_assessor": [  # 🚫 비활성화 (개발 시간 절약)
-                    #     "위험",
-                    #     "리스크",
-                    #     "부채",
-                    #     "유동성",
-                    #     "신용",
-                    #     "경영진",
-                    #     "지배구조",
-                    # ],
                 }
 
                 # 전문가 타입 결정 (더 정확한 매칭)
-                expert_type = "technical_analyst"  # 기본값 (기술적 분석가로 변경)
-                # if any(
-                #     keyword in expert.name.lower() or keyword in expert.role.lower()
-                #     for keyword in ["fundamental", "재무", "펀더멘털"]
-                # ):
-                #     expert_type = "fundamental_analyst"  # 🚫 비활성화 (통합 재무분석가로 대체)
-                # elif any(
-                #     keyword in expert.name.lower() or keyword in expert.role.lower()
-                #     for keyword in ["industry", "산업", "업계"]
-                # ):
-                #     expert_type = "industry_analyst"  # 🚫 비활성화 (개발 시간 절약)
-                # elif any(
-                #     keyword in expert.name.lower() or keyword in expert.role.lower()
-                #     for keyword in ["valuation", "밸류에이션", "가치"]
-                # ):
-                #     expert_type = "valuation_expert"  # 🚫 비활성화 (통합 재무분석가로 대체)
-                # elif any(
-                #     keyword in expert.name.lower() or keyword in expert.role.lower()
-                #     for keyword in ["risk", "리스크", "위험"]
-                # ):
-                #     expert_type = "risk_assessor"  # 🚫 비활성화 (개발 시간 절약)
+                expert_type = "technical_analyst"  # 기본값
+
+                # 통합 재무분석가 매칭 (펀더멘털 + 밸류에이션 통합)
                 if any(
+                    keyword in expert.name.lower() or keyword in expert.role.lower()
+                    for keyword in [
+                        "통합",
+                        "재무",
+                        "펀더멘털",
+                        "fundamental",
+                        "integrated",
+                    ]
+                ):
+                    expert_type = "integrated_financial_analyst"
+                elif any(
                     keyword in expert.name.lower() or keyword in expert.role.lower()
                     for keyword in ["technical", "기술적"]
                 ):
                     expert_type = "technical_analyst"
 
                 keywords = expert_keywords.get(
-                    expert_type, expert_keywords["technical_analyst"]
+                    expert_type, expert_keywords["integrated_financial_analyst"]
                 )
 
                 # 🎯 사업보고서에서 관련 섹션 찾기
@@ -1657,6 +1677,14 @@ class SmartSectorManager:
                         for keyword in keywords:
                             if keyword in content_sample:
                                 score += 1
+
+                        # 🚀 하이브리드 방식: 회사개요/사업내용 섹션에 추가 가중치 부여
+                        if "회사개요" in section_title or "사업내용" in section_title:
+                            score += 5  # 추가 가중치 5점 부여
+                            logger.info(
+                                f"📋 {expert.name}: 회사개요/사업내용 섹션 추가 가중치 적용 - {section_title}"
+                            )
+
                         if score >= 2:
                             business_sections.append((section_title, content, score))
 
@@ -1678,6 +1706,14 @@ class SmartSectorManager:
                         for keyword in keywords:
                             if keyword in content_sample:
                                 score += 1
+
+                        # 🚀 하이브리드 방식: 회사개요/사업내용 섹션에 추가 가중치 부여
+                        if "회사개요" in section_title or "사업내용" in section_title:
+                            score += 5  # 추가 가중치 5점 부여
+                            logger.info(
+                                f"📋 {expert.name}: 회사개요/사업내용 섹션 추가 가중치 적용 - {section_title}"
+                            )
+
                         if score >= 2:
                             quarterly_sections.append((section_title, content, score))
 
@@ -1747,7 +1783,11 @@ class SmartSectorManager:
             logger.info("📋 DART 보고서 딕셔너리가 제공되지 않았습니다")
 
         # 전문가별 추가 데이터 선별 (기존 로직 유지)
-        if "재무" in expert.expertise or "Fundamental" in expert.role:
+        if (
+            "재무" in expert.expertise
+            or "Fundamental" in expert.role
+            or "통합" in expert.name
+        ):
             # 재무 분석 전문가 - 🎯 시니어 애널리스트 수준 지침 추가
             if financial_data and financial_data.get("success"):
                 financial_summary = self._summarize_financial_data(financial_data)
@@ -2055,7 +2095,31 @@ class SmartSectorManager:
 
             context_parts.append("")
 
-        elif "밸류에이션" in expert.expertise or "Valuation" in expert.role:
+        # 통합 재무분석가에 밸류에이션 로직 추가 (독립적인 조건)
+        if "통합" in expert.name:
+            # 밸류에이션 데이터 추출
+            if financial_data and financial_data.get("success"):
+                try:
+                    valuation_data = self._extract_valuation_data(financial_data)
+                    if valuation_data and isinstance(valuation_data, str):
+                        context_parts.append("💰 밸류에이션 데이터:")
+                        context_parts.append(valuation_data)
+                except Exception as e:
+                    logger.warning(f"⚠️ 밸류에이션 데이터 추출 실패: {e}")
+                    pass
+
+            # 밸류에이션 분석 지침 추가
+            context_parts.append("\n💰 밸류에이션 분석 지침:")
+            context_parts.append("- 재무데이터를 활용한 DCF 분석 (현금흐름 할인)")
+            context_parts.append("- 재무비율을 통한 멀티플 분석 (PER, PBR, EV/EBITDA)")
+            context_parts.append("- 민감도 분석 (WACC, 성장률 변동 시 영향도)")
+            context_parts.append("- DART 데이터를 활용한 현금흐름 분석")
+            context_parts.append("- 웹검색 데이터를 활용한 시장 동향 및 멀티플 비교")
+            context_parts.append("")
+
+        elif (
+            "밸류에이션" in expert.expertise or "Valuation" in expert.role
+        ) and "통합" not in expert.name:
             # 밸류에이션 전문가 - 🎯 시니어 애널리스트 수준 지침 추가
             if financial_data and financial_data.get("success"):
                 # 🔧 안전한 재무 데이터 처리
@@ -2190,7 +2254,7 @@ class SmartSectorManager:
 
             if available_sources:
                 context_parts.append(
-                    f"**📊 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
+                    f"**�� 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
                 )
             else:
                 context_parts.append("**⚠️ 사용 가능한 데이터 소스 없음**")

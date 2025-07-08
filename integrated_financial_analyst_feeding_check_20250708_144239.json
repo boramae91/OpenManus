@@ -1,0 +1,19 @@
+{
+  "test_timestamp": "2025-07-08T14:42:39.647738",
+  "issue_found": true,
+  "problem_description": "통합 재무분석가가 DART 딕셔너리를 제대로 피딩하지 못함",
+  "current_status": {
+    "integrated_financial_analyst": "활성화됨 (섹터팀에서)",
+    "dart_feeding": "비활성화됨 (키워드 매핑 없음)",
+    "keywords_mapping": "기술적 분석가만 활성화"
+  },
+  "proposed_solution": {
+    "add_integrated_financial_keywords": true,
+    "enable_matching_logic": true,
+    "restore_fundamental_valuation_keywords": true
+  },
+  "mock_test_results": {
+    "matched_sections": 6,
+    "test_successful": true
+  }
+}

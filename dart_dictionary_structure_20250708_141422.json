@@ -1,0 +1,31 @@
+{
+  "success": true,
+  "business_report_sections": [
+    "01_회사개요_및_사업내용",
+    "페이지분할_01_section",
+    "페이지분할_17_section",
+    "페이지분할_21_section",
+    "페이지분할_29_section",
+    "페이지분할_32_section",
+    "페이지분할_34_section",
+    "페이지분할_38_section",
+    "페이지분할_40_section",
+    "페이지분할_41_section",
+    "페이지분할_43_section",
+    "페이지분할_45_section",
+    "페이지분할_49_section"
+  ],
+  "quarterly_report_sections": [
+    "02_기타섹션",
+    "03_기타섹션"
+  ],
+  "business_report_sample": {
+    "01_회사개요_및_사업내용": "[97844자 텍스트]",
+    "페이지분할_01_section": "[2536자 텍스트]",
+    "페이지분할_17_section": "[27336자 텍스트]"
+  },
+  "quarterly_report_sample": {
+    "02_기타섹션": "[3256자 텍스트]",
+    "03_기타섹션": "[35359자 텍스트]"
+  }
+}
