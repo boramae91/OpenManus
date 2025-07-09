@@ -841,16 +841,37 @@ class SmartSectorManager:
                             else 0
                         )
 
+                    # 🎯 실제 사용된 데이터 출처 추적 및 추가
+                    used_data_sources = self._identify_used_data_sources(
+                        financial_data=financial_data,
+                        enhanced_dart_data=enhanced_dart_data,
+                        manus_collected_data=manus_collected_data,
+                        technical_analysis_data=None,
+                        dart_reports_dictionary=None,
+                    )
+
+                    # 데이터 출처를 분석 결과에 동적으로 추가
+                    data_source_info = f"""
+
+📊 **실제 사용된 데이터 출처**:
+{', '.join(used_data_sources) if used_data_sources else '데이터 출처 정보 없음'}
+
+"""
+
+                    # 분석 결과에 데이터 출처 정보 추가
+                    enhanced_analysis_result = analysis_text + data_source_info
+
                     return {
                         "expert_name": expert.name,
                         "expert_role": expert.role,
                         "expertise": expert.expertise,
-                        "analysis_result": analysis_text,
+                        "analysis_result": enhanced_analysis_result,
                         "analysis_timestamp": datetime.now().isoformat(),
                         "attempt_number": attempt + 1,
                         "success": True,
                         "web_search_performed": web_search_performed,
                         "web_search_count": web_search_count,
+                        "data_sources_used": used_data_sources,  # 실제 사용된 데이터 출처 추가
                     }
 
                 except Exception as llm_error:
@@ -1341,16 +1362,36 @@ class SmartSectorManager:
             # LLM을 통한 종합 분석 수행
             synthesis_result = await self._call_llm_for_analysis(synthesis_prompt)
 
+            # 🎯 종합 분석에서 실제 사용된 데이터 출처 추적
+            all_used_sources = set()
+            for result in expert_results:
+                sources = result.get("data_sources_used", [])
+                all_used_sources.update(sources)
+
+            # 데이터 출처 정보를 종합 결과에 동적으로 추가
+            data_source_summary = f"""
+
+📊 **종합 분석에서 실제 사용된 데이터 출처**:
+{', '.join(all_used_sources) if all_used_sources else '데이터 출처 정보 없음'}
+
+"""
+
+            # 종합 결과에 데이터 출처 정보 추가
+            enhanced_synthesis_result = synthesis_result + data_source_summary
+
             return {
                 "synthesis_success": True,
                 "expert_count": len(expert_results),
                 "successful_count": len(successful_analyses),
                 "failed_count": len(expert_results) - len(successful_analyses),
-                "synthesis_content": synthesis_result,
+                "synthesis_content": enhanced_synthesis_result,
                 "synthesis_timestamp": time.time(),
                 "data_sources_integrated": self._count_unique_data_sources(
                     expert_results
                 ),
+                "all_data_sources_used": list(
+                    all_used_sources
+                ),  # 전체 사용된 데이터 출처 추가
             }
 
         except Exception as e:
@@ -2132,7 +2173,7 @@ class SmartSectorManager:
 
             if available_sources:
                 context_parts.append(
-                    f"**📊 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
+                    f"**�� 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
                 )
             else:
                 context_parts.append("**⚠️ 사용 가능한 데이터 소스 없음**")
@@ -2226,7 +2267,9 @@ class SmartSectorManager:
                 context_parts.append(
                     "- DART 보고서 딕셔너리에서 상세 현금흐름 정보 활용"
                 )
-            context_parts.append("- 웹검색 데이터에서 시장 동향 및 분석가 의견 참고")
+                context_parts.append(
+                    "- 웹검색 데이터에서 시장 동향 및 분석가 의견 참고"
+                )
 
             context_parts.append("")
 
@@ -2234,14 +2277,10 @@ class SmartSectorManager:
             context_parts.append("**💰 실제 데이터 기반 밸류에이션 분석 방법론**:")
             if financial_data and financial_data.get("success"):
                 context_parts.append("- 재무데이터를 활용한 DCF 분석 (현금흐름 할인)")
-                context_parts.append(
-                    "- 재무비율을 통한 멀티플 분석 (PER, PBR, EV/EBITDA)"
-                )
-                context_parts.append("- 민감도 분석 (WACC, 성장률 변동 시 영향도)")
-                context_parts.append("- DART 데이터를 활용한 현금흐름 분석")
-                context_parts.append(
-                    "- 웹검색 데이터를 활용한 시장 동향 및 멀티플 비교"
-                )
+            context_parts.append("- 재무비율을 통한 멀티플 분석 (PER, PBR, EV/EBITDA)")
+            context_parts.append("- 민감도 분석 (WACC, 성장률 변동 시 영향도)")
+            context_parts.append("- DART 데이터를 활용한 현금흐름 분석")
+            context_parts.append("- 웹검색 데이터를 활용한 시장 동향 및 멀티플 비교")
 
             context_parts.append("")
             context_parts.append("**⚠️ 밸류에이션 분석 주의사항**:")
@@ -2344,7 +2383,7 @@ class SmartSectorManager:
 
             if available_sources:
                 context_parts.append(
-                    f"**📊 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
+                    f"**�� 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
                 )
             else:
                 context_parts.append("**⚠️ 사용 가능한 데이터 소스 없음**")
@@ -2440,7 +2479,9 @@ class SmartSectorManager:
 - **[업계평균]**: 웹검색으로 확인한 동종업계 평균값
 - **[재무데이터 기반 계산]**: 재무제표 데이터를 사용한 직접 계산 (WACC, ROIC 등)
 
-**예시**: "ROE [실제 ROE]% **[실제 데이터 출처]**, 업계 평균 [실제 업계 평균]% **[실제 데이터 출처]**"
+**예시**: "ROE [실제 ROE]% **[실제 사용된 데이터 출처만 표기]**, 업계 평균 [실제 업계 평균]% **[실제 사용된 데이터 출처만 표기]**"
+
+**⚠️ 중요**: 실제로 사용한 데이터 출처만 표기하세요. 사용하지 않은 데이터는 출처를 표기하지 마세요.
 
 🎯 **WACC 직접 계산 필수**: 재무데이터와 사업보고서 우선 활용하세요:
 
