@@ -2251,7 +2251,7 @@ class SmartSectorManager:
 
             if available_sources:
                 context_parts.append(
-                    f"**�� 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
+                    f"** 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
                 )
             else:
                 context_parts.append("**⚠️ 사용 가능한 데이터 소스 없음**")
@@ -2461,7 +2461,7 @@ class SmartSectorManager:
 
             if available_sources:
                 context_parts.append(
-                    f"**�� 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
+                    f"** 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
                 )
             else:
                 context_parts.append("**⚠️ 사용 가능한 데이터 소스 없음**")
