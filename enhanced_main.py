@@ -2792,14 +2792,15 @@ class EnhancedStockAnalysisSystem:
         """
         CoT/5Why/통합 분석 결과를 바탕으로 시니어 애널리스트 스타일의 최종 투자 리포트를 생성합니다.
         """
-        # 통합 분석 결과를 문자열로 합침
-        integration_result = json.dumps(results, ensure_ascii=False, indent=2)
+        # 핵심 분석 결과만 추출하여 토큰 제한 문제 해결
+        key_analysis_data = self._extract_key_analysis_for_senior_report(results)
+
         senior_report_prompt = f"""
 당신은 20년 경력의 시니어 애널리스트입니다.
-아래의 통합 분석 결과를 바탕으로 실제 투자 은행이나 증권사에서 사용하는 전문적인 기업 분석 보고서를 작성해주세요.
+아래의 핵심 분석 결과를 바탕으로 실제 투자 은행이나 증권사에서 사용하는 전문적인 기업 분석 보고서를 작성해주세요.
 
-**통합 분석 결과:**
-{integration_result}
+**핵심 분석 결과:**
+{key_analysis_data}
 
 **전문 보고서 작성 요청:**
 1. **EXECUTIVE SUMMARY**: 투자 의견, 목표가, 핵심 논리, 주요 리스크를 한눈에 파악할 수 있도록 작성
@@ -2821,6 +2822,65 @@ class EnhancedStockAnalysisSystem:
 """
         # 실제 LLM 호출 (self.llm.ask 사용)
         return await self.llm.ask([{"role": "user", "content": senior_report_prompt}])
+
+    def _extract_key_analysis_for_senior_report(self, results: Dict[str, Any]) -> str:
+        """
+        시니어 리포트 생성을 위해 핵심 분석 데이터만 추출합니다.
+        토큰 제한 문제를 해결하기 위해 전체 결과 대신 핵심 정보만 사용합니다.
+        """
+        key_data = {}
+
+        # 1. 종목 정보
+        stock_info = results.get("steps", {}).get("step1_stock_detection", {})
+        if stock_info.get("detected"):
+            key_data["stock_info"] = {
+                "name": stock_info.get("stock_name"),
+                "code": stock_info.get("stock_code"),
+                "sector": stock_info.get("gics_sector"),
+            }
+
+        # 2. 재무 데이터 핵심 지표
+        financial_data = results.get("steps", {}).get("step2_financial_data", {})
+        if financial_data.get("success"):
+            key_metrics = financial_data.get("key_metrics", {})
+            key_data["financial_metrics"] = {
+                "current_price": key_metrics.get("current_price"),
+                "market_cap": key_metrics.get("market_cap"),
+                "pe_ratio": key_metrics.get("pe_ratio"),
+                "pb_ratio": key_metrics.get("pb_ratio"),
+                "roe": key_metrics.get("roe"),
+                "debt_to_equity": key_metrics.get("debt_to_equity"),
+            }
+
+        # 3. CrewAI 분석 결과
+        crewai_analysis = results.get("steps", {}).get(
+            "step4_crewai_comprehensive_analysis", {}
+        )
+        if crewai_analysis.get("success"):
+            synthesis_result = crewai_analysis.get("synthesis_result", {})
+            key_data["crewai_analysis"] = {
+                "investment_opinion": synthesis_result.get("investment_opinion"),
+                "target_price": synthesis_result.get("target_price"),
+                "key_insights": synthesis_result.get("key_insights", [])[
+                    :5
+                ],  # 상위 5개만
+                "risk_factors": synthesis_result.get("risk_factors", [])[
+                    :3
+                ],  # 상위 3개만
+            }
+
+        # 4. 최종 요약
+        final_summary = results.get("final_summary", {})
+        if final_summary:
+            key_data["final_summary"] = {
+                "overall_analysis_depth": final_summary.get("key_insights", {}).get(
+                    "overall_analysis_depth"
+                ),
+                "data_completeness": final_summary.get("data_completeness", 0),
+            }
+
+        # JSON으로 변환하되 간결하게
+        return json.dumps(key_data, ensure_ascii=False, indent=1)
 
 
 async def main():
