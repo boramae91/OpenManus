@@ -6,10 +6,12 @@
 기존 55개 에이전트 대신 5개 에이전트만 선택적으로 활성화해요.
 """
 
+import asyncio
 import hashlib
 import json
 import time
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -86,6 +88,26 @@ class SmartSectorManager:
     90% 비용 절감을 달성하는 혁신적인 시스템이에요!
     """
 
+    # 📊 공통 메시지 상수 정의 (중복 제거를 위한 리팩토링)
+    MESSAGES = {
+        "NO_DATA": "알 수 없음",
+        "NO_TECHNICAL_DATA": "기술적 분석 데이터가 제공되지 않았습니다.",
+        "TECHNICAL_INDICATORS_HEADER": "📊 **실제 계산된 기술적 지표 (최신 값)**:",
+        "CURRENT_PRICE_FORMAT": "**현재 주가**: {price:,.0f}원 ({date})",
+        "CURRENT_VOLUME_FORMAT": "**현재 거래량**: {volume:,}주",
+        "MOVING_AVERAGES_HEADER": "**📈 이동평균선**:",
+        "RSI_HEADER": "**📊 RSI (상대강도지수)**:",
+        "MACD_HEADER": "**📈 MACD**:",
+        "BOLLINGER_BANDS_HEADER": "**📊 볼린저 밴드**:",
+        "STOCHASTIC_HEADER": "**📊 스토캐스틱**:",
+        "WILLIAMS_R_HEADER": "**📊 윌리엄스 %R**:",
+        "OBV_HEADER": "**📊 OBV (On-Balance Volume)**:",
+        "TRADING_SIGNALS_HEADER": "**📊 종합 매매 신호**:",
+        "LAST_UPDATE_FORMAT": "**마지막 업데이트**: {date}",
+        "CALCULATION_ERROR": "계산 불가",
+        "DATA_PROCESSING_ERROR": "데이터 처리 중 오류",
+    }
+
     def __init__(self, llm):
         """
         Smart Sector Manager 초기화
@@ -120,6 +142,7 @@ class SmartSectorManager:
         stock_code: str,
         financial_data: Dict[str, Any],
         analysis_depth: AnalysisDepth = AnalysisDepth.STANDARD,
+        pre_detected_gics_sector: str = None,
     ) -> Dict[str, Any]:
         """
         최적화된 섹터 팀으로 분석 수행
@@ -499,7 +522,15 @@ class SmartSectorManager:
 
                 # 🔧 안전한 컨텍스트 생성 (데이터 보강 포함)
                 context = await self._create_expert_specific_context(
-                    expert, financial_data, enhanced_dart_data, manus_collected_data
+                    expert=expert,
+                    user_prompt="",  # 기본값 추가
+                    stock_name="",  # 기본값 추가
+                    stock_code="",  # 기본값 추가
+                    financial_data=financial_data,
+                    enhanced_dart_data=enhanced_dart_data,
+                    manus_collected_data=manus_collected_data,
+                    technical_analysis_data=None,  # 기본값 추가
+                    dart_reports_dictionary=None,  # 기본값 추가
                 )
 
                 # 🌐 웹검색 강제 실행 (Chat GPT 피드백 해결)
@@ -632,17 +663,17 @@ class SmartSectorManager:
 ## 📊 **STEP 1: 동종업계 비교 분석** (필수)
 - **경쟁사 3개 기업** ROE, PER, EBITDA 마진, 매출성장률 비교 테이블 작성
 - **상대적 순위** 제시: "업계 3위/7개사" 형태로 명시
-- **격차 분석**: "경쟁사 대비 ROE 2.3%p 낮음" 등 구체적 수치
+- **격차 분석**: "경쟁사 대비 ROE [실제 격차]%p 낮음" 등 구체적 수치
 
 ## 📊 **STEP 2: 3년 시계열 트렌드 분석** (필수)
-- **ROE 추이**: "2021년 15.2% → 2022년 12.8% → 2023년 9.1%" 정확한 연도별 수치
+- **ROE 추이**: "[실제 연도별 ROE 추이]" 정확한 연도별 수치
 - **매출성장률 추이**: 3년간 변화와 **구체적 원인** (반도체 사이클, 환율 등)
 - **트렌드 방향성**: 개선/악화 여부를 수치로 입증
 
 ## 📊 **STEP 3: WACC vs ROIC 정량 분석** (필수)
 - **WACC 직접 계산**: 자기자본비용 + 타인자본비용 (가중평균)
 - **ROIC 계산**: NOPAT ÷ Invested Capital
-- **Value Creation**: ROIC - WACC = +/- X.X% (가치창출/파괴 명확히 판단)
+- **Value Creation**: ROIC - WACC = +/- [실제 계산값]% (가치창출/파괴 명확히 판단)
 
 ## 📊 **STEP 4: FCF 정확한 정의 및 분석** (필수)
 - **FCF 정의**: 영업활동현금흐름 - 자본적지출 (재무활동현금흐름 아님!)
@@ -712,7 +743,7 @@ class SmartSectorManager:
 **분석 요구사항**:
 - 시장 트렌드와 산업 동향을 바탕으로 한 미래 수치 예측
 - 구체적 리스크 요인의 발생 확률과 영향도 정량화
-- Bull/Base/Bear 시나리오별 재무지표 변화 예측
+- Bull/Base/Bear 시나리오별 재무지표 변화 예측 (각 시나리오별 발생 확률과 영향도 정량화)
 - 불확실성을 고려한 확률적 전망 제시
 
 
@@ -720,20 +751,37 @@ class SmartSectorManager:
 ## 🎯 **Executive Summary** (최종 결론):
 
 ### 📈 **투자 스코어카드** (5점 만점):
-- 수익성: X.X/5.0점 (ROE, ROIC 기준)
-- 성장성: X.X/5.0점 (매출/이익 성장률 기준)
-- 안전성: X.X/5.0점 (부채비율, FCF 기준)
-- 밸류에이션: X.X/5.0점 (PER, PBR 기준)
-- **종합점수**: X.X/5.0점
+- 수익성: [분석 기반 점수]/5.0점 (ROE, ROIC 기준)
+- 성장성: [분석 기반 점수]/5.0점 (매출/이익 성장률 기준)
+- 안전성: [분석 기반 점수]/5.0점 (부채비율, FCF 기준)
+- 밸류에이션: [분석 기반 점수]/5.0점 (PER, PBR 기준)
+- **종합점수**: [분석 기반 종합점수]/5.0점
+
+**📊 점수 산정 기준**:
+- **5.0점**: 업계 최고 수준, 절대적 우위
+- **4.0-4.9점**: 우수한 수준, 경쟁우위 확보
+- **3.0-3.9점**: 평균 수준, 안정적 운영
+- **2.0-2.9점**: 평균 이하, 개선 필요
+- **1.0-1.9점**: 부족한 수준, 구조적 문제
 
 ### 💡 **투자 실행 전략**:
 - **BUY/HOLD/SELL**: 명확한 투자 의견 + 목표주가
-- **매수 시점**: "지금 즉시" / "X% 하락 시" / "실적 개선 확인 후"
+- **매수 시점**: "지금 즉시" / "[분석 기반 하락률]% 하락 시" / "실적 개선 확인 후"
 - **투자 기간**: 단기(3개월) / 중기(1년) / 장기(3년)
 
 ### ⚠️ **핵심 리스크 2가지**:
-1. **[구체적 리스크명]**: 발생 확률 X%, 예상 주가 영향 -X%
-2. **[구체적 리스크명]**: 발생 확률 X%, 예상 주가 영향 -X%
+1. **[구체적 리스크명]**: 발생 확률 [분석 기반 확률]%, 예상 주가 영향 [분석 기반 영향도]%
+2. **[구체적 리스크명]**: 발생 확률 [분석 기반 확률]%, 예상 주가 영향 [분석 기반 영향도]%
+
+**📊 리스크 확률 계산 기준**:
+- **높은 확률 (60-80%)**: 현재 진행 중이거나 단기 내 발생 가능한 리스크
+- **중간 확률 (30-60%)**: 중기 내 발생 가능하나 불확실성이 있는 리스크
+- **낮은 확률 (10-30%)**: 장기적이거나 발생 가능성이 낮은 리스크
+
+**📈 주가 영향도 계산 기준**:
+- **높은 영향 (-30% 이상)**: 사업 모델 전면 재검토가 필요한 구조적 리스크
+- **중간 영향 (-10~30%)**: 실적에 직접적 영향을 주는 운영 리스크
+- **낮은 영향 (-10% 미만)**: 단기적 변동성이나 마이너한 리스크
 
 ## 🚫 **품질 기준** (다음 표현 사용 시 분석 실패):
 - "긍정적", "양호한", "안정적", "경쟁력 있는" 등 모호한 표현 금지
@@ -1252,9 +1300,15 @@ class SmartSectorManager:
 - **장기 전략 (1-3년)**: 구조적 경쟁력 + ESG + 기술 혁신 주기
 
 ### 3. **시나리오별 대응 전략** (Chat GPT 피드백 핵심)
-- **Bull Case (30% 확률)**: 최적 시나리오에서의 목표가와 대응 전략
-- **Base Case (40% 확률)**: 기본 시나리오에서의 투자 접근법
-- **Bear Case (30% 확률)**: 악재 시나리오에서의 리스크 관리 방안
+- **Bull Case ([분석 기반 확률]% 확률)**: 최적 시나리오에서의 목표가와 대응 전략
+- **Base Case ([분석 기반 확률]% 확률)**: 기본 시나리오에서의 투자 접근법
+- **Bear Case ([분석 기반 확률]% 확률)**: 악재 시나리오에서의 리스크 관리 방안
+
+**📊 시나리오 확률 계산 기준**:
+- **Bull Case**: 긍정적 요인들의 강도와 발생 가능성을 종합하여 확률 산정
+- **Base Case**: 현재 추세가 지속될 가능성을 기반으로 확률 산정
+- **Bear Case**: 부정적 요인들의 위험도와 발생 가능성을 종합하여 확률 산정
+- **총합 100%**: 세 시나리오 확률의 합이 100%가 되도록 조정
 
 ### 4. **핵심 투자 포인트** (정량 지표 장기 추세 포함)
 - **정량적 우위**: 경쟁사 대비 ROE, ROIC, 마진율 우위와 지속성
@@ -2352,7 +2406,30 @@ class SmartSectorManager:
                 safe_context_parts.append(str(part))
 
                 # 🎯 모든 GICS 섹터별 전문가에게 공통 적용되는 데이터 출처 명시 규칙 추가
-        data_source_guidelines = """
+        data_source_guidelines = self._get_data_source_guidelines()
+        safe_context_parts.append(data_source_guidelines)
+
+        full_context = "\n".join(safe_context_parts)
+
+        # 토큰 수 계산 및 로깅
+        estimated_tokens = self._estimate_tokens(full_context)
+        logger.info(
+            f"🎯 {expert.name} 통합 컨텍스트: {estimated_tokens:,} 토큰 (PDF 딕셔너리 완전 활용 + 출처 명시 규칙)"
+        )
+
+        return full_context
+
+    def _get_data_source_guidelines(self) -> str:
+        """
+        📊 데이터 출처 명시 규칙과 WACC 계산 지침을 반환합니다.
+
+        모든 전문가에게 공통으로 적용되는 데이터 출처 표기 규칙과
+        WACC 계산 세부 지침을 제공합니다.
+
+        Returns:
+            str: 데이터 출처 명시 규칙 문자열
+        """
+        return """
 
 📊 **데이터 출처 명시 규칙** (모든 수치에 필수 적용):
 모든 수치 뒤에 반드시 출처를 표기해주세요:
@@ -2363,7 +2440,7 @@ class SmartSectorManager:
 - **[업계평균]**: 웹검색으로 확인한 동종업계 평균값
 - **[재무데이터 기반 계산]**: 재무제표 데이터를 사용한 직접 계산 (WACC, ROIC 등)
 
-**예시**: "ROE 12.5% **[재무데이터]**, 업계 평균 10.2% **[웹검색]**"
+**예시**: "ROE [실제 ROE]% **[실제 데이터 출처]**, 업계 평균 [실제 업계 평균]% **[실제 데이터 출처]**"
 
 🎯 **WACC 직접 계산 필수**: 재무데이터와 사업보고서 우선 활용하세요:
 
@@ -2401,18 +2478,6 @@ class SmartSectorManager:
 🚫 **중요**: 출처 표기가 없는 수치는 분석에서 제외됩니다.
 """
 
-        safe_context_parts.append(data_source_guidelines)
-
-        full_context = "\n".join(safe_context_parts)
-
-        # 토큰 수 계산 및 로깅
-        estimated_tokens = self._estimate_tokens(full_context)
-        logger.info(
-            f"🎯 {expert.name} 통합 컨텍스트: {estimated_tokens:,} 토큰 (PDF 딕셔너리 완전 활용 + 출처 명시 규칙)"
-        )
-
-        return full_context
-
     def _format_technical_indicators_for_expert(
         self, technical_analysis_data: Dict
     ) -> str:
@@ -2429,11 +2494,11 @@ class SmartSectorManager:
             str: 전문가용 포맷팅된 기술적 지표 문자열
         """
         if not technical_analysis_data or not technical_analysis_data.get("success"):
-            return "기술적 분석 데이터가 제공되지 않았습니다."
+            return self.MESSAGES["NO_TECHNICAL_DATA"]
 
         try:
             formatted_lines = []
-            formatted_lines.append("📊 **실제 계산된 기술적 지표 (최신 값)**:")
+            formatted_lines.append(self.MESSAGES["TECHNICAL_INDICATORS_HEADER"])
             formatted_lines.append("")
 
             # 현재 주가 정보
@@ -2441,14 +2506,20 @@ class SmartSectorManager:
             if current_snapshot:
                 current_price = current_snapshot.get("price")
                 current_volume = current_snapshot.get("volume")
-                current_date = current_snapshot.get("date", "알 수 없음")
+                current_date = current_snapshot.get("date", self.MESSAGES["NO_DATA"])
 
                 if current_price:
                     formatted_lines.append(
-                        f"**현재 주가**: {current_price:,.0f}원 ({current_date})"
+                        self.MESSAGES["CURRENT_PRICE_FORMAT"].format(
+                            price=current_price, date=current_date
+                        )
                     )
                 if current_volume:
-                    formatted_lines.append(f"**현재 거래량**: {current_volume:,}주")
+                    formatted_lines.append(
+                        self.MESSAGES["CURRENT_VOLUME_FORMAT"].format(
+                            volume=current_volume
+                        )
+                    )
                 formatted_lines.append("")
 
             # 기술적 지표 추출
@@ -2476,49 +2547,59 @@ class SmartSectorManager:
             logger.info(f"🔍 moving_averages 타입: {type(ma_data)}")
 
             if isinstance(ma_data, dict) and ma_data:
-                formatted_lines.append("**📈 이동평균선**:")
+                formatted_lines.append(self.MESSAGES["MOVING_AVERAGES_HEADER"])
                 try:
                     for period, value in ma_data.items():
                         if value is not None:
                             formatted_lines.append(f"  • {period}: {value:,.0f}원")
                         else:
-                            formatted_lines.append(f"  • {period}: 계산 불가")
+                            formatted_lines.append(
+                                f"  • {period}: {self.MESSAGES['CALCULATION_ERROR']}"
+                            )
                 except Exception as ma_error:
                     logger.error(f"❌ 이동평균선 처리 오류: {ma_error}")
-                    formatted_lines.append("  • 이동평균선 데이터 처리 중 오류")
+                    formatted_lines.append(
+                        f"  • 이동평균선 {self.MESSAGES['DATA_PROCESSING_ERROR']}"
+                    )
                 formatted_lines.append("")
 
             # 2. RSI 지표 처리
             rsi_data = indicators.get("rsi", {})
             if isinstance(rsi_data, dict) and rsi_data:
-                formatted_lines.append("**📊 RSI (상대강도지수)**:")
+                formatted_lines.append(self.MESSAGES["RSI_HEADER"])
                 try:
                     current_rsi = rsi_data.get("current_value")
-                    interpretation = rsi_data.get("interpretation", "알 수 없음")
-                    signal = rsi_data.get("signal", "알 수 없음")
+                    interpretation = rsi_data.get(
+                        "interpretation", self.MESSAGES["NO_DATA"]
+                    )
+                    signal = rsi_data.get("signal", self.MESSAGES["NO_DATA"])
 
                     if current_rsi is not None:
                         formatted_lines.append(f"  • 현재 RSI: {current_rsi:.2f}")
                         formatted_lines.append(f"  • 해석: {interpretation}")
                         formatted_lines.append(f"  • 신호: {signal}")
                     else:
-                        formatted_lines.append("  • RSI 계산 불가")
+                        formatted_lines.append(
+                            f"  • RSI {self.MESSAGES['CALCULATION_ERROR']}"
+                        )
                 except Exception as rsi_error:
                     logger.error(f"❌ RSI 처리 오류: {rsi_error}")
-                    formatted_lines.append("  • RSI 데이터 처리 중 오류")
+                    formatted_lines.append(
+                        f"  • RSI {self.MESSAGES['DATA_PROCESSING_ERROR']}"
+                    )
                 formatted_lines.append("")
 
             # 3. MACD 지표 처리
             macd_data = indicators.get("macd", {})
             if isinstance(macd_data, dict) and macd_data:
-                formatted_lines.append("**📈 MACD**:")
+                formatted_lines.append(self.MESSAGES["MACD_HEADER"])
                 try:
                     # MACD_line과 macd_line 모두 지원 (호환성)
                     macd_line = macd_data.get("MACD_line") or macd_data.get("macd_line")
                     signal_line = macd_data.get("signal_line")
                     histogram = macd_data.get("histogram")
                     signal_interpretation = macd_data.get(
-                        "signal_interpretation", "알 수 없음"
+                        "signal_interpretation", self.MESSAGES["NO_DATA"]
                     )
 
                     if macd_line is not None:
@@ -2530,19 +2611,23 @@ class SmartSectorManager:
                     formatted_lines.append(f"  • 신호: {signal_interpretation}")
                 except Exception as macd_error:
                     logger.error(f"❌ MACD 처리 오류: {macd_error}")
-                    formatted_lines.append("  • MACD 데이터 처리 중 오류")
+                    formatted_lines.append(
+                        f"  • MACD {self.MESSAGES['DATA_PROCESSING_ERROR']}"
+                    )
                 formatted_lines.append("")
 
             # 4. 볼린저 밴드 처리
             bb_data = indicators.get("bollinger_bands", {})
             if isinstance(bb_data, dict) and bb_data:
-                formatted_lines.append("**📊 볼린저 밴드**:")
+                formatted_lines.append(self.MESSAGES["BOLLINGER_BANDS_HEADER"])
                 try:
                     upper_band = bb_data.get("upper_band")
                     middle_band = bb_data.get("middle_band")
                     lower_band = bb_data.get("lower_band")
-                    position_analysis = bb_data.get("position_analysis", "알 수 없음")
-                    bb_signal = bb_data.get("signal", "알 수 없음")
+                    position_analysis = bb_data.get(
+                        "position_analysis", self.MESSAGES["NO_DATA"]
+                    )
+                    bb_signal = bb_data.get("signal", self.MESSAGES["NO_DATA"])
 
                     if all(
                         v is not None for v in [upper_band, middle_band, lower_band]
@@ -2556,13 +2641,15 @@ class SmartSectorManager:
                         formatted_lines.append("  • 볼린저 밴드 계산 불가")
                 except Exception as bb_error:
                     logger.error(f"❌ 볼린저 밴드 처리 오류: {bb_error}")
-                    formatted_lines.append("  • 볼린저 밴드 데이터 처리 중 오류")
+                    formatted_lines.append(
+                        f"  • 볼린저 밴드 {self.MESSAGES['DATA_PROCESSING_ERROR']}"
+                    )
                 formatted_lines.append("")
 
             # 5. 스토캐스틱 처리
             stoch_data = indicators.get("stochastic", {})
             if isinstance(stoch_data, dict) and stoch_data:
-                formatted_lines.append("**📈 스토캐스틱**:")
+                formatted_lines.append(self.MESSAGES["STOCHASTIC_HEADER"])
                 try:
                     k_percent = stoch_data.get("K_percent") or stoch_data.get(
                         "k_percent"
@@ -2571,9 +2658,9 @@ class SmartSectorManager:
                         "d_percent"
                     )
                     stoch_interpretation = stoch_data.get(
-                        "interpretation", "알 수 없음"
+                        "interpretation", self.MESSAGES["NO_DATA"]
                     )
-                    stoch_signal = stoch_data.get("signal", "알 수 없음")
+                    stoch_signal = stoch_data.get("signal", self.MESSAGES["NO_DATA"])
 
                     if k_percent is not None:
                         formatted_lines.append(f"  • %K: {k_percent:.2f}")
@@ -2583,27 +2670,35 @@ class SmartSectorManager:
                     formatted_lines.append(f"  • 신호: {stoch_signal}")
                 except Exception as stoch_error:
                     logger.error(f"❌ 스토캐스틱 처리 오류: {stoch_error}")
-                    formatted_lines.append("  • 스토캐스틱 데이터 처리 중 오류")
+                    formatted_lines.append(
+                        f"  • 스토캐스틱 {self.MESSAGES['DATA_PROCESSING_ERROR']}"
+                    )
                 formatted_lines.append("")
 
             # 6. Williams %R 처리
             wr_data = indicators.get("williams_r", {})
             if isinstance(wr_data, dict) and wr_data:
-                formatted_lines.append("**📊 Williams %R**:")
+                formatted_lines.append(self.MESSAGES["WILLIAMS_R_HEADER"])
                 try:
                     wr_value = wr_data.get("current_value")
-                    wr_interpretation = wr_data.get("interpretation", "알 수 없음")
-                    wr_signal = wr_data.get("signal", "알 수 없음")
+                    wr_interpretation = wr_data.get(
+                        "interpretation", self.MESSAGES["NO_DATA"]
+                    )
+                    wr_signal = wr_data.get("signal", self.MESSAGES["NO_DATA"])
 
                     if wr_value is not None:
                         formatted_lines.append(f"  • 현재 값: {wr_value:.2f}")
                         formatted_lines.append(f"  • 해석: {wr_interpretation}")
                         formatted_lines.append(f"  • 신호: {wr_signal}")
                     else:
-                        formatted_lines.append("  • Williams %R 계산 불가")
+                        formatted_lines.append(
+                            f"  • Williams %R {self.MESSAGES['CALCULATION_ERROR']}"
+                        )
                 except Exception as wr_error:
                     logger.error(f"❌ Williams %R 처리 오류: {wr_error}")
-                    formatted_lines.append("  • Williams %R 데이터 처리 중 오류")
+                    formatted_lines.append(
+                        f"  • Williams %R {self.MESSAGES['DATA_PROCESSING_ERROR']}"
+                    )
                 formatted_lines.append("")
 
             # 7. 거래량 지표 처리
@@ -2622,52 +2717,66 @@ class SmartSectorManager:
                         formatted_lines.append(f"  • 거래량 비율: {volume_ratio:.2f}배")
                 except Exception as vol_error:
                     logger.error(f"❌ 거래량 지표 처리 오류: {vol_error}")
-                    formatted_lines.append("  • 거래량 지표 처리 중 오류")
+                    formatted_lines.append(
+                        f"  • 거래량 지표 {self.MESSAGES['DATA_PROCESSING_ERROR']}"
+                    )
                 formatted_lines.append("")
 
             # 8. OBV 지표 처리
             obv_data = indicators.get("obv", {})
             if isinstance(obv_data, dict) and obv_data:
-                formatted_lines.append("**📈 OBV (On Balance Volume)**:")
+                formatted_lines.append(self.MESSAGES["OBV_HEADER"])
                 try:
                     obv_value = obv_data.get("current_value")
-                    obv_trend = obv_data.get("trend", "알 수 없음")
+                    obv_trend = obv_data.get("trend", self.MESSAGES["NO_DATA"])
 
                     if obv_value is not None:
                         formatted_lines.append(f"  • 현재 OBV: {obv_value:,.0f}")
                         formatted_lines.append(f"  • 추세: {obv_trend}")
                     else:
-                        formatted_lines.append("  • OBV 계산 불가")
+                        formatted_lines.append(
+                            f"  • OBV {self.MESSAGES['CALCULATION_ERROR']}"
+                        )
                 except Exception as obv_error:
                     logger.error(f"❌ OBV 처리 오류: {obv_error}")
-                    formatted_lines.append("  • OBV 데이터 처리 중 오류")
+                    formatted_lines.append(
+                        f"  • OBV {self.MESSAGES['DATA_PROCESSING_ERROR']}"
+                    )
                 formatted_lines.append("")
 
             # 9. 매매 신호 종합
             trading_signals = technical_analysis_data.get("trading_signals", {})
             if isinstance(trading_signals, dict) and trading_signals:
-                formatted_lines.append("**🎯 종합 매매 신호**:")
+                formatted_lines.append(self.MESSAGES["TRADING_SIGNALS_HEADER"])
                 try:
-                    overall_signal = trading_signals.get("overall_signal", "알 수 없음")
-                    signal_strength = trading_signals.get(
-                        "signal_strength", "알 수 없음"
+                    overall_signal = trading_signals.get(
+                        "overall_signal", self.MESSAGES["NO_DATA"]
                     )
-                    recommendation = trading_signals.get("recommendation", "알 수 없음")
+                    signal_strength = trading_signals.get(
+                        "signal_strength", self.MESSAGES["NO_DATA"]
+                    )
+                    recommendation = trading_signals.get(
+                        "recommendation", self.MESSAGES["NO_DATA"]
+                    )
 
                     formatted_lines.append(f"  • 종합 신호: {overall_signal}")
                     formatted_lines.append(f"  • 신호 강도: {signal_strength}")
                     formatted_lines.append(f"  • 추천: {recommendation}")
                 except Exception as signal_error:
                     logger.error(f"❌ 매매 신호 처리 오류: {signal_error}")
-                    formatted_lines.append("  • 매매 신호 처리 중 오류")
+                    formatted_lines.append(
+                        f"  • 매매 신호 {self.MESSAGES['DATA_PROCESSING_ERROR']}"
+                    )
                 formatted_lines.append("")
 
             # 데이터 수집 정보
             total_days = technical_analysis_data.get("total_days", 0)
-            last_update = technical_analysis_data.get("last_update", "알 수 없음")
+            last_update = technical_analysis_data.get(
+                "last_update", self.MESSAGES["NO_DATA"]
+            )
             if total_days > 0:
                 formatted_lines.append(
-                    f"**📊 데이터 정보**: {total_days}일치 데이터 (최종 업데이트: {last_update})"
+                    f"**📊 데이터 정보**: {total_days}일치 데이터 ({self.MESSAGES['LAST_UPDATE_FORMAT'].format(date=last_update)})"
                 )
 
             return "\n".join(formatted_lines)
