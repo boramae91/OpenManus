@@ -20,6 +20,11 @@ import re
 import time
 from typing import Any, Dict, List, Optional
 
+# Matplotlib 백엔드 설정 (GUI 에러 방지)
+import matplotlib
+
+matplotlib.use("Agg")  # GUI 없이 백엔드 사용
+
 # 환경변수 로딩 (가장 먼저 실행)
 from dotenv import load_dotenv
 
@@ -457,7 +462,7 @@ class EnhancedStockAnalysisSystem:
 
             # Step 5.5: 시니어 리포트 스타일 통합 보고서 생성
             logger.info("📋 Step 5.5: 시니어 애널리스트 리포트 생성")
-            senior_report = self.create_senior_report_from_analysis(results)
+            senior_report = await self.create_senior_report_from_analysis(results)
             results["final_senior_report"] = senior_report
 
             # Step 6: JSON 파일 저장
@@ -1445,8 +1450,11 @@ class EnhancedStockAnalysisSystem:
                 ]
                 intent_result["secondary_intents"] = secondary_intents
 
+                confidence_str = (
+                    f"{confidence:.2f}" if confidence is not None else "0.00"
+                )
                 logger.info(
-                    f"🎯 의도 분석 완료: {primary_intent} (점수: {max_score}, 신뢰도: {confidence:.2f if confidence is not None else 0.0:.2f})"
+                    f"🎯 의도 분석 완료: {primary_intent} (점수: {max_score}, 신뢰도: {confidence_str})"
                 )
                 if secondary_intents:
                     logger.info(f"🔍 2차 의도: {', '.join(secondary_intents)}")
