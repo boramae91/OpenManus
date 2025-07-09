@@ -3333,14 +3333,30 @@ class SmartSectorManager:
         if not text:
             return 0
 
-        # 더 정확한 토큰 추정 (GPT-4o 기준)
-        # 한국어: 약 2.5자당 1토큰, 영어: 약 4자당 1토큰
-        # 혼재된 텍스트를 고려하여 3자당 1토큰으로 계산
-        estimated_tokens = len(text) // 3
+        # 🎯 더 정확한 토큰 추정 (GPT-4o 기준)
+        # 한글: 1글자 = 1.5 토큰
+        # 영문: 1단어 = 1.3 토큰
+        # 숫자/기호: 1개 = 1 토큰
+        # JSON 구조: 추가 20% 오버헤드
 
-        # 실제 토큰 수는 보통 추정치보다 10-20% 많을 수 있음
-        # 안전 마진을 위해 15% 추가
-        return max(1, int(estimated_tokens * 1.15))
+        korean_chars = len(
+            [c for c in text if "\u3131" <= c <= "\u318e" or "\uac00" <= c <= "\ud7a3"]
+        )
+        english_words = len([w for w in text.split() if w.isascii() and w.isalpha()])
+        numbers = len([c for c in text if c.isdigit()])
+        other_chars = len(text) - korean_chars - english_words - numbers
+
+        # 기본 토큰 계산
+        base_tokens = korean_chars * 1.5 + english_words * 1.3 + numbers + other_chars
+
+        # JSON 구조 오버헤드 (딕셔너리 구조일 경우)
+        if "{" in text and "}" in text:
+            base_tokens *= 1.2
+
+        # 안전 마진 (10% 추가)
+        estimated_tokens = int(base_tokens * 1.1)
+
+        return max(1, estimated_tokens)
 
     def _optimize_data_for_token_limit(
         self,
@@ -3544,110 +3560,148 @@ class SmartSectorManager:
         if not dart_dict or ratio >= 1.0:
             return dart_dict
 
-        compressed = {}
+        # 🚀 새로운 선택적 데이터 추출 방식 적용
+        return self._extract_essential_dart_data(dart_dict, ratio)
 
-        # 사업보고서와 분기보고서를 각각 압축
+    def _extract_essential_dart_data(self, dart_dict: Dict, ratio: float) -> Dict:
+        """
+        토큰 제한 내에서 가장 중요한 DART 데이터만 선택적으로 추출
+        """
+        extracted = {}
+        target_tokens = int(80000 * ratio)  # 안전 마진을 두고 80,000 토큰 기준
+        current_tokens = 0
+
+        # 🎯 1단계: 핵심 재무지표 (최우선)
         if "business_report_dictionary" in dart_dict:
             business_report = dart_dict["business_report_dictionary"]
-            compressed_business = {}
-
-            # 🎯 스마트 섹션 선택: 중요도 기반
-            section_importance = {
-                "01_회사개요_및_사업내용": 10,  # 최고 중요도
-                "02_재무정보": 9,
-                "03_사업내용": 8,
-                "04_재무상태표": 9,
-                "05_손익계산서": 9,
-                "06_현금흐름표": 8,
-                "07_주요재무비율": 8,
-                "08_재무상태": 7,
-                "09_경영진": 6,
-                "10_지배구조": 6,
-                "11_리스크": 7,
-                "12_투자": 6,
-                "13_기타": 4,
-                "14_부속명세서": 5,
-            }
-
-            # 중요도 순으로 정렬
-            sorted_sections = sorted(
-                business_report.items(),
-                key=lambda x: section_importance.get(x[0], 0),
-                reverse=True,
+            essential_financial = self._extract_essential_financial_sections(
+                business_report
             )
+            financial_tokens = self._estimate_tokens(str(essential_financial))
 
-            # 🎯 토큰 제한에 맞춰 스마트 선택
-            available_tokens = int(100000 * ratio)  # 사업보고서용 토큰 할당
-            used_tokens = 0
+            if financial_tokens <= target_tokens * 0.6:  # 60% 이하일 때만
+                extracted["business_report_dictionary"] = essential_financial
+                current_tokens += financial_tokens
+                logger.info(f"✅ 핵심 재무지표 추출: {financial_tokens:,} 토큰")
 
-            for section_name, section_content in sorted_sections:
-                if used_tokens >= available_tokens:
-                    break
+        # 🎯 2단계: 성장성 및 수익성 지표 (남은 공간의 70%까지만)
+        remaining_tokens = target_tokens - current_tokens
+        if remaining_tokens > target_tokens * 0.2:  # 20% 이상 남았을 때만
+            growth_metrics = self._extract_growth_and_profitability_sections(
+                business_report
+            )
+            growth_tokens = self._estimate_tokens(str(growth_metrics))
 
-                # 🎯 섹션별 적응적 압축
-                importance = section_importance.get(section_name, 5)
+            if current_tokens + growth_tokens <= target_tokens * 0.8:  # 80% 이하로 제한
+                if "business_report_dictionary" not in extracted:
+                    extracted["business_report_dictionary"] = {}
+                extracted["business_report_dictionary"].update(growth_metrics)
+                current_tokens += growth_tokens
+                logger.info(f"✅ 성장성/수익성 지표 추출: {growth_tokens:,} 토큰")
 
-                if importance >= 8:  # 고중요도 섹션
-                    max_chars = 50000  # 50,000자 유지
-                elif importance >= 6:  # 중중요도 섹션
-                    max_chars = 30000  # 30,000자 유지
-                else:  # 저중요도 섹션
-                    max_chars = 15000  # 15,000자 유지
-
-                # 🎯 스마트 자르기: 문장 단위로 자르기
-                if len(section_content) > max_chars:
-                    # 마지막 완전한 문장까지 유지
-                    truncated = section_content[:max_chars]
-                    last_period = truncated.rfind(".")
-                    last_exclamation = truncated.rfind("!")
-                    last_question = truncated.rfind("?")
-
-                    cut_point = max(last_period, last_exclamation, last_question)
-                    if cut_point > max_chars * 0.8:  # 80% 이상이면 문장 단위로 자르기
-                        compressed_content = section_content[: cut_point + 1]
-                    else:
-                        compressed_content = truncated
-
-                    compressed_content += f"\n...[중요도 {importance}/10 섹션, {len(section_content):,}자 중 {len(compressed_content):,}자 표시]..."
-                else:
-                    compressed_content = section_content
-
-                compressed_business[section_name] = compressed_content
-                used_tokens += self._estimate_tokens(compressed_content)
-
-            compressed["business_report_dictionary"] = compressed_business
-
-        if "quarterly_report_dictionary" in dart_dict:
+        # 🎯 3단계: 분기보고서 핵심 정보 (최신 정보 우선)
+        if (
+            "quarterly_report_dictionary" in dart_dict
+            and current_tokens < target_tokens * 0.9
+        ):
             quarterly_report = dart_dict["quarterly_report_dictionary"]
-            compressed_quarterly = {}
+            quarterly_essential = self._extract_quarterly_essential(quarterly_report)
+            quarterly_tokens = self._estimate_tokens(str(quarterly_essential))
 
-            # 분기보고서는 더 적극적으로 압축 (최신 정보 우선)
-            available_tokens = int(50000 * ratio)  # 분기보고서용 토큰 할당
-            used_tokens = 0
+            if current_tokens + quarterly_tokens <= target_tokens:
+                extracted["quarterly_report_dictionary"] = quarterly_essential
+                current_tokens += quarterly_tokens
+                logger.info(f"✅ 분기보고서 핵심 정보 추출: {quarterly_tokens:,} 토큰")
 
-            for section_name, section_content in quarterly_report.items():
-                if used_tokens >= available_tokens:
-                    break
+        logger.info(
+            f"🎯 최종 DART 데이터 토큰: {current_tokens:,} / {target_tokens:,} ({current_tokens/target_tokens*100:.1f}%)"
+        )
+        return extracted
 
-                # 분기보고서는 20,000자로 제한
-                if len(section_content) > 20000:
-                    truncated = section_content[:20000]
-                    last_period = truncated.rfind(".")
-                    if last_period > 16000:  # 80% 이상이면 문장 단위로 자르기
-                        compressed_content = section_content[: last_period + 1]
-                    else:
-                        compressed_content = truncated
+    def _extract_essential_financial_sections(self, business_report: Dict) -> Dict:
+        """핵심 재무지표만 추출 (최우선)"""
+        essential_sections = {}
 
-                    compressed_content += f"\n...[분기보고서 섹션, {len(section_content):,}자 중 {len(compressed_content):,}자 표시]..."
+        # 🥇 최고 중요도 섹션들
+        priority_sections = [
+            "04_재무상태표",
+            "05_손익계산서",
+            "06_현금흐름표",
+            "07_주요재무비율",
+        ]
+
+        for section_name in priority_sections:
+            if section_name in business_report:
+                section_content = business_report[section_name]
+                # 핵심 섹션은 30,000자로 제한
+                if len(section_content) > 30000:
+                    compressed_content = self._smart_truncate(section_content, 30000)
+                    compressed_content += f"\n...[핵심재무섹션, {len(section_content):,}자 중 {len(compressed_content):,}자 표시]..."
                 else:
                     compressed_content = section_content
 
-                compressed_quarterly[section_name] = compressed_content
-                used_tokens += self._estimate_tokens(compressed_content)
+                essential_sections[section_name] = compressed_content
 
-            compressed["quarterly_report_dictionary"] = compressed_quarterly
+        return essential_sections
 
-        return compressed
+    def _extract_growth_and_profitability_sections(self, business_report: Dict) -> Dict:
+        """성장성 및 수익성 관련 섹션 추출"""
+        growth_sections = {}
+
+        # 🥈 중간 중요도 섹션들
+        growth_related_sections = ["02_재무정보", "03_사업내용", "08_재무상태"]
+
+        for section_name in growth_related_sections:
+            if section_name in business_report:
+                section_content = business_report[section_name]
+                # 성장성 섹션은 20,000자로 제한
+                if len(section_content) > 20000:
+                    compressed_content = self._smart_truncate(section_content, 20000)
+                    compressed_content += f"\n...[성장성섹션, {len(section_content):,}자 중 {len(compressed_content):,}자 표시]..."
+                else:
+                    compressed_content = section_content
+
+                growth_sections[section_name] = compressed_content
+
+        return growth_sections
+
+    def _extract_quarterly_essential(self, quarterly_report: Dict) -> Dict:
+        """분기보고서 핵심 정보만 추출"""
+        quarterly_essential = {}
+
+        # 분기보고서는 재무 관련 섹션만 우선 추출
+        quarterly_financial_sections = ["재무상태표", "손익계산서", "현금흐름표"]
+
+        for section_name in quarterly_financial_sections:
+            if section_name in quarterly_report:
+                section_content = quarterly_report[section_name]
+                # 분기보고서는 15,000자로 제한
+                if len(section_content) > 15000:
+                    compressed_content = self._smart_truncate(section_content, 15000)
+                    compressed_content += f"\n...[분기재무섹션, {len(section_content):,}자 중 {len(compressed_content):,}자 표시]..."
+                else:
+                    compressed_content = section_content
+
+                quarterly_essential[section_name] = compressed_content
+
+        return quarterly_essential
+
+    def _smart_truncate(self, text: str, max_chars: int) -> str:
+        """스마트 자르기: 문장 단위로 자르기"""
+        if len(text) <= max_chars:
+            return text
+
+        # 마지막 완전한 문장까지 유지
+        truncated = text[:max_chars]
+        last_period = truncated.rfind(".")
+        last_exclamation = truncated.rfind("!")
+        last_question = truncated.rfind("?")
+
+        cut_point = max(last_period, last_exclamation, last_question)
+        if cut_point > max_chars * 0.8:  # 80% 이상이면 문장 단위로 자르기
+            return text[: cut_point + 1]
+        else:
+            return truncated
 
     def _assess_data_integration_quality(
         self,
