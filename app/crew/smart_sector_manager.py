@@ -1073,10 +1073,10 @@ class SmartSectorManager:
                 # 🚀 향상된 분석 시스템 (CoT + 5Why + 7Why) 사용
                 # (삭제)
                 # 기존 분석 시스템만 사용
-                    logger.info(f"📝 {expert.name} 기존 LLM 방식 사용")
-                    analysis_result = await self._call_llm_for_analysis(
-                        comprehensive_prompt
-                    )
+                logger.info(f"📝 {expert.name} 기존 LLM 방식 사용")
+                analysis_result = await self._call_llm_for_analysis(
+                    comprehensive_prompt
+                )
 
                 expert_results.append(
                     {
@@ -1821,7 +1821,7 @@ class SmartSectorManager:
                 available_sources.append("기술적 분석 데이터")
 
             if available_sources:
-            context_parts.append(
+                context_parts.append(
                     f"**📊 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
                 )
             else:
@@ -1835,15 +1835,15 @@ class SmartSectorManager:
                 context_parts.append("- 재무데이터를 활용한 ROE, ROIC, 재무비율 분석")
                 context_parts.append("- 수익성, 안정성, 활동성 지표 계산 및 평가")
             if enhanced_dart_data and enhanced_dart_data.get("success"):
-            context_parts.append(
+                context_parts.append(
                     "- DART 사업보고서에서 경영진 리더십 및 지배구조 평가"
-            )
+                )
             if dart_reports_dictionary:
-            context_parts.append(
+                context_parts.append(
                     "- DART 보고서 딕셔너리에서 현금흐름표 계정과목 분석"
-            )
+                )
             if manus_collected_data and manus_collected_data.get("performed"):
-            context_parts.append(
+                context_parts.append(
                     "- 웹검색 데이터에서 경쟁사 벤치마킹 및 시장점유율 분석"
                 )
             if technical_analysis_data:
@@ -1855,28 +1855,28 @@ class SmartSectorManager:
             # DART 보고서 딕셔너리가 있을 때만 현금흐름표 분석 지침 추가
             if dart_reports_dictionary:
                 context_parts.append("**🚀 현금흐름표 분석 지침**:")
-            context_parts.append(
+                context_parts.append(
                     "- DART 보고서 딕셔너리에서 현금흐름표 계정과목 직접 추출"
-            )
+                )
                 context_parts.append("- 영업활동, 투자활동, 재무활동 현금흐름 분석")
                 context_parts.append("- 실제 수치 기반 현금흐름 품질 평가")
-            context_parts.append("")
+                context_parts.append("")
             else:
-            context_parts.append(
+                context_parts.append(
                     "**⚠️ 현금흐름표 분석**: DART 보고서 딕셔너리가 없어 상세 분석이 제한됩니다."
-            )
-            context_parts.append("")
+                )
+                context_parts.append("")
 
             # 실제 데이터 기반 추가 분석 지침
             context_parts.append("**📈 추가 분석 지침**:")
             if financial_data and financial_data.get("success"):
-            context_parts.append(
+                context_parts.append(
                     "- 재무데이터를 활용한 성장성, 현금흐름, 재무건전성 분석"
-            )
+                )
             if enhanced_dart_data and enhanced_dart_data.get("success"):
                 context_parts.append("- DART 데이터를 활용한 ESG 및 지배구조 평가")
             if manus_collected_data and manus_collected_data.get("performed"):
-            context_parts.append(
+                context_parts.append(
                     "- 웹검색 데이터를 활용한 경영진 효율성 및 자본배분 정책 분석"
                 )
 
@@ -1977,7 +1977,7 @@ class SmartSectorManager:
                     available_sources.append("웹검색 데이터")
 
                 if available_sources:
-                context_parts.append(
+                    context_parts.append(
                         f"**📊 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
                     )
                 else:
@@ -1988,13 +1988,13 @@ class SmartSectorManager:
                 # 실제 데이터 기반 기술적 분석 지침
                 context_parts.append("**📈 실제 데이터 기반 기술적 분석 지침**:")
                 if technical_analysis_data and technical_analysis_data.get("success"):
-                context_parts.append(
+                    context_parts.append(
                         "- 계산된 기술적 지표(RSI, MACD, 볼린저밴드 등) 기반 분석"
-                )
+                    )
                     context_parts.append("- 이동평균선 배열과 현재가 위치 관계 분석")
                     context_parts.append("- 지지/저항선 레벨에서의 매매 전략")
                 if financial_data and financial_data.get("success"):
-                context_parts.append(
+                    context_parts.append(
                         "- 재무데이터의 가격 정보를 활용한 차트 패턴 분석"
                     )
                 if manus_collected_data and manus_collected_data.get("performed"):
@@ -2013,7 +2013,7 @@ class SmartSectorManager:
                     available_sources.append("웹검색 데이터")
 
                 if available_sources:
-                context_parts.append(
+                    context_parts.append(
                         f"**📊 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
                     )
                 else:
@@ -2024,14 +2024,14 @@ class SmartSectorManager:
                 # 실제 데이터 기반 기술적 분석 지침 (기술적 지표 없음)
                 context_parts.append("**📈 실제 데이터 기반 기술적 분석 지침**:")
                 if financial_data and financial_data.get("success"):
-                context_parts.append(
+                    context_parts.append(
                         "- 재무데이터의 가격 정보를 활용한 기본 차트 분석"
-                )
+                    )
                     context_parts.append("- 이동평균선과 현재가 위치 관계 분석")
                 if manus_collected_data and manus_collected_data.get("performed"):
-                context_parts.append(
+                    context_parts.append(
                         "- 웹검색 데이터를 활용한 시장 동향 및 이벤트 분석"
-                )
+                    )
 
                 context_parts.append("")
                 context_parts.append("**⚠️ 기술적 분석 주의사항**:")
@@ -2077,7 +2077,7 @@ class SmartSectorManager:
                 available_sources.append("기술적 분석 데이터")
 
             if available_sources:
-            context_parts.append(
+                context_parts.append(
                     f"**📊 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
                 )
             else:
@@ -2151,7 +2151,7 @@ class SmartSectorManager:
                 available_sources.append("웹검색 데이터")
 
             if available_sources:
-            context_parts.append(
+                context_parts.append(
                     f"** 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
                 )
             else:
@@ -2162,19 +2162,17 @@ class SmartSectorManager:
             # 실제 데이터 기반 밸류에이션 지침
             context_parts.append("**💰 실제 데이터 기반 밸류에이션 지침**:")
             if financial_data and financial_data.get("success"):
-            context_parts.append(
+                context_parts.append(
                     "- 재무데이터에서 FCF 계산을 위한 영업현금흐름 및 자본적지출 추출"
-            )
-            context_parts.append(
+                )
+                context_parts.append(
                     "- 재무비율을 통한 멀티플 분석 (PER, PBR, EV/EBITDA)"
-            )
+                )
                 context_parts.append("- DART 데이터에서 현금흐름표 정보 추출")
-            context_parts.append(
+                context_parts.append(
                     "- DART 보고서 딕셔너리에서 상세 현금흐름 정보 활용"
-            )
-            context_parts.append(
-                    "- 웹검색 데이터에서 시장 동향 및 분석가 의견 참고"
-            )
+                )
+            context_parts.append("- 웹검색 데이터에서 시장 동향 및 분석가 의견 참고")
 
             context_parts.append("")
 
@@ -2182,26 +2180,14 @@ class SmartSectorManager:
             context_parts.append("**💰 실제 데이터 기반 밸류에이션 분석 방법론**:")
             if financial_data and financial_data.get("success"):
                 context_parts.append("- 재무데이터를 활용한 DCF 분석 (현금흐름 할인)")
-            context_parts.append(
+                context_parts.append(
                     "- 재무비율을 통한 멀티플 분석 (PER, PBR, EV/EBITDA)"
                 )
                 context_parts.append("- 민감도 분석 (WACC, 성장률 변동 시 영향도)")
                 context_parts.append("- DART 데이터를 활용한 현금흐름 분석")
-            context_parts.append("- 웹검색 데이터를 활용한 시장 동향 및 멀티플 비교")
-            context_parts.append("- DART 보고서 딕셔너리에서 상세 현금흐름 정보 활용")
-
-            context_parts.append("")
-
-            # 실제 데이터 기반 밸류에이션 분석 방법론
-            context_parts.append("**💰 실제 데이터 기반 밸류에이션 분석 방법론**:")
-            if financial_data and financial_data.get("success"):
-                context_parts.append("- 재무데이터를 활용한 DCF 분석 (현금흐름 할인)")
-            context_parts.append(
-                    "- 재무비율을 통한 멀티플 분석 (PER, PBR, EV/EBITDA)"
+                context_parts.append(
+                    "- 웹검색 데이터를 활용한 시장 동향 및 멀티플 비교"
                 )
-                context_parts.append("- 민감도 분석 (WACC, 성장률 변동 시 영향도)")
-                context_parts.append("- DART 데이터를 활용한 현금흐름 분석")
-            context_parts.append("- 웹검색 데이터를 활용한 시장 동향 및 멀티플 비교")
 
             context_parts.append("")
             context_parts.append("**⚠️ 밸류에이션 분석 주의사항**:")
@@ -2251,7 +2237,7 @@ class SmartSectorManager:
                 available_sources.append("기술적 분석 데이터")
 
             if available_sources:
-            context_parts.append(
+                context_parts.append(
                     f"** 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
                 )
             else:
@@ -2262,7 +2248,7 @@ class SmartSectorManager:
             # 실제 데이터 기반 리스크 분석 지침
             context_parts.append("**🚨 실제 데이터 기반 리스크 분석 지침**:")
             if financial_data and financial_data.get("success"):
-            context_parts.append(
+                context_parts.append(
                     "- 재무데이터에서 유동성 및 부채 상환 능력 지표 분석"
                 )
                 context_parts.append("- 현금흐름 변동성 및 안정성 평가")
@@ -2303,7 +2289,7 @@ class SmartSectorManager:
                 available_sources.append("재무데이터 (재무제표)")
 
             if available_sources:
-            context_parts.append(
+                context_parts.append(
                     f"**📊 사용 가능한 데이터 소스**: {', '.join(available_sources)}"
                 )
             else:
@@ -2314,7 +2300,7 @@ class SmartSectorManager:
             # 실제 데이터 기반 주석 분석 지침
             context_parts.append("**📋 실제 데이터 기반 주석 분석 지침**:")
             if enhanced_dart_data and enhanced_dart_data.get("success"):
-            context_parts.append(
+                context_parts.append(
                     "- DART 사업보고서에서 IFRS 적용 현황 및 영향 분석"
                 )
                 context_parts.append("- 감사의견 및 핵심감사사항(KAM) 분석")
@@ -2333,14 +2319,14 @@ class SmartSectorManager:
                 context_parts.append("- 우발채무 및 보증채무 정밀분석")
                 context_parts.append("- 관계회사 거래 투명성 평가")
             if dart_reports_dictionary:
-            context_parts.append(
+                context_parts.append(
                     "- DART 보고서 딕셔너리에서 금융상품 및 파생상품 위험 평가"
-            )
+                )
                 context_parts.append("- 리스 및 약정사항 영향도 분석")
             if financial_data and financial_data.get("success"):
-            context_parts.append(
+                context_parts.append(
                     "- 재무데이터에서 회계정책 변경 및 추정변경 영향 분석"
-            )
+                )
                 context_parts.append("- 연결범위 변동 및 지배력 분석")
 
             context_parts.append("")
