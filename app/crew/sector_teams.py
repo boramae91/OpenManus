@@ -68,8 +68,8 @@ class AnalystAgent:
             try:
                 from langchain.memory import ConversationBufferMemory
 
-            self.memory_system = ConversationBufferMemory(
-                memory_key="analysis_history", return_messages=True
+                self.memory_system = ConversationBufferMemory(
+                    memory_key="analysis_history", return_messages=True
                 )
             except ImportError:
                 # 최신 버전에서는 다른 방식 사용
@@ -84,7 +84,7 @@ class AnalystAgent:
                     self.memory_system = None
                     print(
                         f"⚠️ {self.name} 메모리 시스템 초기화 실패 - 최신 LangChain 버전 확인 필요"
-            )
+                    )
 
             # 성능 지표 초기화
             self.performance_metrics = {

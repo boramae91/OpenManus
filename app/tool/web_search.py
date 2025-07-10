@@ -10,7 +10,6 @@ from app.config import config
 from app.logger import logger
 from app.tool.base import BaseTool, ToolResult
 from app.tool.search import (
-    BaiduSearchEngine,
     BingSearchEngine,
     DuckDuckGoSearchEngine,
     GoogleSearchEngine,
@@ -262,7 +261,6 @@ class WebSearch(BaseTool):
     }
     _search_engine: dict[str, WebSearchEngine] = {
         "google": GoogleSearchEngine(),
-        "baidu": BaiduSearchEngine(),
         "duckduckgo": DuckDuckGoSearchEngine(),
         "bing": BingSearchEngine(),
     }
@@ -452,6 +450,7 @@ class WebSearch(BaseTool):
         )
         engine_order.extend([e for e in self._search_engine if e not in engine_order])
 
+        # baidu 제거 후 검색 엔진 순서: google -> duckduckgo -> bing
         return engine_order
 
     @retry(
