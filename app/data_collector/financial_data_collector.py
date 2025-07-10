@@ -834,7 +834,7 @@ class FinancialDataCollector:
 - 시가총액: {f"{current_price_info.get('market_cap'):,}" if isinstance(current_price_info.get('market_cap'), (int, float)) and current_price_info.get('market_cap') is not None else current_price_info.get('market_cap', 'N/A')}
 - 52주 최고가: {price_history.get('52_week_high', 'N/A')}
 - 52주 최저가: {price_history.get('52_week_low', 'N/A')}
-- 1년 수익률: {price_history.get('price_change_1y', 'N/A'):.2f if price_history.get('price_change_1y') is not None else 'N/A'}%
+- 1년 수익률: {f"{price_history.get('price_change_1y'):.2f}" if isinstance(price_history.get('price_change_1y'), (int, float)) and price_history.get('price_change_1y') is not None else price_history.get('price_change_1y', 'N/A')}%
 
 📈 주요 재무 지표:
 - PER (주가수익비율): {financial_ratios.get('pe_ratio', 'N/A')}

@@ -239,6 +239,7 @@ class EnhancedDartDataCollector:
             quarterly_interface = None
 
             # 사업보고서 인터페이스 생성
+            business_interface = None
             if result["business_report_dictionary"]:
                 try:
                     from app.utils.large_pdf_analyzer import PDFDictionaryInterface
@@ -255,8 +256,11 @@ class EnhancedDartDataCollector:
                     logger.error(
                         f"❌ 사업보고서 인터페이스 생성 실패: {interface_error}"
                     )
+                    # 인터페이스 생성 실패해도 딕셔너리는 사용 가능하도록 계속 진행
+                    business_interface = None
 
             # 분기보고서 인터페이스 생성
+            quarterly_interface = None
             if result["quarterly_report_dictionary"]:
                 try:
                     from app.utils.large_pdf_analyzer import PDFDictionaryInterface
@@ -273,14 +277,25 @@ class EnhancedDartDataCollector:
                     logger.error(
                         f"❌ 분기보고서 인터페이스 생성 실패: {interface_error}"
                     )
+                    # 인터페이스 생성 실패해도 딕셔너리는 사용 가능하도록 계속 진행
+                    quarterly_interface = None
 
-            # JSON 직렬화 가능한 형태로 저장
-            result["business_report_interface"] = (
-                business_interface.to_dict() if business_interface else None
-            )
-            result["quarterly_report_interface"] = (
-                quarterly_interface.to_dict() if quarterly_interface else None
-            )
+            # JSON 직렬화 가능한 형태로 저장 (안전한 방식)
+            try:
+                result["business_report_interface"] = (
+                    business_interface.to_dict() if business_interface else None
+                )
+            except Exception as e:
+                logger.warning(f"⚠️ 사업보고서 인터페이스 직렬화 실패: {e}")
+                result["business_report_interface"] = None
+
+            try:
+                result["quarterly_report_interface"] = (
+                    quarterly_interface.to_dict() if quarterly_interface else None
+                )
+            except Exception as e:
+                logger.warning(f"⚠️ 분기보고서 인터페이스 직렬화 실패: {e}")
+                result["quarterly_report_interface"] = None
             result["business_metadata"] = business_metadata
             result["quarterly_metadata"] = quarterly_metadata
 
@@ -293,6 +308,9 @@ class EnhancedDartDataCollector:
                 f"   📈 분기보고서: {len(result['quarterly_report_dictionary'])}개 섹션 ({quarterly_total_text:,}자)"
             )
             logger.info(f"   🚀 CrewAI 전문가별 독립 접근 준비 완료!")
+
+            # 📊 섹션 분할 품질 검증 추가
+            self._validate_section_quality(result)
 
             # 5️⃣ 성공 여부 최종 판단
             if (
@@ -314,6 +332,156 @@ class EnhancedDartDataCollector:
                 "corp_code": corp_code,
                 "company_name": company_name,
             }
+
+    def _validate_section_quality(self, result: Dict[str, Any]) -> None:
+        """
+        📊 섹션 분할 품질을 검증하고 개선 방안을 제시합니다.
+
+        Args:
+            result: DART 딕셔너리 생성 결과
+        """
+        try:
+            logger.info("🔍 섹션 분할 품질 검증 시작...")
+
+            # 사업보고서 섹션 품질 검증
+            if result.get("business_report_dictionary"):
+                business_quality = self._analyze_section_quality(
+                    result["business_report_dictionary"], "사업보고서"
+                )
+                logger.info(f"📄 사업보고서 섹션 품질: {business_quality['score']}/100")
+
+                if business_quality["issues"]:
+                    logger.warning(
+                        f"⚠️ 사업보고서 섹션 문제점: {', '.join(business_quality['issues'])}"
+                    )
+                if business_quality["recommendations"]:
+                    logger.info(
+                        f"💡 사업보고서 개선 방안: {', '.join(business_quality['recommendations'])}"
+                    )
+
+            # 분기보고서 섹션 품질 검증
+            if result.get("quarterly_report_dictionary"):
+                quarterly_quality = self._analyze_section_quality(
+                    result["quarterly_report_dictionary"], "분기보고서"
+                )
+                logger.info(
+                    f"📈 분기보고서 섹션 품질: {quarterly_quality['score']}/100"
+                )
+
+                if quarterly_quality["issues"]:
+                    logger.warning(
+                        f"⚠️ 분기보고서 섹션 문제점: {', '.join(quarterly_quality['issues'])}"
+                    )
+                if quarterly_quality["recommendations"]:
+                    logger.info(
+                        f"💡 분기보고서 개선 방안: {', '.join(quarterly_quality['recommendations'])}"
+                    )
+
+        except Exception as e:
+            logger.warning(f"⚠️ 섹션 품질 검증 실패: {e}")
+
+    def _analyze_section_quality(
+        self, sections: Dict[str, str], report_type: str
+    ) -> Dict[str, Any]:
+        """
+        📊 개별 섹션들의 품질을 분석합니다.
+
+        Args:
+            sections: 섹션 딕셔너리
+            report_type: 보고서 유형
+
+        Returns:
+            Dict: 품질 분석 결과
+        """
+        quality_result = {
+            "score": 0,
+            "issues": [],
+            "recommendations": [],
+            "section_count": len(sections),
+            "total_length": sum(len(content) for content in sections.values()),
+            "avg_length": 0,
+            "min_length": 0,
+            "max_length": 0,
+        }
+
+        if not sections:
+            quality_result["issues"].append("섹션이 없습니다")
+            return quality_result
+
+        # 기본 통계 계산
+        lengths = [len(content) for content in sections.values()]
+        quality_result["avg_length"] = sum(lengths) // len(lengths)
+        quality_result["min_length"] = min(lengths)
+        quality_result["max_length"] = max(lengths)
+
+        # 품질 점수 계산 (100점 만점)
+        score = 0
+
+        # 1. 섹션 개수 평가 (20점)
+        if len(sections) >= 10:
+            score += 20
+        elif len(sections) >= 5:
+            score += 15
+        elif len(sections) >= 3:
+            score += 10
+        else:
+            score += 5
+            quality_result["issues"].append("섹션 개수가 적습니다")
+
+        # 2. 평균 길이 평가 (30점)
+        if quality_result["avg_length"] >= 1000:
+            score += 30
+        elif quality_result["avg_length"] >= 500:
+            score += 25
+        elif quality_result["avg_length"] >= 200:
+            score += 20
+        else:
+            score += 10
+            quality_result["issues"].append("섹션 내용이 너무 짧습니다")
+
+        # 3. 길이 균형성 평가 (25점)
+        length_variance = max(lengths) - min(lengths)
+        if length_variance <= 1000:
+            score += 25
+        elif length_variance <= 2000:
+            score += 20
+        elif length_variance <= 5000:
+            score += 15
+        else:
+            score += 10
+            quality_result["issues"].append("섹션 길이가 균형적이지 않습니다")
+
+        # 4. 제목 품질 평가 (25점)
+        meaningful_titles = 0
+        for title in sections.keys():
+            if len(title) >= 5 and any(
+                keyword in title
+                for keyword in ["재무", "손익", "현금", "매출", "이익", "자산", "부채"]
+            ):
+                meaningful_titles += 1
+
+        title_ratio = meaningful_titles / len(sections)
+        if title_ratio >= 0.7:
+            score += 25
+        elif title_ratio >= 0.5:
+            score += 20
+        elif title_ratio >= 0.3:
+            score += 15
+        else:
+            score += 10
+            quality_result["issues"].append("의미있는 제목의 섹션이 적습니다")
+
+        quality_result["score"] = score
+
+        # 개선 방안 제시
+        if score < 60:
+            quality_result["recommendations"].append("섹션 분할 알고리즘 개선 필요")
+        if quality_result["avg_length"] < 500:
+            quality_result["recommendations"].append("최소 섹션 길이 증가 필요")
+        if length_variance > 5000:
+            quality_result["recommendations"].append("섹션 길이 균형 조정 필요")
+
+        return quality_result
 
     async def _download_and_process_report(
         self,
