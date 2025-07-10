@@ -1521,7 +1521,8 @@ class LargePDFAnalyzer:
             return {
                 "success": False,
                 "error": str(e),
-                "fallback_summary": "통합 분석 실패 - 개별 섹션 분석 결과를 참조하세요",
+                "recommendation": "통합 분석에 실패했습니다. 개별 섹션 분석 결과를 참조하거나 분석을 재시도하세요.",
+                "required_action": "통합 분석 재시도 필요",
             }
 
     async def _extract_key_insights(
@@ -1584,7 +1585,8 @@ class LargePDFAnalyzer:
             return {
                 "success": False,
                 "error": str(e),
-                "fallback_insights": "핵심 인사이트 추출 실패 - 통합 분석 결과를 참조하세요",
+                "recommendation": "핵심 인사이트 추출에 실패했습니다. 통합 분석 결과를 참조하거나 분석을 재시도하세요.",
+                "required_action": "핵심 인사이트 추출 재시도 필요",
             }
 
     async def _save_analysis_results(

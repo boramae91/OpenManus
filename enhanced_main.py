@@ -185,8 +185,22 @@ class EnhancedStockAnalysisSystem:
             logger.info("🎯 Step 0: 사용자 질문 의도 분석")
             intent_analysis = await self._timed_analyze_user_intent(user_prompt)
             results["steps"]["step0_intent_analysis"] = intent_analysis
+            # 🔧 안전한 confidence 포맷팅 (None 값 처리)
+            confidence = intent_analysis.get("confidence", 0.0)
+            try:
+                if confidence is not None:
+                    if isinstance(confidence, (int, float)):
+                        confidence_str = f"{confidence:.2f}"
+                    else:
+                        confidence_str = str(confidence)
+                else:
+                    confidence_str = "0.00"
+            except Exception as e:
+                logger.warning(f"⚠️ confidence 포맷팅 오류: {e}")
+                confidence_str = "0.00"
+
             logger.info(
-                f"✅ 의도 분석 완료: {intent_analysis['primary_intent']} (신뢰도: {intent_analysis['confidence']})"
+                f"✅ 의도 분석 완료: {intent_analysis['primary_intent']} (신뢰도: {confidence_str})"
             )
 
             # Step 1: 종목 및 종목코드 감지
@@ -284,12 +298,14 @@ class EnhancedStockAnalysisSystem:
                 technical_analysis_data = {
                     "success": False,
                     "error": f"기술적 분석 수집 예외: {str(tech_error)}",
-                    "fallback_mode": True,
+                    "fallback_mode": False,  # 폴백 모드 비활성화
+                    "recommendation": "기술적 분석 데이터 수집에 실패했습니다. 기본 재무 데이터만으로 분석을 진행합니다.",
+                    "required_action": "기술적 분석 데이터 수집 재시도 필요",
                 }
                 results["steps"][
                     "step2_technical_analysis_data"
                 ] = technical_analysis_data
-                logger.info("ℹ️ 기술적 분석 실패로 인해 폴백 모드로 진행합니다")
+                logger.warning("⚠️ 기술적 분석 실패 - 기본 재무 데이터만으로 분석 진행")
 
             # 2-2: 🚀 Enhanced DART API 데이터 수집 (새로운 기능들)
             enhanced_dart_data = None
@@ -316,7 +332,7 @@ class EnhancedStockAnalysisSystem:
                     "ℹ️ Enhanced DART 데이터 수집 생략 (API 키 없음 또는 해외 종목)"
                 )
 
-            # 🚀 2-3: DART 사업보고서/분기보고서 목차별 딕셔너리 생성 (NEW!)
+            # 🚀 2-3: DART 사업보고서/분기보고서 목차별 딕셔너리 생성 (강화된 버전)
             dart_reports_dictionary = None
             if self.enhanced_dart_collector.is_available() and self._is_korean_stock(
                 stock_info["stock_code"]
@@ -325,62 +341,78 @@ class EnhancedStockAnalysisSystem:
                     "📋 DART 사업보고서/분기보고서 목차별 딕셔너리 생성 시작..."
                 )
 
-                # 종목코드에서 기업고유코드 찾기
-                corp_code = self.enhanced_dart_collector.get_corp_code_from_stock_code(
-                    stock_code=stock_info["stock_code"],
-                    company_name=stock_info.get("stock_name"),
-                )
-
-                if corp_code:
-                    logger.info(f"🎯 기업고유코드 발견: {corp_code}")
-
-                    dart_reports_dictionary = await self.enhanced_dart_collector.get_business_reports_with_dictionary(
-                        corp_code=corp_code,
-                        company_name=stock_info.get("stock_name", "분석대상회사"),
+                try:
+                    # 종목코드에서 기업고유코드 찾기
+                    corp_code = (
+                        self.enhanced_dart_collector.get_corp_code_from_stock_code(
+                            stock_code=stock_info["stock_code"],
+                            company_name=stock_info.get("stock_name"),
+                        )
                     )
 
-                    if dart_reports_dictionary.get("success"):
-                        results["steps"][
-                            "step2_dart_reports_dictionary"
-                        ] = dart_reports_dictionary
+                    if corp_code:
+                        logger.info(f"🎯 기업고유코드 발견: {corp_code}")
 
-                        # 상세 로그 (분리된 딕셔너리 방식)
-                        business_sections = len(
-                            dart_reports_dictionary.get(
-                                "business_report_dictionary", {}
-                            )
+                        dart_reports_dictionary = await self.enhanced_dart_collector.get_business_reports_with_dictionary(
+                            corp_code=corp_code,
+                            company_name=stock_info.get("stock_name", "분석대상회사"),
                         )
-                        quarterly_sections = len(
-                            dart_reports_dictionary.get(
-                                "quarterly_report_dictionary", {}
-                            )
-                        )
-                        total_sections = business_sections + quarterly_sections
 
-                        logger.info("🎉 분리된 DART 보고서 딕셔너리 생성 완료!")
-                        logger.info(
-                            f"   📄 사업보고서: {business_sections}개 섹션 (연간 종합정보)"
-                        )
-                        logger.info(
-                            f"   📈 분기보고서: {quarterly_sections}개 섹션 (최신 분기정보)"
-                        )
-                        logger.info(f"   🎯 총 섹션: {total_sections}개")
-                        logger.info("   🚀 CrewAI 전문가별 독립 접근 준비 완료!")
-                        logger.info("   💡 시기별 정보를 구분하여 더 정확한 분석 가능!")
+                        if dart_reports_dictionary.get("success"):
+                            results["steps"][
+                                "step2_dart_reports_dictionary"
+                            ] = dart_reports_dictionary
+
+                            # 상세 로그 (분리된 딕셔너리 방식)
+                            business_sections = len(
+                                dart_reports_dictionary.get(
+                                    "business_report_dictionary", {}
+                                )
+                            )
+                            quarterly_sections = len(
+                                dart_reports_dictionary.get(
+                                    "quarterly_report_dictionary", {}
+                                )
+                            )
+                            total_sections = business_sections + quarterly_sections
+
+                            logger.info("🎉 분리된 DART 보고서 딕셔너리 생성 완료!")
+                            logger.info(
+                                f"   📄 사업보고서: {business_sections}개 섹션 (연간 종합정보)"
+                            )
+                            logger.info(
+                                f"   📈 분기보고서: {quarterly_sections}개 섹션 (최신 분기정보)"
+                            )
+                            logger.info(f"   🎯 총 섹션: {total_sections}개")
+                            logger.info("   🚀 CrewAI 전문가별 독립 접근 준비 완료!")
+                            logger.info(
+                                "   💡 시기별 정보를 구분하여 더 정확한 분석 가능!"
+                            )
+                        else:
+                            logger.warning(
+                                f"⚠️ DART 보고서 딕셔너리 생성 실패: {dart_reports_dictionary.get('error')}"
+                            )
+                            # ❌ DART 딕셔너리 생성 실패 - 명확한 오류 반환
+                            logger.error(
+                                f"❌ DART 보고서 딕셔너리 생성 실패: {dart_reports_dictionary.get('error')}"
+                            )
+                            dart_reports_dictionary = None
                     else:
-                        logger.warning(
-                            f"⚠️ DART 보고서 딕셔너리 생성 실패: {dart_reports_dictionary.get('error')}"
+                        logger.error(
+                            f"❌ 기업고유코드를 찾을 수 없음: {stock_info['stock_code']}"
                         )
+                        # ❌ 기업고유코드 미발견 - 명확한 오류 반환
                         dart_reports_dictionary = None
-                else:
-                    logger.warning(
-                        f"⚠️ 기업고유코드를 찾을 수 없음: {stock_info['stock_code']}"
-                    )
+                except Exception as dart_error:
+                    logger.error(f"❌ DART 딕셔너리 생성 중 예외 발생: {dart_error}")
+                    # ❌ DART 딕셔너리 생성 실패 - 명확한 오류 반환
                     dart_reports_dictionary = None
             else:
                 logger.info(
                     "ℹ️ DART 보고서 딕셔너리 생성 생략 (API 키 없음 또는 해외 종목)"
                 )
+                # ❌ DART API 키 없음 - 명확한 오류 반환
+                dart_reports_dictionary = None
 
             # 🚀 Step 3: 의도 맞춤형 정보 수집 (Manus Agent 먼저 실행!)
             logger.info("📈 Step 3: 의도 맞춤형 정보 수집 (Manus Agent 웹검색 우선)")
@@ -527,7 +559,17 @@ class EnhancedStockAnalysisSystem:
             confidence = intent_analysis.get("confidence", 0.0)
 
             # 🔧 안전한 confidence 포맷팅 (None 값 처리)
-            confidence_str = f"{confidence:.2f}" if confidence is not None else "0.00"
+            try:
+                if confidence is not None:
+                    if isinstance(confidence, (int, float)):
+                        confidence_str = f"{confidence:.2f}"
+                    else:
+                        confidence_str = str(confidence)
+                else:
+                    confidence_str = "0.00"
+            except Exception as e:
+                logger.warning(f"⚠️ confidence 포맷팅 오류: {e}")
+                confidence_str = "0.00"
 
             logger.info(
                 f"🎯 정보 수집 - 의도: {primary_intent}, 포커스: {analysis_focus}, 신뢰도: {confidence_str}"
@@ -600,11 +642,9 @@ class EnhancedStockAnalysisSystem:
             try:
                 if self.manus_agent is None:
                     logger.warning(
-                        "⚠️ Manus Agent가 비활성화되어 있습니다 - 기본 정보만 수집"
+                        "⚠️ Manus Agent가 비활성화되어 있습니다 - 정보 수집 제한됨"
                     )
-                    collection_response = (
-                        "Manus Agent가 비활성화되어 있어 기본 정보만 수집됩니다."
-                    )
+                    collection_response = "Manus Agent가 비활성화되어 있어 상세한 정보 수집이 제한됩니다. 기본 재무 데이터만으로 분석을 진행합니다."
                 else:
                     if (
                         hasattr(self.manus_agent, "memory")
@@ -638,7 +678,7 @@ class EnhancedStockAnalysisSystem:
                         )
             except Exception as memory_error:
                 logger.error(f"❌ Manus Agent 메모리 처리 오류: {memory_error}")
-                collection_response = "Manus Agent 오류로 인해 기본 정보만 수집됩니다."
+                collection_response = "Manus Agent 오류로 인해 상세한 정보 수집이 제한됩니다. 기본 재무 데이터만으로 분석을 진행합니다."
 
             # 📄 PDF 감지 및 자동 분석
             pdf_analysis_result = await self._detect_and_analyze_pdf_from_response(
@@ -1450,9 +1490,18 @@ class EnhancedStockAnalysisSystem:
                 ]
                 intent_result["secondary_intents"] = secondary_intents
 
-                confidence_str = (
-                    f"{confidence:.2f}" if confidence is not None else "0.00"
-                )
+                # 🔧 안전한 confidence 포맷팅 (None 값 처리)
+                try:
+                    if confidence is not None:
+                        if isinstance(confidence, (int, float)):
+                            confidence_str = f"{confidence:.2f}"
+                        else:
+                            confidence_str = str(confidence)
+                    else:
+                        confidence_str = "0.00"
+                except Exception as e:
+                    logger.warning(f"⚠️ confidence 포맷팅 오류: {e}")
+                    confidence_str = "0.00"
                 logger.info(
                     f"🎯 의도 분석 완료: {primary_intent} (점수: {max_score}, 신뢰도: {confidence_str})"
                 )
@@ -1468,6 +1517,36 @@ class EnhancedStockAnalysisSystem:
             intent_result["confidence"] = 0.1
 
         return intent_result
+
+    def _create_fallback_dart_dictionary(
+        self, stock_code: str, stock_name: str
+    ) -> Dict[str, Any]:
+        """DART 딕셔너리 생성 실패 시 오류 반환 (폴백 제거)"""
+        logger.error(f"❌ {stock_name}({stock_code}) DART 딕셔너리 생성 실패")
+
+        return {
+            "success": False,
+            "error": f"DART API 접근이 제한되어 분석을 수행할 수 없습니다.",
+            "stock_code": stock_code,
+            "stock_name": stock_name,
+            "recommendation": "DART API 키 설정이 필요합니다. https://opendart.fss.or.kr/ 에서 API 키를 발급받으세요.",
+            "required_action": "DART_API_KEY 환경변수 설정 필요",
+        }
+
+    def _create_fallback_pdf_interface(
+        self, stock_name: str, stock_code: str
+    ) -> Dict[str, Any]:
+        """PDF 인터페이스 생성 실패 시 오류 반환 (폴백 제거)"""
+        logger.error(f"❌ {stock_name}({stock_code}) PDF 인터페이스 생성 실패")
+
+        return {
+            "success": False,
+            "error": f"PDF 분석이 제한되어 상세 분석을 수행할 수 없습니다.",
+            "stock_code": stock_code,
+            "stock_name": stock_name,
+            "recommendation": "PDF 파일을 제공하거나 Manus Agent를 활성화하여 PDF 분석을 수행하세요.",
+            "required_action": "PDF 파일 제공 또는 Manus Agent 활성화 필요",
+        }
 
     def _is_korean_stock(self, stock_code: str) -> bool:
         """한국 주식인지 확인해요 (6자리 숫자면 한국 주식)"""
@@ -1540,7 +1619,7 @@ class EnhancedStockAnalysisSystem:
         prompt_length = len(user_prompt)
 
         if deep_count >= 2 or prompt_length > 200:
-            logger.info("🔍 DEEP 분석 모드 감지 - 상세한 전문가 분석 수행")
+            logger.info("�� DEEP 분석 모드 감지 - 상세한 전문가 분석 수행")
             return AnalysisDepth.DEEP
         elif quick_count >= 2 or prompt_length < 50:
             logger.info("⚡ QUICK 분석 모드 감지 - 빠른 핵심 분석 수행")
@@ -1769,8 +1848,21 @@ class EnhancedStockAnalysisSystem:
             data_priority = intent_analysis.get("data_priority", "기본")
             confidence = intent_analysis.get("confidence", 0.0)
 
+            # 🔧 안전한 confidence 포맷팅 (None 값 처리)
+            try:
+                if confidence is not None:
+                    if isinstance(confidence, (int, float)):
+                        confidence_str = f"{confidence:.2f}"
+                    else:
+                        confidence_str = str(confidence)
+                else:
+                    confidence_str = "0.00"
+            except Exception as e:
+                logger.warning(f"⚠️ confidence 포맷팅 오류: {e}")
+                confidence_str = "0.00"
+
             logger.info(
-                f"🎯 맞춤형 분석 - 의도: {primary_intent}, 포커스: {analysis_focus}, 신뢰도: {confidence:.2f}"
+                f"🎯 맞춤형 분석 - 의도: {primary_intent}, 포커스: {analysis_focus}, 신뢰도: {confidence_str}"
             )
 
             # 🎯 의도별 맞춤형 분석 프롬프트 구성

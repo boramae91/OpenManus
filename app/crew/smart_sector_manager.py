@@ -342,6 +342,15 @@ class SmartSectorManager:
                 activated_team, analysis_depth, user_prompt
             )
 
+            # 🔧 데이터 전달 검증 및 로깅
+            self._validate_data_transfer(
+                optimized_financial,
+                optimized_dart,
+                optimized_manus,
+                optimized_dart_dict,
+                technical_analysis_data,
+            )
+
             # 🚀 5. 종합 데이터로 전문가별 분석 수행 (최적화된 데이터 사용!)
             expert_insights = await self._perform_comprehensive_expert_analysis(
                 selected_experts,
@@ -353,6 +362,7 @@ class SmartSectorManager:
                 optimized_manus,  # 🔢 최적화된 Manus 데이터
                 technical_analysis_data,  # 🎯 기술적 분석 데이터 추가!
                 optimized_dart_dict,  # 🚀 최적화된 DART 딕셔너리 사용!
+                None,  # 🔧 PDF 인터페이스 (manus_collected_data에서 추출)
             )
 
             # 6. 비용 절감 계산
@@ -844,11 +854,33 @@ class SmartSectorManager:
                 # LLM 분석 수행
                 logger.info(f"🤖 {expert.name} LLM 분석 요청...")
 
-                # 🔧 단순화된 LLM 호출 (웹검색은 이미 완료)
+                # 🔧 최적화된 LLM 호출 (CoT 강화 + 온도 조절 + 프롬프트 개선)
                 try:
-                    # 웹검색 없이 순수 분석만 수행
+                    # 🔧 프롬프트에 명확한 지침 추가
+                    enhanced_prompt = f"""
+{prompt}
+
+**🎯 중요 지침**:
+1. 위의 데이터를 기반으로 바로 구체적인 분석을 시작하세요
+2. "다음과 같은 분석을 진행하겠습니다" 같은 프롬프트 문구는 사용하지 마세요
+3. Chain of Thought 방식으로 단계별 사고 과정을 명시하세요
+4. 모든 수치는 반드시 출처를 명시하세요
+5. 분석 결과는 구체적이고 실용적이어야 합니다
+
+**📋 분석 형식**:
+**1단계: 데이터 분석**
+[구체적인 데이터 분석 내용]
+
+**2단계: 핵심 지표 평가**
+[핵심 지표별 상세 분석]
+
+**3단계: 투자 판단**
+[투자 의견 및 근거]
+"""
+
+                    # CoT 강화를 위한 온도 조절 및 토큰 수 증가
                     analysis_result = await llm_instance.ask(
-                        prompt=prompt, temperature=0.3, max_tokens=4000
+                        prompt=enhanced_prompt, temperature=0.05, max_tokens=8000
                     )
 
                     # 결과 처리
@@ -864,7 +896,29 @@ class SmartSectorManager:
                             f"분석 결과가 너무 짧음: {len(analysis_text)}자"
                         )
 
-                    logger.info(f"✅ {expert.name} 분석 완료: {len(analysis_text):,}자")
+                    # 🔧 CoT (Chain of Thought) 검증
+                    cot_keywords = [
+                        "사고 과정",
+                        "1단계",
+                        "2단계",
+                        "3단계",
+                        "4단계",
+                        "5단계",
+                        "6단계",
+                        "분석 방법론",
+                        "Chain of Thought",
+                    ]
+                    cot_found = any(
+                        keyword in analysis_text for keyword in cot_keywords
+                    )
+
+                    if not cot_found and attempt < max_retries - 1:
+                        logger.warning(f"⚠️ {expert.name} CoT 검증 실패 - 재실행 예정")
+                        raise ValueError("CoT 형식이 포함되지 않음 - 재실행 필요")
+
+                    logger.info(
+                        f"✅ {expert.name} 분석 완료: {len(analysis_text):,}자 (CoT: {'포함' if cot_found else '미포함'})"
+                    )
 
                     # 웹검색 수행 여부 확인 (펀더멘털 전문가만)
                     web_search_performed = False
@@ -1112,6 +1166,49 @@ class SmartSectorManager:
         """성능 통계 조회"""
         return self.stats.copy()
 
+    def _create_fallback_pdf_interface(
+        self, stock_name: str, stock_code: str
+    ) -> Dict[str, Any]:
+        """PDF 인터페이스 생성 실패 시 명확한 오류 반환 (폴백 제거)"""
+        logger.error(f"❌ {stock_name}({stock_code}) PDF 인터페이스 생성 실패")
+
+        return {
+            "success": False,
+            "error": f"PDF 분석이 제한되어 상세 분석을 수행할 수 없습니다.",
+            "stock_code": stock_code,
+            "stock_name": stock_name,
+            "recommendation": "PDF 파일을 제공하거나 Manus Agent를 활성화하여 PDF 분석을 수행하세요.",
+            "required_action": "PDF 파일 제공 또는 Manus Agent 활성화 필요",
+            "fallback_mode": False,  # 폴백 모드 비활성화
+            "message": f"PDF 분석이 제한되어 상세 분석을 수행할 수 없습니다. {stock_name}({stock_code})의 상세 분석을 위해서는 PDF 파일이 필요합니다.",
+        }
+
+    def _validate_data_transfer(
+        self,
+        financial_data: Dict,
+        enhanced_dart_data: Dict,
+        manus_collected_data: Dict,
+        dart_reports_dictionary: Dict,
+        technical_analysis_data: Dict,
+    ):
+        """데이터 전달 검증 및 로깅"""
+
+        logger.info("🔍 데이터 전달 상태 확인:")
+        logger.info(f"  - 재무 데이터: {'✅' if financial_data else '❌'}")
+        logger.info(f"  - DART 데이터: {'✅' if enhanced_dart_data else '❌'}")
+        logger.info(f"  - Manus 데이터: {'✅' if manus_collected_data else '❌'}")
+        logger.info(f"  - DART 딕셔너리: {'✅' if dart_reports_dictionary else '❌'}")
+        logger.info(f"  - 기술적 분석: {'✅' if technical_analysis_data else '❌'}")
+
+        # PDF 인터페이스 확인
+        if manus_collected_data and manus_collected_data.get("pdf_analysis"):
+            pdf_interface = manus_collected_data["pdf_analysis"].get(
+                "pdf_dictionary_interface"
+            )
+            logger.info(f"  - PDF 인터페이스: {'✅' if pdf_interface else '❌'}")
+        else:
+            logger.info("  - PDF 인터페이스: ❌ (PDF 분석 데이터 없음)")
+
     def reset_stats(self):
         """통계 초기화"""
         self.stats = {
@@ -1133,6 +1230,7 @@ class SmartSectorManager:
         manus_collected_data: Dict = None,
         technical_analysis_data: Dict = None,  # 🎯 기술적 분석 데이터 추가!
         dart_reports_dictionary: Dict = None,  # 🚀 DART 보고서 딕셔너리 추가!
+        pdf_interface=None,  # 🔧 PDF 인터페이스 매개변수 추가!
     ) -> Dict[str, Any]:
         """
         🚀 모든 데이터를 통합한 전문가 분석 수행
@@ -1156,12 +1254,49 @@ class SmartSectorManager:
         """
         logger.info(f"🎯 {len(experts)}명 전문가 종합 분석 시작...")
 
+        # 🚨 데이터 검증 - 폴백 없이 명확한 오류 반환
+        validation_result = self._validate_required_data(
+            financial_data,
+            enhanced_dart_data,
+            manus_collected_data,
+            dart_reports_dictionary,
+            technical_analysis_data,
+        )
+
+        if not validation_result["is_valid"]:
+            return {
+                "synthesis_success": False,
+                "error": f"분석에 필요한 데이터가 부족합니다: {validation_result['missing_data']}",
+                "required_data": validation_result["required_data"],
+                "available_data": validation_result["available_data"],
+                "recommendation": "DART API 키 설정, PDF 파일 제공, 또는 Manus Agent 활성화가 필요합니다.",
+            }
+
         expert_results = []
         analysis_start_time = time.time()
 
         for expert in experts:
             try:
                 logger.info(f"👨‍💼 전문가 분석 시작: {expert.name}")
+
+                # 🔧 PDF 인터페이스 추출 (폴백 제거)
+                extracted_pdf_interface = None
+                if manus_collected_data and manus_collected_data.get("pdf_analysis"):
+                    extracted_pdf_interface = manus_collected_data["pdf_analysis"].get(
+                        "pdf_dictionary_interface"
+                    )
+                    if extracted_pdf_interface:
+                        logger.info(f"📄 {expert.name}: PDF 인터페이스 발견")
+                    else:
+                        logger.warning(f"⚠️ {expert.name}: PDF 인터페이스가 없습니다")
+                else:
+                    logger.warning(f"⚠️ {expert.name}: PDF 분석 데이터가 없습니다")
+
+                # 🔧 DART 딕셔너리 검증 (폴백 제거)
+                if dart_reports_dictionary and dart_reports_dictionary.get("success"):
+                    logger.info(f"📋 {expert.name}: DART 딕셔너리 발견")
+                else:
+                    logger.warning(f"⚠️ {expert.name}: DART 딕셔너리가 없습니다")
 
                 # 🚀 종합 분석용 프롬프트 구성
                 comprehensive_prompt = await self._create_expert_specific_context(
@@ -1172,15 +1307,9 @@ class SmartSectorManager:
                     financial_data,
                     enhanced_dart_data,
                     manus_collected_data,
-                    (
-                        manus_collected_data.get("pdf_analysis", {}).get(
-                            "pdf_dictionary_interface"
-                        )
-                        if manus_collected_data
-                        else None
-                    ),  # 🚀 PDF 인터페이스 전달
-                    technical_analysis_data,  # 🎯 기술적 분석 데이터 추가!
-                    dart_reports_dictionary,  # 🚀 DART 보고서 딕셔너리 추가!
+                    extracted_pdf_interface or pdf_interface,
+                    technical_analysis_data,
+                    dart_reports_dictionary,
                 )
 
                 # 🚀 향상된 분석 시스템 (CoT + 5Why + 7Why) 사용
@@ -1230,6 +1359,7 @@ class SmartSectorManager:
                         "expert_name": expert.name,
                         "expertise_area": expert.expertise,
                         "analysis_result": analysis_result,
+                        "analysis_time": time.time() - analysis_start_time,
                         "data_sources_used": self._identify_used_data_sources(
                             financial_data,
                             enhanced_dart_data,
@@ -1237,7 +1367,7 @@ class SmartSectorManager:
                             technical_analysis_data,
                             dart_reports_dictionary,
                         ),
-                        "analysis_timestamp": time.time(),
+                        "cot_verified": cot_found,
                     }
                 )
 
@@ -1250,7 +1380,8 @@ class SmartSectorManager:
                         "expert_name": expert.name,
                         "expertise_area": expert.expertise,
                         "analysis_result": f"분석 실패: {str(e)}",
-                        "error": True,
+                        "analysis_time": time.time() - analysis_start_time,
+                        "error": str(e),
                     }
                 )
 
@@ -1259,17 +1390,67 @@ class SmartSectorManager:
             expert_results, prompt
         )
 
-        total_analysis_time = time.time() - analysis_start_time
+        return synthesis_result
+
+    def _validate_required_data(
+        self,
+        financial_data: Dict,
+        enhanced_dart_data: Dict = None,
+        manus_collected_data: Dict = None,
+        dart_reports_dictionary: Dict = None,
+        technical_analysis_data: Dict = None,
+    ) -> Dict[str, Any]:
+        """
+        🚨 분석에 필요한 데이터 검증 (폴백 제거)
+
+        Returns:
+            Dict: 검증 결과
+        """
+        required_data = []
+        available_data = []
+        missing_data = []
+
+        # 필수 데이터 검증
+        if not financial_data:
+            missing_data.append("재무 데이터")
+        else:
+            available_data.append("재무 데이터")
+            required_data.append("재무 데이터")
+
+        # 선택적 데이터 검증 (있으면 더 좋은 분석 가능)
+        if enhanced_dart_data:
+            available_data.append("DART 데이터")
+        else:
+            missing_data.append("DART 데이터")
+
+        if manus_collected_data:
+            available_data.append("Manus 수집 데이터")
+        else:
+            missing_data.append("Manus 수집 데이터")
+
+        if dart_reports_dictionary:
+            available_data.append("DART 딕셔너리")
+        else:
+            missing_data.append("DART 딕셔너리")
+
+        if technical_analysis_data:
+            available_data.append("기술적 분석 데이터")
+        else:
+            missing_data.append("기술적 분석 데이터")
+
+        # 최소 요구사항: 재무 데이터는 반드시 필요
+        is_valid = len(required_data) > 0
 
         return {
-            "individual_expert_analyses": expert_results,
-            "expert_count": len(experts),
-            "successful_analyses": len(
-                [r for r in expert_results if not r.get("error")]
+            "is_valid": is_valid,
+            "required_data": required_data,
+            "available_data": available_data,
+            "missing_data": missing_data,
+            "data_quality_score": (
+                len(available_data) / (len(available_data) + len(missing_data))
+                if (len(available_data) + len(missing_data)) > 0
+                else 0
             ),
-            "synthesis_result": synthesis_result,
-            "total_analysis_time": f"{total_analysis_time:.2f}초",
-            "data_integration_type": "comprehensive_multi_source",
         }
 
     def _identify_used_data_sources(
@@ -1565,11 +1746,23 @@ class SmartSectorManager:
 
         context_parts = []
 
-        # 기본 정보 (모든 전문가 공통)
-        context_parts.append(f"분석 대상: {stock_name} ({stock_code})")
-        context_parts.append(f"사용자 질문: {user_prompt}")
-        context_parts.append(f"전문가 역할: {expert.name}")
-        context_parts.append(f"분석 포커스: {expert.analysis_focus}")
+        # 🔧 개선된 기본 정보 (프롬프트 반복 방지)
+        context_parts.append(f"**분석 대상**: {stock_name} ({stock_code})")
+        context_parts.append(f"**사용자 요청**: {user_prompt}")
+        context_parts.append(f"**전문가 역할**: {expert.name}")
+        context_parts.append(f"**분석 목표**: {expert.analysis_focus}")
+
+        # 🔧 명확한 분석 지침 추가
+        context_parts.append(
+            """
+**📋 분석 수행 지침**:
+1. 위의 데이터를 기반으로 실제 분석을 수행하세요
+2. "다음과 같은 분석을 진행하겠습니다" 같은 프롬프트 문구는 사용하지 마세요
+3. 바로 구체적인 분석 결과를 제시하세요
+4. 모든 수치는 반드시 출처를 명시하세요
+5. Chain of Thought 방식으로 단계별 사고 과정을 명시하세요
+"""
+        )
 
         # 🚀 PDF 딕셔너리 우선 활용 (섹션 제한 없음!)
         if pdf_interface:
@@ -3592,7 +3785,7 @@ class SmartSectorManager:
         enhanced_dart_data: Dict = None,
         manus_collected_data: Dict = None,
         dart_reports_dictionary: Dict = None,  # 🚀 DART 딕셔너리 추가!
-        target_token_limit: int = 120000,  # 2명 체제에 맞게 증가 (기존 100K → 120K)
+        target_token_limit: int = 800000,  # 2명 체제에 맞게 대폭 증가 (기존 500K → 800K)
     ) -> Dict[str, Any]:
         """
         🎯 토큰 제한에 맞춰 데이터를 최적화합니다.
@@ -3651,29 +3844,32 @@ class SmartSectorManager:
                 # 각 데이터 소스별 우선순위에 따라 압축
                 compression_ratio = target_token_limit / current_tokens
 
-                # 재무데이터 압축 (가장 중요하므로 80% 유지)
+                # 🔧 완화된 압축 비율 적용 (최소 0.1 이상 보장)
+                min_ratio = max(compression_ratio, 0.1)  # 최소 10% 보장
+
+                # 재무데이터 압축 (가장 중요하므로 90% 유지)
                 if financial_data:
                     optimized_data["financial_data"] = self._compress_financial_data(
-                        financial_data, compression_ratio * 0.8
+                        financial_data, min_ratio * 0.9
                     )
 
-                # Enhanced DART 데이터 압축 (70% 유지)
+                # Enhanced DART 데이터 압축 (85% 유지)
                 if enhanced_dart_data:
                     optimized_data["enhanced_dart_data"] = self._compress_dart_data(
-                        enhanced_dart_data, compression_ratio * 0.7
+                        enhanced_dart_data, min_ratio * 0.85
                     )
 
-                # Manus 데이터 압축 (60% 유지)
+                # Manus 데이터 압축 (80% 유지)
                 if manus_collected_data:
                     optimized_data["manus_collected_data"] = self._compress_manus_data(
-                        manus_collected_data, compression_ratio * 0.6
+                        manus_collected_data, min_ratio * 0.8
                     )
 
-                # 🚀 DART 딕셔너리 압축 (50% 유지 - 가장 큰 데이터)
+                # 🚀 DART 딕셔너리 압축 (75% 유지 - 가장 큰 데이터)
                 if dart_reports_dictionary:
                     optimized_data["dart_reports_dictionary"] = (
                         self._compress_dart_dictionary(
-                            dart_reports_dictionary, compression_ratio * 0.5
+                            dart_reports_dictionary, min_ratio * 0.75
                         )
                     )
 

@@ -64,9 +64,26 @@ class AnalystAgent:
     def _setup_langchain_system(self):
         """LangChain 시스템 초기 설정"""
         try:
-            # Memory 시스템 설정
+            # Memory 시스템 설정 (최신 LangChain 버전 호환)
+            try:
+                from langchain.memory import ConversationBufferMemory
+
             self.memory_system = ConversationBufferMemory(
                 memory_key="analysis_history", return_messages=True
+                )
+            except ImportError:
+                # 최신 버전에서는 다른 방식 사용
+                try:
+                    from langchain_core.memory import ConversationBufferMemory
+
+                    self.memory_system = ConversationBufferMemory(
+                        memory_key="analysis_history", return_messages=True
+                    )
+                except ImportError:
+                    # 폴백: 메모리 시스템 비활성화
+                    self.memory_system = None
+                    print(
+                        f"⚠️ {self.name} 메모리 시스템 초기화 실패 - 최신 LangChain 버전 확인 필요"
             )
 
             # 성능 지표 초기화

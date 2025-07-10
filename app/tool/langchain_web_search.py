@@ -180,23 +180,16 @@ class LangChainWebSearchTool:
 
         except Exception as e:
             logger.error(f"❌ DuckDuckGo 검색 실패: {e}")
-            # 폴백: 시뮬레이션 결과 반환
+            # ❌ 검색 실패 - 명확한 오류 반환
             return {
-                "success": True,
+                "success": False,
+                "error": f"DuckDuckGo 검색에 실패했습니다: {str(e)}",
                 "query": query,
                 "engine": "duckduckgo",
                 "language": language,
-                "results": [
-                    {
-                        "title": f"{query} 관련 정보",
-                        "url": f"https://duckduckgo.com/?q={encoded_query}",
-                        "snippet": f"{query}에 대한 검색 결과입니다. 실제 검색을 위해 DuckDuckGo를 방문하세요.",
-                        "source": "duckduckgo",
-                    }
-                ],
-                "total_results": 1,
-                "search_url": f"https://duckduckgo.com/?q={encoded_query}",
-                "note": "실제 검색 API 호출 실패로 기본 결과 제공",
+                "results": [],
+                "recommendation": "검색 API 키 설정 또는 네트워크 연결을 확인하세요.",
+                "required_action": "검색 API 키 설정 또는 네트워크 연결 확인 필요",
             }
 
     def _search_bing(

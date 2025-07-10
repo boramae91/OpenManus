@@ -743,8 +743,11 @@ class FinancialDataCollector:
         return len(stock_code) == 6 and stock_code.isdigit()
 
     def _get_fallback_company_info(self, stock_code: str) -> Dict[str, Any]:
-        """DART API 실패시 폴백 데이터"""
+        """DART API 실패시 명확한 오류 반환 (폴백 제거)"""
+        logger.error(f"❌ DART API 연결 실패: {stock_code}")
         return {
+            "success": False,
+            "error": f"DART API 연결에 실패했습니다: {stock_code}",
             "corp_name": f"종목코드_{stock_code}",
             "corp_code": "정보없음",
             "business_summary": "DART API 연결 실패",
@@ -752,11 +755,16 @@ class FinancialDataCollector:
             "listing_date": "정보없음",
             "ceo_name": "정보없음",
             "address": "정보없음",
+            "recommendation": "DART API 키 설정이 필요합니다. https://opendart.fss.or.kr/ 에서 API 키를 발급받으세요.",
+            "required_action": "DART_API_KEY 환경변수 설정 필요",
         }
 
     def _get_fallback_financial_data(self) -> Dict[str, Any]:
-        """DART API 실패시 폴백 재무데이터"""
+        """DART API 실패시 명확한 오류 반환 (폴백 제거)"""
+        logger.error("❌ DART API 연결 실패로 재무 데이터 수집 불가")
         return {
+            "success": False,
+            "error": "DART API 연결 실패로 재무 데이터를 수집할 수 없습니다.",
             "revenue": 0,
             "operating_profit": 0,
             "net_income": 0,
@@ -764,8 +772,9 @@ class FinancialDataCollector:
             "total_liabilities": 0,
             "total_equity": 0,
             "cash_and_equivalents": 0,
-            "data_source": "fallback_no_dart_connection",
-            "note": "DART API 연결 실패로 기본값 사용",
+            "data_source": "dart_api_failed",
+            "recommendation": "DART API 키 설정이 필요합니다. https://opendart.fss.or.kr/ 에서 API 키를 발급받으세요.",
+            "required_action": "DART_API_KEY 환경변수 설정 필요",
         }
 
     def _assess_data_quality(self, info: Dict) -> str:

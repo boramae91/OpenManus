@@ -44,14 +44,10 @@ class DuckDuckGoSearchEngine(WebSearchEngine):
                             description=getattr(item, "body", None),
                         )
                     )
-                except Exception:
-                    # Fallback
-                    results.append(
-                        SearchItem(
-                            title=f"DuckDuckGo Result {i + 1}",
-                            url=str(item),
-                            description=None,
-                        )
-                    )
+                except Exception as e:
+                    # ❌ 검색 결과 파싱 실패 - 명확한 오류 반환
+                    logger.error(f"❌ DuckDuckGo 검색 결과 파싱 실패: {e}")
+                    # 실패한 항목은 건너뛰고 계속 진행
+                    continue
 
         return results
