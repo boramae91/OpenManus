@@ -486,10 +486,9 @@ class EnhancedStockAnalysisSystem:
                     else:
                         logger.info("  - PDF 분석: ❌ (없음)")
 
-                    # DART 딕셔너리 상세 로깅
-                    if dart_reports_dictionary and dart_reports_dictionary.get(
-                        "success"
-                    ):
+                    # DART 딕셔너리 상세 로깅 (개선된 검증)
+                    if dart_reports_dictionary:
+                        # 실제 섹션 존재 여부로 검증 (success 필드 무관)
                         business_sections = len(
                             dart_reports_dictionary.get(
                                 "business_report_dictionary", {}
@@ -500,11 +499,105 @@ class EnhancedStockAnalysisSystem:
                                 "quarterly_report_dictionary", {}
                             )
                         )
-                        logger.info(
-                            f"  - DART 딕셔너리: ✅ (사업보고서 {business_sections}개, 분기보고서 {quarterly_sections}개 섹션)"
-                        )
+                        total_sections = business_sections + quarterly_sections
+
+                        if total_sections > 0:
+                            logger.info(
+                                f"  - DART 딕셔너리: ✅ (사업보고서 {business_sections}개, 분기보고서 {quarterly_sections}개 섹션)"
+                            )
+                            # success 필드가 False인 경우 경고
+                            if not dart_reports_dictionary.get("success", True):
+                                logger.warning(
+                                    f"  ⚠️ DART 딕셔너리: success=False이지만 {total_sections}개 섹션 존재"
+                                )
+                        else:
+                            logger.info("  - DART 딕셔너리: ❌ (섹션 없음)")
                     else:
-                        logger.info("  - DART 딕셔너리: ❌ (없음)")
+                        logger.info("  - DART 딕셔너리: ❌ (딕셔너리 자체가 없음)")
+
+                    # 🔍 DART 딕셔너리 전달 전 최종 검증
+                    if dart_reports_dictionary:
+                        # 실제 섹션 데이터가 있는지 재확인
+                        business_dict = dart_reports_dictionary.get(
+                            "business_report_dictionary", {}
+                        )
+                        quarterly_dict = dart_reports_dictionary.get(
+                            "quarterly_report_dictionary", {}
+                        )
+
+                        # 상세한 데이터 구조 로깅
+                        logger.info(f"🔍 DART 딕셔너리 전달 전 상세 검증:")
+                        logger.info(
+                            f"  - dart_reports_dictionary 타입: {type(dart_reports_dictionary)}"
+                        )
+                        logger.info(
+                            f"  - dart_reports_dictionary 키: {list(dart_reports_dictionary.keys())}"
+                        )
+                        logger.info(
+                            f"  - business_report_dictionary 타입: {type(business_dict)}"
+                        )
+                        logger.info(
+                            f"  - business_report_dictionary 길이: {len(business_dict)}"
+                        )
+                        logger.info(
+                            f"  - quarterly_report_dictionary 타입: {type(quarterly_dict)}"
+                        )
+                        logger.info(
+                            f"  - quarterly_report_dictionary 길이: {len(quarterly_dict)}"
+                        )
+
+                        # 실제 섹션 내용 샘플 로깅
+                        if business_dict:
+                            business_keys = list(business_dict.keys())[:3]  # 상위 3개만
+                            logger.info(
+                                f"  - business_report_dictionary 샘플 키: {business_keys}"
+                            )
+                            for key in business_keys:
+                                content_length = len(str(business_dict[key]))
+                                logger.info(f"    - {key}: {content_length}자")
+
+                        if quarterly_dict:
+                            quarterly_keys = list(quarterly_dict.keys())[
+                                :3
+                            ]  # 상위 3개만
+                            logger.info(
+                                f"  - quarterly_report_dictionary 샘플 키: {quarterly_keys}"
+                            )
+                            for key in quarterly_keys:
+                                content_length = len(str(quarterly_dict[key]))
+                                logger.info(f"    - {key}: {content_length}자")
+
+                        if not business_dict and not quarterly_dict:
+                            logger.warning(
+                                "⚠️ DART 딕셔너리 전달 전 검증 실패: 섹션 데이터가 비어있음"
+                            )
+                            # 빈 딕셔너리 대신 None 전달
+                            dart_reports_dictionary = None
+                        else:
+                            logger.info(
+                                f"✅ DART 딕셔너리 전달 준비 완료: 사업보고서 {len(business_dict)}개, 분기보고서 {len(quarterly_dict)}개 섹션"
+                            )
+
+                            # 🚀 데이터 구조 보존을 위한 안전장치
+                            # 딕셔너리가 실제로 존재하는지 재확인
+                            if len(business_dict) == 0 and len(quarterly_dict) == 0:
+                                logger.error(
+                                    "❌ 최종 검증 실패: 섹션 데이터가 실제로 비어있습니다"
+                                )
+                                dart_reports_dictionary = None
+                            else:
+                                # 데이터 구조가 올바른지 확인
+                                if not isinstance(
+                                    business_dict, dict
+                                ) or not isinstance(quarterly_dict, dict):
+                                    logger.error(
+                                        "❌ 데이터 구조 오류: 딕셔너리가 아닙니다"
+                                    )
+                                    dart_reports_dictionary = None
+                                else:
+                                    logger.info("✅ 데이터 구조 검증 통과")
+                    else:
+                        logger.warning("⚠️ DART 딕셔너리가 None입니다")
 
                     # 🚀 통합 데이터로 CrewAI 섹터별 전문가 분석 수행 (🎯 GICS 섹터 사전 감지됨!)
                     sector_analysis_result = await self.smart_sector_manager.analyze_with_comprehensive_data(
