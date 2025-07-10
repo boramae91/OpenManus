@@ -458,6 +458,54 @@ class EnhancedStockAnalysisSystem:
                         user_prompt
                     )
 
+                    # 📊 데이터 전달 전 최종 검증 및 로깅
+                    logger.info("🔍 CrewAI 전달 데이터 검증:")
+                    logger.info(
+                        f"  - 재무데이터: {'✅' if financial_data.get('success') else '❌'}"
+                    )
+                    logger.info(
+                        f"  - Enhanced DART: {'✅' if enhanced_dart_data else '❌'}"
+                    )
+                    logger.info(
+                        f"  - Manus 수집: {'✅' if manus_collection_result.get('performed') else '❌'}"
+                    )
+                    logger.info(
+                        f"  - 기술적 분석: {'✅' if technical_analysis_data.get('success') else '❌'}"
+                    )
+                    logger.info(
+                        f"  - DART 딕셔너리: {'✅' if dart_reports_dictionary else '❌'}"
+                    )
+
+                    # PDF 데이터 상세 로깅
+                    if manus_collection_result.get("pdf_analysis"):
+                        pdf_analysis = manus_collection_result["pdf_analysis"]
+                        pdf_sections = len(pdf_analysis.get("pdf_dictionary", {}))
+                        logger.info(
+                            f"  - PDF 분석: {'✅' if pdf_analysis.get('pdf_detected') else '❌'} ({pdf_sections}개 섹션)"
+                        )
+                    else:
+                        logger.info("  - PDF 분석: ❌ (없음)")
+
+                    # DART 딕셔너리 상세 로깅
+                    if dart_reports_dictionary and dart_reports_dictionary.get(
+                        "success"
+                    ):
+                        business_sections = len(
+                            dart_reports_dictionary.get(
+                                "business_report_dictionary", {}
+                            )
+                        )
+                        quarterly_sections = len(
+                            dart_reports_dictionary.get(
+                                "quarterly_report_dictionary", {}
+                            )
+                        )
+                        logger.info(
+                            f"  - DART 딕셔너리: ✅ (사업보고서 {business_sections}개, 분기보고서 {quarterly_sections}개 섹션)"
+                        )
+                    else:
+                        logger.info("  - DART 딕셔너리: ❌ (없음)")
+
                     # 🚀 통합 데이터로 CrewAI 섹터별 전문가 분석 수행 (🎯 GICS 섹터 사전 감지됨!)
                     sector_analysis_result = await self.smart_sector_manager.analyze_with_comprehensive_data(
                         user_prompt=user_prompt,

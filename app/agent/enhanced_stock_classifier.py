@@ -174,12 +174,12 @@ class EnhancedStockClassifier(BaseAgent):
 - 거래소: {basic_info.get('exchange', '정보없음')}
 
 💰 **시장 데이터:**
-- 현재 주가: {current_price_info.get('current_price', 'N/A'):,} {basic_info.get('currency', 'KRW')}
-- 시가총액: {self._format_large_number(current_price_info.get('market_cap', 0))}
+- 현재 주가: {f"{current_price_info.get('current_price'):,}" if isinstance(current_price_info.get('current_price'), (int, float)) and current_price_info.get('current_price') is not None else current_price_info.get('current_price', 'N/A')} {basic_info.get('currency', 'KRW')}
+- 시가총액: {f"{current_price_info.get('market_cap'):,}" if isinstance(current_price_info.get('market_cap'), (int, float)) and current_price_info.get('market_cap') is not None else current_price_info.get('market_cap', 'N/A')}
 - 발행주식수: {self._format_large_number(current_price_info.get('shares_outstanding', 0))}
-- 거래량: {current_price_info.get('volume', 'N/A'):,}
+- 거래량: {f"{current_price_info.get('volume'):,}" if isinstance(current_price_info.get('volume'), (int, float)) and current_price_info.get('volume') is not None else current_price_info.get('volume', 'N/A')}
 
-📊 **핵심 재무지표:**
+�� **핵심 재무지표:**
 - PER (주가수익비율): {financial_ratios.get('pe_ratio', 'N/A')}
 - PBR (주가순자산비율): {financial_ratios.get('pb_ratio', 'N/A')}
 - PSR (주가매출비율): {financial_ratios.get('ps_ratio', 'N/A')}

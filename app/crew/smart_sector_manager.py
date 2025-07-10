@@ -1263,13 +1263,26 @@ class SmartSectorManager:
             technical_analysis_data,
         )
 
+        # 📄 PDF 데이터 가용성 전용 검증
+        pdf_validation = self._validate_pdf_data_availability(
+            manus_collected_data, dart_reports_dictionary
+        )
+
+        # 📊 데이터 가용성 메시지 생성
+        data_availability_message = self._create_data_availability_message(
+            validation_result, pdf_validation
+        )
+
         if not validation_result["is_valid"]:
             return {
                 "synthesis_success": False,
-                "error": f"분석에 필요한 데이터가 부족합니다: {validation_result['missing_data']}",
+                "error": f"분석에 필요한 데이터가 부족합니다: {', '.join(validation_result['missing_data'])}",
                 "required_data": validation_result["required_data"],
                 "available_data": validation_result["available_data"],
-                "recommendation": "DART API 키 설정, PDF 파일 제공, 또는 Manus Agent 활성화가 필요합니다.",
+                "data_quality_score": validation_result["data_quality_score"],
+                "pdf_validation": pdf_validation,
+                "data_availability_message": data_availability_message,
+                "recommendations": validation_result["recommendations"],
             }
 
         expert_results = []
@@ -1279,24 +1292,72 @@ class SmartSectorManager:
             try:
                 logger.info(f"👨‍💼 전문가 분석 시작: {expert.name}")
 
-                # 🔧 PDF 인터페이스 추출 (폴백 제거)
+                # 🔧 PDF 인터페이스 추출 및 상세 로깅
                 extracted_pdf_interface = None
+                pdf_sections_count = 0
+
                 if manus_collected_data and manus_collected_data.get("pdf_analysis"):
-                    extracted_pdf_interface = manus_collected_data["pdf_analysis"].get(
+                    pdf_analysis = manus_collected_data["pdf_analysis"]
+                    extracted_pdf_interface = pdf_analysis.get(
                         "pdf_dictionary_interface"
                     )
-                    if extracted_pdf_interface:
-                        logger.info(f"📄 {expert.name}: PDF 인터페이스 발견")
-                    else:
-                        logger.warning(f"⚠️ {expert.name}: PDF 인터페이스가 없습니다")
-                else:
-                    logger.warning(f"⚠️ {expert.name}: PDF 분석 데이터가 없습니다")
 
-                # 🔧 DART 딕셔너리 검증 (폴백 제거)
-                if dart_reports_dictionary and dart_reports_dictionary.get("success"):
-                    logger.info(f"📋 {expert.name}: DART 딕셔너리 발견")
+                    if extracted_pdf_interface:
+                        pdf_sections_count = len(pdf_analysis.get("pdf_dictionary", {}))
+                        logger.info(
+                            f"📄 {expert.name}: PDF 인터페이스 발견 ({pdf_sections_count}개 섹션)"
+                        )
+                    else:
+                        logger.warning(
+                            f"⚠️ {expert.name}: PDF 인터페이스가 없습니다 (PDF 분석은 완료되었지만 인터페이스 생성 실패)"
+                        )
                 else:
-                    logger.warning(f"⚠️ {expert.name}: DART 딕셔너리가 없습니다")
+                    logger.warning(
+                        f"⚠️ {expert.name}: PDF 분석 데이터가 없습니다 (Manus Agent에서 PDF를 감지하지 못했거나 분석이 수행되지 않음)"
+                    )
+
+                # 🔧 DART 딕셔너리 검증 및 상세 로깅
+                dart_sections_count = 0
+                if dart_reports_dictionary and dart_reports_dictionary.get("success"):
+                    business_sections = len(
+                        dart_reports_dictionary.get("business_report_dictionary", {})
+                    )
+                    quarterly_sections = len(
+                        dart_reports_dictionary.get("quarterly_report_dictionary", {})
+                    )
+                    dart_sections_count = business_sections + quarterly_sections
+
+                    if dart_sections_count > 0:
+                        logger.info(
+                            f"📋 {expert.name}: DART 딕셔너리 발견 (사업보고서 {business_sections}개, 분기보고서 {quarterly_sections}개 섹션)"
+                        )
+                    else:
+                        logger.warning(
+                            f"⚠️ {expert.name}: DART 딕셔너리는 생성되었지만 섹션이 없습니다"
+                        )
+                else:
+                    if dart_reports_dictionary:
+                        error_msg = dart_reports_dictionary.get(
+                            "error", "알 수 없는 오류"
+                        )
+                        logger.warning(
+                            f"⚠️ {expert.name}: DART 딕셔너리 생성 실패 - {error_msg}"
+                        )
+                    else:
+                        logger.warning(
+                            f"⚠️ {expert.name}: DART 딕셔너리가 제공되지 않았습니다"
+                        )
+
+                # 📊 전문가별 데이터 전달 요약
+                total_sections = pdf_sections_count + dart_sections_count
+                if total_sections > 0:
+                    logger.info(
+                        f"🎯 {expert.name}: 총 {total_sections}개 PDF 섹션 전달 완료"
+                    )
+                else:
+                    logger.warning(
+                        f"⚠️ {expert.name}: 전달할 PDF 데이터가 없습니다 (보고서 분석이 제한적일 수 있음)"
+                    )
 
                 # 🚀 종합 분석용 프롬프트 구성
                 comprehensive_prompt = await self._create_expert_specific_context(
@@ -1401,57 +1462,289 @@ class SmartSectorManager:
         technical_analysis_data: Dict = None,
     ) -> Dict[str, Any]:
         """
-        🚨 분석에 필요한 데이터 검증 (폴백 제거)
+        🚨 필수 데이터 유효성 검사 (폴백 제거, 명확한 오류 반환)
+
+        Args:
+            financial_data: 재무데이터
+            enhanced_dart_data: Enhanced DART 데이터
+            manus_collected_data: Manus 수집 데이터
+            dart_reports_dictionary: DART 보고서 딕셔너리
+            technical_analysis_data: 기술적 분석 데이터
 
         Returns:
-            Dict: 검증 결과
+            Dict: 검증 결과 및 누락된 데이터 정보
         """
-        required_data = []
-        available_data = []
-        missing_data = []
+        validation_result = {
+            "is_valid": True,
+            "missing_data": [],
+            "available_data": [],
+            "required_data": [],
+            "data_quality_score": 0,
+            "recommendations": [],
+        }
+
+        # 필수 데이터 목록 정의
+        required_data_types = [
+            ("재무데이터", financial_data, "yfinance 또는 DART API에서 수집"),
+            ("기술적 분석 데이터", technical_analysis_data, "yfinance에서 계산된 지표"),
+        ]
+
+        # 선택적 데이터 목록 정의
+        optional_data_types = [
+            ("Enhanced DART 데이터", enhanced_dart_data, "DART API 키 필요"),
+            ("Manus 수집 데이터", manus_collected_data, "Manus Agent 활성화 필요"),
+            (
+                "DART 보고서 딕셔너리",
+                dart_reports_dictionary,
+                "DART API에서 사업보고서/분기보고서 필요",
+            ),
+        ]
 
         # 필수 데이터 검증
-        if not financial_data:
-            missing_data.append("재무 데이터")
-        else:
-            available_data.append("재무 데이터")
-            required_data.append("재무 데이터")
+        for data_name, data, requirement in required_data_types:
+            validation_result["required_data"].append(
+                {"name": data_name, "requirement": requirement, "status": "필수"}
+            )
 
-        # 선택적 데이터 검증 (있으면 더 좋은 분석 가능)
-        if enhanced_dart_data:
-            available_data.append("DART 데이터")
-        else:
-            missing_data.append("DART 데이터")
+            if data and isinstance(data, dict):
+                if data.get("success") or data.get("detected") or len(data) > 0:
+                    validation_result["available_data"].append(data_name)
+                    validation_result["data_quality_score"] += 50  # 필수 데이터는 50점
+                else:
+                    validation_result["missing_data"].append(f"{data_name} (수집 실패)")
+                    validation_result["is_valid"] = False
+            else:
+                validation_result["missing_data"].append(f"{data_name} (없음)")
+                validation_result["is_valid"] = False
 
-        if manus_collected_data:
-            available_data.append("Manus 수집 데이터")
-        else:
-            missing_data.append("Manus 수집 데이터")
+        # 선택적 데이터 검증
+        for data_name, data, requirement in optional_data_types:
+            if data and isinstance(data, dict):
+                if data.get("success") or data.get("performed") or len(data) > 0:
+                    validation_result["available_data"].append(data_name)
+                    validation_result[
+                        "data_quality_score"
+                    ] += 10  # 선택적 데이터는 10점씩
+                else:
+                    validation_result["missing_data"].append(f"{data_name} (처리 실패)")
+            else:
+                validation_result["missing_data"].append(f"{data_name} (없음)")
 
-        if dart_reports_dictionary:
-            available_data.append("DART 딕셔너리")
-        else:
-            missing_data.append("DART 딕셔너리")
+        # 구체적인 권장사항 생성
+        recommendations = []
 
-        if technical_analysis_data:
-            available_data.append("기술적 분석 데이터")
-        else:
-            missing_data.append("기술적 분석 데이터")
+        if "재무데이터" in validation_result["missing_data"]:
+            recommendations.append(
+                "💡 재무데이터 수집 실패: yfinance API 연결 상태를 확인하세요"
+            )
 
-        # 최소 요구사항: 재무 데이터는 반드시 필요
-        is_valid = len(required_data) > 0
+        if "기술적 분석 데이터" in validation_result["missing_data"]:
+            recommendations.append("💡 기술적 분석 실패: 주가 데이터 수집이 필요합니다")
 
-        return {
-            "is_valid": is_valid,
-            "required_data": required_data,
-            "available_data": available_data,
-            "missing_data": missing_data,
-            "data_quality_score": (
-                len(available_data) / (len(available_data) + len(missing_data))
-                if (len(available_data) + len(missing_data)) > 0
-                else 0
-            ),
+        if "Enhanced DART 데이터" in validation_result["missing_data"]:
+            recommendations.append(
+                "💡 DART 데이터 없음: DART API 키 설정이 필요합니다 (config_example.env 참조)"
+            )
+
+        if "Manus 수집 데이터" in validation_result["missing_data"]:
+            recommendations.append(
+                "💡 Manus 데이터 없음: Manus Agent가 비활성화되어 있습니다"
+            )
+
+        if "DART 보고서 딕셔너리" in validation_result["missing_data"]:
+            recommendations.append(
+                "💡 DART 보고서 딕셔너리 없음: 사업보고서/분기보고서가 존재하지 않거나 다운로드에 실패했습니다"
+            )
+
+        validation_result["recommendations"] = recommendations
+
+        # 데이터 품질 점수 정규화 (0-100)
+        validation_result["data_quality_score"] = min(
+            validation_result["data_quality_score"], 100
+        )
+
+        # 상세 로깅
+        logger.info("🔍 데이터 유효성 검사 결과:")
+        logger.info(f"  - 검증 통과: {'✅' if validation_result['is_valid'] else '❌'}")
+        logger.info(
+            f"  - 데이터 품질 점수: {validation_result['data_quality_score']}/100"
+        )
+        logger.info(
+            f"  - 사용 가능한 데이터: {', '.join(validation_result['available_data'])}"
+        )
+        if validation_result["missing_data"]:
+            logger.warning(
+                f"  - 누락된 데이터: {', '.join(validation_result['missing_data'])}"
+            )
+        if recommendations:
+            logger.info(f"  - 권장사항: {'; '.join(recommendations)}")
+
+        return validation_result
+
+    def _validate_pdf_data_availability(
+        self, manus_collected_data: Dict = None, dart_reports_dictionary: Dict = None
+    ) -> Dict[str, Any]:
+        """
+        📄 PDF 데이터 가용성 전용 검증
+
+        Args:
+            manus_collected_data: Manus 수집 데이터
+            dart_reports_dictionary: DART 보고서 딕셔너리
+
+        Returns:
+            Dict: PDF 데이터 검증 결과
+        """
+        pdf_validation = {
+            "pdf_analysis_available": False,
+            "dart_dictionary_available": False,
+            "pdf_analysis_reason": "",
+            "dart_dictionary_reason": "",
+            "total_pdf_sections": 0,
+            "recommendations": [],
         }
+
+        # PDF 분석 데이터 검증
+        if manus_collected_data and manus_collected_data.get("pdf_analysis"):
+            pdf_analysis = manus_collected_data["pdf_analysis"]
+            if pdf_analysis.get("pdf_detected") and pdf_analysis.get(
+                "analysis_completed"
+            ):
+                pdf_validation["pdf_analysis_available"] = True
+                pdf_validation["total_pdf_sections"] += len(
+                    pdf_analysis.get("pdf_dictionary", {})
+                )
+                logger.info(
+                    f"📄 PDF 분석 데이터 발견: {pdf_validation['total_pdf_sections']}개 섹션"
+                )
+            else:
+                pdf_validation["pdf_analysis_reason"] = (
+                    "PDF가 감지되지 않았거나 분석이 완료되지 않았습니다"
+                )
+                logger.warning(
+                    f"⚠️ PDF 분석 실패: {pdf_validation['pdf_analysis_reason']}"
+                )
+        else:
+            pdf_validation["pdf_analysis_reason"] = (
+                "Manus Agent에서 PDF 분석 데이터가 수집되지 않았습니다"
+            )
+            logger.warning(
+                f"⚠️ PDF 분석 데이터 없음: {pdf_validation['pdf_analysis_reason']}"
+            )
+
+        # DART 딕셔너리 검증
+        if dart_reports_dictionary and dart_reports_dictionary.get("success"):
+            business_sections = len(
+                dart_reports_dictionary.get("business_report_dictionary", {})
+            )
+            quarterly_sections = len(
+                dart_reports_dictionary.get("quarterly_report_dictionary", {})
+            )
+            total_sections = business_sections + quarterly_sections
+
+            if total_sections > 0:
+                pdf_validation["dart_dictionary_available"] = True
+                pdf_validation["total_pdf_sections"] += total_sections
+                logger.info(
+                    f"📋 DART 딕셔너리 발견: 사업보고서 {business_sections}개, 분기보고서 {quarterly_sections}개 섹션"
+                )
+            else:
+                pdf_validation["dart_dictionary_reason"] = (
+                    "DART에서 보고서를 찾을 수 없거나 섹션이 생성되지 않았습니다"
+                )
+                logger.warning(
+                    f"⚠️ DART 딕셔너리 실패: {pdf_validation['dart_dictionary_reason']}"
+                )
+        else:
+            if dart_reports_dictionary:
+                pdf_validation["dart_dictionary_reason"] = (
+                    f"DART 딕셔너리 생성 실패: {dart_reports_dictionary.get('error', '알 수 없는 오류')}"
+                )
+            else:
+                pdf_validation["dart_dictionary_reason"] = (
+                    "DART 딕셔너리가 제공되지 않았습니다"
+                )
+            logger.warning(
+                f"⚠️ DART 딕셔너리 없음: {pdf_validation['dart_dictionary_reason']}"
+            )
+
+        # 권장사항 생성
+        if not pdf_validation["pdf_analysis_available"]:
+            pdf_validation["recommendations"].append(
+                "📄 PDF 분석 개선: Manus Agent가 PDF 파일을 감지하고 분석할 수 있도록 웹 검색을 활성화하세요"
+            )
+
+        if not pdf_validation["dart_dictionary_available"]:
+            pdf_validation["recommendations"].append(
+                "📋 DART 딕셔너리 개선: DART API 키를 설정하고, 해당 기업의 사업보고서/분기보고서가 존재하는지 확인하세요"
+            )
+
+        # 최종 상태 로깅
+        if pdf_validation["total_pdf_sections"] > 0:
+            logger.info(
+                f"✅ PDF 데이터 총 {pdf_validation['total_pdf_sections']}개 섹션 사용 가능"
+            )
+        else:
+            logger.warning("❌ 사용 가능한 PDF 데이터가 없습니다")
+
+        return pdf_validation
+
+    def _create_data_availability_message(
+        self, validation_result: Dict, pdf_validation: Dict
+    ) -> str:
+        """
+        📊 데이터 가용성 상태를 사용자 친화적으로 설명하는 메시지 생성
+
+        Args:
+            validation_result: 전체 데이터 검증 결과
+            pdf_validation: PDF 데이터 검증 결과
+
+        Returns:
+            str: 사용자 친화적인 상태 메시지
+        """
+        message_parts = []
+
+        # 전체 상태
+        if validation_result["is_valid"]:
+            message_parts.append("✅ 분석에 필요한 기본 데이터가 모두 준비되었습니다")
+        else:
+            message_parts.append(
+                "⚠️ 일부 필수 데이터가 누락되어 분석 품질이 제한될 수 있습니다"
+            )
+
+        # 데이터 품질 점수
+        quality_score = validation_result["data_quality_score"]
+        if quality_score >= 80:
+            message_parts.append(f"📊 데이터 품질: 우수 ({quality_score}/100)")
+        elif quality_score >= 60:
+            message_parts.append(f"📊 데이터 품질: 양호 ({quality_score}/100)")
+        elif quality_score >= 40:
+            message_parts.append(f"📊 데이터 품질: 보통 ({quality_score}/100)")
+        else:
+            message_parts.append(f"📊 데이터 품질: 제한적 ({quality_score}/100)")
+
+        # 사용 가능한 데이터
+        available_data = validation_result["available_data"]
+        if available_data:
+            message_parts.append(f"📋 사용 가능한 데이터: {', '.join(available_data)}")
+
+        # PDF 데이터 상태
+        if pdf_validation["total_pdf_sections"] > 0:
+            message_parts.append(
+                f"📄 PDF 데이터: {pdf_validation['total_pdf_sections']}개 섹션 사용 가능"
+            )
+        else:
+            message_parts.append("📄 PDF 데이터: 없음 (보고서 분석이 제한적일 수 있음)")
+
+        # 권장사항
+        all_recommendations = (
+            validation_result["recommendations"] + pdf_validation["recommendations"]
+        )
+        if all_recommendations:
+            message_parts.append("💡 개선 권장사항:")
+            for rec in all_recommendations[:3]:  # 상위 3개만 표시
+                message_parts.append(f"   • {rec}")
+
+        return "\n".join(message_parts)
 
     def _identify_used_data_sources(
         self,

@@ -829,9 +829,9 @@ class FinancialDataCollector:
 - 산업: {basic_info.get('industry', '정보없음')}
 - 거래소: {basic_info.get('exchange', '정보없음')}
 
-💰 현재 주가 정보:
-- 현재가: {current_price_info.get('current_price', 'N/A'):,} {basic_info.get('currency', 'KRW')}
-- 시가총액: {current_price_info.get('market_cap', 'N/A'):,}
+�� 현재 주가 정보:
+- 현재가: {f"{current_price_info.get('current_price'):,}" if isinstance(current_price_info.get('current_price'), (int, float)) and current_price_info.get('current_price') is not None else current_price_info.get('current_price', 'N/A')} {basic_info.get('currency', 'KRW')}
+- 시가총액: {f"{current_price_info.get('market_cap'):,}" if isinstance(current_price_info.get('market_cap'), (int, float)) and current_price_info.get('market_cap') is not None else current_price_info.get('market_cap', 'N/A')}
 - 52주 최고가: {price_history.get('52_week_high', 'N/A')}
 - 52주 최저가: {price_history.get('52_week_low', 'N/A')}
 - 1년 수익률: {price_history.get('price_change_1y', 'N/A'):.2f if price_history.get('price_change_1y') is not None else 'N/A'}%
