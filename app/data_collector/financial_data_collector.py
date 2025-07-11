@@ -839,13 +839,13 @@ class FinancialDataCollector:
 📈 주요 재무 지표:
 - PER (주가수익비율): {financial_ratios.get('pe_ratio', 'N/A')}
 - PBR (주가순자산비율): {financial_ratios.get('pb_ratio', 'N/A')}
-- ROE (자기자본이익률): {financial_ratios.get('return_on_equity', 'N/A'):.2% if financial_ratios.get('return_on_equity') is not None else 'N/A'}
+- ROE (자기자본이익률): {f"{financial_ratios.get('return_on_equity'):.2%}" if financial_ratios.get('return_on_equity') is not None else 'N/A'}
 - 부채비율: {financial_ratios.get('debt_ratio', 'N/A')}
-- 배당수익률: {financial_ratios.get('dividend_yield', 'N/A'):.2% if financial_ratios.get('dividend_yield') is not None else 'N/A'}
+- 배당수익률: {f"{financial_ratios.get('dividend_yield'):.2%}" if financial_ratios.get('dividend_yield') is not None else 'N/A'}
 
 📊 성장성 지표:
-- 매출 성장률: {growth_metrics.get('revenue_growth', 'N/A'):.3f if growth_metrics.get('revenue_growth') is not None else 'N/A'}
-- 이익 성장률: {growth_metrics.get('earnings_growth', 'N/A'):.3f if growth_metrics.get('earnings_growth') is not None else 'N/A'}
+- 매출 성장률: {f"{growth_metrics.get('revenue_growth'):.3f}" if growth_metrics.get('revenue_growth') is not None else 'N/A'}
+- 이익 성장률: {f"{growth_metrics.get('earnings_growth'):.3f}" if growth_metrics.get('earnings_growth') is not None else 'N/A'}
 
 🔍 데이터 품질: {collected_data.get('data_quality', '정보없음')}
 📅 수집 시간: {stock_info.get('collection_timestamp', 'N/A')}

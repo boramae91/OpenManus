@@ -820,12 +820,12 @@ class EnhancedDartDataCollector:
             logger.info(f"📋 {report_name} 목록 조회 중...")
             time.sleep(self.api_delay)
 
-            # 🔧 수정: 보고서 타입별 최적화된 날짜 범위 검색
+            # 🔧 수정: 보고서 타입별 최적화된 날짜 범위 검색 (더 넓은 범위)
             if report_code == "11011":  # 사업보고서
-                # 사업보고서는 다음 연도 3-5월에 제출됨
+                # 사업보고서는 다음 연도 전체(1~12월)로 넓게 검색해요
                 search_year = int(bsns_year) + 1
-                bgn_de = f"{search_year}0301"  # 다음 연도 3월부터
-                end_de = f"{search_year}0531"  # 다음 연도 5월까지
+                bgn_de = f"{search_year}0101"  # 다음 연도 1월부터
+                end_de = f"{search_year}1231"  # 다음 연도 12월까지
             else:  # 분기보고서, 반기보고서
                 # 분기보고서는 해당 연도 내에 제출됨
                 bgn_de = f"{bsns_year}0101"  # 해당 연도 1월부터
@@ -979,12 +979,12 @@ class EnhancedDartDataCollector:
         try:
             time.sleep(self.api_delay)
 
-            # 🔧 수정: 보고서 타입별 최적화된 날짜 범위 검색
+            # 🔧 수정: 보고서 타입별 최적화된 날짜 범위 검색 (더 넓은 범위)
             if report_code == "11011":  # 사업보고서
-                # 사업보고서는 다음 연도 3-5월에 제출됨
+                # 사업보고서는 다음 연도 전체(1~12월)로 넓게 검색해요
                 search_year = int(bsns_year) + 1
-                bgn_de = f"{search_year}0301"  # 다음 연도 3월부터
-                end_de = f"{search_year}0531"  # 다음 연도 5월까지
+                bgn_de = f"{search_year}0101"  # 다음 연도 1월부터
+                end_de = f"{search_year}1231"  # 다음 연도 12월까지
             else:  # 분기보고서, 반기보고서
                 # 분기보고서는 해당 연도 내에 제출됨
                 bgn_de = f"{bsns_year}0101"  # 해당 연도 1월부터

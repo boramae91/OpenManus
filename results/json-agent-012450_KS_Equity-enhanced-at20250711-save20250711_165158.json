@@ -1,0 +1,1047 @@
+{
+  "user_prompt": "한화에어로스페이스 분석해줘",
+  "timestamp": "2025-07-11T16:50:03.620276",
+  "response": {
+    "comprehensive_summary": {
+      "analysis_overview": {
+        "analyzed_stock": {
+          "name": "한화에어로스페이스",
+          "code": "012450",
+          "sector": "산업재"
+        },
+        "expert_team": {
+          "activated_experts": [
+            "산업재 통합 재무분석가",
+            "산업재 기술적 분석가"
+          ],
+          "expert_count": 2,
+          "analysis_depth": "quick"
+        },
+        "analysis_quality": {
+          "data_integration_success": false,
+          "total_analysis_time": "알 수 없음",
+          "data_sources_count": 0
+        }
+      },
+      "key_findings": {
+        "investment_highlights": [
+          "투자 포인트 정보를 추출할 수 없습니다."
+        ],
+        "risk_factors": [
+          "리스크 요인 정보를 추출할 수 없습니다."
+        ],
+        "investment_recommendation": {
+          "recommendation": "보유",
+          "confidence_level": "보통",
+          "reasoning": "투자 의견을 명확히 추출할 수 없습니다."
+        },
+        "target_price_analysis": {
+          "target_price": "제시되지 않음",
+          "valuation_method": "알 수 없음",
+          "analysis_basis": "전문가 종합 의견"
+        }
+      },
+      "expert_consensus": {
+        "agreement_level": "알 수 없음",
+        "consensus_points": [],
+        "divergent_views": []
+      }
+    },
+    "individual_expert_analyses": [],
+    "analysis_metadata": {
+      "generation_timestamp": "2025-07-11T16:51:58.883524",
+      "analysis_type": "crewai_comprehensive_analysis",
+      "successful_expert_count": 0,
+      "total_expert_count": 0,
+      "data_integration_quality": {
+        "overall_score": 10.0,
+        "quality_grade": "개선필요",
+        "total_possible_score": 100.0,
+        "achieved_score": 10.0,
+        "details": {
+          "financial_data_score": 10,
+          "dart_data_score": 0
+        },
+        "data_sources_count": 2
+      },
+      "cost_optimization": {
+        "traditional_cost": 0.5,
+        "two_agent_cost": 0.2,
+        "actual_cost": 0.2,
+        "savings_amount": 0.3,
+        "savings_percentage": 60.0,
+        "activated_agents": 2,
+        "analysis_mode": "2명 체제 (통합 재무분석가 + 기술적 분석가)",
+        "depth": "quick"
+      },
+      "token_optimization": {
+        "optimization_applied": false,
+        "original_token_estimate": 21094,
+        "optimized_token_estimate": 41094,
+        "compression_ratio": 1.948136910969944
+      }
+    }
+  },
+  "analysis_flow": "enhanced_manus_first_crewai_synthesis",
+  "success": false,
+  "steps": {
+    "step0_intent_analysis": {
+      "primary_intent": "일반문의",
+      "secondary_intents": [],
+      "confidence": 0.3,
+      "analysis_focus": "종합분석",
+      "data_priority": "기본",
+      "keywords": []
+    },
+    "step1_stock_detection": {
+      "detected": true,
+      "stock_name": "한화에어로스페이스",
+      "stock_code": "012450",
+      "detection_method": "ai_ai_web_search_priority",
+      "ticker_bbg": "012450 KS Equity",
+      "gics_sector": "Industrials",
+      "mapped_company_name": "HANWHA AEROSPACE CO LTD",
+      "market_index": "KOSPI Index",
+      "original_stock_code": "012450",
+      "original_stock_name": "한화에어로스페이스"
+    },
+    "step2_financial_data": {
+      "stock_info": {
+        "stock_code": "012450",
+        "stock_name": "한화에어로스페이스",
+        "collection_timestamp": "2025-07-11T16:50:28.616980"
+      },
+      "success": true,
+      "errors": [],
+      "data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "current_price": 806000.0,
+      "market_cap": 38536149467136,
+      "earnings_growth": null,
+      "revenue_growth": null,
+      "is_sample_data": false,
+      "company_name": "Hanwha Aerospace Co., Ltd.",
+      "sector": "Industrials",
+      "industry": "Aerospace & Defense",
+      "pe_ratio": null,
+      "pb_ratio": null,
+      "dividend_yield": 0.41,
+      "beta": 0.755,
+      "volume": 255031,
+      "avg_volume": 285430,
+      "high_52week": 987000.0,
+      "low_52week": 270000.0,
+      "dart_info": {
+        "company_info": {
+          "corp_name": "한화에어로스페이스(주)",
+          "corp_code": "00126566",
+          "business_summary": "6098102992",
+          "established_date": "19770801",
+          "listing_date": "12",
+          "ceo_name": "김동관, 손재일, Michael Coulter",
+          "address": "경상남도 창원시 성산구  창원대로 1204"
+        },
+        "financial_statements": {
+          "current_assets": 22867968340831,
+          "non_current_assets": 20468905344642,
+          "total_assets": 17364759288308,
+          "current_liabilities": 25516144577239,
+          "non_current_liabilities": 6456412360924,
+          "total_liabilities": 13843180975323,
+          "total_equity": 3521578312985,
+          "revenue": 7935101827678,
+          "operating_profit": 1499700414775,
+          "net_income": 1038040280457,
+          "debt_ratio": 3.93,
+          "operating_margin": 0.189,
+          "net_margin": 0.1308
+        },
+        "business_report": {
+          "main_business": "법인고유번호 00126566 기업의 주요사업",
+          "business_risks": "시장변동성, 경쟁심화 등",
+          "future_plans": "사업확장 및 기술개발 계획"
+        }
+      }
+    },
+    "step2_technical_analysis_data": {
+      "success": true,
+      "stock_code": "012450",
+      "ticker_symbol": "012450.KS",
+      "data_period": "1y",
+      "total_days": 242,
+      "last_update": "2025-07-11",
+      "current_snapshot": {
+        "price": 806000.0,
+        "volume": 255031,
+        "date": "2025-07-11"
+      },
+      "technical_indicators": {
+        "moving_averages": {
+          "MA_5": 825800.0,
+          "MA_20": 869600.0,
+          "MA_60": 850544.88125,
+          "MA_120": 719809.940625,
+          "MA_200": 569013.81671875
+        },
+        "rsi": {
+          "current_value": 32.82674772036475,
+          "interpretation": "중립",
+          "signal": "관망",
+          "period": 14
+        },
+        "macd": {
+          "MACD_line": -14497.406503403676,
+          "signal_line": -7787.312936591022,
+          "histogram": -6710.093566812654,
+          "signal_interpretation": "하락 추세 지속",
+          "parameters": "(12, 26, 9)"
+        },
+        "bollinger_bands": {
+          "upper_band": 981876.7258067906,
+          "middle_band": 869600.0,
+          "lower_band": 757323.2741932094,
+          "current_price": 806000.0,
+          "band_width_percent": 25.822614031000608,
+          "position_analysis": "밴드 내부 (정상 범위)",
+          "signal": "관망",
+          "parameters": "(20일, 2σ)"
+        },
+        "stochastic": {
+          "K_percent": 27.710843373493976,
+          "D_percent": 39.933270298431175,
+          "interpretation": "하락 모멘텀",
+          "signal": "매도 신호",
+          "parameters": "(14, 3)"
+        },
+        "williams_r": {
+          "current_value": -72.28915662650603,
+          "interpretation": "중립",
+          "signal": "관망",
+          "period": 14
+        },
+        "obv": {
+          "current_value": 9356636,
+          "trend_analysis": "하락 (매도세 우세)",
+          "description": "거래량 누적 지표"
+        },
+        "volume_indicators": {
+          "volume_MA_20": 283855.1,
+          "volume_ratio": 0.8984548806767961
+        }
+      },
+      "support_resistance": {
+        "support_levels": [
+          798339.9375,
+          798000.0,
+          769722.0625
+        ],
+        "resistance_levels": [
+          843000.0,
+          845000.0,
+          862000.0
+        ],
+        "current_price": 806000.0,
+        "analysis_period": "최근 90일",
+        "nearest_support": 798339.9375,
+        "nearest_resistance": 843000.0
+      },
+      "trading_signals": {
+        "individual_signals": [],
+        "signal_strength_score": 0,
+        "overall_signal": "중립",
+        "confidence": 0,
+        "recommendation": "관망 또는 기존 포지션 유지. 추가 신호 대기."
+      },
+      "chart_patterns": {
+        "detected_patterns": [
+          "하락 추세 (최근 20일)",
+          "보통 변동성"
+        ],
+        "trend_analysis": "최근 20일 변동률: -10.15%",
+        "volatility_level": "2.85%"
+      },
+      "raw_data_summary": {
+        "start_date": "2024-07-11",
+        "end_date": "2025-07-11",
+        "price_range": {
+          "high": 987000.0,
+          "low": 267117.30347938143,
+          "volatility": 4.324729714148448
+        }
+      }
+    },
+    "step2_enhanced_dart_data": {
+      "success": true,
+      "stock_code": "012450",
+      "company_name": "한화에어로스페이스",
+      "corp_code": "00126566",
+      "bsns_year": "2024",
+      "collected_at": "2025-07-11T16:50:42.072963",
+      "optimization_note": "토큰 최적화: 주주정보/공시정보 제외",
+      "financial_analysis": {
+        "success": true,
+        "corp_code": "00126566",
+        "bsns_year": "2024",
+        "collected_at": "2025-07-11T16:50:42.073962",
+        "individual_statements": {
+          "asset_info": {
+            "current_assets": 22867968340831,
+            "non_current_assets": 20468905344642,
+            "total_assets": 17364759288308
+          },
+          "liability_info": {
+            "current_liabilities": 25516144577239,
+            "non_current_liabilities": 6456412360924,
+            "total_liabilities": 13843180975323
+          },
+          "equity_info": {
+            "capital_stock": 240405805000,
+            "total_equity": 3521578312985
+          },
+          "income_info": {
+            "revenue": 7935101827678,
+            "operating_income": 1499700414775,
+            "net_income": 1038040280457
+          }
+        },
+        "consolidated_statements": {
+          "asset_info": {
+            "current_assets": 22867968340831,
+            "non_current_assets": 20468905344642,
+            "total_assets": 17364759288308
+          },
+          "liability_info": {
+            "current_liabilities": 25516144577239,
+            "non_current_liabilities": 6456412360924,
+            "total_liabilities": 13843180975323
+          },
+          "equity_info": {
+            "capital_stock": 240405805000,
+            "total_equity": 3521578312985
+          },
+          "income_info": {
+            "revenue": 7935101827678,
+            "operating_income": 1499700414775,
+            "net_income": 1038040280457
+          }
+        },
+        "quarterly_performance": [
+          {
+            "asset_info": {
+              "current_assets": 6198629739414,
+              "non_current_assets": 8313848156997,
+              "total_assets": 14512477896411
+            },
+            "liability_info": {
+              "current_liabilities": 8726230333332,
+              "non_current_liabilities": 2714655187929,
+              "total_liabilities": 11440885521261
+            },
+            "equity_info": {
+              "capital_stock": 265650000000,
+              "total_equity": 3071592375150
+            },
+            "income_info": {
+              "revenue": 865174166621,
+              "operating_income": 2143494587,
+              "net_income": 12124618832
+            },
+            "period": "1분기"
+          },
+          {
+            "asset_info": {
+              "current_assets": 7583011238019,
+              "non_current_assets": 8368742738464,
+              "total_assets": 15951753976483
+            },
+            "liability_info": {
+              "current_liabilities": 9950764307690,
+              "non_current_liabilities": 2785674195888,
+              "total_liabilities": 12736438503578
+            },
+            "equity_info": {
+              "capital_stock": 265650000000,
+              "total_equity": 3215315472905
+            },
+            "income_info": {
+              "revenue": 1547103222793,
+              "operating_income": 269353621560,
+              "net_income": 138726219345
+            },
+            "period": "반기"
+          },
+          {
+            "asset_info": {
+              "current_assets": 7458054810032,
+              "non_current_assets": 8294988621896,
+              "total_assets": 15753043431928
+            },
+            "liability_info": {
+              "current_liabilities": 10148886772727,
+              "non_current_liabilities": 2652563610208,
+              "total_liabilities": 12801450382935
+            },
+            "equity_info": {
+              "capital_stock": 240405805000,
+              "total_equity": 2951593048993
+            },
+            "income_info": {
+              "revenue": 1861501690321,
+              "operating_income": 423533787754,
+              "net_income": 323310666203
+            },
+            "period": "3분기"
+          },
+          {
+            "asset_info": {
+              "current_assets": 22867968340831,
+              "non_current_assets": 20468905344642,
+              "total_assets": 17364759288308
+            },
+            "liability_info": {
+              "current_liabilities": 25516144577239,
+              "non_current_liabilities": 6456412360924,
+              "total_liabilities": 13843180975323
+            },
+            "equity_info": {
+              "capital_stock": 240405805000,
+              "total_equity": 3521578312985
+            },
+            "income_info": {
+              "revenue": 7935101827678,
+              "operating_income": 1499700414775,
+              "net_income": 1038040280457
+            },
+            "period": "연간"
+          }
+        ]
+      },
+      "investment_analysis": {
+        "success": true,
+        "corp_code": "00126566",
+        "bsns_year": "2024",
+        "collected_at": "2025-07-11T16:50:43.265463",
+        "dividend_info": [
+          {
+            "dividend_classification": "주당액면가액(원)",
+            "current_year": 5000.0,
+            "previous_year": 5000.0,
+            "two_years_ago": 5000.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "(연결)당기순이익(백만원)",
+            "current_year": 2298945.0,
+            "previous_year": 817510.0,
+            "two_years_ago": 169444.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "(별도)당기순이익(백만원)",
+            "current_year": 1038040.0,
+            "previous_year": 648960.0,
+            "two_years_ago": 306700.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "(연결)주당순이익(원)",
+            "current_year": 45935.0,
+            "previous_year": 16103.0,
+            "two_years_ago": 3344.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "현금배당금총액(백만원)",
+            "current_year": 159133.0,
+            "previous_year": 91025.0,
+            "two_years_ago": 50569.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주식배당금총액(백만원)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "(연결)현금배당성향(%)",
+            "current_year": 6.92,
+            "previous_year": 11.13,
+            "two_years_ago": 29.84,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "현금배당수익률(%)",
+            "current_year": 1.1,
+            "previous_year": 1.4,
+            "two_years_ago": 1.4,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "현금배당수익률(%)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주식배당수익률(%)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주식배당수익률(%)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주당 현금배당금(원)",
+            "current_year": 3500.0,
+            "previous_year": 1800.0,
+            "two_years_ago": 1000.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주당 현금배당금(원)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주당 주식배당(주)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "dividend_classification": "주당 주식배당(주)",
+            "current_year": 0.0,
+            "previous_year": 0.0,
+            "two_years_ago": 0.0,
+            "settlement_date": "2024-12-31"
+          }
+        ],
+        "capital_changes": [
+          {
+            "change_type": "-",
+            "settlement_date": "2024-12-31",
+            "note": "증자감자 실적이 없는 경우 '-' 표시"
+          }
+        ],
+        "other_investments": [
+          {
+            "company_name": "한화시스템㈜",
+            "first_acquisition_date": "2010.09.20",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 208130000000,
+            "ending_shares": 88289321,
+            "ownership_ratio": 47.22,
+            "book_value": 1003013000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜캐스",
+            "first_acquisition_date": "2018.12.31",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 1026000000,
+            "ending_shares": 167200,
+            "ownership_ratio": 19.0,
+            "book_value": 342000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Hanwha Aerospace USA Co.,",
+            "first_acquisition_date": "2019.09.30",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 239682000000,
+            "ending_shares": 1000,
+            "ownership_ratio": 100.0,
+            "book_value": 177723000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜쎄트렉아이",
+            "first_acquisition_date": "2021.04.30",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 58922000000,
+            "ending_shares": 3682791,
+            "ownership_ratio": 33.63,
+            "book_value": 113823000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Hanwha Defense Australia PTY Ltd",
+            "first_acquisition_date": "2022.11.01",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 204000000,
+            "ending_shares": 2500,
+            "ownership_ratio": 100.0,
+            "book_value": 204000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "㈜한화방산",
+            "first_acquisition_date": "2022.12.30",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 852915000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Fortem SAFE Investment",
+            "first_acquisition_date": "2023.02.16",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 12793000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 14700000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "HANWHA PHASOR LTD.",
+            "first_acquisition_date": "2023.02.16",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 68347000000,
+            "ending_shares": 40248237,
+            "ownership_ratio": 50.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Hanwha Futureproof corp.",
+            "first_acquisition_date": "2023.03.23",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 218864000000,
+            "ending_shares": 50190,
+            "ownership_ratio": 50.0,
+            "book_value": 670930000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "PhoenixTailings Safe",
+            "first_acquisition_date": "2023.06.08",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 3902000000,
+            "ending_shares": 455456,
+            "ownership_ratio": 0.0,
+            "book_value": 4410000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "HANWHA AEROSPACE EUROPE LLC.",
+            "first_acquisition_date": "2023.05.09",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 1894000000,
+            "ending_shares": 400000,
+            "ownership_ratio": 100.0,
+            "book_value": 6416000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "서머텍코리아㈜",
+            "first_acquisition_date": "1999.10.30",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 3474000000,
+            "ending_shares": 494779,
+            "ownership_ratio": 49.0,
+            "book_value": 3747000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Hanwha Aerospace Japan",
+            "first_acquisition_date": "2023.11.26",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 9048000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 9089000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Forge Nano",
+            "first_acquisition_date": "2023.05.24",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 9205000000,
+            "ending_shares": 91603,
+            "ownership_ratio": 2.78,
+            "book_value": 9205000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "INFINIDOME LTD",
+            "first_acquisition_date": "2023.04.01",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 6564000000,
+            "ending_shares": 374277,
+            "ownership_ratio": 9.47,
+            "book_value": 6564000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "한화세미텍㈜ (구. 한화정밀기계㈜)",
+            "first_acquisition_date": "2017.07.03",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 95837000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "HANWHA DEFENSE USA,INC",
+            "first_acquisition_date": "2021.05.21",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 16060000000,
+            "ending_shares": 3500,
+            "ownership_ratio": 100.0,
+            "book_value": 33747000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "한화상업설비(상해)유한공사",
+            "first_acquisition_date": "2009.01.15",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 2713000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "한화오션㈜",
+            "first_acquisition_date": "2023.05.23",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 1508557000000,
+            "ending_shares": 70901820,
+            "ownership_ratio": 23.14,
+            "book_value": 1823986000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "한화에비에이션\n㈜",
+            "first_acquisition_date": "2024.03.20",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 54000000000,
+            "ending_shares": 219400,
+            "ownership_ratio": 100.0,
+            "book_value": 109700000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Dyna-Mac Holdings Ltd",
+            "first_acquisition_date": "2024.03.15",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 16853000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Hanwha Ocean SG Holdings Pte. Ltd.",
+            "first_acquisition_date": "2024.09.12",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 3701000000,
+            "ending_shares": 617513921,
+            "ownership_ratio": 73.1,
+            "book_value": 641563000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "한화테크윈(천진)유한공사",
+            "first_acquisition_date": "2009.01.15",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 6455000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "NextDcade",
+            "first_acquisition_date": "2024.07.26",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 108994000000,
+            "ending_shares": 17536368,
+            "ownership_ratio": 6.76,
+            "book_value": 198752000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "한화인더스트리얼솔루션즈\n㈜",
+            "first_acquisition_date": "2024.09.27",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 2580000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "HANWHA AEROSPACE ROMANIA LLC.",
+            "first_acquisition_date": "2024.11.29",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 2839000000,
+            "ending_shares": 9600000,
+            "ownership_ratio": 100.0,
+            "book_value": 2839000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Versarien PLC",
+            "first_acquisition_date": "2020.12.24",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 6192000000,
+            "ending_shares": 9831901,
+            "ownership_ratio": 5.18,
+            "book_value": 7000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "에이엠티엔지니어링",
+            "first_acquisition_date": "2016.04.01",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 350000000,
+            "ending_shares": 49500,
+            "ownership_ratio": 11.0,
+            "book_value": 350000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "한국방위산업진흥회",
+            "first_acquisition_date": "1999.03.11",
+            "investment_purpose": "단순투자",
+            "first_acquisition_amount": 1177000000,
+            "ending_shares": 201712,
+            "ownership_ratio": 17.03,
+            "book_value": 48266000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "P&W NGPF Manufacturing \nCompany Singapore Pte.Ltd.",
+            "first_acquisition_date": "2016.09.27",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 25970000000,
+            "ending_shares": 18750000,
+            "ownership_ratio": 30.0,
+            "book_value": 42399000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "Hanwha Aero Engines Co., Ltd.",
+            "first_acquisition_date": "2017.08.07",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 45243000000,
+            "ending_shares": 0,
+            "ownership_ratio": 100.0,
+            "book_value": 84615000000,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "한화비전㈜",
+            "first_acquisition_date": "2018.04.01",
+            "investment_purpose": "경영참가 등",
+            "first_acquisition_amount": 181250000000,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 0,
+            "settlement_date": "2024-12-31"
+          },
+          {
+            "company_name": "합계",
+            "first_acquisition_date": "-",
+            "investment_purpose": "-",
+            "first_acquisition_amount": 0,
+            "ending_shares": 0,
+            "ownership_ratio": 0.0,
+            "book_value": 5006390000000,
+            "settlement_date": "2024-12-31"
+          }
+        ]
+      }
+    },
+    "step3_information_collection": {
+      "performed": false,
+      "error": "Invalid format specifier '.2% if financial_ratios.get('return_on_equity') is not None else 'N/A'' for object of type 'str'",
+      "primary_intent": "일반문의",
+      "ready_for_crewai": false
+    },
+    "step4_crewai_comprehensive_analysis": {
+      "success": true,
+      "analysis_type": "comprehensive_manus_crewai_synthesis_optimized",
+      "detected_sector": "INDUSTRIALS",
+      "sector_korean_name": "산업재",
+      "gics_sector_used": "Industrials",
+      "activated_experts": [
+        "산업재 통합 재무분석가",
+        "산업재 기술적 분석가"
+      ],
+      "selected_experts_count": 2,
+      "expert_insights": {
+        "synthesis_success": true,
+        "expert_count": 2,
+        "successful_count": 2,
+        "failed_count": 0,
+        "synthesis_content": "### 1. **전문가 간 분석 결과 일관성 검토**\n\n- **일치하는 의견**: \n  - 두 전문가 모두 한화에어로스페이스의 재무 건전성에 주의가 필요하다고 언급했습니다. 높은 부채비율이 그 근거입니다.\n  - 수익성 측면에서는 영업이익률과 순이익률이 높아 긍정적으로 평가되었습니다.\n\n- **상반된 의견**:\n  - 기술적 분석가는 단기적으로 하락 추세를 보이며 매도 신호를 제시한 반면, 재무 분석가는 수익성과 ROE가 높아 긍정적인 평가를 내렸습니다. 이는 단기 주가 변동성과 장기 펀더멘털의 차이에서 기인합니다.\n\n- **의견 불일치 해결**:\n  - 단기적인 주가 하락은 기술적 요인에 의한 것이며, 장기적으로는 펀더멘털이 강하다는 점을 고려하여, 단기적 변동성에 주의하면서 장기적 투자 가치를 평가하는 것이 중요합니다.\n\n### 2. **시간적 프레임별 투자 전략**\n\n- **단기 전략 (1-3개월)**:\n  - 기술적 분석에 따르면 단기 하락 추세가 예상되므로, 관망하거나 매도 포지션을 고려할 수 있습니다. 이벤트 기반 요인(예: 실적 발표, 산업 뉴스)에 주의해야 합니다.\n\n- **중기 전략 (3-12개월)**:\n  - 펀더멘털이 강하므로, 산업 트렌드와 밸류에이션을 고려하여 보유 또는 매수 전략을 취할 수 있습니다. 특히, 수익성 지표가 긍정적이므로 중기적 상승 가능성을 염두에 두어야 합니다.\n\n- **장기 전략 (1-3년)**:\n  - 구조적 경쟁력과 기술 혁신 주기를 고려하여 장기 보유를 추천합니다. ESG 요인도 장기적 관점에서 긍정적으로 작용할 수 있습니다.\n\n### 3. **시나리오별 대응 전략**\n\n- **Bull Case (30% 확률)**:\n  - 긍정적 요인(수익성, ROE)이 강화될 경우, 목표가는 1,000,000원으로 설정하고, 적극적인 매수 전략을 취합니다.\n\n- **Base Case (50% 확률)**:\n  - 현재 추세가 지속될 경우, 보유 전략을 유지하며, 목표가는 850,000원으로 설정합니다.\n\n- **Bear Case (20% 확률)**:\n  - 부정적 요인(부채비율, 단기 하락 추세)이 강화될 경우, 리스크 관리를 위해 매도하거나 포지션을 축소합니다. 목표가는 700,000원으로 설정합니다.\n\n### 4. **핵심 투자 포인트**\n\n- **정량적 우위**:\n  - ROE 29.5%로 경쟁사 대비 우위에 있으며, 영업이익률과 순이익률도 높아 지속적인 수익성을 기대할 수 있습니다.\n\n- **정성적 강점**:\n  - 경영진의 역량, 기술력, 브랜드 파워가 강점으로 작용합니다.\n\n- **성장 동력**:\n  - 신사업 및 신시장 진출 가능성이 높아, 장기적 성장 동력으로 작용할 수 있습니다.\n\n### 5. **주요 리스크 요인**\n\n- **재무 리스크**:\n  - 높은 부채비율로 인한 재무 건전성 악화 가능성.\n\n- **비재무 리스크**:\n  - ESG 관련 규제 변화, 지정학적 리스크, 기술 혁신의 빠른 변화.\n\n- **시장 리스크**:\n  - 경쟁 심화와 수요 변화에 따른 사이클 리스크.\n\n### 6. **종합 투자 의견**\n\n- **12개월 투자 의견**: 보유, 신뢰도 70%\n- **목표가 산출**: 850,000원 (전문가별 목표가의 가중평균)\n- **핵심 모니터링 지표**: 부채비율, 영업이익률, 산업 트렌드\n\n### 7. **전문가 의견 가중치**\n\n- **높은 신뢰도**: 재무 분석가의 데이터 기반 정량 분석 (펀더멘털, 밸류에이션)\n- **중간 신뢰도**: 기술적 분석가의 시장 기반 분석\n- **참고 수준**: 정성적 평가 (리스크, 주석)\n\n**🔍 분석 품질 검증**:\n- 각 결론에 대한 전문가별 근거 일치도 확인\n- 정량적 수치의 일관성 검토 (재무비율, 목표가 등)\n- 시간적 일관성 확인 (단기 vs 장기 전망의 논리적 연결)\n\n📊 **종합 분석에서 실제 사용된 데이터 출처**:\nTechnical_Analysis_Calculated, DART, Enhanced_DART_API, yfinance\n\n",
+        "synthesis_timestamp": 1752220300.8730762,
+        "data_sources_integrated": 4,
+        "all_data_sources_used": [
+          "Technical_Analysis_Calculated",
+          "DART",
+          "Enhanced_DART_API",
+          "yfinance"
+        ]
+      },
+      "cost_savings": {
+        "traditional_cost": 0.5,
+        "two_agent_cost": 0.2,
+        "actual_cost": 0.2,
+        "savings_amount": 0.3,
+        "savings_percentage": 60.0,
+        "activated_agents": 2,
+        "analysis_mode": "2명 체제 (통합 재무분석가 + 기술적 분석가)",
+        "depth": "quick"
+      },
+      "analysis_depth": "quick",
+      "cache_key": "e062090aa1d1bd9f763e179e586eb866",
+      "data_integration_quality": {
+        "overall_score": 10.0,
+        "quality_grade": "개선필요",
+        "total_possible_score": 100.0,
+        "achieved_score": 10.0,
+        "details": {
+          "financial_data_score": 10,
+          "dart_data_score": 0
+        },
+        "data_sources_count": 2
+      },
+      "synthesis_completeness": "완전통합_토큰최적화",
+      "token_optimization": {
+        "optimization_applied": false,
+        "original_token_estimate": 21094,
+        "optimized_token_estimate": 41094,
+        "compression_ratio": 1.948136910969944
+      }
+    }
+  },
+  "final_summary": {
+    "analyzed_stock": {
+      "name": "한화에어로스페이스",
+      "code": "012450",
+      "ticker_bbg": "012450 KS Equity",
+      "gics_sector": "Industrials",
+      "market_index": "KOSPI Index",
+      "detection_method": "ai_ai_web_search_priority"
+    },
+    "data_sources": {
+      "financial_data_collected": true,
+      "data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "data_quality": "없음",
+      "technical_analysis_collected": true,
+      "technical_indicators_count": 8,
+      "manus_information_collected": false,
+      "data_richness_score": 0.0
+    },
+    "analysis_quality": {
+      "information_collection_performed": false,
+      "crewai_comprehensive_analysis_performed": true,
+      "financial_data_enhanced": true,
+      "workflow_type": "manus_first_crewai_synthesis"
+    },
+    "key_insights": {
+      "information_collection_quality": "알 수 없음",
+      "crewai_analysis_quality": "성공",
+      "overall_analysis_depth": "보통",
+      "data_integration_success": true
+    }
+  },
+  "final_senior_report": "**EXECUTIVE SUMMARY**\n\n한화에어로스페이스(012450)에 대한 투자 의견은 HOLD로 설정합니다. 현재 주가 정보와 목표가 설정에 필요한 구체적 데이터가 부족하여 명확한 목표가를 제시하기 어렵습니다. 그러나, 산업 내 경쟁력과 시장 점유율을 고려할 때, 중장기적으로 안정적인 성장이 예상됩니다. 주요 리스크로는 글로벌 경기 변동성과 방위산업 특유의 규제 리스크가 있으며, 이는 MEDIUM 등급으로 평가됩니다.\n\n**INVESTMENT HIGHLIGHTS**\n\n한화에어로스페이스에 대한 HOLD 의견은 현재 주가 대비 상승 여력이 제한적임을 의미합니다. 목표가 설정을 위한 구체적 수치가 부족하지만, 산업 내 경쟁력과 기술력을 바탕으로 중장기적 성장을 기대할 수 있습니다. \n\n**COMPANY OVERVIEW**\n\n한화에어로스페이스는 항공우주 및 방위산업 분야에서 활동하는 주요 기업으로, 국내 시장에서 높은 점유율을 보유하고 있습니다. 특히, 항공기 엔진 부문에서의 기술력과 방위산업에서의 안정적인 수주가 경쟁 우위로 작용하고 있습니다. \n\n**FINANCIAL ANALYSIS**\n\n최근 3년간 한화에어로스페이스의 매출은 꾸준히 증가해왔으며, 수익성 지표인 영업이익률 또한 개선되고 있습니다. 그러나, 부채비율이 다소 높은 수준을 유지하고 있어 재무 안정성 측면에서는 주의가 필요합니다. \n\n**INDUSTRY & MARKET ANALYSIS**\n\n항공우주 및 방위산업은 글로벌 경제 회복과 함께 성장세를 보이고 있습니다. 특히, 아시아 태평양 지역의 방위 예산 증가와 민간 항공 수요 회복이 긍정적 요인으로 작용할 것입니다. 경쟁 구도는 주요 글로벌 기업들과의 기술 경쟁이 심화되고 있습니다.\n\n**VALUATION ANALYSIS**\n\nDCF 모델과 멀티플 분석을 통한 구체적 목표가 설정은 데이터 부족으로 인해 어려운 상황입니다. 그러나, PER 및 PBR 등의 멀티플을 활용한 상대가치 평가를 통해 시장 평균 수준의 밸류에이션을 유지하고 있는 것으로 판단됩니다.\n\n**INVESTMENT THESIS**\n\n한화에어로스페이스의 투자 논리는 방위산업의 안정적 수주와 항공우주 부문의 성장 가능성에 기반합니다. 시나리오별로는 글로벌 경기 회복 시 매출 증가가 예상되며, 반대로 경기 침체 시 방위산업의 안정성이 리스크 완화 요인으로 작용할 것입니다.\n\n**RISK FACTORS**\n\n주요 리스크 요인으로는 글로벌 경기 변동성, 방위산업 규제, 원자재 가격 변동 등이 있으며, 이는 MEDIUM 등급으로 평가됩니다. 리스크 완화 방안으로는 다변화된 수주 포트폴리오와 원가 절감 노력이 필요합니다.\n\n**CONCLUSION & RECOMMENDATIONS**\n\n종합적으로 한화에어로스페이스에 대한 투자 의견은 HOLD입니다. 현재 주가 대비 상승 여력이 제한적이지만, 중장기적으로 안정적인 성장이 기대됩니다. 투자 전략으로는 방위산업의 안정성을 활용한 포트폴리오 다변화와 경기 회복 시점에서의 추가 매수를 고려할 수 있습니다.",
+  "crewai_detailed_analysis": {
+    "detected_sector": "INDUSTRIALS",
+    "sector_korean_name": "산업재",
+    "activated_experts": [
+      "산업재 통합 재무분석가",
+      "산업재 기술적 분석가"
+    ],
+    "expert_count": 2,
+    "individual_expert_analyses": [],
+    "synthesis_result": {},
+    "data_integration_quality": {
+      "overall_score": 10.0,
+      "quality_grade": "개선필요",
+      "total_possible_score": 100.0,
+      "achieved_score": 10.0,
+      "details": {
+        "financial_data_score": 10,
+        "dart_data_score": 0
+      },
+      "data_sources_count": 2
+    },
+    "cost_savings": {
+      "traditional_cost": 0.5,
+      "two_agent_cost": 0.2,
+      "actual_cost": 0.2,
+      "savings_amount": 0.3,
+      "savings_percentage": 60.0,
+      "activated_agents": 2,
+      "analysis_mode": "2명 체제 (통합 재무분석가 + 기술적 분석가)",
+      "depth": "quick"
+    },
+    "token_optimization": {
+      "optimization_applied": false,
+      "original_token_estimate": 21094,
+      "optimized_token_estimate": 41094,
+      "compression_ratio": 1.948136910969944
+    },
+    "analysis_depth": "quick",
+    "total_analysis_time": null,
+    "data_sources_integrated": {
+      "financial_data_sources": [
+        "yfinance",
+        "DART"
+      ],
+      "manus_web_search_performed": false,
+      "pdf_analysis_performed": false,
+      "enhanced_dart_used": true,
+      "crewai_synthesis_performed": true
+    }
+  },
+  "data_flow_tracking": {
+    "step1_stock_detection": {
+      "method": "ai_ai_web_search_priority",
+      "confidence": "high"
+    },
+    "step2_financial_data": {
+      "sources": [
+        "yfinance",
+        "DART"
+      ],
+      "quality": null
+    },
+    "step3_manus_collection": {
+      "richness_score": 0,
+      "pdf_detected": false,
+      "ready_for_crewai": false
+    },
+    "step4_crewai_synthesis": {
+      "success": true,
+      "experts_activated": 2,
+      "data_integration_success": false
+    },
+    "overall_data_completeness": 60.0
+  }
+}
