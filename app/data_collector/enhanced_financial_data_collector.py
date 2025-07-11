@@ -2571,11 +2571,11 @@ class EnhancedDartDataCollector:
         self, stock_code: str, company_name: str = None, bsns_year: str = None
     ) -> Dict[str, Any]:
         """
-        종합 기업 분석 (모든 기능 통합) - 회사명 지원 추가
+        종합 기업 분석 (토큰 최적화 버전 - 주주정보/공시정보 제외)
 
         Args:
-            stock_code: 6자리 종목코드
-            company_name: 회사명 (동적 검색용, 선택사항)
+            stock_code: 종목코드
+            company_name: 회사명
             bsns_year: 사업연도
 
         Returns:
@@ -2584,13 +2584,13 @@ class EnhancedDartDataCollector:
         if not self.is_available():
             return {"success": False, "error": "DART API 키가 설정되지 않았습니다"}
 
-        # 종목코드 + 회사명 → 기업고유코드 변환 (동적 검색 지원)
+        if not bsns_year:
+            bsns_year = str(datetime.now().year - 1)
+
+        # 기업고유코드 조회
         corp_code = self.get_corp_code_from_stock_code(stock_code, company_name)
         if not corp_code:
-            return {
-                "success": False,
-                "error": f"종목코드 {stock_code} ({company_name})에 대한 기업고유코드를 찾을 수 없습니다",
-            }
+            return {"success": False, "error": "기업고유코드를 찾을 수 없습니다"}
 
         logger.info(
             f"🔍 Enhanced DART: {stock_code} ({company_name}) 종합 기업 분석 시작"
@@ -2601,32 +2601,36 @@ class EnhancedDartDataCollector:
             "stock_code": stock_code,
             "company_name": company_name,
             "corp_code": corp_code,
-            "analysis_date": datetime.now().isoformat(),
+            "bsns_year": bsns_year,
+            "collected_at": datetime.now().isoformat(),
+            "optimization_note": "토큰 최적화: 주주정보/공시정보 제외",
         }
 
         try:
-            # 1. 상세한 재무정보
+            # 1. 상세한 재무정보 (유지)
             financial_data = self.get_detailed_financial_data(corp_code, bsns_year)
             if financial_data["success"]:
                 result["financial_analysis"] = financial_data
 
-            # 2. 기업 지배구조 정보
-            governance_data = self.get_governance_info(corp_code, bsns_year)
-            if governance_data["success"]:
-                result["governance_analysis"] = governance_data
+            # 2. 기업 지배구조 정보 (제외 - 토큰 절약)
+            # governance_data = self.get_governance_info(corp_code, bsns_year)
+            # if governance_data["success"]:
+            #     result["governance_analysis"] = governance_data
+            logger.info("🚫 주주정보 수집 제외 (토큰 최적화)")
 
-            # 3. 투자정보
+            # 3. 투자정보 (유지)
             investment_data = self.get_investment_info(corp_code, bsns_year)
             if investment_data["success"]:
                 result["investment_analysis"] = investment_data
 
-            # 4. 최근 공시 모니터링 (최근 30일)
-            disclosure_data = self.monitor_disclosures(corp_code, days=30)
-            if disclosure_data["success"]:
-                result["disclosure_monitoring"] = disclosure_data
+            # 4. 최근 공시 모니터링 (제외 - 토큰 절약)
+            # disclosure_data = self.monitor_disclosures(corp_code, days=30)
+            # if disclosure_data["success"]:
+            #     result["disclosure_monitoring"] = disclosure_data
+            logger.info("🚫 공시정보 수집 제외 (토큰 최적화)")
 
             logger.info(
-                f"✅ Enhanced DART: {stock_code} ({company_name}) 종합 기업 분석 완료"
+                f"✅ Enhanced DART: {stock_code} ({company_name}) 종합 기업 분석 완료 (토큰 최적화)"
             )
             return result
 
