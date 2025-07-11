@@ -161,26 +161,29 @@ class EnhancedDartDataCollector:
                     f"⚠️ 사업보고서 처리 실패: {business_report_result.get('error')}"
                 )
 
-            # 2️⃣ 최신 분기보고서 다운로드 및 딕셔너리 변환
-            logger.info("📋 2단계: 최신 분기보고서 다운로드 및 딕셔너리 변환...")
-            quarterly_report_result = await self._download_and_process_report(
-                corp_code=corp_code,
-                company_name=company_name,
-                bsns_year=bsns_year,
-                report_type="quarterly_report",  # 분기보고서
-            )
+            # 2️⃣ 최신 분기보고서 다운로드 및 딕셔너리 변환 (토큰 절약을 위해 비활성화)
+            # logger.info("📋 2단계: 최신 분기보고서 다운로드 및 딕셔너리 변환...")
+            # quarterly_report_result = await self._download_and_process_report(
+            #     corp_code=corp_code,
+            #     company_name=company_name,
+            #     bsns_year=bsns_year,
+            #     report_type="quarterly_report",  # 분기보고서
+            # )
 
-            if quarterly_report_result.get("success"):
-                result["quarterly_report_dictionary"] = quarterly_report_result.get(
-                    "pdf_dictionary", {}
-                )
-                logger.info(
-                    f"✅ 분기보고서 딕셔너리 생성 완료: {len(result['quarterly_report_dictionary'])}개 섹션"
-                )
-            else:
-                logger.warning(
-                    f"⚠️ 분기보고서 처리 실패: {quarterly_report_result.get('error')}"
-                )
+            # if quarterly_report_result.get("success"):
+            #     result["quarterly_report_dictionary"] = quarterly_report_result.get(
+            #         "pdf_dictionary", {}
+            #     )
+            #     logger.info(
+            #         f"✅ 분기보고서 딕셔너리 생성 완료: {len(result['quarterly_report_dictionary'])}개 섹션"
+            #     )
+            # else:
+            #     logger.warning(
+            #         f"⚠️ 분기보고서 처리 실패: {quarterly_report_result.get('error')}"
+            #     )
+
+            logger.info("🚫 분기보고서 딕셔너리 생성 비활성화 (토큰 절약)")
+            result["quarterly_report_dictionary"] = {}  # 빈 딕셔너리로 설정
 
             # 3️⃣ 전문가별 바로 사용 가능한 딕셔너리 생성 (🚀 핵심 개선!)
             logger.info("🎯 3단계: 전문가별 바로 사용 가능한 딕셔너리 생성...")
@@ -255,10 +258,9 @@ class EnhancedDartDataCollector:
             logger.info(
                 f"   📄 사업보고서: {len(result['business_report_dictionary'])}개 섹션 ({business_total_text:,}자)"
             )
-            logger.info(
-                f"   📈 분기보고서: {len(result['quarterly_report_dictionary'])}개 섹션 ({quarterly_total_text:,}자)"
-            )
+            logger.info(f"   📈 분기보고서: 비활성화됨 (토큰 절약)")
             logger.info(f"   🚀 CrewAI 전문가별 바로 사용 가능한 딕셔너리 준비 완료!")
+            logger.info(f"   💡 시기별 정보를 구분하여 더 정확한 분석 가능!")
 
             # 📊 섹션 분할 품질 검증 추가
             self._validate_section_quality(result)
@@ -289,9 +291,7 @@ class EnhancedDartDataCollector:
                 logger.info(
                     f"   - business_report_dictionary: {len(result['business_report_dictionary'])}개 섹션"
                 )
-                logger.info(
-                    f"   - quarterly_report_dictionary: {len(result['quarterly_report_dictionary'])}개 섹션"
-                )
+                logger.info(f"   - quarterly_report_dictionary: 비활성화됨 (토큰 절약)")
                 logger.info(
                     f"   - expert_ready_dictionaries: {len(result['expert_ready_dictionaries'])}개 전문가 타입"
                 )
@@ -724,38 +724,42 @@ class EnhancedDartDataCollector:
                     search_years = [str(int(bsns_year) - 1), bsns_year]
                     quarterly_codes = [
                         "11014",
-                        "11012",
+                        # "11012",  # 반기보고서 비활성화 (토큰 절약)
                         "11013",
-                    ]  # 3분기 → 반기 → 1분기
-                    quarterly_names = ["3분기보고서", "반기보고서", "1분기보고서"]
+                    ]  # 3분기 → 1분기 (반기보고서 제외)
+                    quarterly_names = ["3분기보고서", "1분기보고서"]
                 elif current_month <= 8:  # 6~8월: 1분기보고서 위주
                     search_years = [bsns_year, str(int(bsns_year) - 1)]
                     quarterly_codes = [
                         "11013",
                         "11014",
-                        "11012",
-                    ]  # 1분기 → 3분기 → 반기
-                    quarterly_names = ["1분기보고서", "3분기보고서", "반기보고서"]
-                elif current_month <= 11:  # 9~11월: 반기보고서 위주
+                        # "11012",  # 반기보고서 비활성화 (토큰 절약)
+                    ]  # 1분기 → 3분기 (반기보고서 제외)
+                    quarterly_names = ["1분기보고서", "3분기보고서"]
+                elif current_month <= 11:  # 9~11월: 반기보고서 위주 (비활성화)
                     search_years = [bsns_year, str(int(bsns_year) - 1)]
                     quarterly_codes = [
-                        "11012",
+                        # "11012",  # 반기보고서 비활성화 (토큰 절약)
                         "11013",
                         "11014",
-                    ]  # 반기 → 1분기 → 3분기
-                    quarterly_names = ["반기보고서", "1분기보고서", "3분기보고서"]
+                    ]  # 1분기 → 3분기 (반기보고서 제외)
+                    quarterly_names = ["1분기보고서", "3분기보고서"]
                 else:  # 12월: 3분기보고서 위주
                     search_years = [bsns_year, str(int(bsns_year) - 1)]
                     quarterly_codes = [
                         "11014",
-                        "11012",
+                        # "11012",  # 반기보고서 비활성화 (토큰 절약)
                         "11013",
-                    ]  # 3분기 → 반기 → 1분기
-                    quarterly_names = ["3분기보고서", "반기보고서", "1분기보고서"]
+                    ]  # 3분기 → 1분기 (반기보고서 제외)
+                    quarterly_names = ["3분기보고서", "1분기보고서"]
 
-                logger.info(f"🗓️ 분기보고서 검색 전략: 현재 {current_month}월 기준")
+                logger.info(
+                    f"🗓️ 분기보고서 검색 전략: 현재 {current_month}월 기준 (반기보고서 비활성화)"
+                )
                 logger.info(f"   - 검색 연도 순서: {', '.join(search_years)}")
-                logger.info(f"   - 검색 분기 순서: {', '.join(quarterly_names)}")
+                logger.info(
+                    f"   - 검색 분기 순서: {', '.join(quarterly_names)} (반기보고서 제외)"
+                )
 
                 found_report = False
                 for search_year in search_years:
@@ -857,7 +861,7 @@ class EnhancedDartDataCollector:
             # 보고서 코드에 따른 보고서명 매핑
             report_type_map = {
                 "11011": "사업보고서",
-                "11012": "반기보고서",
+                # "11012": "반기보고서",  # 반기보고서 비활성화 (토큰 절약)
                 "11013": "1분기보고서",
                 "11014": "3분기보고서",
             }
@@ -1034,7 +1038,7 @@ class EnhancedDartDataCollector:
                     # 보고서 코드에 따른 보고서명 매핑
                     report_type_map = {
                         "11011": "사업보고서",
-                        "11012": "반기보고서",
+                        # "11012": "반기보고서",  # 반기보고서 비활성화 (토큰 절약)
                         "11013": "1분기보고서",
                         "11014": "3분기보고서",
                     }
