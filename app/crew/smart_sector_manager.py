@@ -352,6 +352,17 @@ class SmartSectorManager:
             )
 
             # 🚀 5. 종합 데이터로 전문가별 분석 수행 (최적화된 데이터 사용!)
+            # 🔧 PDF 인터페이스 추출
+            pdf_interface = None
+            if optimized_manus and optimized_manus.get("pdf_analysis"):
+                pdf_interface = optimized_manus["pdf_analysis"].get(
+                    "pdf_dictionary_interface"
+                )
+                if pdf_interface:
+                    logger.info("📄 PDF 인터페이스 추출 완료")
+                else:
+                    logger.info("📄 PDF 인터페이스가 없습니다 (DART 딕셔너리만 사용)")
+
             expert_insights = await self._perform_comprehensive_expert_analysis(
                 selected_experts,
                 user_prompt,
@@ -362,7 +373,7 @@ class SmartSectorManager:
                 optimized_manus,  # 🔢 최적화된 Manus 데이터
                 technical_analysis_data,  # 🎯 기술적 분석 데이터 추가!
                 optimized_dart_dict,  # 🚀 최적화된 DART 딕셔너리 사용!
-                None,  # 🔧 PDF 인터페이스 (manus_collected_data에서 추출)
+                pdf_interface,  # 🔧 PDF 인터페이스 (manus_collected_data에서 추출)
             )
 
             # 6. 비용 절감 계산
@@ -1874,22 +1885,21 @@ class SmartSectorManager:
 
             synthesis_prompt += """
 
-🎯 위 전문가들의 분석을 종합하여 다음과 같이 정리해주세요 (Chat GPT 피드백 완전 반영):
+🎯 위 전문가들의 분석을 종합하여 다음과 같이 정리해주세요 :
 
-## 🚀 Chat GPT 피드백 반영 - 시니어 애널리스트 수준 통합 분석
 
-### 1. **전문가 간 분석 결과 일관성 검토** (Chat GPT 피드백 핵심)
+### 1. **전문가 간 분석 결과 일관성 검토**
 - **일치하는 의견**: 여러 전문가가 동일하게 제시한 강점/약점 (신뢰도 높음)
 - **상반된 의견**: 전문가 간 모순되는 결론과 그 원인 분석
   * 예: 기술적 분석(단기 하락) vs 밸류에이션(매수 권장)의 차이점
 - **의견 불일치 해결**: 상반된 의견에 대한 종합적 판단과 우선순위
 
-### 2. **시간적 프레임별 투자 전략** (Chat GPT 피드백 핵심)
+### 2. **시간적 프레임별 투자 전략**
 - **단기 전략 (1-3개월)**: 기술적 분석 + 이벤트 기반 요인
 - **중기 전략 (3-12개월)**: 펀더멘털 + 산업 트렌드 + 밸류에이션
 - **장기 전략 (1-3년)**: 구조적 경쟁력 + ESG + 기술 혁신 주기
 
-### 3. **시나리오별 대응 전략** (Chat GPT 피드백 핵심)
+### 3. **시나리오별 대응 전략**
 - **Bull Case ([분석 기반 확률]% 확률)**: 최적 시나리오에서의 목표가와 대응 전략
 - **Base Case ([분석 기반 확률]% 확률)**: 기본 시나리오에서의 투자 접근법
 - **Bear Case ([분석 기반 확률]% 확률)**: 악재 시나리오에서의 리스크 관리 방안
@@ -2347,7 +2357,14 @@ class SmartSectorManager:
                     f"⚠️ PDF 인터페이스가 예상과 다른 형태입니다: {type(pdf_interface)}"
                 )
         else:
-            logger.info("📄 PDF 딕셔너리 인터페이스가 제공되지 않았습니다")
+            if pdf_interface is None:
+                logger.info(
+                    "📄 PDF 딕셔너리 인터페이스가 제공되지 않았습니다 (DART 딕셔너리만 사용)"
+                )
+            else:
+                logger.info(
+                    "📄 PDF 딕셔너리 인터페이스가 비어있습니다 (DART 딕셔너리만 사용)"
+                )
 
         # 🚀 새로운 전문가별 DART 딕셔너리 처리 (🚀 핵심 개선!)
         if dart_reports_dictionary and dart_reports_dictionary.get(
