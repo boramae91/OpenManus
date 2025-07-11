@@ -2146,10 +2146,18 @@ class SmartSectorManager:
                 if not expert_key:
                     expert_key = "general"
 
-                # 해당 전문가에게 적합한 섹션 가져오기
+                # 해당 전문가에게 적합한 섹션 가져오기 (주석 섹션 제외)
                 relevant_sections = section_categories.get(expert_key, [])
                 if expert_key != "general":
                     relevant_sections.extend(section_categories.get("general", [])[:2])
+
+                # 🔧 주석(footnote) 섹션 필터링 적용
+                relevant_sections = self._filter_out_footnote_sections(
+                    relevant_sections
+                )
+                logger.info(
+                    f"🔧 {expert.name}: 주석 섹션 제외 후 {len(relevant_sections)}개 섹션 선택"
+                )
 
                 # 실제 섹션 내용 추가
                 if relevant_sections and pdf_dictionary:
@@ -2161,13 +2169,90 @@ class SmartSectorManager:
 
                     for section_title in relevant_sections[:5]:  # 최대 5개 섹션
                         if section_title in pdf_dictionary:
+                            # 🔧 주석 섹션 및 분석에 덜 중요한 섹션 제외 (토큰 절약)
+                            if any(
+                                keyword.lower() in section_title.lower()
+                                for keyword in [
+                                    # 기존 주석 관련
+                                    "주석",
+                                    "footnote",
+                                    "note",
+                                    "주석사항",
+                                    "회계처리방법",
+                                    "법적고지",
+                                    "부속명세서",
+                                    "notes",
+                                    "footnotes",
+                                    # 🚀 추가 필터링: 법적 고지사항
+                                    "법적고지사항",
+                                    "법적책임면책",
+                                    "공시의무",
+                                    "disclaimer",
+                                    "legal_notice",
+                                    "법적고지내용",
+                                    "법적고지서",
+                                    "책임면책",
+                                    "면책조항",
+                                    # 🚀 추가 필터링: 감사 관련
+                                    "감사인의의견서",
+                                    "감사의견",
+                                    "auditor_opinion",
+                                    "audit_report",
+                                    "감사보고서",
+                                    "감사범위",
+                                    "audit_scope",
+                                    "audit_opinion",
+                                    # 🚀 추가 필터링: 회계 처리 방법
+                                    "회계처리기준",
+                                    "회계처리방침",
+                                    "accounting_policies",
+                                    "accounting_standards",
+                                    "회계기준",
+                                    "회계방침",
+                                    "accounting_methods",
+                                    "accounting_principles",
+                                    # 🚀 추가 필터링: 부속 서류
+                                    "부속서류",
+                                    "부속서류서",
+                                    "supplementary_documents",
+                                    "attachments",
+                                    "부속명세",
+                                    "부속서류사항",
+                                    "supplementary_info",
+                                    "attached_documents",
+                                    # 🚀 추가 필터링: 기타 상세 설명
+                                    "상세설명",
+                                    "상세내용",
+                                    "detailed_description",
+                                    "detailed_content",
+                                    "상세기준",
+                                    "상세방법",
+                                    "detailed_standards",
+                                    "detailed_methods",
+                                    # 🚀 추가 필터링: 표준화된 문구
+                                    "본보고서는",
+                                    "이보고서는",
+                                    "위의내용은",
+                                    "this_report",
+                                    "the_above",
+                                    "보고서개요",
+                                    "보고서요약",
+                                    "report_summary",
+                                    "report_overview",
+                                ]
+                            ):
+                                logger.info(
+                                    f"🔧 {expert.name}: 분석에 덜 중요한 섹션 제외 - {section_title}"
+                                )
+                                continue
+
                             content = pdf_dictionary[section_title]
 
-                            # 🚀 200만자 제한으로 확장
-                            if len(content) > 2000000:
+                            # 🔧 GPT-4o 토큰 제한에 맞춰 섹션 크기 제한 (약 50만자로 축소)
+                            if len(content) > 500000:
                                 content = (
-                                    content[:2000000]
-                                    + "\n...[200만자 제한으로 내용 일부 생략]..."
+                                    content[:500000]
+                                    + "\n...[50만자 제한으로 내용 일부 생략]..."
                                 )
 
                             context_parts.append(f"### {section_title}")
@@ -2186,71 +2271,112 @@ class SmartSectorManager:
 
             # 🔧 PDFDictionaryInterface 객체인 경우 (기존 로직)
             elif hasattr(pdf_interface, "get_sections_by_expert_type"):
-                # 주석 전문가 특별 처리
-                if "주석" in expert.name or "Footnote" in expert.role:
-                    footnote_sections = pdf_interface.get_sections_by_expert_type(
-                        # "footnote_specialist"  # 🚫 비활성화 (개발 시간 절약)
-                    )
-                    if footnote_sections:
-                        context_parts.append(
-                            "📄 **재무제표 주석 섹션 (PDF 완전 분석)**:"
-                        )
-                        section_count = 0
-                        total_content_length = 0
-
-                        for section_title, content in footnote_sections.items():
-                            # 🚀 주석 전문가는 섹션 제한 없음! 모든 주석 섹션 완전 분석
-                            if (
-                                len(content) > 2000000
-                            ):  # 🚀 개별 섹션 200만자 제한으로 확대
-                                content = (
-                                    content[:2000000]
-                                    + "\n...[200만자 제한으로 내용 일부 생략]..."
-                                )
-
-                            context_parts.append(f"### {section_title}")
-                            context_parts.append(content)
-                            context_parts.append("")
-                            section_count += 1
-                            total_content_length += len(content)
-
-                        logger.info(
-                            f"📝 주석 전문가: {section_count}개 섹션, 총 {total_content_length:,}자 (제한 없음)"
-                        )
-                    else:
-                        logger.info("📝 PDF에서 주석 섹션을 찾지 못했습니다")
-
+                # 🔧 주석 전문가는 비활성화되어 있으므로 모든 전문가가 주석 섹션을 제외하도록 처리
                 # 다른 전문가들 처리
-                else:
-                    expert_sections = pdf_interface.get_sections_by_expert_type(
-                        expert.role.lower().replace(" ", "_")
+                expert_sections = pdf_interface.get_sections_by_expert_type(
+                    expert.role.lower().replace(" ", "_")
+                )
+                if expert_sections:
+                    context_parts.append(
+                        f"📄 **{expert.name} 관련 PDF 섹션 (완전 활용)**:"
                     )
-                    if expert_sections:
-                        context_parts.append(
-                            f"📄 **{expert.name} 관련 PDF 섹션 (완전 활용)**:"
-                        )
-                        section_count = 0
-                        total_content_length = 0
+                    section_count = 0
+                    total_content_length = 0
 
-                        for section_title, content in expert_sections.items():
-                            # 🚀 모든 전문가 섹션 제한 제거! 필요한 모든 섹션 활용
-                            if (
-                                len(content) > 2000000
-                            ):  # 🚀 개별 섹션 200만자 제한으로 확대
-                                content = (
-                                    content[:2000000]
-                                    + "\n...[200만자 제한으로 내용 일부 생략]..."
-                                )
+                    for section_title, content in expert_sections.items():
+                        # 🔧 주석 섹션 및 분석에 덜 중요한 섹션 제외 (토큰 절약)
+                        if any(
+                            keyword.lower() in section_title.lower()
+                            for keyword in [
+                                # 기존 주석 관련
+                                "주석",
+                                "footnote",
+                                "note",
+                                "주석사항",
+                                "회계처리방법",
+                                "법적고지",
+                                "부속명세서",
+                                "notes",
+                                "footnotes",
+                                # 🚀 추가 필터링: 법적 고지사항
+                                "법적고지사항",
+                                "법적책임면책",
+                                "공시의무",
+                                "disclaimer",
+                                "legal_notice",
+                                "법적고지내용",
+                                "법적고지서",
+                                "책임면책",
+                                "면책조항",
+                                # 🚀 추가 필터링: 감사 관련
+                                "감사인의의견서",
+                                "감사의견",
+                                "auditor_opinion",
+                                "audit_report",
+                                "감사보고서",
+                                "감사범위",
+                                "audit_scope",
+                                "audit_opinion",
+                                # 🚀 추가 필터링: 회계 처리 방법
+                                "회계처리기준",
+                                "회계처리방침",
+                                "accounting_policies",
+                                "accounting_standards",
+                                "회계기준",
+                                "회계방침",
+                                "accounting_methods",
+                                "accounting_principles",
+                                # 🚀 추가 필터링: 부속 서류
+                                "부속서류",
+                                "부속서류서",
+                                "supplementary_documents",
+                                "attachments",
+                                "부속명세",
+                                "부속서류사항",
+                                "supplementary_info",
+                                "attached_documents",
+                                # 🚀 추가 필터링: 기타 상세 설명
+                                "상세설명",
+                                "상세내용",
+                                "detailed_description",
+                                "detailed_content",
+                                "상세기준",
+                                "상세방법",
+                                "detailed_standards",
+                                "detailed_methods",
+                                # 🚀 추가 필터링: 표준화된 문구
+                                "본보고서는",
+                                "이보고서는",
+                                "위의내용은",
+                                "this_report",
+                                "the_above",
+                                "보고서개요",
+                                "보고서요약",
+                                "report_summary",
+                                "report_overview",
+                            ]
+                        ):
+                            logger.info(
+                                f"🔧 {expert.name}: 분석에 덜 중요한 섹션 제외 - {section_title}"
+                            )
+                            continue
 
-                            context_parts.append(f"### {section_title}")
-                            context_parts.append(content)
-                            context_parts.append("")
-                            section_count += 1
-                            total_content_length += len(content)
+                        # 🔧 GPT-4o 토큰 제한에 맞춰 섹션 크기 제한 (약 50만자로 축소)
+                        if len(content) > 500000:
+                            content = (
+                                content[:500000]
+                                + "\n...[50만자 제한으로 내용 일부 생략]..."
+                            )
 
-                    logger.info(
-                        f"📄 {expert.name}: {section_count}개 섹션, 총 {total_content_length:,}자 (제한 없음)"
-                    )
+                        context_parts.append(f"### {section_title}")
+                        context_parts.append(content)
+                        context_parts.append("")
+                        section_count += 1
+                        total_content_length += len(content)
+
+                logger.info(
+                    f"📄 {expert.name}: {section_count}개 섹션, 총 {total_content_length:,}자 (제한 없음)"
+                )
             else:
                 logger.warning(
                     f"⚠️ PDF 인터페이스가 예상과 다른 형태입니다: {type(pdf_interface)}"
@@ -2294,47 +2420,251 @@ class SmartSectorManager:
             # 해당 전문가용 딕셔너리 가져오기
             expert_data = expert_ready_dictionaries.get(expert_type)
 
-            if expert_data and expert_data.get("sections"):
-                sections = expert_data.get("sections", {})
-                metadata = expert_data.get("metadata", {})
+            # 🔧 데이터 타입 안전성 검증
+            if expert_data:
+                logger.info(f"🔍 {expert.name} expert_data 타입: {type(expert_data)}")
 
-                context_parts.append(f"📄 **{expert.name} 전용 DART 보고서 섹션**:")
-                section_count = 0
-                total_content_length = 0
+                # expert_data가 문자열인 경우 (압축 과정에서 변환된 경우)
+                if isinstance(expert_data, str):
+                    logger.warning(
+                        f"⚠️ {expert.name}: expert_data가 문자열로 변환됨 - 딕셔너리 구조 복원 시도"
+                    )
+                    # 간단한 텍스트로 처리
+                    context_parts.append(f"📄 **{expert.name} 전용 DART 보고서 내용**:")
+                    # 🔧 주석 관련 내용 제거 (토큰 절약)
+                    import re
 
-                for section_title, content in sections.items():
-                    # 🚀 200만자 제한으로 확장
-                    if len(content) > 2000000:
-                        content = (
-                            content[:2000000]
-                            + "\n...[200만자 제한으로 내용 일부 생략]..."
+                    # 주석 관련 패턴 및 분석에 덜 중요한 패턴 제거
+                    footnote_patterns = [
+                        # 기존 주석 관련
+                        r"주석.*?[\n\r]",
+                        r"footnote.*?[\n\r]",
+                        r"note.*?[\n\r]",
+                        r"주석사항.*?[\n\r]",
+                        r"회계처리방법.*?[\n\r]",
+                        r"법적고지.*?[\n\r]",
+                        r"부속명세서.*?[\n\r]",
+                        # 🚀 추가 필터링: 법적 고지사항
+                        r"법적고지사항.*?[\n\r]",
+                        r"법적책임면책.*?[\n\r]",
+                        r"공시의무.*?[\n\r]",
+                        r"disclaimer.*?[\n\r]",
+                        r"legal_notice.*?[\n\r]",
+                        r"법적고지내용.*?[\n\r]",
+                        r"법적고지서.*?[\n\r]",
+                        r"책임면책.*?[\n\r]",
+                        r"면책조항.*?[\n\r]",
+                        # 🚀 추가 필터링: 감사 관련
+                        r"감사인의의견서.*?[\n\r]",
+                        r"감사의견.*?[\n\r]",
+                        r"auditor_opinion.*?[\n\r]",
+                        r"audit_report.*?[\n\r]",
+                        r"감사보고서.*?[\n\r]",
+                        r"감사범위.*?[\n\r]",
+                        r"audit_scope.*?[\n\r]",
+                        r"audit_opinion.*?[\n\r]",
+                        # 🚀 추가 필터링: 회계 처리 방법
+                        r"회계처리기준.*?[\n\r]",
+                        r"회계처리방침.*?[\n\r]",
+                        r"accounting_policies.*?[\n\r]",
+                        r"accounting_standards.*?[\n\r]",
+                        r"회계기준.*?[\n\r]",
+                        r"회계방침.*?[\n\r]",
+                        r"accounting_methods.*?[\n\r]",
+                        r"accounting_principles.*?[\n\r]",
+                        # 🚀 추가 필터링: 부속 서류
+                        r"부속서류.*?[\n\r]",
+                        r"부속서류서.*?[\n\r]",
+                        r"supplementary_documents.*?[\n\r]",
+                        r"attachments.*?[\n\r]",
+                        r"부속명세.*?[\n\r]",
+                        r"부속서류사항.*?[\n\r]",
+                        r"supplementary_info.*?[\n\r]",
+                        r"attached_documents.*?[\n\r]",
+                        # 🚀 추가 필터링: 기타 상세 설명
+                        r"상세설명.*?[\n\r]",
+                        r"상세내용.*?[\n\r]",
+                        r"detailed_description.*?[\n\r]",
+                        r"detailed_content.*?[\n\r]",
+                        r"상세기준.*?[\n\r]",
+                        r"상세방법.*?[\n\r]",
+                        r"detailed_standards.*?[\n\r]",
+                        r"detailed_methods.*?[\n\r]",
+                        # 🚀 추가 필터링: 표준화된 문구
+                        r"본보고서는.*?[\n\r]",
+                        r"이보고서는.*?[\n\r]",
+                        r"위의내용은.*?[\n\r]",
+                        r"this_report.*?[\n\r]",
+                        r"the_above.*?[\n\r]",
+                        r"보고서개요.*?[\n\r]",
+                        r"보고서요약.*?[\n\r]",
+                        r"report_summary.*?[\n\r]",
+                        r"report_overview.*?[\n\r]",
+                    ]
+
+                    for pattern in footnote_patterns:
+                        expert_data = re.sub(
+                            pattern, "", expert_data, flags=re.IGNORECASE
                         )
 
-                    context_parts.append(f"### {section_title}")
-                    context_parts.append(content)
+                    # 🔧 GPT-4o 토큰 제한에 맞춰 텍스트 길이 제한 (약 50만자로 축소)
+                    if len(expert_data) > 500000:
+                        expert_data = (
+                            expert_data[:500000]
+                            + "\n...[50만자 제한으로 내용 일부 생략]..."
+                        )
+                    context_parts.append(expert_data)
                     context_parts.append("")
-                    section_count += 1
-                    total_content_length += len(content)
+                    logger.info(
+                        f"📄 {expert.name}: 텍스트 형태로 {len(expert_data):,}자 제공"
+                    )
 
-                logger.info(
-                    f"📄 {expert.name}: {section_count}개 섹션, 총 {total_content_length:,}자 (전문가별 딕셔너리)"
-                )
+                # expert_data가 딕셔너리인 경우 (정상 케이스)
+                elif isinstance(expert_data, dict) and expert_data.get("sections"):
+                    sections = expert_data.get("sections", {})
+                    metadata = expert_data.get("metadata", {})
 
-                # 메타데이터 정보 추가
-                context_parts.append(f"**📊 DART 보고서 메타데이터**:")
-                context_parts.append(
-                    f"- 총 섹션: {metadata.get('total_sections', 0)}개"
-                )
-                context_parts.append(
-                    f"- 관련 섹션: {metadata.get('relevant_sections', 0)}개"
-                )
-                context_parts.append(
-                    f"- 일반 섹션: {metadata.get('general_sections', 0)}개"
-                )
-                context_parts.append(
-                    f"- 총 텍스트: {metadata.get('total_text_length', 0):,}자"
-                )
-                context_parts.append("")
+                    # sections도 타입 검증
+                    if isinstance(sections, dict):
+                        context_parts.append(
+                            f"📄 **{expert.name} 전용 DART 보고서 섹션**:"
+                        )
+                        section_count = 0
+                        total_content_length = 0
+
+                        for section_title, content in sections.items():
+                            # 🔧 주석 섹션 및 분석에 덜 중요한 섹션 제외 (토큰 절약)
+                            if any(
+                                keyword.lower() in section_title.lower()
+                                for keyword in [
+                                    # 기존 주석 관련
+                                    "주석",
+                                    "footnote",
+                                    "note",
+                                    "주석사항",
+                                    "회계처리방법",
+                                    "법적고지",
+                                    "부속명세서",
+                                    "notes",
+                                    "footnotes",
+                                    # 🚀 추가 필터링: 법적 고지사항
+                                    "법적고지사항",
+                                    "법적책임면책",
+                                    "공시의무",
+                                    "disclaimer",
+                                    "legal_notice",
+                                    "법적고지내용",
+                                    "법적고지서",
+                                    "책임면책",
+                                    "면책조항",
+                                    # 🚀 추가 필터링: 감사 관련
+                                    "감사인의의견서",
+                                    "감사의견",
+                                    "auditor_opinion",
+                                    "audit_report",
+                                    "감사보고서",
+                                    "감사범위",
+                                    "audit_scope",
+                                    "audit_opinion",
+                                    # 🚀 추가 필터링: 회계 처리 방법
+                                    "회계처리기준",
+                                    "회계처리방침",
+                                    "accounting_policies",
+                                    "accounting_standards",
+                                    "회계기준",
+                                    "회계방침",
+                                    "accounting_methods",
+                                    "accounting_principles",
+                                    # 🚀 추가 필터링: 부속 서류
+                                    "부속서류",
+                                    "부속서류서",
+                                    "supplementary_documents",
+                                    "attachments",
+                                    "부속명세",
+                                    "부속서류사항",
+                                    "supplementary_info",
+                                    "attached_documents",
+                                    # 🚀 추가 필터링: 기타 상세 설명
+                                    "상세설명",
+                                    "상세내용",
+                                    "detailed_description",
+                                    "detailed_content",
+                                    "상세기준",
+                                    "상세방법",
+                                    "detailed_standards",
+                                    "detailed_methods",
+                                    # 🚀 추가 필터링: 표준화된 문구
+                                    "본보고서는",
+                                    "이보고서는",
+                                    "위의내용은",
+                                    "this_report",
+                                    "the_above",
+                                    "보고서개요",
+                                    "보고서요약",
+                                    "report_summary",
+                                    "report_overview",
+                                ]
+                            ):
+                                logger.info(
+                                    f"🔧 {expert.name}: 분석에 덜 중요한 섹션 제외 - {section_title}"
+                                )
+                                continue
+
+                            # 🔧 GPT-4o 토큰 제한에 맞춰 섹션 크기 제한 (약 50만자로 축소)
+                            if len(content) > 500000:
+                                content = (
+                                    content[:500000]
+                                    + "\n...[50만자 제한으로 내용 일부 생략]..."
+                                )
+
+                            context_parts.append(f"### {section_title}")
+                            context_parts.append(content)
+                            context_parts.append("")
+                            section_count += 1
+                            total_content_length += len(content)
+
+                        logger.info(
+                            f"📄 {expert.name}: {section_count}개 섹션, 총 {total_content_length:,}자 (전문가별 딕셔너리)"
+                        )
+
+                        # 메타데이터 정보 추가
+                        context_parts.append(f"**📊 DART 보고서 메타데이터**:")
+                        context_parts.append(
+                            f"- 총 섹션: {metadata.get('total_sections', 0)}개"
+                        )
+                        context_parts.append(
+                            f"- 관련 섹션: {metadata.get('relevant_sections', 0)}개"
+                        )
+                        context_parts.append(
+                            f"- 일반 섹션: {metadata.get('general_sections', 0)}개"
+                        )
+                        context_parts.append(
+                            f"- 총 텍스트: {metadata.get('total_text_length', 0):,}자"
+                        )
+                        context_parts.append("")
+                    else:
+                        logger.warning(
+                            f"⚠️ {expert.name}: sections가 딕셔너리가 아님 (타입: {type(sections)})"
+                        )
+                        # 텍스트로 처리
+                        context_parts.append(
+                            f"📄 **{expert.name} 전용 DART 보고서 내용**:"
+                        )
+                        if isinstance(sections, str):
+                            if len(sections) > 2000000:
+                                sections = (
+                                    sections[:2000000]
+                                    + "\n...[200만자 제한으로 내용 일부 생략]..."
+                                )
+                            context_parts.append(sections)
+                        else:
+                            context_parts.append(f"데이터 타입 오류: {type(sections)}")
+                        context_parts.append("")
+
+                else:
+                    logger.warning(
+                        f"⚠️ {expert.name}: 지원되지 않는 expert_data 타입 또는 구조 ({type(expert_data)})"
+                    )
 
             else:
                 logger.warning(
@@ -3976,7 +4306,7 @@ class SmartSectorManager:
         enhanced_dart_data: Dict = None,
         manus_collected_data: Dict = None,
         dart_reports_dictionary: Dict = None,  # 🚀 DART 딕셔너리 추가!
-        target_token_limit: int = 800000,  # 2명 체제에 맞게 대폭 증가 (기존 500K → 800K)
+        target_token_limit: int = 100000,  # 🔧 GPT-4o 제한에 맞춰 대폭 감소 (800K → 100K)
     ) -> Dict[str, Any]:
         """
         🎯 토큰 제한에 맞춰 데이터를 최적화합니다.
@@ -3986,12 +4316,14 @@ class SmartSectorManager:
             enhanced_dart_data: Enhanced DART 데이터
             manus_collected_data: Manus 수집 데이터
             dart_reports_dictionary: DART 보고서 딕셔너리
-            target_token_limit: 목표 토큰 제한
+            target_token_limit: 목표 토큰 제한 (GPT-4o 128K 제한 고려)
 
         Returns:
             Dict: 최적화된 데이터
         """
-        logger.info(f"🔢 토큰 최적화 시작 - 목표: {target_token_limit:,} 토큰")
+        logger.info(
+            f"🔢 토큰 최적화 시작 - 목표: {target_token_limit:,} 토큰 (GPT-4o 제한 준수)"
+        )
 
         optimized_data = {
             "financial_data": financial_data,
@@ -4004,8 +4336,12 @@ class SmartSectorManager:
         }
 
         try:
-            # 현재 토큰 수 추정
+            # 🔧 더 정확한 토큰 수 추정 (실제 LLM 호출 시 추가되는 오버헤드 고려)
             current_tokens = 0
+            safety_margin = (
+                20000  # 🔧 안전 여유분 20K 토큰 (시스템 메시지, 프롬프트 등)
+            )
+            effective_limit = target_token_limit - safety_margin
 
             if financial_data:
                 financial_text = str(financial_data)
@@ -4026,47 +4362,89 @@ class SmartSectorManager:
 
             optimized_data["original_token_estimate"] = current_tokens
 
-            # 토큰 제한을 초과하는 경우 최적화 적용
-            if current_tokens > target_token_limit:
+            # 🔧 더 엄격한 토큰 제한 적용
+            if current_tokens > effective_limit:
                 logger.info(
-                    f"⚠️ 토큰 제한 초과: {current_tokens:,} > {target_token_limit:,}"
+                    f"⚠️ 토큰 제한 초과: {current_tokens:,} > {effective_limit:,} (안전 여유분 포함)"
                 )
 
-                # 각 데이터 소스별 우선순위에 따라 압축
-                compression_ratio = target_token_limit / current_tokens
+                # 🔧 더 적극적인 압축 비율 계산 (최소 20% 보존으로 하향 조정)
+                compression_ratio = effective_limit / current_tokens
+                min_compression_ratio = 0.2  # 🔧 최소 20% 보존 (기존 30%에서 하향)
+                safe_compression_ratio = max(compression_ratio, min_compression_ratio)
 
-                # 🔧 완화된 압축 비율 적용 (최소 0.1 이상 보장)
-                min_ratio = max(compression_ratio, 0.1)  # 최소 10% 보장
+                logger.info(
+                    f"🔢 압축 비율: 원본={compression_ratio:.3f}, 안전={safe_compression_ratio:.3f}"
+                )
 
-                # 재무데이터 압축 (가장 중요하므로 90% 유지)
+                # 🔧 재무데이터 압축 (가장 중요하므로 높은 비율 유지)
                 if financial_data:
+                    financial_ratio = min(
+                        safe_compression_ratio * 1.3, 1.0
+                    )  # 130% 가중치, 최대 100%
                     optimized_data["financial_data"] = self._compress_financial_data(
-                        financial_data, min_ratio * 0.9
+                        financial_data, financial_ratio
                     )
+                    logger.info(f"📊 재무데이터 압축: {financial_ratio:.3f} 비율 적용")
 
-                # Enhanced DART 데이터 압축 (85% 유지)
+                # 🔧 Enhanced DART 데이터 압축
                 if enhanced_dart_data:
+                    dart_ratio = min(safe_compression_ratio * 1.2, 1.0)  # 120% 가중치
                     optimized_data["enhanced_dart_data"] = self._compress_dart_data(
-                        enhanced_dart_data, min_ratio * 0.85
+                        enhanced_dart_data, dart_ratio
                     )
+                    logger.info(f"🏢 Enhanced DART 압축: {dart_ratio:.3f} 비율 적용")
 
-                # Manus 데이터 압축 (80% 유지)
+                # 🔧 Manus 데이터 압축
                 if manus_collected_data:
+                    manus_ratio = min(safe_compression_ratio * 1.0, 1.0)  # 100% 가중치
                     optimized_data["manus_collected_data"] = self._compress_manus_data(
-                        manus_collected_data, min_ratio * 0.8
+                        manus_collected_data, manus_ratio
+                    )
+                    logger.info(f"🔍 Manus 데이터 압축: {manus_ratio:.3f} 비율 적용")
+
+                # 🚀 DART 딕셔너리 압축 (가장 적극적으로 압축)
+                if dart_reports_dictionary:
+                    dart_dict_ratio = min(
+                        safe_compression_ratio * 0.6, 1.0
+                    )  # 60% 가중치 (더 낮게 조정)
+                    logger.info(
+                        f"📋 DART 딕셔너리 압축 시작: {dart_dict_ratio:.3f} 비율 적용"
                     )
 
-                # 🚀 DART 딕셔너리 압축 (75% 유지 - 가장 큰 데이터)
-                if dart_reports_dictionary:
-                    optimized_data["dart_reports_dictionary"] = (
-                        self._compress_dart_dictionary(
-                            dart_reports_dictionary, min_ratio * 0.75
+                    # 🔍 압축 전 검증
+                    logger.info("🔍 DART 딕셔너리 압축 전 검증...")
+                    pre_compression_valid = self._validate_dart_dictionary_at_each_step(
+                        dart_reports_dictionary, "압축_전"
+                    )
+
+                    # 🚀 전문가별 딕셔너리 구조 보존 압축 사용
+                    compressed_dart_dict = (
+                        self._compress_dart_dictionary_preserve_structure(
+                            dart_reports_dictionary, dart_dict_ratio
                         )
                     )
 
+                    # 🔍 압축 후 검증
+                    logger.info("🔍 DART 딕셔너리 압축 후 검증...")
+                    post_compression_valid = (
+                        self._validate_dart_dictionary_at_each_step(
+                            compressed_dart_dict, "압축_후"
+                        )
+                    )
+
+                    if post_compression_valid:
+                        optimized_data["dart_reports_dictionary"] = compressed_dart_dict
+                        logger.info("✅ DART 딕셔너리 검증 통과 - 압축 데이터 사용")
+                    else:
+                        logger.warning("⚠️ 압축 후 검증 실패 - 원본 데이터 유지")
+                        optimized_data["dart_reports_dictionary"] = (
+                            dart_reports_dictionary
+                        )
+
                 optimized_data["optimization_applied"] = True
 
-                # 최적화 후 토큰 수 재계산
+                # 🔧 최적화 후 토큰 수 재계산 (더 정확한 계산)
                 optimized_tokens = 0
                 for key in [
                     "financial_data",
@@ -4079,15 +4457,70 @@ class SmartSectorManager:
                             str(optimized_data[key])
                         )
 
-                optimized_data["optimized_token_estimate"] = optimized_tokens
+                # 🔧 안전 여유분 포함한 총 토큰 수 계산
+                total_estimated_tokens = optimized_tokens + safety_margin
+                optimized_data["optimized_token_estimate"] = total_estimated_tokens
 
-                logger.info(
-                    f"✅ 토큰 최적화 완료: {current_tokens:,} → {optimized_tokens:,}"
+                # 🎯 압축 효과 분석
+                compression_achieved = (
+                    optimized_tokens / current_tokens if current_tokens > 0 else 1.0
                 )
+                logger.info(
+                    f"✅ 토큰 최적화 완료: {current_tokens:,} → {optimized_tokens:,} (압축률: {compression_achieved:.3f})"
+                )
+                logger.info(
+                    f"📊 총 예상 토큰: {total_estimated_tokens:,} (안전 여유분 포함)"
+                )
+
+                # 🔧 GPT-4o 제한 초과 여부 최종 확인
+                if total_estimated_tokens > target_token_limit:
+                    logger.warning(
+                        f"⚠️ 여전히 토큰 제한 초과: {total_estimated_tokens:,} > {target_token_limit:,}"
+                    )
+                    # 🔧 추가 긴급 압축 적용
+                    emergency_ratio = (
+                        target_token_limit / total_estimated_tokens * 0.8
+                    )  # 80% 안전 마진
+                    logger.info(f"🚨 긴급 추가 압축 적용: {emergency_ratio:.3f} 비율")
+
+                    # 모든 데이터에 긴급 압축 적용
+                    for key in [
+                        "financial_data",
+                        "enhanced_dart_data",
+                        "manus_collected_data",
+                        "dart_reports_dictionary",
+                    ]:
+                        if optimized_data[key]:
+                            if key == "financial_data":
+                                optimized_data[key] = self._compress_financial_data(
+                                    optimized_data[key], emergency_ratio
+                                )
+                            elif key == "enhanced_dart_data":
+                                optimized_data[key] = self._compress_dart_data(
+                                    optimized_data[key], emergency_ratio
+                                )
+                            elif key == "manus_collected_data":
+                                optimized_data[key] = self._compress_manus_data(
+                                    optimized_data[key], emergency_ratio
+                                )
+                            elif key == "dart_reports_dictionary":
+                                optimized_data[key] = (
+                                    self._compress_dart_dictionary_preserve_structure(
+                                        optimized_data[key], emergency_ratio
+                                    )
+                                )
+
+                # 압축이 너무 과도한 경우 경고
+                if compression_achieved < 0.15:  # 15% 미만으로 압축된 경우
+                    logger.warning(
+                        f"⚠️ 과도한 압축 감지 ({compression_achieved:.1%}) - 데이터 품질 저하 가능성"
+                    )
 
             else:
                 logger.info(f"✅ 토큰 제한 내: {current_tokens:,} 토큰")
-                optimized_data["optimized_token_estimate"] = current_tokens
+                optimized_data["optimized_token_estimate"] = (
+                    current_tokens + safety_margin
+                )
 
         except Exception as e:
             logger.error(f"❌ 토큰 최적화 실패: {e}")
@@ -4177,6 +4610,1305 @@ class SmartSectorManager:
 
         # 🚀 새로운 선택적 데이터 추출 방식 적용
         return self._extract_essential_dart_data(dart_dict, ratio)
+
+    def _compress_dart_dictionary_preserve_structure(
+        self, dart_dict: Dict, ratio: float
+    ) -> Dict:
+        """
+        🚀 전문가별 딕셔너리 구조를 보존하면서 압축합니다.
+
+        Args:
+            dart_dict: 원본 DART 딕셔너리
+            ratio: 압축 비율 (0.0 ~ 1.0)
+
+        Returns:
+            Dict: 구조가 보존된 압축 딕셔너리
+        """
+        if not dart_dict or ratio >= 1.0:
+            return dart_dict
+
+        logger.info(f"🔧 구조 보존 압축 시작: {ratio:.3f} 비율")
+
+        # 🔍 압축 전 원본 구조 로깅
+        logger.info(f"🔍 압축 전 원본 구조: {list(dart_dict.keys())}")
+        logger.info(
+            f"🔍 압축 전 business_report_dictionary 길이: {len(dart_dict.get('business_report_dictionary', {}))}"
+        )
+        logger.info(
+            f"🔍 압축 전 quarterly_report_dictionary 길이: {len(dart_dict.get('quarterly_report_dictionary', {}))}"
+        )
+
+        try:
+            # 🎯 전문가별 딕셔너리 압축
+            compressed_expert_dict = {}
+            if "expert_ready_dictionaries" in dart_dict:
+                compressed_expert_dict = self._compress_expert_ready_dictionaries(
+                    dart_dict["expert_ready_dictionaries"], ratio
+                )
+                logger.info("✅ expert_ready_dictionaries 압축 완료")
+
+            # 🔧 압축된 원본 구조도 생성 (검증을 위해)
+            compressed_business_dict = {}
+            compressed_quarterly_dict = {}
+
+            if "business_report_dictionary" in dart_dict:
+                compressed_business_dict = self._compress_original_dart_structure(
+                    dart_dict["business_report_dictionary"], ratio
+                )
+                logger.info("✅ business_report_dictionary 압축 완료")
+
+            if "quarterly_report_dictionary" in dart_dict:
+                compressed_quarterly_dict = self._compress_original_dart_structure(
+                    dart_dict["quarterly_report_dictionary"], ratio
+                )
+                logger.info("✅ quarterly_report_dictionary 압축 완료")
+
+            # 🎯 일관된 구조 반환 (검증을 위해 원본 구조도 포함)
+            compressed_dict = {
+                "expert_ready_dictionaries": compressed_expert_dict,
+                "business_report_dictionary": compressed_business_dict,
+                "quarterly_report_dictionary": compressed_quarterly_dict,
+                "success": True,
+                "compression_applied": True,
+                "original_structure_preserved": True,
+                "compression_ratio": ratio,
+                "compressed_at": "optimization_stage",
+            }
+
+            # 🔍 압축 후 검증을 위한 메타데이터 추가
+            compressed_dict["validation_info"] = {
+                "expert_sections_count": len(compressed_expert_dict),
+                "business_sections_count": len(compressed_business_dict),
+                "quarterly_sections_count": len(compressed_quarterly_dict),
+                "total_expert_content": sum(
+                    len(str(v)) for v in compressed_expert_dict.values()
+                ),
+                "total_business_content": sum(
+                    len(str(v)) for v in compressed_business_dict.values()
+                ),
+                "total_quarterly_content": sum(
+                    len(str(v)) for v in compressed_quarterly_dict.values()
+                ),
+            }
+
+            # 🔍 압축 후 결과 구조 로깅
+            logger.info(f"🔍 압축 후 결과 구조: {list(compressed_dict.keys())}")
+            logger.info(
+                f"🔍 압축 후 business_report_dictionary 길이: {len(compressed_dict.get('business_report_dictionary', {}))}"
+            )
+            logger.info(
+                f"🔍 압축 후 quarterly_report_dictionary 길이: {len(compressed_dict.get('quarterly_report_dictionary', {}))}"
+            )
+            logger.info(
+                f"🔍 압축 후 validation_info: {compressed_dict.get('validation_info', {})}"
+            )
+
+            logger.info("✅ 구조 보존 압축 완료")
+            return compressed_dict
+
+        except Exception as e:
+            logger.error(f"❌ 구조 보존 압축 실패: {e}")
+            # 실패 시 기존 압축 방식 사용
+            return self._extract_essential_dart_data(dart_dict, ratio)
+
+    def _compress_expert_ready_dictionaries(
+        self, expert_dict: Dict, ratio: float
+    ) -> Dict:
+        """
+        전문가별 딕셔너리를 선택적으로 압축합니다.
+
+        ⚠️ 중요: 전문가 키워드 매핑을 유지하면서 압축
+        """
+        if not expert_dict:
+            return expert_dict
+
+        compressed_expert_dict = {}
+
+        # 전문가별 중요도 설정
+        expert_importance = {
+            "integrated_financial_analyst": 1.0,  # 통합재무전문가 (최고 중요도)
+            "technical_analyst": 0.9,  # 기술적 분석가
+            "valuation_expert": 0.8,  # 밸류에이션 전문가
+            "risk_assessor": 0.7,  # 리스크 평가자
+            "industry_expert": 0.6,  # 산업 전문가
+            "footnote_specialist": 0.5,  # 각주 전문가
+        }
+
+        for expert_name, expert_data in expert_dict.items():
+            if expert_data and len(expert_data) > 0:
+                # 전문가별 중요도에 따른 압축 비율 조정
+                importance_weight = expert_importance.get(expert_name, 0.5)
+                expert_ratio = min(ratio * importance_weight, 1.0)
+
+                # 통합재무전문가는 최우선 보존
+                if expert_name == "integrated_financial_analyst":
+                    expert_ratio = max(expert_ratio, 0.5)  # 최소 50% 보존
+
+                compressed_expert_dict[expert_name] = self._compress_single_expert_data(
+                    expert_data, expert_ratio, expert_name
+                )
+
+                logger.info(f"📊 {expert_name} 압축: {expert_ratio:.3f} 비율")
+
+        return compressed_expert_dict
+
+    def _compress_single_expert_data(
+        self, expert_data: Dict, ratio: float, expert_name: str
+    ) -> Dict:
+        """
+        단일 전문가 데이터를 압축합니다.
+
+        Args:
+            expert_data: 전문가 데이터
+            ratio: 압축 비율
+            expert_name: 전문가 이름
+
+        Returns:
+            Dict: 압축된 전문가 데이터 (딕셔너리 구조 유지)
+        """
+        if not expert_data or ratio >= 1.0:
+            return expert_data
+
+        # 🔧 데이터 구조 분석 및 처리
+        logger.info(f"🔍 {expert_name} 데이터 구조 분석: {type(expert_data)}")
+
+        # expert_data가 딕셔너리가 아닌 경우 (이미 섹션 구조가 아님)
+        if not isinstance(expert_data, dict):
+            logger.warning(
+                f"⚠️ {expert_name}: 예상과 다른 데이터 구조 ({type(expert_data)})"
+            )
+            return expert_data
+
+        # 🎯 전문가별 구조 보존 압축
+        compressed_data = {
+            "sections": {},  # 섹션 구조 유지
+            "metadata": {
+                "expert_name": expert_name,
+                "original_sections": len(expert_data),
+                "compression_ratio": ratio,
+                "compressed_at": "optimization_stage",
+            },
+        }
+
+        # 전문가별 핵심 키워드 섹션 우선 보존 (확장된 키워드)
+        expert_priority_keywords = {
+            "integrated_financial_analyst": [
+                # 펀더멘털 관련
+                "재무",
+                "손익",
+                "매출",
+                "순이익",
+                "자산",
+                "부채",
+                "자본",
+                "현금흐름",
+                "수익성",
+                "안정성",
+                "회사개요",
+                "사업내용",
+                "재무제표",
+                "손익계산서",
+                "재무상태표",
+                "현금흐름표",
+                "ROE",
+                "ROA",
+                "ROIC",
+                "유동비율",
+                "부채비율",
+                # 밸류에이션 관련
+                "가치",
+                "평가",
+                "적정가",
+                "목표가",
+                "DCF",
+                "밸류에이션",
+                "투자",
+                "배당",
+                "내재가치",
+                "멀티플",
+                "PER",
+                "PBR",
+                "EV/EBITDA",
+                "WACC",
+                "FCF",
+                "할인율",
+                "성장률",
+                # 통합 분석 관련
+                "종합",
+                "통합",
+                "분석",
+                "투자의견",
+                "매수",
+                "매도",
+                "보유",
+                "시나리오",
+                "리스크",
+                "성장성",
+                "안정성",
+                "수익성",
+                # 사업 관련 (추가)
+                "사업",
+                "개요",
+                "기업",
+                "회사",
+                "업종",
+                "산업",
+                "시장",
+                "경쟁",
+                "영업",
+                "이익",
+                "수익",
+                "비용",
+                "지출",
+                "투자",
+                "자본",
+                "경영",
+                "전략",
+                "계획",
+                "전망",
+            ],
+            "technical_analyst": ["기술", "차트", "지표", "추세", "거래량", "가격"],
+            "valuation_expert": ["가치", "평가", "PER", "PBR", "DCF", "목표가"],
+            "risk_assessor": ["리스크", "위험", "변동성", "부채", "유동성"],
+            "industry_expert": ["산업", "경쟁", "시장", "점유율", "성장"],
+            "footnote_specialist": ["각주", "주석", "세부", "상세"],
+        }
+
+        priority_keywords = expert_priority_keywords.get(expert_name, [])
+
+        # 일관된 압축을 위한 최소 보존 섹션 수 계산
+        min_sections = max(1, int(len(expert_data) * 0.4))  # 최소 40% 보존
+        target_sections = max(min_sections, int(len(expert_data) * ratio))
+
+        logger.info(
+            f"🔧 {expert_name} 압축 목표: {target_sections}개 섹션 (최소 {min_sections}개 보장)"
+        )
+
+        # 1단계: 키워드 매칭 섹션 우선 선택 (최소 섹션 수 보장)
+        selected_sections = 0
+
+        # 섹션별 키워드 매칭 점수 계산
+        section_scores = []
+        for section_name, section_content in expert_data.items():
+            score = 0
+
+            # 제목에서 키워드 매칭 (가중치 3)
+            for keyword in priority_keywords:
+                if keyword in section_name.lower():
+                    score += 3
+
+            # 내용에서 키워드 매칭 (가중치 1, 처음 1000자만)
+            content_sample = str(section_content)[:1000]
+            for keyword in priority_keywords:
+                if keyword in content_sample:
+                    score += 1
+
+            # 통합 재무분석가 특별 가중치 (회사개요/사업내용 섹션)
+            if expert_name == "integrated_financial_analyst":
+                if "회사개요" in section_name or "사업내용" in section_name:
+                    score += 5  # 추가 가중치
+                    logger.info(
+                        f"🚀 {expert_name} 특별 가중치 적용: {section_name} (+5점)"
+                    )
+
+            section_scores.append((section_name, section_content, score))
+
+        # 점수 순으로 정렬
+        section_scores.sort(key=lambda x: x[2], reverse=True)
+
+        # 최소 섹션 수만큼 우선 선택
+        for section_name, section_content, score in section_scores:
+            if selected_sections >= min_sections:
+                break
+
+            compressed_data["sections"][section_name] = self._smart_truncate_section(
+                section_content, ratio
+            )
+            selected_sections += 1
+            logger.info(
+                f"✅ {expert_name} 우선순위 섹션 선택: {section_name} (점수: {score})"
+            )
+
+        # 2단계: 나머지 섹션 중 크기가 큰 것 우선 선택 (일관된 알고리즘)
+        remaining_sections = {
+            k: v for k, v in expert_data.items() if k not in compressed_data["sections"]
+        }
+        remaining_sorted = sorted(
+            remaining_sections.items(), key=lambda x: len(str(x[1])), reverse=True
+        )
+
+        for section_name, section_content in remaining_sorted:
+            if selected_sections >= target_sections:
+                break
+
+            compressed_data["sections"][section_name] = self._smart_truncate_section(
+                section_content, ratio
+            )
+            selected_sections += 1
+            logger.info(f"✅ {expert_name} 추가 섹션 선택: {section_name}")
+
+        # 최소 내용 보장 검증
+        total_content = sum(len(str(v)) for v in compressed_data["sections"].values())
+        if total_content < 100:  # 최소 100자 보장
+            logger.warning(
+                f"⚠️ {expert_name} 압축 후 내용이 너무 적음 ({total_content}자). 추가 섹션 선택..."
+            )
+
+            # 추가 섹션 선택
+            for section_name, section_content in remaining_sorted[
+                selected_sections : selected_sections + 1
+            ]:
+                compressed_data["sections"][section_name] = (
+                    self._smart_truncate_section(section_content, ratio)
+                )
+                logger.info(
+                    f"✅ {expert_name} 최소 내용 보장을 위한 추가 섹션: {section_name}"
+                )
+
+        # 🔧 메타데이터 업데이트
+        compressed_data["metadata"]["compressed_sections"] = selected_sections
+        compressed_data["metadata"]["total_sections"] = selected_sections
+        compressed_data["metadata"]["relevant_sections"] = selected_sections
+        compressed_data["metadata"]["general_sections"] = 0
+        compressed_data["metadata"]["total_text_length"] = sum(
+            len(str(content)) for content in compressed_data["sections"].values()
+        )
+
+        logger.info(f"✅ {expert_name} 구조 보존 압축 완료: {selected_sections}개 섹션")
+        return compressed_data
+
+    def _smart_truncate_section(self, section_content: str, ratio: float) -> str:
+        """
+        섹션 내용을 스마트하게 압축합니다.
+
+        Args:
+            section_content: 섹션 내용
+            ratio: 압축 비율
+
+        Returns:
+            str: 압축된 섹션 내용
+        """
+        if not section_content or ratio >= 1.0:
+            return section_content
+
+        content_str = str(section_content)
+        target_length = int(len(content_str) * ratio)
+
+        if target_length >= len(content_str):
+            return content_str
+
+        # 최소 1000자는 보존
+        target_length = max(target_length, 1000)
+
+        # 문장 단위로 자르기
+        truncated = self._smart_truncate(content_str, target_length)
+
+        # 압축 표시 추가
+        if len(truncated) < len(content_str):
+            truncated += (
+                f"\n\n[📝 압축됨: {len(content_str):,}자 → {len(truncated):,}자]"
+            )
+
+        return truncated
+
+    def _compress_original_dart_structure(self, dart_dict: Dict, ratio: float) -> Dict:
+        """
+        기존 DART 구조를 유지하면서 압축하되 최소한의 핵심 내용을 보존합니다.
+        """
+        logger.info(
+            f"🔧 원본 DART 구조 압축 시작: {len(dart_dict)}개 섹션, 압축 비율: {ratio:.3f}"
+        )
+
+        compressed_dict = {}
+
+        # business_report_dictionary 압축 (최소 내용 보장)
+        if "business_report_dictionary" in dart_dict:
+            compressed_business = self._compress_business_report_sections_with_minimum(
+                dart_dict["business_report_dictionary"], ratio
+            )
+            compressed_dict["business_report_dictionary"] = compressed_business
+            logger.info(
+                f"✅ business_report_dictionary 압축 완료: {len(compressed_business)}개 섹션"
+            )
+
+        # quarterly_report_dictionary 압축 (최소 내용 보장)
+        if "quarterly_report_dictionary" in dart_dict:
+            compressed_quarterly = (
+                self._compress_quarterly_report_sections_with_minimum(
+                    dart_dict["quarterly_report_dictionary"], ratio
+                )
+            )
+            compressed_dict["quarterly_report_dictionary"] = compressed_quarterly
+            logger.info(
+                f"✅ quarterly_report_dictionary 압축 완료: {len(compressed_quarterly)}개 섹션"
+            )
+
+        # 최종 검증
+        total_sections = len(
+            compressed_dict.get("business_report_dictionary", {})
+        ) + len(compressed_dict.get("quarterly_report_dictionary", {}))
+        total_content = sum(
+            len(str(v))
+            for sections in compressed_dict.values()
+            for v in sections.values()
+        )
+
+        logger.info(
+            f"✅ 원본 DART 구조 압축 완료: 총 {total_sections}개 섹션, {total_content:,}자"
+        )
+
+        # 최소 내용 보장 검증
+        if total_content < 500:  # 최소 500자 보장
+            logger.warning(
+                f"⚠️ 압축 후 내용이 너무 적음 ({total_content}자). 최소 내용 보장 로직 실행..."
+            )
+            compressed_dict = self._ensure_minimum_content(
+                compressed_dict, dart_dict, ratio
+            )
+
+        return compressed_dict
+
+    def _compress_business_report_sections(
+        self, business_report: Dict, ratio: float
+    ) -> Dict:
+        """
+        사업보고서 섹션을 중요도에 따라 압축합니다.
+        """
+        # 중요도 순으로 정렬된 섹션 목록
+        priority_sections = [
+            "04_재무상태표",
+            "05_손익계산서",
+            "06_현금흐름표",
+            "07_주요재무비율",
+            "02_재무정보",
+            "03_사업내용",
+            "01_회사개요",
+            "08_재무상태",
+        ]
+
+        compressed_sections = {}
+        selected_count = 0
+        target_count = max(3, int(len(business_report) * ratio))  # 최소 3개 섹션 보존
+
+        # 우선순위 섹션 먼저 선택
+        for section_name in priority_sections:
+            if selected_count >= target_count:
+                break
+
+            if section_name in business_report:
+                compressed_sections[section_name] = self._smart_truncate_section(
+                    business_report[section_name], ratio
+                )
+                selected_count += 1
+
+        # 나머지 섹션 중 크기가 큰 것 선택
+        remaining_sections = {
+            k: v for k, v in business_report.items() if k not in compressed_sections
+        }
+        remaining_sorted = sorted(
+            remaining_sections.items(), key=lambda x: len(str(x[1])), reverse=True
+        )
+
+        for section_name, section_content in remaining_sorted:
+            if selected_count >= target_count:
+                break
+
+            compressed_sections[section_name] = self._smart_truncate_section(
+                section_content, ratio
+            )
+            selected_count += 1
+
+        return compressed_sections
+
+    def _compress_business_report_sections_with_minimum(
+        self, business_report: Dict, ratio: float
+    ) -> Dict:
+        """
+        사업보고서 섹션을 중요도에 따라 압축하되 최소 내용을 보장합니다.
+        """
+        logger.info(
+            f"🔧 사업보고서 최소 내용 보장 압축 시작: {len(business_report)}개 섹션"
+        )
+
+        # 중요도 순으로 정렬된 섹션 목록
+        priority_sections = [
+            "04_재무상태표",
+            "05_손익계산서",
+            "06_현금흐름표",
+            "07_주요재무비율",
+            "02_재무정보",
+            "03_사업내용",
+            "01_회사개요",
+            "08_재무상태",
+        ]
+
+        compressed_sections = {}
+        selected_count = 0
+
+        # 최소 보존 섹션 수 계산 (최소 30%는 보존)
+        min_sections = max(2, int(len(business_report) * 0.3))
+        target_count = max(min_sections, int(len(business_report) * ratio))
+
+        logger.info(
+            f"🔧 사업보고서 압축 목표: {target_count}개 섹션 (최소 {min_sections}개 보장)"
+        )
+
+        # 1단계: 우선순위 섹션 먼저 선택 (최소 섹션 수 보장)
+        for section_name in priority_sections:
+            if selected_count >= min_sections:
+                break
+
+            if section_name in business_report:
+                compressed_sections[section_name] = self._smart_truncate_section(
+                    business_report[section_name], ratio
+                )
+                selected_count += 1
+                logger.info(f"✅ 우선순위 섹션 선택: {section_name}")
+
+        # 2단계: 나머지 섹션 중 크기가 큰 것 선택
+        remaining_sections = {
+            k: v for k, v in business_report.items() if k not in compressed_sections
+        }
+        remaining_sorted = sorted(
+            remaining_sections.items(), key=lambda x: len(str(x[1])), reverse=True
+        )
+
+        for section_name, section_content in remaining_sorted:
+            if selected_count >= target_count:
+                break
+
+            compressed_sections[section_name] = self._smart_truncate_section(
+                section_content, ratio
+            )
+            selected_count += 1
+            logger.info(f"✅ 추가 섹션 선택: {section_name}")
+
+        # 최소 내용 보장 검증
+        total_content = sum(len(str(v)) for v in compressed_sections.values())
+        if total_content < 300:  # 최소 300자 보장
+            logger.warning(
+                f"⚠️ 사업보고서 압축 후 내용이 너무 적음 ({total_content}자). 추가 섹션 선택..."
+            )
+
+            # 추가 섹션 선택
+            for section_name, section_content in remaining_sorted[
+                selected_count : selected_count + 2
+            ]:
+                compressed_sections[section_name] = self._smart_truncate_section(
+                    section_content, ratio
+                )
+                logger.info(f"✅ 최소 내용 보장을 위한 추가 섹션: {section_name}")
+
+        logger.info(f"✅ 사업보고서 압축 완료: {len(compressed_sections)}개 섹션")
+        return compressed_sections
+
+    def _compress_quarterly_report_sections_with_minimum(
+        self, quarterly_report: Dict, ratio: float
+    ) -> Dict:
+        """
+        분기보고서 섹션을 압축하되 최소 내용을 보장합니다.
+        """
+        logger.info(
+            f"🔧 분기보고서 최소 내용 보장 압축 시작: {len(quarterly_report)}개 섹션"
+        )
+
+        # 분기보고서 중요 섹션
+        priority_sections = ["재무상태표", "손익계산서", "현금흐름표"]
+
+        compressed_sections = {}
+        selected_count = 0
+
+        # 최소 보존 섹션 수 계산
+        min_sections = max(1, int(len(quarterly_report) * 0.5))  # 최소 50% 보존
+        target_count = max(min_sections, int(len(quarterly_report) * ratio))
+
+        logger.info(
+            f"🔧 분기보고서 압축 목표: {target_count}개 섹션 (최소 {min_sections}개 보장)"
+        )
+
+        # 1단계: 우선순위 섹션 선택
+        for section_name in priority_sections:
+            if selected_count >= min_sections:
+                break
+
+            if section_name in quarterly_report:
+                compressed_sections[section_name] = self._smart_truncate_section(
+                    quarterly_report[section_name], ratio
+                )
+                selected_count += 1
+                logger.info(f"✅ 우선순위 섹션 선택: {section_name}")
+
+        # 2단계: 나머지 섹션 선택
+        remaining_sections = {
+            k: v for k, v in quarterly_report.items() if k not in compressed_sections
+        }
+        remaining_sorted = sorted(
+            remaining_sections.items(), key=lambda x: len(str(x[1])), reverse=True
+        )
+
+        for section_name, section_content in remaining_sorted:
+            if selected_count >= target_count:
+                break
+
+            compressed_sections[section_name] = self._smart_truncate_section(
+                section_content, ratio
+            )
+            selected_count += 1
+            logger.info(f"✅ 추가 섹션 선택: {section_name}")
+
+        # 최소 내용 보장 검증
+        total_content = sum(len(str(v)) for v in compressed_sections.values())
+        if total_content < 200:  # 최소 200자 보장
+            logger.warning(
+                f"⚠️ 분기보고서 압축 후 내용이 너무 적음 ({total_content}자). 추가 섹션 선택..."
+            )
+
+            # 추가 섹션 선택
+            for section_name, section_content in remaining_sorted[
+                selected_count : selected_count + 1
+            ]:
+                compressed_sections[section_name] = self._smart_truncate_section(
+                    section_content, ratio
+                )
+                logger.info(f"✅ 최소 내용 보장을 위한 추가 섹션: {section_name}")
+
+        logger.info(f"✅ 분기보고서 압축 완료: {len(compressed_sections)}개 섹션")
+        return compressed_sections
+
+    def _ensure_minimum_content(
+        self, compressed_dict: Dict, original_dict: Dict, ratio: float
+    ) -> Dict:
+        """
+        압축 후 최소 내용이 보장되지 않았을 때 추가 내용을 보장합니다.
+        """
+        logger.info("🔧 최소 내용 보장 로직 실행...")
+
+        # business_report_dictionary 최소 내용 보장
+        if "business_report_dictionary" in original_dict:
+            original_business = original_dict["business_report_dictionary"]
+            compressed_business = compressed_dict.get("business_report_dictionary", {})
+
+            if len(compressed_business) == 0:
+                # 최소 1개 섹션은 보장
+                largest_section = max(
+                    original_business.items(), key=lambda x: len(str(x[1]))
+                )
+                compressed_dict["business_report_dictionary"] = {
+                    largest_section[0]: self._smart_truncate_section(
+                        largest_section[1], ratio
+                    )
+                }
+                logger.info(
+                    f"✅ business_report_dictionary 최소 섹션 보장: {largest_section[0]}"
+                )
+
+        # quarterly_report_dictionary 최소 내용 보장
+        if "quarterly_report_dictionary" in original_dict:
+            original_quarterly = original_dict["quarterly_report_dictionary"]
+            compressed_quarterly = compressed_dict.get(
+                "quarterly_report_dictionary", {}
+            )
+
+            if len(compressed_quarterly) == 0:
+                # 최소 1개 섹션은 보장
+                largest_section = max(
+                    original_quarterly.items(), key=lambda x: len(str(x[1]))
+                )
+                compressed_dict["quarterly_report_dictionary"] = {
+                    largest_section[0]: self._smart_truncate_section(
+                        largest_section[1], ratio
+                    )
+                }
+                logger.info(
+                    f"✅ quarterly_report_dictionary 최소 섹션 보장: {largest_section[0]}"
+                )
+
+        return compressed_dict
+
+    def _compress_quarterly_report_sections(
+        self, quarterly_report: Dict, ratio: float
+    ) -> Dict:
+        """
+        분기보고서 섹션을 압축합니다.
+        """
+        # 분기보고서 중요 섹션
+        priority_sections = ["재무상태표", "손익계산서", "현금흐름표"]
+
+        compressed_sections = {}
+        selected_count = 0
+        target_count = max(2, int(len(quarterly_report) * ratio))  # 최소 2개 섹션 보존
+
+        for section_name in priority_sections:
+            if selected_count >= target_count:
+                break
+
+            if section_name in quarterly_report:
+                compressed_sections[section_name] = self._smart_truncate_section(
+                    quarterly_report[section_name], ratio
+                )
+                selected_count += 1
+
+        return compressed_sections
+
+    def _validate_dart_dictionary_at_each_step(
+        self, dart_dict: Dict, step_name: str
+    ) -> bool:
+        """
+        🔍 각 단계에서 DART 딕셔너리 상태를 검증합니다.
+
+        Args:
+            dart_dict: 검증할 DART 딕셔너리
+            step_name: 단계 이름 (예: "생성_후", "최적화_후", "전달_전")
+
+        Returns:
+            bool: 검증 성공 여부
+        """
+        if not dart_dict:
+            logger.error(f"❌ [{step_name}] DART 딕셔너리가 비어있음")
+            return False
+
+        try:
+            # 🔧 압축 상태 확인
+            is_compressed = dart_dict.get("compression_applied", False)
+
+            # 🔍 단계별 검증 로깅 강화
+            logger.info(f"🔍 [{step_name}] 검증 시작 - 압축 상태: {is_compressed}")
+            logger.info(f"🔍 [{step_name}] 딕셔너리 키: {list(dart_dict.keys())}")
+
+            if is_compressed:
+                logger.info(f"🔍 [{step_name}] 압축된 DART 딕셔너리 검증 중...")
+                return self._validate_compressed_dart_dictionary_at_step(
+                    dart_dict, step_name
+                )
+            else:
+                logger.info(f"🔍 [{step_name}] 원본 DART 딕셔너리 검증 중...")
+                return self._validate_original_dart_dictionary_at_step(
+                    dart_dict, step_name
+                )
+
+        except Exception as e:
+            logger.error(f"❌ [{step_name}] 검증 중 오류 발생: {e}")
+            return False
+
+    def _validate_compressed_dart_dictionary_at_step(
+        self, dart_dict: Dict, step_name: str
+    ) -> bool:
+        """압축된 DART 딕셔너리 단계별 검증"""
+        try:
+            # 1. 압축된 구조 검증
+            structure_ok = self._validate_compressed_dart_dictionary(
+                dart_dict, step_name
+            )
+
+            # 2. 압축된 내용 검증
+            content_ok = self._validate_compressed_dart_content(dart_dict, step_name)
+
+            # 3. 압축된 매핑 검증
+            mapping_ok = self._validate_compressed_expert_mapping(dart_dict, step_name)
+
+            overall_ok = structure_ok and content_ok and mapping_ok
+
+            if overall_ok:
+                logger.info(f"✅ [{step_name}] 압축된 DART 딕셔너리 검증 통과")
+            else:
+                logger.warning(f"⚠️ [{step_name}] 압축된 DART 딕셔너리 검증 실패")
+
+            return overall_ok
+
+        except Exception as e:
+            logger.error(f"❌ [{step_name}] 압축된 딕셔너리 검증 중 오류: {e}")
+            return False
+
+    def _validate_original_dart_dictionary_at_step(
+        self, dart_dict: Dict, step_name: str
+    ) -> bool:
+        """원본 DART 딕셔너리 단계별 검증"""
+        try:
+            # 1. 기본 구조 검증
+            structure_ok = self._validate_original_dart_dictionary(dart_dict, step_name)
+
+            # 2. 데이터 내용 검증
+            content_ok = self._validate_dart_dictionary_content(dart_dict, step_name)
+
+            # 3. 전문가 매핑 검증
+            mapping_ok = self._validate_expert_mapping(dart_dict, step_name)
+
+            overall_ok = structure_ok and content_ok and mapping_ok
+
+            if overall_ok:
+                logger.info(f"✅ [{step_name}] 원본 DART 딕셔너리 검증 통과")
+            else:
+                logger.warning(f"⚠️ [{step_name}] 원본 DART 딕셔너리 검증 실패")
+
+            return overall_ok
+
+        except Exception as e:
+            logger.error(f"❌ [{step_name}] 원본 딕셔너리 검증 중 오류: {e}")
+            return False
+
+    def _validate_dart_dictionary_structure(
+        self, dart_dict: Dict, step_name: str
+    ) -> bool:
+        """DART 딕셔너리 구조를 검증합니다."""
+        # 🔧 압축 상태 확인
+        is_compressed = dart_dict.get("compression_applied", False)
+
+        if is_compressed:
+            logger.info(f"🔍 [{step_name}] 압축된 DART 딕셔너리 검증 중...")
+            return self._validate_compressed_dart_dictionary(dart_dict, step_name)
+        else:
+            logger.info(f"🔍 [{step_name}] 원본 DART 딕셔너리 검증 중...")
+            return self._validate_original_dart_dictionary(dart_dict, step_name)
+
+    def _validate_compressed_dart_dictionary(
+        self, dart_dict: Dict, step_name: str
+    ) -> bool:
+        """압축된 DART 딕셔너리 구조를 검증합니다."""
+        structure_issues = []
+
+        # 🔍 압축 상태 상세 로깅
+        logger.info(
+            f"🔍 [{step_name}] 압축 상태: {dart_dict.get('compression_applied', False)}"
+        )
+        logger.info(
+            f"🔍 [{step_name}] 전문가 딕셔너리 키: {list(dart_dict.get('expert_ready_dictionaries', {}).keys())}"
+        )
+        logger.info(
+            f"🔍 [{step_name}] 원본 구조 키: {[k for k in dart_dict.keys() if k not in ['expert_ready_dictionaries', 'success', 'compression_applied', 'validation_info']]}"
+        )
+
+        # 1. 압축 표시 확인
+        if not dart_dict.get("compression_applied", False):
+            structure_issues.append("압축 표시가 없음")
+
+        # 2. expert_ready_dictionaries 구조 확인 (최우선)
+        if "expert_ready_dictionaries" in dart_dict:
+            expert_dict = dart_dict["expert_ready_dictionaries"]
+            if not isinstance(expert_dict, dict):
+                structure_issues.append("expert_ready_dictionaries가 딕셔너리가 아님")
+            elif len(expert_dict) == 0:
+                structure_issues.append("expert_ready_dictionaries가 비어있음")
+            else:
+                # 각 전문가 데이터 확인
+                for expert_name, expert_data in expert_dict.items():
+                    if not expert_data or len(expert_data) == 0:
+                        structure_issues.append(f"{expert_name} 데이터가 비어있음")
+                logger.info(
+                    f"✅ [{step_name}] 압축된 expert_ready_dictionaries 구조 검증 통과"
+                )
+        else:
+            structure_issues.append("expert_ready_dictionaries 키가 없음")
+
+        # 3. 압축된 원본 구조 확인 (빈 딕셔너리가 아닌 실제 내용이 있는지 확인)
+        if "business_report_dictionary" in dart_dict:
+            business_dict = dart_dict["business_report_dictionary"]
+            if isinstance(business_dict, dict):
+                # 빈 딕셔너리가 아닌 실제 내용이 있는지 확인
+                total_content = sum(len(str(v)) for v in business_dict.values())
+                if total_content == 0:
+                    logger.warning(
+                        f"⚠️ [{step_name}] 압축된 business_report_dictionary가 비어있음"
+                    )
+                    # 압축된 데이터는 원본 구조가 비어있을 수 있으므로 경고만 하고 실패로 처리하지 않음
+                else:
+                    logger.info(
+                        f"✅ [{step_name}] 압축된 business_report_dictionary 구조 검증 통과 (내용: {total_content}자)"
+                    )
+
+        if "quarterly_report_dictionary" in dart_dict:
+            quarterly_dict = dart_dict["quarterly_report_dictionary"]
+            if isinstance(quarterly_dict, dict):
+                # 빈 딕셔너리가 아닌 실제 내용이 있는지 확인
+                total_content = sum(len(str(v)) for v in quarterly_dict.values())
+                if total_content == 0:
+                    logger.warning(
+                        f"⚠️ [{step_name}] 압축된 quarterly_report_dictionary가 비어있음"
+                    )
+                    # 압축된 데이터는 원본 구조가 비어있을 수 있으므로 경고만 하고 실패로 처리하지 않음
+                else:
+                    logger.info(
+                        f"✅ [{step_name}] 압축된 quarterly_report_dictionary 구조 검증 통과 (내용: {total_content}자)"
+                    )
+
+        # 4. validation_info 확인 (압축 후 메타데이터)
+        if "validation_info" in dart_dict:
+            validation_info = dart_dict["validation_info"]
+            logger.info(f"🔍 [{step_name}] 압축 검증 정보: {validation_info}")
+
+            # 전문가 딕셔너리 내용 확인
+            if validation_info.get("expert_sections_count", 0) == 0:
+                structure_issues.append("압축 후 전문가 섹션이 없음")
+            elif validation_info.get("total_expert_content", 0) < 100:
+                structure_issues.append("압축 후 전문가 내용이 너무 적음")
+
+        if structure_issues:
+            logger.warning(
+                f"⚠️ [{step_name}] 압축된 구조 이슈: {', '.join(structure_issues)}"
+            )
+            return False
+
+        logger.info(f"✅ [{step_name}] 압축된 구조 검증 통과")
+        return True
+
+    def _validate_original_dart_dictionary(
+        self, dart_dict: Dict, step_name: str
+    ) -> bool:
+        """원본 DART 딕셔너리 구조를 검증합니다."""
+        structure_issues = []
+
+        # 🔍 원본 구조 검증 로깅 강화
+        logger.info(f"🔍 [{step_name}] 원본 DART 딕셔너리 구조 검증 시작")
+        logger.info(f"🔍 [{step_name}] 원본 딕셔너리 키: {list(dart_dict.keys())}")
+
+        # expert_ready_dictionaries 구조 확인
+        if "expert_ready_dictionaries" in dart_dict:
+            expert_dict = dart_dict["expert_ready_dictionaries"]
+            logger.info(
+                f"🔍 [{step_name}] expert_ready_dictionaries 키: {list(expert_dict.keys())}"
+            )
+
+            if not isinstance(expert_dict, dict):
+                structure_issues.append("expert_ready_dictionaries가 딕셔너리가 아님")
+                logger.error(
+                    f"❌ [{step_name}] expert_ready_dictionaries가 딕셔너리가 아님"
+                )
+            elif len(expert_dict) == 0:
+                structure_issues.append("expert_ready_dictionaries가 비어있음")
+                logger.error(f"❌ [{step_name}] expert_ready_dictionaries가 비어있음")
+            else:
+                # 각 전문가 데이터 확인
+                for expert_name, expert_data in expert_dict.items():
+                    if not expert_data or len(expert_data) == 0:
+                        structure_issues.append(f"{expert_name} 데이터가 비어있음")
+                        logger.warning(
+                            f"⚠️ [{step_name}] {expert_name} 데이터가 비어있음"
+                        )
+                    else:
+                        logger.info(
+                            f"✅ [{step_name}] {expert_name} 데이터 확인됨 (길이: {len(expert_data)})"
+                        )
+
+        # 기존 구조 확인
+        elif (
+            "business_report_dictionary" in dart_dict
+            or "quarterly_report_dictionary" in dart_dict
+        ):
+            if "business_report_dictionary" in dart_dict:
+                business_dict = dart_dict["business_report_dictionary"]
+                logger.info(
+                    f"🔍 [{step_name}] business_report_dictionary 길이: {len(business_dict)}"
+                )
+
+                if not isinstance(business_dict, dict) or len(business_dict) == 0:
+                    structure_issues.append("business_report_dictionary가 비어있음")
+                    logger.error(
+                        f"❌ [{step_name}] business_report_dictionary가 비어있음"
+                    )
+                else:
+                    logger.info(f"✅ [{step_name}] business_report_dictionary 확인됨")
+
+            if "quarterly_report_dictionary" in dart_dict:
+                quarterly_dict = dart_dict["quarterly_report_dictionary"]
+                logger.info(
+                    f"🔍 [{step_name}] quarterly_report_dictionary 길이: {len(quarterly_dict)}"
+                )
+
+                if not isinstance(quarterly_dict, dict) or len(quarterly_dict) == 0:
+                    structure_issues.append("quarterly_report_dictionary가 비어있음")
+                    logger.error(
+                        f"❌ [{step_name}] quarterly_report_dictionary가 비어있음"
+                    )
+                else:
+                    logger.info(f"✅ [{step_name}] quarterly_report_dictionary 확인됨")
+
+        else:
+            structure_issues.append("알려진 DART 구조를 찾을 수 없음")
+            logger.error(f"❌ [{step_name}] 알려진 DART 구조를 찾을 수 없음")
+
+        # 구조 이슈 리포트
+        if structure_issues:
+            logger.warning(
+                f"⚠️ [{step_name}] 원본 구조 이슈: {', '.join(structure_issues)}"
+            )
+            return False
+
+        logger.info(f"✅ [{step_name}] 원본 구조 검증 통과")
+        return True
+
+    def _validate_compressed_dart_content(
+        self, dart_dict: Dict, step_name: str
+    ) -> bool:
+        """압축된 DART 딕셔너리 내용을 검증합니다."""
+        content_issues = []
+        total_content_length = 0
+
+        # 🔍 압축된 데이터 상세 로깅
+        logger.info(f"🔍 [{step_name}] 압축된 내용 검증 시작")
+
+        # 압축된 전문가 딕셔너리 내용 확인
+        if "expert_ready_dictionaries" in dart_dict:
+            expert_dict = dart_dict["expert_ready_dictionaries"]
+            for expert_name, expert_data in expert_dict.items():
+                if expert_data:
+                    expert_content_length = len(str(expert_data))
+                    total_content_length += expert_content_length
+
+                    logger.info(
+                        f"🔍 [{step_name}] {expert_name}: {expert_content_length}자"
+                    )
+
+                    # 압축된 데이터는 더 작을 수 있으므로 기준을 낮춤
+                    if expert_content_length < 100:  # 최소 100자로 상향 조정
+                        content_issues.append(
+                            f"{expert_name} 압축된 내용이 너무 짧음 ({expert_content_length}자)"
+                        )
+
+        # 압축된 원본 구조 내용 확인 (최소 내용 보장 검증)
+        if "business_report_dictionary" in dart_dict:
+            business_dict = dart_dict["business_report_dictionary"]
+            if isinstance(business_dict, dict) and len(business_dict) > 0:
+                business_content_length = sum(
+                    len(str(v)) for v in business_dict.values()
+                )
+                total_content_length += business_content_length
+                logger.info(
+                    f"🔍 [{step_name}] business_report_dictionary: {business_content_length}자 ({len(business_dict)}개 섹션)"
+                )
+
+                # 최소 내용 보장 검증 (개선된 기준)
+                if business_content_length < 200:  # 최소 200자로 상향 조정
+                    content_issues.append(
+                        f"business_report_dictionary 압축된 내용이 너무 짧음 ({business_content_length}자)"
+                    )
+            else:
+                content_issues.append(
+                    "business_report_dictionary가 비어있거나 유효하지 않음"
+                )
+
+        if "quarterly_report_dictionary" in dart_dict:
+            quarterly_dict = dart_dict["quarterly_report_dictionary"]
+            if isinstance(quarterly_dict, dict) and len(quarterly_dict) > 0:
+                quarterly_content_length = sum(
+                    len(str(v)) for v in quarterly_dict.values()
+                )
+                total_content_length += quarterly_content_length
+                logger.info(
+                    f"🔍 [{step_name}] quarterly_report_dictionary: {quarterly_content_length}자 ({len(quarterly_dict)}개 섹션)"
+                )
+
+                # 최소 내용 보장 검증 (개선된 기준)
+                if quarterly_content_length < 100:  # 최소 100자로 상향 조정
+                    content_issues.append(
+                        f"quarterly_report_dictionary 압축된 내용이 너무 짧음 ({quarterly_content_length}자)"
+                    )
+            else:
+                content_issues.append(
+                    "quarterly_report_dictionary가 비어있거나 유효하지 않음"
+                )
+
+        # validation_info에서 추가 정보 확인
+        if "validation_info" in dart_dict:
+            validation_info = dart_dict["validation_info"]
+            logger.info(f"🔍 [{step_name}] validation_info 내용: {validation_info}")
+
+            # validation_info의 내용과 실제 계산된 내용 비교
+            expected_total = (
+                validation_info.get("total_expert_content", 0)
+                + validation_info.get("total_business_content", 0)
+                + validation_info.get("total_quarterly_content", 0)
+            )
+            logger.info(
+                f"🔍 [{step_name}] 예상 총 내용: {expected_total}자, 실제 총 내용: {total_content_length}자"
+            )
+
+        # 압축된 데이터는 전체 길이가 더 작을 수 있음
+        if total_content_length < 500:  # 최소 500자
+            content_issues.append(
+                f"압축된 전체 내용이 너무 짧음 ({total_content_length}자)"
+            )
+
+        # 내용 이슈 리포트
+        if content_issues:
+            logger.warning(
+                f"⚠️ [{step_name}] 압축된 내용 이슈: {', '.join(content_issues)}"
+            )
+            return False
+
+        logger.info(
+            f"✅ [{step_name}] 압축된 내용 검증 통과 (총 {total_content_length:,}자)"
+        )
+        return True
+
+    def _validate_compressed_expert_mapping(
+        self, dart_dict: Dict, step_name: str
+    ) -> bool:
+        """압축된 전문가 매핑 상태를 검증합니다."""
+        mapping_issues = []
+
+        # 🔍 압축된 매핑 검증 로깅 강화
+        logger.info(f"🔍 [{step_name}] 압축된 전문가 매핑 검증 시작")
+
+        if "expert_ready_dictionaries" in dart_dict:
+            expert_dict = dart_dict["expert_ready_dictionaries"]
+
+            # 🔍 전문가 딕셔너리 상세 로깅
+            logger.info(
+                f"🔍 [{step_name}] 전문가 딕셔너리 키: {list(expert_dict.keys())}"
+            )
+
+            # 핵심 전문가 데이터 확인 (압축 후에도 최소 1개는 있어야 함)
+            required_experts = ["integrated_financial_analyst", "technical_analyst"]
+            found_experts = 0
+
+            for expert_name in required_experts:
+                if expert_name in expert_dict:
+                    expert_data = expert_dict[expert_name]
+                    if expert_data and len(expert_data) > 0:
+                        found_experts += 1
+                        logger.info(
+                            f"✅ [{step_name}] {expert_name} 데이터 확인됨 (길이: {len(expert_data)})"
+                        )
+                    else:
+                        mapping_issues.append(f"압축된 {expert_name} 데이터가 비어있음")
+                        logger.warning(
+                            f"⚠️ [{step_name}] {expert_name} 데이터가 비어있음"
+                        )
+                else:
+                    logger.warning(f"⚠️ [{step_name}] {expert_name} 키가 없음")
+
+            # 최소 1개 전문가는 있어야 함
+            if found_experts == 0:
+                mapping_issues.append("압축 후에도 최소 1개 전문가 데이터가 필요함")
+                logger.error(f"❌ [{step_name}] 모든 필수 전문가 데이터가 없음")
+            else:
+                logger.info(f"✅ [{step_name}] {found_experts}개 전문가 데이터 확인됨")
+
+        else:
+            mapping_issues.append("압축된 expert_ready_dictionaries 키가 없음")
+            logger.error(f"❌ [{step_name}] expert_ready_dictionaries 키가 없음")
+
+        # 매핑 이슈 리포트
+        if mapping_issues:
+            logger.warning(
+                f"⚠️ [{step_name}] 압축된 매핑 이슈: {', '.join(mapping_issues)}"
+            )
+            return False
+
+        logger.info(f"✅ [{step_name}] 압축된 매핑 검증 통과")
+        return True
+
+    def _validate_dart_dictionary_content(
+        self, dart_dict: Dict, step_name: str
+    ) -> bool:
+        """DART 딕셔너리 내용을 검증합니다."""
+        content_issues = []
+        total_content_length = 0
+
+        # 🔍 원본 내용 검증 로깅 강화
+        logger.info(f"🔍 [{step_name}] 원본 DART 딕셔너리 내용 검증 시작")
+
+        # 내용 길이 계산
+        if "expert_ready_dictionaries" in dart_dict:
+            expert_dict = dart_dict["expert_ready_dictionaries"]
+            logger.info(f"🔍 [{step_name}] expert_ready_dictionaries 검증 중...")
+
+            for expert_name, expert_data in expert_dict.items():
+                if expert_data:
+                    expert_content_length = len(str(expert_data))
+                    total_content_length += expert_content_length
+
+                    logger.info(
+                        f"🔍 [{step_name}] {expert_name}: {expert_content_length}자"
+                    )
+
+                    # 각 전문가 데이터 최소 길이 확인
+                    if expert_content_length < 100:  # 최소 100자
+                        content_issues.append(
+                            f"{expert_name} 내용이 너무 짧음 ({expert_content_length}자)"
+                        )
+                        logger.warning(
+                            f"⚠️ [{step_name}] {expert_name} 내용이 너무 짧음"
+                        )
+
+        elif "business_report_dictionary" in dart_dict:
+            business_dict = dart_dict["business_report_dictionary"]
+            business_content_length = len(str(business_dict))
+            total_content_length += business_content_length
+
+            logger.info(
+                f"🔍 [{step_name}] business_report_dictionary: {business_content_length}자"
+            )
+
+            if business_content_length < 500:  # 최소 500자
+                content_issues.append(
+                    f"사업보고서 내용이 너무 짧음 ({business_content_length}자)"
+                )
+                logger.warning(f"⚠️ [{step_name}] 사업보고서 내용이 너무 짧음")
+
+        # 전체 내용 길이 확인
+        if total_content_length < 1000:  # 최소 1000자
+            content_issues.append(f"전체 내용이 너무 짧음 ({total_content_length}자)")
+            logger.warning(f"⚠️ [{step_name}] 전체 내용이 너무 짧음")
+
+        # 내용 이슈 리포트
+        if content_issues:
+            logger.warning(f"⚠️ [{step_name}] 내용 이슈: {', '.join(content_issues)}")
+            return False
+
+        logger.info(f"✅ [{step_name}] 내용 검증 통과 (총 {total_content_length:,}자)")
+        return True
+
+    def _validate_expert_mapping(self, dart_dict: Dict, step_name: str) -> bool:
+        """전문가 매핑 상태를 검증합니다."""
+        mapping_issues = []
+
+        # 🔍 원본 매핑 검증 로깅 강화
+        logger.info(f"🔍 [{step_name}] 원본 전문가 매핑 검증 시작")
+
+        if "expert_ready_dictionaries" in dart_dict:
+            expert_dict = dart_dict["expert_ready_dictionaries"]
+            logger.info(
+                f"🔍 [{step_name}] 전문가 딕셔너리 키: {list(expert_dict.keys())}"
+            )
+
+            # 핵심 전문가 데이터 확인
+            required_experts = ["integrated_financial_analyst", "technical_analyst"]
+
+            for expert_name in required_experts:
+                if expert_name not in expert_dict:
+                    mapping_issues.append(f"필수 전문가 {expert_name} 데이터 없음")
+                    logger.error(
+                        f"❌ [{step_name}] 필수 전문가 {expert_name} 데이터 없음"
+                    )
+                elif not expert_dict[expert_name] or len(expert_dict[expert_name]) == 0:
+                    mapping_issues.append(f"필수 전문가 {expert_name} 데이터 비어있음")
+                    logger.warning(
+                        f"⚠️ [{step_name}] 필수 전문가 {expert_name} 데이터 비어있음"
+                    )
+                else:
+                    logger.info(
+                        f"✅ [{step_name}] {expert_name} 데이터 확인됨 (길이: {len(expert_dict[expert_name])})"
+                    )
+
+        else:
+            # 기존 구조에서는 기본 매핑 확인
+            logger.info(f"🔍 [{step_name}] 기존 구조 매핑 확인 중...")
+            if (
+                "business_report_dictionary" not in dart_dict
+                and "quarterly_report_dictionary" not in dart_dict
+            ):
+                mapping_issues.append("기본 보고서 구조가 없음")
+                logger.error(f"❌ [{step_name}] 기본 보고서 구조가 없음")
+            else:
+                logger.info(f"✅ [{step_name}] 기본 보고서 구조 확인됨")
+
+        # 매핑 이슈 리포트
+        if mapping_issues:
+            logger.warning(f"⚠️ [{step_name}] 매핑 이슈: {', '.join(mapping_issues)}")
+            return False
+
+        logger.info(f"✅ [{step_name}] 매핑 검증 통과")
+        return True
 
     def _extract_essential_dart_data(self, dart_dict: Dict, ratio: float) -> Dict:
         """

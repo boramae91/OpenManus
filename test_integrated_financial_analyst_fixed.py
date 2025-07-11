@@ -69,7 +69,7 @@ def test_integrated_financial_analyst_fixed():
     # 3. 통합 재무분석가 키워드 매칭 시뮬레이션
     print("\n📊 3단계: 통합 재무분석가 키워드 매칭 시뮬레이션...")
 
-    # 통합 재무분석가 키워드 (수정된 내용)
+    # 통합 재무분석가 키워드 (확장된 최신 버전)
     integrated_financial_keywords = [
         # 펀더멘털 관련
         "재무",
@@ -124,9 +124,29 @@ def test_integrated_financial_analyst_fixed():
         "성장성",
         "안정성",
         "수익성",
+        # 사업 관련 (추가된 키워드)
+        "사업",
+        "개요",
+        "기업",
+        "회사",
+        "업종",
+        "산업",
+        "시장",
+        "경쟁",
+        "영업",
+        "이익",
+        "수익",
+        "비용",
+        "지출",
+        "투자",
+        "자본",
+        "경영",
+        "전략",
+        "계획",
+        "전망",
     ]
 
-    # 섹션별 매칭 점수 계산
+    # 섹션별 매칭 점수 계산 (개선된 로직)
     print("\n🔍 섹션별 키워드 매칭 점수:")
 
     matched_sections = []
@@ -145,6 +165,11 @@ def test_integrated_financial_analyst_fixed():
         for keyword in integrated_financial_keywords:
             if keyword in content_sample:
                 score += 1
+
+        # 통합 재무분석가 특별 가중치 (회사개요/사업내용 섹션)
+        if "회사개요" in section_title or "사업내용" in section_title:
+            score += 5  # 추가 가중치
+            print(f"   🚀 특별 가중치 적용: {section_title} (+5점)")
 
         # 점수가 2 이상인 섹션만 선택
         if score >= 2:
