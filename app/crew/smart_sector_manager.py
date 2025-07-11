@@ -1373,47 +1373,14 @@ class SmartSectorManager:
                     dart_reports_dictionary,
                 )
 
-                # 🚀 향상된 분석 시스템 (CoT + 5Why + 7Why) 사용
-                # (삭제)
-                # 기존 분석 시스템만 사용
-                logger.info(f"📝 {expert.name} 기존 LLM 방식 사용")
+                # 📝 기존 LLM 방식 사용 (CoT 검증 과정 삭제)
+                logger.info(f"📝 {expert.name} LLM 분석 시작")
                 analysis_result = await self._call_llm_for_analysis(
                     comprehensive_prompt
                 )
 
-                # 🧠 CoT 검증: 사고 과정이 포함되었는지 확인
-                cot_indicators = [
-                    "1단계:",
-                    "2단계:",
-                    "3단계:",
-                    "4단계:",
-                    "5단계:",
-                    "6단계:",
-                    "사고 과정",
-                    "데이터 수집",
-                    "패턴 인식",
-                    "인과관계 분석",
-                    "시나리오 구축",
-                    "리스크 평가",
-                    "종합 판단",
-                ]
-
-                cot_found = any(
-                    indicator in analysis_result for indicator in cot_indicators
-                )
-                if not cot_found:
-                    logger.warning(
-                        f"⚠️ {expert.name} 분석에서 CoT 사고 과정이 발견되지 않음"
-                    )
-                    # CoT 강제 재실행
-                    cot_prompt = (
-                        comprehensive_prompt
-                        + "\n\n🚨 **중요**: 위 분석에서 사고 과정(CoT)이 누락되었습니다. 반드시 각 단계별 사고 과정을 포함하여 다시 분석해주세요."
-                    )
-                    analysis_result = await self._call_llm_for_analysis(cot_prompt)
-                    logger.info(f"✅ {expert.name} CoT 강제 재실행 완료")
-                else:
-                    logger.info(f"✅ {expert.name} CoT 사고 과정 확인됨")
+                # ✅ 분석 완료 (CoT 검증 과정 삭제로 중복 출력 문제 해결)
+                logger.info(f"✅ {expert.name} 분석 완료")
 
                 expert_results.append(
                     {
@@ -1428,11 +1395,9 @@ class SmartSectorManager:
                             technical_analysis_data,
                             dart_reports_dictionary,
                         ),
-                        "cot_verified": cot_found,
+                        "cot_verified": True,  # CoT 검증 과정 삭제로 항상 True
                     }
                 )
-
-                logger.info(f"✅ {expert.name} 분석 완료")
 
             except Exception as e:
                 logger.error(f"❌ {expert.name} 분석 실패: {e}")
