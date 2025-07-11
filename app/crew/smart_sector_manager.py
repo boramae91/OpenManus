@@ -4403,13 +4403,12 @@ class SmartSectorManager:
                     )
                     logger.info(f"🔍 Manus 데이터 압축: {manus_ratio:.3f} 비율 적용")
 
-                # 🚀 DART 딕셔너리 압축 (가장 적극적으로 압축)
+                # 🚀 DART 딕셔너리 압축 (이미 필터링된 데이터이므로 압축 비활성화)
                 if dart_reports_dictionary:
-                    dart_dict_ratio = min(
-                        safe_compression_ratio * 0.6, 1.0
-                    )  # 60% 가중치 (더 낮게 조정)
+                    # 🔧 이미 필터링된 데이터이므로 압축 비활성화 (압축 비율 1.0 = 압축 없음)
+                    dart_dict_ratio = 1.0  # 압축 없음 (이미 필터링된 데이터)
                     logger.info(
-                        f"📋 DART 딕셔너리 압축 시작: {dart_dict_ratio:.3f} 비율 적용"
+                        f"📋 DART 딕셔너리 압축 비활성화 (이미 필터링된 데이터): {dart_dict_ratio:.3f} 비율 적용"
                     )
 
                     # 🔍 압축 전 검증
@@ -4418,11 +4417,9 @@ class SmartSectorManager:
                         dart_reports_dictionary, "압축_전"
                     )
 
-                    # 🚀 전문가별 딕셔너리 구조 보존 압축 사용
+                    # 🚀 압축 비활성화 - 원본 데이터 그대로 사용
                     compressed_dart_dict = (
-                        self._compress_dart_dictionary_preserve_structure(
-                            dart_reports_dictionary, dart_dict_ratio
-                        )
+                        dart_reports_dictionary  # 압축 없이 원본 사용
                     )
 
                     # 🔍 압축 후 검증
@@ -4504,11 +4501,12 @@ class SmartSectorManager:
                                     optimized_data[key], emergency_ratio
                                 )
                             elif key == "dart_reports_dictionary":
-                                optimized_data[key] = (
-                                    self._compress_dart_dictionary_preserve_structure(
-                                        optimized_data[key], emergency_ratio
-                                    )
+                                # 🚨 DART 딕셔너리는 이미 필터링된 데이터이므로 긴급 압축에서 제외
+                                logger.info(
+                                    "🚨 DART 딕셔너리는 이미 필터링된 데이터이므로 긴급 압축에서 제외"
                                 )
+                                # 원본 데이터 유지 (압축하지 않음)
+                                continue
 
                 # 압축이 너무 과도한 경우 경고
                 if compression_achieved < 0.15:  # 15% 미만으로 압축된 경우
