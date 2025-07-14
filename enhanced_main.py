@@ -3023,38 +3023,79 @@ class EnhancedStockAnalysisSystem:
 
     async def create_senior_report_from_analysis(self, results: Dict[str, Any]) -> str:
         """
+        🚀 통합 개선: 전문가 의견 종합 + 시니어 리포트 생성
+
         CoT/5Why/통합 분석 결과를 바탕으로 시니어 애널리스트 스타일의 최종 투자 리포트를 생성합니다.
+        새로운 PromptComponents의 시니어 리포트 프레임워크를 활용하여 더 체계적이고 전문적인 리포트를 생성합니다.
         """
+        # 🚀 PromptComponents import (동적 import로 순환 참조 방지)
+        from app.crew.prompt_components import PromptComponents
+
         # 핵심 분석 결과만 추출하여 토큰 제한 문제 해결
         key_analysis_data = self._extract_key_analysis_for_senior_report(results)
 
-        senior_report_prompt = f"""
-당신은 20년 경력의 시니어 애널리스트입니다.
-아래의 핵심 분석 결과를 바탕으로 실제 투자 은행이나 증권사에서 사용하는 전문적인 기업 분석 보고서를 작성해주세요.
+        # 🎯 종목 정보 추출
+        stock_info = results.get("steps", {}).get("step1_stock_detection", {})
+        stock_name = stock_info.get("stock_name", "분석대상")
+        sector_name = stock_info.get("gics_sector", "일반")
 
-**핵심 분석 결과:**
+        # 🚀 전문가 분석 결과 추출 (CrewAI 종합 분석 결과)
+        crewai_analysis = results.get("steps", {}).get(
+            "step4_crewai_comprehensive_analysis", {}
+        )
+        expert_insights = crewai_analysis.get("expert_insights", {})
+        synthesis_result = (
+            expert_insights.get("synthesis_result", {}) if expert_insights else {}
+        )
+
+        # 🎯 새로운 통합 시니어 리포트 템플릿 생성
+        senior_report_template = PromptComponents.create_senior_report_template(
+            stock_name=stock_name,
+            sector_name=sector_name,
+            expert_insights=expert_insights,
+        )
+
+        # 🚀 강화된 프롬프트 구성 (의견 종합 + 리포트 생성 통합)
+        enhanced_senior_report_prompt = f"""
+당신은 20년 경력의 시니어 애널리스트입니다.
+다음은 여러 전문가가 분석한 결과를 종합하여 실제 투자은행/증권사 수준의 전문적인 리포트를 작성하는 작업입니다.
+
+{senior_report_template}
+
+**📊 실제 수집된 분석 데이터:**
 {key_analysis_data}
 
-**전문 보고서 작성 요청:**
-1. **EXECUTIVE SUMMARY**: 투자 의견, 목표가, 핵심 논리, 주요 리스크를 한눈에 파악할 수 있도록 작성
-2. **INVESTMENT HIGHLIGHTS**: 매수/중립/매도 판단의 핵심 근거와 현재 주가 대비 목표가 상승/하락 폭 명시
-3. **COMPANY OVERVIEW**: 사업 구조, 시장 점유율, 경쟁 우위를 구체적 수치와 함께 분석
-4. **FINANCIAL ANALYSIS**: 최근 3년간 재무 실적 추이와 수익성/성장성/안정성 지표를 객관적으로 분석
-5. **INDUSTRY & MARKET ANALYSIS**: 산업 규모, 성장 전망, 경쟁 구도를 구체적 데이터로 분석
-6. **VALUATION ANALYSIS**: DCF 모델과 멀티플 분석을 통한 목표가 설정 근거를 상세히 설명
-7. **INVESTMENT THESIS**: 투자 의견의 핵심 논리와 시나리오별 전망을 구체적으로 제시
-8. **RISK FACTORS**: 주요 리스크 요인별 상세 분석과 리스크 완화 방안 제시
-9. **CONCLUSION & RECOMMENDATIONS**: 종합적 투자 의견과 실제 실행 가능한 투자 전략 제시
+**🎯 전문가 종합 분석 결과:**
+{synthesis_result.get('synthesis_content', '전문가 종합 분석 결과 없음')}
 
-**작성 스타일:**
-- 모든 수치는 구체적 수치로 표현 (예: "매출 1,000억원", "PER 15배")
-- 투자 의견은 BUY/HOLD/SELL로 명확히 표기
-- 목표가는 12개월 기준으로 설정
-- 리스크 등급은 LOW/MEDIUM/HIGH로 표기
-- 실제 투자자가 바로 활용할 수 있는 실용적 내용으로 작성
+**📋 추가 지침:**
+
+1. **의견 통합 우선순위**
+   - 정량적 재무 분석 > 기술적 분석 > 정성적 평가 순으로 가중치 적용
+   - 전문가 간 의견 불일치 시 데이터 품질과 논리적 일관성을 기준으로 판단
+   - 모든 결론에 대해 구체적인 근거와 신뢰도 점수 제시
+
+2. **투자은행 품질 기준**
+   - 모든 수치: 정확한 단위와 소수점 표기 (예: "목표가 65,000원", "PER 12.3배")
+   - 투자 의견: BUY/HOLD/SELL + 신뢰도 % 병기
+   - 목표가: 상승/하락 여력 % 명시
+   - 리스크: 발생 확률과 주가 영향도 정량화
+
+3. **실용성 강화**
+   - 투자자가 즉시 실행할 수 있는 구체적 전략 제시
+   - 매수/매도 타이밍과 조건 명시
+   - 포트폴리오 내 적정 비중 권고
+   - 모니터링 지표와 의견 변경 시점 안내
+
+**⚠️ 중요: 위의 템플릿 형식을 정확히 따라 전문적이고 체계적인 리포트를 작성해주세요.**
 """
-        # 실제 LLM 호출 (self.llm.ask 사용)
-        return await self.llm.ask([{"role": "user", "content": senior_report_prompt}])
+
+        # 🎯 LLM 호출 시 더 적절한 매개변수 사용
+        return await self.llm.ask(
+            [{"role": "user", "content": enhanced_senior_report_prompt}],
+            temperature=0.1,  # 일관성을 위해 낮은 온도
+            max_tokens=6000,  # 충분한 토큰으로 완전한 리포트 생성
+        )
 
     def _extract_key_analysis_for_senior_report(self, results: Dict[str, Any]) -> str:
         """
