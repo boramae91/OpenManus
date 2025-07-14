@@ -803,7 +803,20 @@ class LLM:
             if isinstance(oe, AuthenticationError):
                 logger.error("Authentication failed. Check API key.")
             elif isinstance(oe, RateLimitError):
-                logger.error("Rate limit exceeded. Consider increasing retry attempts.")
+                # 할당량 초과와 일반적인 rate limit을 구분해서 처리
+                if "insufficient_quota" in str(oe):
+                    logger.error(
+                        "⚠️  OpenAI API 할당량을 초과했습니다! 다음을 확인해주세요:"
+                    )
+                    logger.error(
+                        "   1. https://platform.openai.com/account/billing 에서 사용량 확인"
+                    )
+                    logger.error("   2. 결제 정보 및 요금제 확인")
+                    logger.error("   3. 새로운 API 키 발급 또는 유료 플랜 구독")
+                else:
+                    logger.error(
+                        "Rate limit exceeded. Consider increasing retry attempts."
+                    )
             elif isinstance(oe, APIError):
                 logger.error(f"API error: {oe}")
             raise
