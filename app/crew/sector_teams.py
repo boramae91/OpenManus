@@ -2254,54 +2254,6 @@ class SectorTeamFactory:
                 temperature=0.1,
                 max_tokens=8000,  # 2명 체제에 맞게 증가 (기존 4K → 8K)
             )
-            technical_analysis_prompt = PromptTemplate(
-                template="""
-당신은 {sector_name} 섹터 전문 기술적 분석가입니다.
-
-**종합 기술적 분석**
-
-제공된 가격 데이터를 바탕으로 종합적인 기술적 분석을 수행하세요:
-
-**입력 데이터:**
-{price_data}
-
-**회사명:** {company_name}
-
-**분석 요구사항:**
-1. 차트 패턴 분석:
-   - 주요 차트 패턴 식별 (헤드앤숄더, 더블탑/바텀 등)
-   - 추세선과 채널 분석
-   - 지지선과 저항선 레벨 분석
-2. 기술적 지표 분석:
-   - 이동평균선 분석 (20일, 60일, 200일)
-   - RSI, MACD, 스토캐스틱 등 오실레이터 분석
-   - 볼린저 밴드와 피벗 포인트 분석
-3. 거래량 분석:
-   - 거래량 추세와 가격 변동의 관계
-   - 거래량 가중 평균가격(VWAP) 분석
-   - 거래량 프로파일 분석
-4. 섹터 상대강도 분석:
-   - 섹터 대비 상대적 성과 분석
-   - 섹터 내 순위와 강도 평가
-   - 섹터 로테이션 영향 분석
-5. 기술적 전망 및 투자 권고:
-   - 단기/중기 기술적 전망
-   - 주요 지지/저항 레벨과 목표가
-   - 매수/매도 시점 권고
-
-**출력 형식:**
-- 차트 패턴: [주요 패턴과 의미 분석]
-- 기술적 지표: [주요 지표별 신호 분석]
-- 거래량 분석: [거래량과 가격 관계 분석]
-- 섹터 비교: [섹터 대비 상대적 성과]
-- 기술적 전망: [단기/중기 전망과 목표가]
-- 투자 권고: [매수/매도 시점과 근거]
-
-웹 검색을 통해 최신 차트 이슈와 기술적 트렌드도 참고하세요.
-""",
-            )
-            # from langchain.agents import AgentExecutor, create_openai_functions_agent
-            # from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 
             web_search_tool = self.web_search_tool.create_langchain_tool()
             system_prompt = ChatPromptTemplate.from_messages(
