@@ -1398,26 +1398,30 @@ class EnhancedDartDataCollector:
 
     # ==================== 1️⃣ 상세한 재무정보 ====================
 
-    def get_detailed_financial_data(
-        self, corp_code: str, bsns_year: str = None
+    async def get_detailed_financial_data(
+        self, corp_code: str, bsns_year: str
     ) -> Dict[str, Any]:
         """
-        상세한 재무정보를 수집해요
+        🚀 상세한 재무정보 수집 (연결재무제표 우선)
+
+        단일회사 주요계정, 다중회사 주요계정, 분기별 실적을 모두 수집해서
+        통합 재무분석가가 바로 사용할 수 있는 형태로 가공해요!
+
+        🎯 토큰 최적화: 개별재무제표 수집 비활성화, 연결재무제표만 사용
 
         Args:
             corp_code: 기업 고유코드 (8자리)
-            bsns_year: 사업연도 (기본값: 작년)
+            bsns_year: 사업연도
 
         Returns:
-            Dict: 상세 재무정보
+            Dict: 상세한 재무정보
         """
         if not self.is_available():
             return {"success": False, "error": "DART API 키가 설정되지 않았습니다"}
 
-        if not bsns_year:
-            bsns_year = str(datetime.now().year - 1)
-
-        logger.info(f"📊 {corp_code} 상세 재무정보 수집 시작 ({bsns_year}년)")
+        logger.info(
+            f"🚀 Enhanced DART: {corp_code} ({bsns_year}) 상세 재무정보 수집 (연결재무제표 우선)..."
+        )
 
         try:
             result = {
@@ -1425,24 +1429,34 @@ class EnhancedDartDataCollector:
                 "corp_code": corp_code,
                 "bsns_year": bsns_year,
                 "collected_at": datetime.now().isoformat(),
+                "optimization_note": "토큰 최적화: 개별재무제표 수집 비활성화",
             }
 
-            # 단일회사 주요계정 (개별재무제표)
-            single_accounts = self._get_single_company_accounts(corp_code, bsns_year)
-            if single_accounts["success"]:
-                result["individual_statements"] = single_accounts["data"]
+            # 🚫 단일회사 주요계정 (개별재무제표) - 토큰 절약을 위해 비활성화
+            # single_accounts = self._get_single_company_accounts(corp_code, bsns_year)
+            # if single_accounts["success"]:
+            #     result["individual_statements"] = single_accounts["data"]
+            logger.info("🚫 개별재무제표 수집 비활성화 (토큰 최적화)")
 
-            # 다중회사 주요계정 (연결재무제표)
+            # 🎯 다중회사 주요계정 (연결재무제표) - 유지
             multi_accounts = self._get_multi_company_accounts(corp_code, bsns_year)
             if multi_accounts["success"]:
                 result["consolidated_statements"] = multi_accounts["data"]
+                logger.info("✅ 연결재무제표 수집 완료")
+            else:
+                logger.warning("⚠️ 연결재무제표 수집 실패")
 
-            # 분기별 실적 (최근 4분기)
-            quarterly_data = self._get_quarterly_performance(corp_code, bsns_year)
+            # 🎯 분기별 실적 (최근 4분기) - 연결재무제표만 사용하도록 수정 필요
+            quarterly_data = self._get_quarterly_performance_consolidated_only(
+                corp_code, bsns_year
+            )
             if quarterly_data["success"]:
                 result["quarterly_performance"] = quarterly_data["data"]
+                logger.info("✅ 분기별 연결실적 수집 완료")
+            else:
+                logger.warning("⚠️ 분기별 실적 수집 실패")
 
-            logger.info(f"✅ {corp_code} 상세 재무정보 수집 완료")
+            logger.info(f"✅ {corp_code} 상세 재무정보 수집 완료 (연결재무제표 우선)")
             return result
 
         except Exception as e:
@@ -3690,3 +3704,58 @@ class EnhancedDartDataCollector:
                     logger.warning(f"  ⚠️ {issue}")
         else:
             logger.warning(f"📊 분기보고서: 섹션 없음")
+
+    def _get_quarterly_performance_consolidated_only(
+        self, corp_code: str, bsns_year: str
+    ) -> Dict[str, Any]:
+        """🎯 분기별 실적 조회 (연결재무제표만 사용 - 토큰 최적화)"""
+        try:
+            quarterly_data = []
+
+            # 최근 4분기 데이터 수집
+            quarters = [
+                "11013",
+                "11012",
+                "11014",
+                "11011",
+            ]  # 1분기, 반기, 3분기, 사업보고서
+            quarter_names = ["1분기", "반기", "3분기", "연간"]
+
+            for quarter_code, quarter_name in zip(quarters, quarter_names):
+                time.sleep(self.api_delay)
+
+                params = {
+                    "crtfc_key": self.dart_api_key,
+                    "corp_code": corp_code,
+                    "bsns_year": bsns_year,
+                    "reprt_code": quarter_code,
+                }
+
+                # 🎯 연결재무제표만 사용 (multi_account 엔드포인트)
+                response = requests.get(
+                    self.base_url + self.endpoints["multi_account"], params=params
+                )
+
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get("status") == "000":
+                        accounts = data.get("list", [])
+                        quarter_financials = self._parse_financial_statements(accounts)
+                        quarter_financials["period"] = quarter_name
+                        quarter_financials["report_type"] = "연결재무제표"
+                        quarterly_data.append(quarter_financials)
+                        logger.info(f"✅ {quarter_name} 연결실적 수집 완료")
+                    else:
+                        logger.warning(
+                            f"⚠️ {quarter_name} 연결실적 API 오류: {data.get('message')}"
+                        )
+                else:
+                    logger.warning(
+                        f"⚠️ {quarter_name} 연결실적 HTTP 오류: {response.status_code}"
+                    )
+
+            return {"success": True, "data": quarterly_data}
+
+        except Exception as e:
+            logger.error(f"❌ 분기별 연결실적 수집 실패: {e}")
+            return {"success": False, "error": str(e)}
