@@ -352,26 +352,39 @@ class EnhancedDartDataCollector:
         bsns_year: str,
     ) -> Dict[str, Any]:
         """
-        🚀 전문가별 바로 사용 가능한 딕셔너리 생성
+        🚀 전문가별 바로 사용 가능한 딕셔너리 생성 (연결재무제표 우선)
 
         각 전문가가 바로 사용할 수 있는 형태로 딕셔너리를 구성합니다.
         중간 변환 과정 없이 직접 CrewAI에 전달 가능한 구조입니다.
+        🎯 연결재무제표 우선 선택으로 토큰 사용량 최적화!
 
         Args:
-            business_dict: 사업보고서 딕셔너리
-            quarterly_dict: 분기보고서 딕셔너리
+            business_dict: 사업보고서 딕셔너리 (이미 필터링된 상태)
+            quarterly_dict: 분기보고서 딕셔너리 (이미 필터링된 상태)
             company_name: 회사명
             corp_code: 기업코드
             bsns_year: 사업연도
 
         Returns:
-            Dict: 전문가별 딕셔너리
+            Dict: 전문가별 딕셔너리 (연결재무제표 우선)
         """
-        logger.info(f"🎯 전문가별 딕셔너리 생성 시작: {company_name}")
+        logger.info(
+            f"🎯 전문가별 딕셔너리 생성 시작: {company_name} (연결재무제표 우선)"
+        )
 
-        # 전문가별 키워드 매핑
+        # 전문가별 키워드 매핑 (연결재무제표 키워드 추가)
         expert_keywords = {
             "integrated_financial_analyst": [
+                # 🚀 연결재무제표 우선 키워드 추가
+                "연결",
+                "consolidated",
+                "합계",
+                "전체",
+                "그룹",
+                "연결재무제표",
+                "연결손익계산서",
+                "연결재무상태표",
+                "연결현금흐름표",
                 # 재무 관련
                 "재무",
                 "손익",
@@ -449,92 +462,232 @@ class EnhancedDartDataCollector:
             ],
         }
 
+        # 🚀 별도재무제표 제외 키워드
+        exclude_keywords = [
+            "별도",
+            "개별",
+            "단독",
+            "individual",
+            "separate",
+            "standalone",
+            "별도재무제표",
+            "별도손익계산서",
+            "별도재무상태표",
+            "별도현금흐름표",
+            "별도자본변동표",
+            "개별재무제표",
+            "개별손익계산서",
+            "개별재무상태표",
+        ]
+
         # 전문가별 딕셔너리 생성
         expert_dictionaries = {}
 
         for expert_type, keywords in expert_keywords.items():
-            logger.info(f"🔧 {expert_type} 딕셔너리 생성 중...")
+            logger.info(f"🔧 {expert_type} 딕셔너리 생성 중... (연결재무제표 우선)")
 
-            # 해당 전문가에게 적합한 섹션들 찾기
-            relevant_sections = {}
-
-            # 사업보고서에서 관련 섹션 찾기
-            for section_title, content in business_dict.items():
-                title_lower = section_title.lower()
-                content_lower = content.lower()
-
-                # 키워드 매칭 확인
-                if any(
-                    keyword in title_lower or keyword in content_lower
-                    for keyword in keywords
-                ):
-                    relevant_sections[f"[사업보고서] {section_title}"] = content
-
-            # 분기보고서에서 관련 섹션 찾기
-            for section_title, content in quarterly_dict.items():
-                title_lower = section_title.lower()
-                content_lower = content.lower()
-
-                # 키워드 매칭 확인
-                if any(
-                    keyword in title_lower or keyword in content_lower
-                    for keyword in keywords
-                ):
-                    relevant_sections[f"[분기보고서] {section_title}"] = content
-
-            # 일반 섹션도 일부 포함 (모든 전문가가 참고할 수 있는 내용)
+            # 🎯 1단계: 연결재무제표 우선 섹션 선별
+            consolidated_sections = {}
             general_sections = {}
 
-            # 사업보고서 일반 섹션
+            # 사업보고서에서 관련 섹션 찾기 (연결재무제표 우선)
             for section_title, content in business_dict.items():
-                if section_title not in [
-                    s.replace("[사업보고서] ", "") for s in relevant_sections.keys()
-                ]:
-                    general_sections[f"[사업보고서] {section_title}"] = content
-                    if len(general_sections) >= 2:  # 일반 섹션 최대 2개만
-                        break
+                title_lower = section_title.lower()
+                content_lower = content.lower()
 
-            # 분기보고서 일반 섹션
+                # 🚫 별도재무제표 제외 확인
+                should_exclude = any(
+                    exclude_keyword in title_lower
+                    or exclude_keyword in content_lower[:1000]
+                    for exclude_keyword in exclude_keywords
+                )
+
+                if should_exclude:
+                    logger.info(f"🚫 별도재무제표 섹션 제외: {section_title}")
+                    continue
+
+                # 🎯 연결재무제표 우선 키워드 매칭
+                is_consolidated = any(
+                    "연결" in title_lower
+                    or "consolidated" in title_lower
+                    or "연결" in content_lower[:1000]
+                    or "consolidated" in content_lower[:1000]
+                    for _ in [1]  # 단순히 루프를 위한 더미
+                )
+
+                # 키워드 매칭 확인
+                is_relevant = any(
+                    keyword in title_lower
+                    or keyword in content_lower[:2000]  # 처음 2000자만 검사
+                    for keyword in keywords
+                )
+
+                if is_relevant:
+                    section_key = f"[사업보고서] {section_title}"
+                    if is_consolidated:
+                        consolidated_sections[section_key] = content
+                        logger.info(
+                            f"🎯 연결재무제표 섹션 선택: {section_title} ({len(content):,}자)"
+                        )
+                    else:
+                        general_sections[section_key] = content
+                        logger.info(
+                            f"📊 일반 재무섹션 선택: {section_title} ({len(content):,}자)"
+                        )
+
+            # 분기보고서에서 관련 섹션 찾기 (연결재무제표 우선)
             for section_title, content in quarterly_dict.items():
-                if section_title not in [
-                    s.replace("[분기보고서] ", "") for s in relevant_sections.keys()
-                ]:
-                    general_sections[f"[분기보고서] {section_title}"] = content
-                    if len(general_sections) >= 2:  # 일반 섹션 최대 2개만
-                        break
+                title_lower = section_title.lower()
+                content_lower = content.lower()
 
-            # 관련 섹션과 일반 섹션 합치기
-            all_sections = {**relevant_sections, **general_sections}
+                # 🚫 별도재무제표 제외 확인
+                should_exclude = any(
+                    exclude_keyword in title_lower
+                    or exclude_keyword in content_lower[:1000]
+                    for exclude_keyword in exclude_keywords
+                )
+
+                if should_exclude:
+                    logger.info(f"🚫 별도재무제표 섹션 제외: {section_title}")
+                    continue
+
+                # 🎯 연결재무제표 우선 키워드 매칭
+                is_consolidated = any(
+                    "연결" in title_lower
+                    or "consolidated" in title_lower
+                    or "연결" in content_lower[:1000]
+                    or "consolidated" in content_lower[:1000]
+                    for _ in [1]  # 단순히 루프를 위한 더미
+                )
+
+                # 키워드 매칭 확인
+                is_relevant = any(
+                    keyword in title_lower
+                    or keyword in content_lower[:2000]  # 처음 2000자만 검사
+                    for keyword in keywords
+                )
+
+                if is_relevant:
+                    section_key = f"[분기보고서] {section_title}"
+                    if is_consolidated:
+                        consolidated_sections[section_key] = content
+                        logger.info(
+                            f"🎯 연결재무제표 섹션 선택: {section_title} ({len(content):,}자)"
+                        )
+                    else:
+                        general_sections[section_key] = content
+                        logger.info(
+                            f"📊 일반 재무섹션 선택: {section_title} ({len(content):,}자)"
+                        )
+
+            # 🎯 2단계: 추가 일반 섹션 선별 (연결재무제표가 부족한 경우)
+            additional_general_sections = {}
+
+            # 연결재무제표 섹션이 부족하면 일반 섹션 추가
+            if len(consolidated_sections) < 3:
+                sections_to_search = [
+                    ("사업보고서", business_dict),
+                    ("분기보고서", quarterly_dict),
+                ]
+
+                for report_type, sections_dict in sections_to_search:
+                    for section_title, content in sections_dict.items():
+                        if len(additional_general_sections) >= 3:  # 최대 3개만
+                            break
+
+                        section_key = f"[{report_type}] {section_title}"
+
+                        # 이미 선택된 섹션인지 확인
+                        if (
+                            section_key not in consolidated_sections
+                            and section_key not in general_sections
+                        ):
+
+                            title_lower = section_title.lower()
+                            content_lower = content.lower()
+
+                            # 🚫 별도재무제표 제외 확인
+                            should_exclude = any(
+                                exclude_keyword in title_lower
+                                or exclude_keyword in content_lower[:1000]
+                                for exclude_keyword in exclude_keywords
+                            )
+
+                            if not should_exclude:
+                                additional_general_sections[section_key] = content
+                                logger.info(
+                                    f"📋 추가 일반섹션 선택: {section_title} ({len(content):,}자)"
+                                )
+
+            # 🎯 3단계: 우선순위에 따른 최종 섹션 조합
+            # 연결재무제표 > 일반 재무정보 > 추가 일반섹션 순으로 결합
+            all_sections = {
+                **consolidated_sections,  # 1순위: 연결재무제표
+                **general_sections,  # 2순위: 일반 재무정보
+                **additional_general_sections,  # 3순위: 추가 일반섹션
+            }
+
+            # 🎯 4단계: 토큰 제한 적용 (전문가별 최대 크기 제한)
+            max_expert_size = 200000  # 전문가별 최대 20만자
+            current_size = 0
+            final_sections = {}
+
+            # 우선순위 순으로 섹션 추가
+            for section_key, content in all_sections.items():
+                if current_size + len(content) <= max_expert_size:
+                    final_sections[section_key] = content
+                    current_size += len(content)
+                else:
+                    logger.info(
+                        f"🔄 용량 초과로 제외: {section_key} ({len(content):,}자)"
+                    )
+                    break
 
             # 전문가별 딕셔너리 구성
             expert_dictionaries[expert_type] = {
-                "sections": all_sections,
+                "sections": final_sections,
                 "metadata": {
                     "expert_type": expert_type,
                     "company_name": company_name,
                     "corp_code": corp_code,
                     "bsns_year": bsns_year,
-                    "total_sections": len(all_sections),
-                    "relevant_sections": len(relevant_sections),
+                    "total_sections": len(final_sections),
+                    "consolidated_sections": len(consolidated_sections),
                     "general_sections": len(general_sections),
+                    "additional_sections": len(additional_general_sections),
                     "total_text_length": sum(
-                        len(content) for content in all_sections.values()
+                        len(content) for content in final_sections.values()
                     ),
                     "creation_timestamp": datetime.now().isoformat(),
-                    "source": "dart_api_expert_ready_dictionary",
-                    "processing_method": "keyword_based_section_selection",
+                    "source": "dart_api_expert_ready_dictionary_consolidated_priority",
+                    "processing_method": "consolidated_first_keyword_based_selection",
+                    "optimization_applied": True,
+                    "excluded_individual_statements": True,
                 },
                 "keywords_used": keywords,
                 "section_types": {
-                    "relevant": list(relevant_sections.keys()),
+                    "consolidated": list(consolidated_sections.keys()),
                     "general": list(general_sections.keys()),
+                    "additional": list(additional_general_sections.keys()),
+                },
+                "filtering_stats": {
+                    "original_business_sections": len(business_dict),
+                    "original_quarterly_sections": len(quarterly_dict),
+                    "final_sections": len(final_sections),
+                    "total_size": current_size,
+                    "consolidated_priority_applied": True,
                 },
             }
 
-            logger.info(f"✅ {expert_type}: {len(all_sections)}개 섹션 생성 완료")
-            logger.info(f"   - 관련 섹션: {len(relevant_sections)}개")
-            logger.info(f"   - 일반 섹션: {len(general_sections)}개")
+            logger.info(
+                f"✅ {expert_type}: {len(final_sections)}개 섹션 생성 완료 (연결재무제표 우선)"
+            )
+            logger.info(f"   - 연결재무제표: {len(consolidated_sections)}개")
+            logger.info(f"   - 일반 재무정보: {len(general_sections)}개")
+            logger.info(f"   - 추가 일반섹션: {len(additional_general_sections)}개")
+            logger.info(f"   - 최종 크기: {current_size:,}자")
 
+        logger.info(f"🎉 전문가별 딕셔너리 생성 완료 (연결재무제표 우선 적용)")
         return expert_dictionaries
 
     def _validate_section_quality(self, result: Dict[str, Any]) -> None:
@@ -2724,6 +2877,7 @@ class EnhancedDartDataCollector:
 
         🚀 100만자 지원으로 대용량 사업보고서도 완벽 처리!
         사업보고서나 분기보고서의 구조를 인식해서 의미있는 섹션으로 나누어줘요
+        🎯 연결재무제표 우선 선택으로 토큰 사용량 최적화!
         """
         try:
             sections = {}
@@ -2903,15 +3057,20 @@ class EnhancedDartDataCollector:
                 forced_sections = self._force_split_large_text(text, max_section_size)
                 filtered_sections.update(forced_sections)
 
+            # 🚀 NEW: 연결재무제표 우선 선택 필터링 적용!
+            optimized_sections = self._filter_for_consolidated_statements(
+                filtered_sections
+            )
+
             logger.info(
-                f"✅ 텍스트 섹션 분할 완료: {len(filtered_sections)}개 섹션 (100만자 지원)"
+                f"✅ 텍스트 섹션 분할 완료: {len(optimized_sections)}개 섹션 (연결재무제표 우선)"
             )
 
             # 섹션별 통계 출력
-            for section_name, content in filtered_sections.items():
+            for section_name, content in optimized_sections.items():
                 logger.debug(f"   📄 {section_name}: {len(content):,}자")
 
-            return filtered_sections
+            return optimized_sections
 
         except Exception as e:
             logger.error(f"❌ 텍스트 섹션 분할 실패: {e}")
@@ -2919,6 +3078,266 @@ class EnhancedDartDataCollector:
             if len(text.strip()) > 500:
                 return {"01_전체문서": text[:max_section_size]}
             return {}
+
+    def _filter_for_consolidated_statements(
+        self, sections: Dict[str, str]
+    ) -> Dict[str, str]:
+        """
+        🚀 연결재무제표 우선 선택 필터링 (Option 1 + Option 2 조합)
+
+        별도재무제표 관련 섹션들을 제외하고 연결재무제표만 사용하여
+        토큰 사용량을 40-50% 절약합니다!
+
+        Args:
+            sections: 원본 섹션 딕셔너리
+
+        Returns:
+            Dict: 연결재무제표 우선 필터링된 섹션 딕셔너리
+        """
+        try:
+            logger.info("🎯 연결재무제표 우선 선택 필터링 시작...")
+
+            # 🔧 Option 1: 연결재무제표만 사용 (권장)
+            consolidated_keywords = [
+                "연결",
+                "consolidated",
+                "합계",
+                "전체",
+                "그룹",
+                "종합",
+                "연결재무제표",
+                "연결손익계산서",
+                "연결재무상태표",
+                "연결현금흐름표",
+                "연결자본변동표",
+                "연결포괄손익계산서",
+            ]
+
+            # 🔧 Option 2: 키워드 기반 필터링 - 별도재무제표 제외
+            individual_keywords = [
+                "별도",
+                "개별",
+                "단독",
+                "individual",
+                "separate",
+                "standalone",
+                "별도재무제표",
+                "별도손익계산서",
+                "별도재무상태표",
+                "별도현금흐름표",
+                "별도자본변동표",
+                "개별재무제표",
+                "개별손익계산서",
+                "개별재무상태표",
+                "단독재무제표",
+                "단독손익계산서",
+                "단독재무상태표",
+            ]
+
+            # 🚀 추가 필터링: 토큰 절약을 위한 불필요 섹션 제외
+            exclude_keywords = [
+                # 기존 필터링 (주석, 법적 고지 등)
+                "주석",
+                "footnote",
+                "note",
+                "주석사항",
+                "회계처리방법",
+                "법적고지",
+                "부속명세서",
+                "notes",
+                "footnotes",
+                "법적고지사항",
+                "법적책임면책",
+                "공시의무",
+                "disclaimer",
+                "legal_notice",
+                "책임면책",
+                "면책조항",
+                "감사인의의견서",
+                "감사의견",
+                "auditor_opinion",
+                "audit_report",
+                "감사보고서",
+                "감사범위",
+                "audit_scope",
+                "audit_opinion",
+                "회계처리기준",
+                "회계처리방침",
+                "accounting_policies",
+                "회계기준",
+                "회계방침",
+                "accounting_methods",
+                "부속서류",
+                "supplementary_documents",
+                "attachments",
+                "상세설명",
+                "상세내용",
+                "detailed_description",
+                "보고서개요",
+                "보고서요약",
+                "report_summary",
+                # 🚀 NEW: 별도재무제표 관련 추가 제외
+                "별도",
+                "개별",
+                "단독",
+                "individual",
+                "separate",
+                "standalone",
+            ]
+
+            # 🎯 우선순위별 섹션 분류
+            high_priority_sections = {}  # 연결재무제표 관련
+            medium_priority_sections = {}  # 일반 재무 정보
+            low_priority_sections = {}  # 기타 정보
+            excluded_sections = {}  # 제외된 섹션들
+
+            total_original_size = sum(len(content) for content in sections.values())
+
+            for section_name, content in sections.items():
+                section_lower = section_name.lower()
+                content_lower = content.lower()
+
+                # 🚫 1단계: 별도재무제표 및 불필요 섹션 제외
+                should_exclude = False
+                excluded_reason = ""
+
+                for exclude_keyword in exclude_keywords:
+                    if (
+                        exclude_keyword in section_lower
+                        or exclude_keyword in content_lower[:1000]
+                    ):  # 처음 1000자만 검사
+                        should_exclude = True
+                        excluded_reason = f"제외 키워드 '{exclude_keyword}' 발견"
+                        break
+
+                if should_exclude:
+                    excluded_sections[section_name] = {
+                        "content": content,
+                        "reason": excluded_reason,
+                        "size": len(content),
+                    }
+                    logger.info(f"🚫 섹션 제외: {section_name} ({excluded_reason})")
+                    continue
+
+                # ✅ 2단계: 연결재무제표 우선 선택
+                is_consolidated = False
+                for cons_keyword in consolidated_keywords:
+                    if (
+                        cons_keyword in section_lower
+                        or cons_keyword in content_lower[:1000]
+                    ):  # 처음 1000자만 검사
+                        is_consolidated = True
+                        break
+
+                if is_consolidated:
+                    high_priority_sections[section_name] = content
+                    logger.info(
+                        f"🎯 고우선순위 (연결): {section_name} ({len(content):,}자)"
+                    )
+                    continue
+
+                # 📊 3단계: 재무 관련 정보 중우선순위 분류
+                financial_keywords = [
+                    "재무",
+                    "손익",
+                    "매출",
+                    "이익",
+                    "자산",
+                    "부채",
+                    "자본",
+                    "현금흐름",
+                    "재무제표",
+                    "손익계산서",
+                    "재무상태표",
+                    "현금흐름표",
+                    "자본변동표",
+                    "financial",
+                    "income",
+                    "revenue",
+                    "assets",
+                    "liabilities",
+                    "equity",
+                ]
+
+                is_financial = False
+                for fin_keyword in financial_keywords:
+                    if (
+                        fin_keyword in section_lower
+                        or fin_keyword in content_lower[:1000]
+                    ):  # 처음 1000자만 검사
+                        is_financial = True
+                        break
+
+                if is_financial:
+                    medium_priority_sections[section_name] = content
+                    logger.info(
+                        f"📊 중우선순위 (재무): {section_name} ({len(content):,}자)"
+                    )
+                else:
+                    low_priority_sections[section_name] = content
+                    logger.info(
+                        f"📋 저우선순위 (기타): {section_name} ({len(content):,}자)"
+                    )
+
+            # 🎯 4단계: 토큰 제한에 맞춰 섹션 선택
+            final_sections = {}
+            current_size = 0
+            target_size = int(total_original_size * 0.6)  # 원본의 60%로 제한
+
+            # 고우선순위부터 순서대로 추가
+            for priority_name, priority_sections in [
+                ("고우선순위 (연결재무제표)", high_priority_sections),
+                ("중우선순위 (재무정보)", medium_priority_sections),
+                ("저우선순위 (기타정보)", low_priority_sections),
+            ]:
+                for section_name, content in priority_sections.items():
+                    if current_size + len(content) <= target_size:
+                        final_sections[section_name] = content
+                        current_size += len(content)
+                        logger.info(f"✅ 선택됨 ({priority_name}): {section_name}")
+                    else:
+                        logger.info(
+                            f"🔄 용량 초과로 제외: {section_name} ({len(content):,}자)"
+                        )
+                        break
+
+                # 목표 크기에 도달하면 중단
+                if current_size >= target_size:
+                    break
+
+            # 📊 5단계: 결과 통계 출력
+            original_size = sum(len(content) for content in sections.values())
+            final_size = sum(len(content) for content in final_sections.values())
+            excluded_size = sum(item["size"] for item in excluded_sections.values())
+
+            savings_ratio = (
+                (1 - final_size / original_size) * 100 if original_size > 0 else 0
+            )
+
+            logger.info(f"🎉 연결재무제표 우선 필터링 완료!")
+            logger.info(f"   📊 원본: {len(sections)}개 섹션, {original_size:,}자")
+            logger.info(f"   ✅ 최종: {len(final_sections)}개 섹션, {final_size:,}자")
+            logger.info(
+                f"   🚫 제외: {len(excluded_sections)}개 섹션, {excluded_size:,}자"
+            )
+            logger.info(
+                f"   💰 토큰 절약: {savings_ratio:.1f}% ({original_size - final_size:,}자 절약)"
+            )
+
+            # 제외된 섹션들 상세 로깅
+            if excluded_sections:
+                logger.info(f"🚫 제외된 섹션들:")
+                for section_name, info in excluded_sections.items():
+                    logger.info(
+                        f"   - {section_name}: {info['reason']} ({info['size']:,}자)"
+                    )
+
+            return final_sections
+
+        except Exception as e:
+            logger.error(f"❌ 연결재무제표 필터링 실패: {e}")
+            # 실패시 원본 섹션 반환
+            return sections
 
     def _extract_section_name(self, line: str) -> str:
         """라인에서 섹션 이름 추출"""
