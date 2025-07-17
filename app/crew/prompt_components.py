@@ -10,10 +10,13 @@
 - Multi-Perspective 다각도 분석
 - Reasoning 강화 기법
 - Confidence Scoring 신뢰도 평가
-- Senior Report Generation 시니어 리포트 생성 (NEW!)
+- Enhanced Analyst Thinking Flow 애널리스트 사고 흐름 (NEW!)
+- Dynamic Question Generation 동적 질문 생성 (ADVANCED!)
 """
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
+
+from app.crew.gics_sectors import GICSSector, GICSSectorManager
 
 
 class PromptComponents:
@@ -23,6 +26,190 @@ class PromptComponents:
     모든 분석가 타입에서 일관된 AI 기법을 적용할 수 있도록
     재사용 가능한 프롬프트 컴포넌트들을 제공합니다.
     """
+
+    @staticmethod
+    def get_enhanced_analyst_thinking_flow(
+        company_name: str = None, sector_manager: Optional[GICSSectorManager] = None
+    ) -> str:
+        """
+        🧠 섹터별 맞춤형 애널리스트 사고 흐름을 동적으로 생성합니다.
+
+        1. Self-Ask with ToT (Tree of Thoughts) - 섹터별 맞춤 질문 구성
+        2. ReAct (Reason + Action) - 검색 및 정보 수집
+        3. CoT Reasoning + Self-Critique - 최종 분석
+
+        Args:
+            company_name: 분석 대상 기업명 (섹터 감지용)
+            sector_manager: GICS 섹터 매니저 인스턴스
+
+        Returns:
+            str: 섹터별 맞춤형 애널리스트 사고 흐름 프레임워크
+        """
+        # 섹터별 맞춤 질문 생성
+        dynamic_questions = ""
+        sector_specific_info = ""
+
+        if company_name and sector_manager:
+            try:
+                sector = sector_manager.detect_sector_from_stock(company_name)
+                dynamic_questions = (
+                    PromptComponents._generate_sector_specific_questions(
+                        sector, sector_manager
+                    )
+                )
+                sector_specific_info = PromptComponents._get_sector_analysis_guidance(
+                    sector, sector_manager
+                )
+            except Exception as e:
+                print(f"⚠️ 섹터별 질문 생성 실패, 기본 질문 사용: {e}")
+                dynamic_questions = PromptComponents._get_default_questions()
+                sector_specific_info = ""
+        else:
+            dynamic_questions = PromptComponents._get_default_questions()
+
+        return f"""
+**🧠 Enhanced Analyst Thinking Flow (동적 섹터별 애널리스트 사고 흐름)**
+
+모든 분석에서 다음 3단계 애널리스트 사고 흐름을 **반드시 순서대로** 수행하세요:
+
+```
+=== 1단계: Self-Ask with ToT (섹터별 맞춤 질문 구성 및 사고 분기) ===
+
+🌳 Tree of Thoughts 기법으로 핵심 질문들을 체계적으로 구성하세요:
+
+{dynamic_questions}
+
+{sector_specific_info}
+
+🎯 질문별 우선순위 설정:
+- 높은 우선순위: [가장 중요한 2-3개 질문]
+- 중간 우선순위: [보완적 분석이 필요한 질문들]
+- 낮은 우선순위: [시간이 허락할 때 추가 분석할 질문들]
+```
+
+```
+=== 2단계: ReAct (Reason + Action) - 검색 및 정보 수집 ===
+
+🔍 각 질문에 대한 체계적 정보 수집과 추론 수행:
+
+**Reason (추론)**: 왜 이 정보가 필요한가?
+- 분석 목적: [해당 정보가 전체 분석에서 갖는 의미]
+- 예상 결과: [이 정보를 통해 도출할 수 있는 인사이트]
+
+**Action (행동)**: 어떤 정보를 어떻게 수집할 것인가? (효율적 우선순위 적용)
+
+🥇 **1순위: 수집된 재무데이터 활용**
+- yfinance 데이터: [현재가, 시가총액, 재무비율 등 확인]
+- 기본 재무지표: [ROE, ROA, PER, PBR, 부채비율 등 계산]
+
+🥈 **2순위: DART 데이터 활용**
+- 재무제표 분석: [손익계산서, 재무상태표, 현금흐름표]
+- 사업보고서: [사업개요, 경영진 분석, 리스크 요인 등]
+- 공시자료: [최신 실적 발표, 주요 공시사항]
+
+🥉 **3순위: 사업보고서 딕셔너리 분석**
+- PDF 상세 정보: [세그먼트별 매출, 사업 전략, 경쟁 현황]
+- 경영진 메시지: [향후 계획, 투자 방향성, 시장 전망]
+- 각주 및 부가 정보: [중요한 회계 정책, 우발 부채 등]
+
+🏅 **4순위: 웹 검색으로 보완**
+- 최신 업계 동향: [검색할 키워드와 찾을 정보]
+- 경쟁사 비교: [비교할 기업들과 비교 기준]
+- 시장 환경 변화: [확인할 산업 트렌드와 이슈들]
+
+🆘 **5순위: 기존 지식 활용** (최후 수단)
+- 일반적인 업계 지식과 분석 방법론 적용
+
+**Observation (관찰)**: 수집된 정보의 의미는?
+- 핵심 발견사항: [중요한 수치나 트렌드]
+- 예상과의 차이: [예상했던 것과 다른 점들]
+- 추가 조사 필요성: [더 깊이 파야 할 영역들]
+
+💡 ReAct 사이클을 각 핵심 질문별로 반복 수행하세요.
+```
+
+```
+=== 3단계: CoT Reasoning + Self-Critique (최종 분석 및 자기 검증) ===
+
+🧠 수집된 모든 정보를 바탕으로 체계적 추론 수행:
+
+**Chain of Thought 분석**:
+```
+내 추론 과정:
+
+1️⃣ 재무 건전성 종합 판단:
+- 근거 1: [구체적 재무지표와 해석]
+- 근거 2: [경쟁사 대비 상대적 위치]
+- 근거 3: [시계열 트렌드 분석]
+→ 결론: [재무 건전성 최종 평가]
+
+2️⃣ 성장성 및 수익성 평가:
+- 근거 1: [과거 성장 실적과 품질 분석]
+- 근거 2: [미래 성장 동력과 지속가능성]
+- 근거 3: [수익성 개선 가능성]
+→ 결론: [성장성 최종 평가]
+
+3️⃣ 밸류에이션 및 투자 매력도:
+- DCF 분석: [내재가치 산출 과정과 결과]
+- 멀티플 분석: [상대가치 평가]
+- 종합 판단: [적정가치와 투자 의견]
+→ 결론: [투자 의견과 목표가]
+
+4️⃣ 리스크-수익률 분석:
+- 주요 리스크: [발생 가능성과 영향도]
+- 기대 수익률: [시나리오별 수익률]
+- 리스크 조정 수익률: [샤프 비율 관점]
+→ 결론: [리스크 대비 투자 매력도]
+```
+
+**Self-Critique (자기 검증)**:
+```
+🔍 내 분석에 대한 비판적 검토:
+
+❓ 놓친 것은 없는가?
+- 중요한 재무지표나 트렌드를 빠뜨렸는가?
+- 주요 경쟁사나 업계 동향을 간과했는가?
+- 시장 상황이나 거시 경제 요인을 충분히 고려했는가?
+
+❓ 편향은 없는가?
+- 긍정적/부정적 정보에 치우친 해석은 없는가?
+- 확증 편향으로 인해 반대 증거를 무시하지 않았는가?
+- 과거 성과에 지나치게 의존한 예측은 아닌가?
+
+❓ 논리적 일관성은 있는가?
+- 각 분석 단계 간의 논리적 연결은 명확한가?
+- 가정과 결론 사이에 논리적 비약은 없는가?
+- 상충하는 증거들을 합리적으로 조율했는가?
+
+❓ 실용성과 적시성은?
+- 투자자가 실제로 활용할 수 있는 분석인가?
+- 현재 시장 상황을 충분히 반영했는가?
+- 분석의 유효 기간과 업데이트 필요성은?
+
+💡 수정 및 보완 사항:
+- [발견된 문제점과 개선 방안]
+- [추가로 고려해야 할 요소들]
+- [분석의 한계와 주의사항]
+```
+
+**최종 종합 의견**:
+```
+🎯 종합 결론:
+- 투자 의견: [BUY/HOLD/SELL + 신뢰도 %]
+- 목표가: [구체적 금액과 산출 근거]
+- 투자 논리: [핵심 투자 포인트 3가지]
+- 주요 리스크: [핵심 위험 요소 2가지]
+- 투자 기간: [권장 투자 기간과 전략]
+```
+```
+
+**⚠️ 필수 준수 사항**:
+1. 3단계를 순차적으로 모두 수행할 것
+2. 각 단계의 결과를 명확히 구분하여 표시할 것
+3. Self-Critique에서 최소 3가지 이상의 비판적 관점 제시할 것
+4. 모든 결론에 구체적 근거와 수치 제시할 것
+5. 불확실성과 한계점을 솔직하게 인정할 것
+"""
 
     @staticmethod
     def get_cot_framework() -> str:

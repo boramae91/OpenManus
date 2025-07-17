@@ -2,8 +2,6 @@
 """
 섹터별 전문 분석팀 팩토리 시스템
 
-11개 GICS 섹터별로 6명의 전문가 에이전트를 정의해요
-각 섹터마다 맞춤형 분석 전문가들이 있어요!
 LangChain을 통한 성능 향상!
 """
 
@@ -971,62 +969,52 @@ class SectorTeamFactory:
             )
         )
 
+        # 🚀 동적 질문 생성을 위한 섹터별 맞춤형 Enhanced Thinking Flow 생성
+        # 기업명이 실행 시에 제공되므로, 여기서는 섹터 기반 기본 프레임워크 생성
+        try:
+            dynamic_thinking_flow = PromptComponents.get_enhanced_analyst_thinking_flow(
+                company_name=None,  # 실행 시에 동적으로 업데이트됨
+                sector_manager=gics_sector_manager,
+            )
+        except Exception as e:
+            print(f"⚠️ 동적 사고 흐름 생성 실패, 기본 프레임워크 사용: {e}")
+            dynamic_thinking_flow = (
+                PromptComponents.get_enhanced_analyst_thinking_flow()
+            )
+
         integrated_financial_analyst = AnalystAgent(
-            name=f"{sector_korean_name} 통합 재무분석가 (AI Enhanced)",
-            role="Advanced Integrated Financial Analyst with AI Reasoning",
-            expertise="고급 재무제표 분석, AI 강화 기업가치 평가, 다각도 투자 의견 종합",
-            analysis_focus=f"{sector_korean_name} 기업의 재무 건전성, 성장성, 내재가치를 AI 강화 추론 기법으로 종합적으로 분석",
+            name=f"{sector_korean_name} 통합 재무분석가 (Dynamic Enhanced Thinking Flow)",
+            role="Senior Financial Analyst with Sector-Specific Enhanced Analytical Thinking",
+            expertise="섹터별 맞춤형 실제 애널리스트 사고 흐름 구현, 동적 질문 생성, 체계적 재무분석, 고도화된 투자 의견 도출",
+            analysis_focus=f"{sector_korean_name} 기업을 섹터 특성 기반 Self-Ask with ToT → ReAct → CoT+Self-Critique 흐름으로 심층 분석하여 시니어 애널리스트 수준의 투자 인사이트 제공",
             key_methods=[
-                "Chain of Thought (CoT) 기반 재무비율 분석",
-                "Self-Critique 적용 DuPont 분석",
-                "Multi-Perspective 현금흐름 분석",
-                "Reasoning-Enhanced DCF 모델링",
-                "Confidence-Scored 멀티플 분석",
-                "Reflection-Based Sum-of-Parts 분석",
-                "AI 강화 시나리오별 밸류에이션",
-                "Self-Validation 투자 의견 도출",
+                "🧠 Sector-Specific Self-Ask with ToT: 섹터별 맞춤 질문 동적 생성",
+                "📊 ReAct 루프: 데이터 우선순위 기반 정보 수집 (yfinance→DART→PDF→웹검색)",
+                "🔍 Chain of Thought: 논리적 단계별 추론",
+                "🎯 Self-Critique: 다각도 자기 검증",
+                "💰 Enhanced DCF 모델링: 가정 명시 및 민감도 분석",
+                "📈 Comparative Valuation: 경쟁사 심층 비교",
+                "🔮 Scenario Planning: 확률 기반 시나리오 분석",
+                "⚖️ Risk-Return Optimization: 리스크 조정 투자 의견",
             ],
-            sector_context=f"{sector_korean_name} 섹터의 특성을 반영한 AI 강화 통합 재무분석 및 밸류에이션 전문가",
+            sector_context=f"{sector_korean_name} 섹터의 특성을 반영한 AI 강화 통합 재무분석 및 밸류에이션 전문가 (동적 질문 생성 지원)",
             sector_specific_points=[
-                f"통합 재무분석 관점에서 {sector_context.get('valuation_approach', '가치평가 방법')}",
-                "⭐ **AI 강화 통합 재무분석 프레임워크**:",
-                "🔴 **핵심 원칙**: 제공된 실제 재무데이터 최우선 + AI 추론 기법 적용",
+                f"🎯 {sector_korean_name} 섹터 특화 Enhanced Thinking Flow 관점에서 {sector_context.get('valuation_approach', '가치평가 방법')}",
+                "🚀 **Dynamic Enhanced Analyst Thinking Flow 프레임워크**:",
+                "🔴 **핵심 원칙**: 섹터별 특성 반영 + 실제 애널리스트 사고 과정 완벽 구현 + 체계적 추론 기법 적용",
                 "",
                 # 모듈화된 AI 강화 프레임워크 삽입
                 integrated_analysis_framework,
                 "",
-                "🎯 **5단계 통합 재무분석 프로세스**:",
-                "**1단계: 재무 건전성 분석**",
-                "- 핵심 재무비율 계산 (ROE, ROA, ROIC, 유동비율, 부채비율)",
-                "- 각 비율별 Chain of Thought 적용",
-                "- 3년간 트렌드 분석 및 변화 패턴 식별",
-                "- DuPont 분석을 통한 ROE 분해",
-                "- 현금흐름 안정성 평가",
+                # 동적으로 생성된 사고 흐름 프레임워크 삽입
+                dynamic_thinking_flow,
                 "",
-                "**2단계: 경쟁사 비교 및 업계 분석**",
-                "- 동종업계 상위 5개 경쟁사 재무비율 비교",
-                "- 업계 평균 대비 상대적 위치 평가",
-                "- 시장점유율과 경쟁 우위 분석",
-                "- 웹 검색을 통한 최신 업황 정보 반영",
-                "",
-                "**3단계: 내재가치 산출 (DCF + 멀티플 통합)**",
-                "- WACC 계산 (구체적 계산 과정 포함)",
-                "- 향후 5년 FCF 예측 (성장률, 마진, 투자 가정 명시)",
-                "- DCF 모델링을 통한 내재가치 산출",
-                "- PER, PBR, EV/EBITDA 멀티플 분석",
-                "- 가중평균 목표가 계산",
-                "",
-                "**4단계: 시나리오별 밸류에이션**",
-                "- 낙관/기본/비관 3시나리오 분석",
-                "- 주요 변수별 민감도 분석",
-                "- 확률가중 목표가 산출",
-                "- 각 시나리오별 발생 확률과 근거 제시",
-                "",
-                "**5단계: 종합 투자 의견 도출**",
-                "- 재무 건전성과 기업가치 종합 평가",
-                "- 리스크 대비 수익률 분석",
-                "- 명확한 투자 의견과 근거 제시",
-                "- Self-Critique 결과 포함",
+                "⚠️ **특별 지시사항**:",
+                "1. 분석 시작 시 기업명을 기반으로 섹터별 맞춤 질문을 동적으로 생성하세요",
+                "2. 질문 생성 후 반드시 3단계 Enhanced Thinking Flow를 순차적으로 수행하세요",
+                "3. 각 단계의 결과를 명확히 구분하여 표시하세요",
+                "4. Self-Critique에서 최소 3가지 이상의 비판적 관점을 제시하세요",
+                "5. 모든 결론에 구체적 근거와 수치를 제시하세요",
             ],
             risk_awareness=[f"통합 재무분석 관점에서 {risk_factors}"],
             critical_metrics=(
@@ -1699,53 +1687,76 @@ class SectorTeamFactory:
 
             output_format = PromptComponents.get_output_format_template("통합 재무분석")
 
-            # 시스템 프롬프트 생성 (모듈화된 컴포넌트 활용)
+            # 🚀 향상된 애널리스트 사고 흐름 프레임워크 적용
+            enhanced_thinking_flow = (
+                PromptComponents.get_enhanced_analyst_thinking_flow()
+            )
+
+            # 시스템 프롬프트 생성 (향상된 애널리스트 사고 흐름 적용)
             system_prompt = ChatPromptTemplate.from_messages(
                 [
                     (
                         "system",
                         f"""
-당신은 {sector_name} 섹터 전문 통합 재무분석가입니다. 시니어 애널리스트를 보조할 수 있는 수준의 깊이 있는 분석을 제공하는 것이 목표입니다.
+당신은 {sector_name} 섹터 전문 통합 재무분석가입니다.
+실제 시니어 애널리스트와 동등한 수준의 체계적이고 깊이 있는 분석을 제공하는 것이 목표입니다.
+
+🎯 **핵심 임무**: 애널리스트 사고 흐름을 완벽히 구현한 분석 수행
+
+{enhanced_thinking_flow}
 
 {unified_framework}
 
-**📊 5단계 분석 프로세스 (AI 강화 기법 적용)**
+**🔧 분석 적용 지침**:
 
-**1단계: 재무 건전성 분석**
-- 핵심 재무비율 계산 (ROE, ROA, ROIC, 유동비율, 부채비율)
-- 각 비율별 Chain of Thought 적용
-- 3년간 트렌드 분석 및 변화 패턴 식별
-- DuPont 분석을 통한 ROE 분해
-- 현금흐름 안정성 평가
+**필수 사고 과정**:
+1️⃣ **Self-Ask with ToT**: 먼저 체계적인 질문 구성과 사고 분기를 통해 분석 범위를 명확히 정의
+2️⃣ **ReAct 루프**: 각 질문에 대해 추론→행동→관찰의 체계적 정보 수집 수행
+3️⃣ **CoT + Self-Critique**: 수집된 정보를 바탕으로 논리적 추론과 엄격한 자기 검증 실시
 
-**2단계: 경쟁사 비교 및 업계 분석**
-- 동종업계 상위 5개 경쟁사 재무비율 비교
-- 업계 평균 대비 상대적 위치 평가
-- 시장점유율과 경쟁 우위 분석
-- 웹 검색을 통한 최신 업황 정보 반영
+**효율적 정보 수집 전략** (우선순위 적용):
 
-**3단계: 내재가치 산출 (DCF + 멀티플 통합)**
-- WACC 계산 (구체적 계산 과정 포함)
-- 향후 5년 FCF 예측 (성장률, 마진, 투자 가정 명시)
-- DCF 모델링을 통한 내재가치 산출
-- PER, PBR, EV/EBITDA 멀티플 분석
-- 가중평균 목표가 계산
+🥇 **1순위: 제공된 재무데이터 최우선 활용**
+- yfinance 데이터: 현재가, 시가총액, 기본 재무비율 분석
+- 수집된 재무지표: ROE, ROA, PER, PBR, 부채비율 등 계산 및 해석
 
-**4단계: 시나리오별 밸류에이션**
-- 낙관/기본/비관 3시나리오 분석
-- 주요 변수별 민감도 분석
-- 확률가중 목표가 산출
-- 각 시나리오별 발생 확률과 근거 제시
+🥈 **2순위: DART 데이터 심층 분석**
+- 재무제표: 손익계산서, 재무상태표, 현금흐름표 상세 분석
+- 사업보고서: 사업개요, 경영진 분석, 리스크 요인 추출
+- 공시자료: 최신 실적 발표, 주요 사업 변화 확인
 
-**5단계: 종합 투자 의견 도출**
-- 재무 건전성과 기업가치 종합 평가
-- 리스크 대비 수익률 분석
-- 명확한 투자 의견과 근거 제시
-- Self-Critique 결과 포함
+🥉 **3순위: 사업보고서 딕셔너리 활용**
+- PDF 세부 정보: 세그먼트별 실적, 사업 전략, 경쟁 환경
+- 경영진 메시지: 미래 계획, 투자 방향, 시장 전망
+- 정성적 정보: 기술 개발, 신규 사업, 파트너십 등
+
+🏅 **4순위: 웹 검색으로 보완 (필요시에만)**
+- 경쟁사 정보: "{sector_name} 섹터 주요 기업 재무성과 비교"
+- 산업 동향: "{sector_name} 업계 전망 성장률 트렌드"
+- 최신 이슈: "기업명 + 최근 뉴스 실적 발표"
+
+**⚠️ 필수 준수 사항**:
+1. 웹 검색 전에 반드시 제공된 재무데이터를 먼저 분석할 것
+2. 컨텍스트에 있는 모든 정보(yfinance, DART 등)를 우선 활용할 것
+3. 웹 검색은 기존 데이터로 답할 수 없는 부분만 보완용으로 사용할 것
+4. 분석 시작 시 "제공된 재무데이터부터 분석하겠습니다"라고 명시할 것
+
+**분석 품질 기준**:
+- 모든 수치에 출처와 계산 과정 명시
+- 경쟁사 최소 3개 이상 구체적 비교
+- 시나리오별 확률과 영향도 정량화
+- Self-Critique에서 최소 3가지 관점 검증
+- 투자 의견에 신뢰도 % 표기 필수
+
+**📊 최종 출력 형식**:
+1. **1단계 결과**: Self-Ask with ToT 질문 구성 및 우선순위
+2. **2단계 결과**: ReAct 정보 수집 및 분석 과정
+3. **3단계 결과**: CoT 추론 및 Self-Critique 검증
+4. **종합 결론**: 투자 의견, 목표가, 핵심 논리, 주요 리스크
 
 {output_format}
 
-모든 분석에서 AI 강화 기법을 적용하고, 웹 검색을 통해 최신 정보를 반영하세요.
+⚠️ **중요**: 반드시 3단계 애널리스트 사고 흐름을 순서대로 완전히 수행하고, 각 단계의 결과를 명확히 구분하여 제시하세요.
 """,
                     ),
                     MessagesPlaceholder(variable_name="chat_history"),
@@ -1759,9 +1770,14 @@ class SectorTeamFactory:
                 llm=llm, tools=[web_search_tool], prompt=system_prompt
             )
 
-            # Agent Executor 생성
+            # Agent Executor 생성 (향상된 사고 흐름을 위해 반복 횟수 증가)
             integrated_chain = AgentExecutor(
-                agent=agent, tools=[web_search_tool], verbose=True, max_iterations=5
+                agent=agent,
+                tools=[web_search_tool],
+                verbose=True,
+                max_iterations=10,  # 3단계 사고 흐름 처리를 위해 증가
+                early_stopping_method="generate",  # 완전한 답변 생성 보장
+                return_intermediate_steps=True,  # 중간 단계 추적 활성화
             )
 
             print(f"✅ {analyst.name} 통합 재무분석 LangChain Chain 생성 완료!")
@@ -2231,31 +2247,31 @@ class SectorTeamFactory:
 **📊 5단계 기술적 분석 프로세스 (AI 강화 기법 적용)**
 
 **1단계: 차트 패턴 분석**
-- 주요 차트 패턴 식별 (헤드앤숄더, 더블탑/바텀 등)
+   - 주요 차트 패턴 식별 (헤드앤숄더, 더블탑/바텀 등)
 - 각 패턴별 Chain of Thought 적용
-- 추세선과 채널 분석
-- 지지선과 저항선 레벨 분석
+   - 추세선과 채널 분석
+   - 지지선과 저항선 레벨 분석
 
 **2단계: 기술적 지표 분석**
-- 이동평균선 분석 (20일, 60일, 200일)
-- RSI, MACD, 스토캐스틱 등 오실레이터 분석
-- 볼린저 밴드와 피벗 포인트 분석
+   - 이동평균선 분석 (20일, 60일, 200일)
+   - RSI, MACD, 스토캐스틱 등 오실레이터 분석
+   - 볼린저 밴드와 피벗 포인트 분석
 - 웹 검색을 통한 최신 기술적 트렌드 반영
 
 **3단계: 거래량 분석**
-- 거래량 추세와 가격 변동의 관계
-- 거래량 가중 평균가격(VWAP) 분석
-- 거래량 프로파일 분석
+   - 거래량 추세와 가격 변동의 관계
+   - 거래량 가중 평균가격(VWAP) 분석
+   - 거래량 프로파일 분석
 
 **4단계: 섹터 상대강도 분석**
-- 섹터 대비 상대적 성과 분석
-- 섹터 내 순위와 강도 평가
-- 섹터 로테이션 영향 분석
+   - 섹터 대비 상대적 성과 분석
+   - 섹터 내 순위와 강도 평가
+   - 섹터 로테이션 영향 분석
 
 **5단계: 기술적 전망 및 투자 권고**
-- 단기/중기 기술적 전망
-- 주요 지지/저항 레벨과 목표가
-- 매수/매도 시점 권고
+   - 단기/중기 기술적 전망
+   - 주요 지지/저항 레벨과 목표가
+   - 매수/매도 시점 권고
 - Self-Critique 결과 포함
 
 {output_format}
