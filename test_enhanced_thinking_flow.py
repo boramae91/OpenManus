@@ -235,24 +235,38 @@ async def test_enhanced_thinking_flow():
                     ),
                 }
 
-                # 🚀 섹터별 맞춤형 질문 생성 검증
+                # 🚀 섹터별 맞춤형 질문 생성 검증 (더 엄격한 기준)
                 sector_specific_checks = {
-                    "IT 섹터 특화 질문": any(
+                    "Q5 섹터 특화 질문 존재": any(
                         [
-                            "기술 경쟁력" in result_output,
-                            "플랫폼 점유율" in result_output,
-                            "R&D 투자" in result_output,
-                            "클라우드" in result_output,
-                            "AI" in result_output,
-                            "반도체" in result_output,
-                            "Q5" in result_output,  # IT 섹터 특화 질문
+                            "Q5:" in result_output,
+                            "Q5 " in result_output,
+                            "🖥️" in result_output,  # IT 섹터 이모지
+                            "섹터 특화 분석 질문" in result_output,
                         ]
                     ),
-                    "동적 질문 생성": any(
+                    "IT 섹터 특화 내용": any(
                         [
-                            "동적" in result_output,
-                            "맞춤형" in result_output,
-                            "섹터 특화" in result_output,
+                            "기술 경쟁력" in result_output,
+                            "R&D 투자" in result_output,
+                            "클라우드" in result_output,
+                            "AI 전환" in result_output,
+                            "반도체 사이클" in result_output,
+                            "락인 효과" in result_output,
+                        ]
+                    ),
+                    "3단계 순서 준수": all(
+                        [
+                            "1단계" in result_output,
+                            "2단계" in result_output,
+                            "3단계" in result_output,
+                        ]
+                    ),
+                    "강제 지시사항 인식": any(
+                        [
+                            "CRITICAL" in result_output,
+                            "MANDATORY" in result_output,
+                            "절대적으로 준수" in result_output,
                         ]
                     ),
                 }

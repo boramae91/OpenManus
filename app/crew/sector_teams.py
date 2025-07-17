@@ -30,6 +30,245 @@ from .gics_sectors import GICSSector, GICSSectorManager
 from .prompt_components import PromptComponents
 
 
+class Q5EnforcedAgentExecutor(AgentExecutor):
+    """
+    Q5 섹터 특화 질문을 강제로 보장하는 Custom AgentExecutor
+
+    LangChain AgentExecutor를 상속받아 실행 레벨에서 Q5를 강제로 추가합니다.
+    이렇게 하면 Agent가 Q5를 생성하지 않아도 확실히 포함됩니다.
+    """
+
+    def __init__(
+        self,
+        sector: GICSSector,
+        sector_manager: GICSSectorManager,
+        agent_name: str = "",
+        **kwargs,
+    ):
+        """
+        Q5 강제 생성 Agent Executor 초기화
+
+        Args:
+            sector: GICS 섹터
+            sector_manager: 섹터 매니저
+            agent_name: Agent 이름 (로깅용)
+            **kwargs: AgentExecutor 기본 매개변수들
+        """
+        # 기본 AgentExecutor 초기화
+        super().__init__(**kwargs)
+
+        # 추가 속성을 object의 __dict__에 직접 저장 (Pydantic 우회)
+        object.__setattr__(self, "_q5_sector", sector)
+        object.__setattr__(self, "_q5_sector_manager", sector_manager)
+        object.__setattr__(self, "_q5_agent_name", agent_name)
+        object.__setattr__(
+            self,
+            "_q5_sector_korean_name",
+            sector_manager.get_sector_korean_name(sector),
+        )
+        object.__setattr__(self, "_q5_sector_emoji", self._get_sector_emoji())
+
+        print(
+            f"🔧 Q5 강제 생성 AgentExecutor 초기화: {self._q5_sector_emoji} {self._q5_sector_korean_name}"
+        )
+
+    def _call(self, inputs: Dict[str, Any], run_manager=None) -> Dict[str, Any]:
+        """
+        AgentExecutor 실행을 override하여 Q5 강제 추가
+
+        Args:
+            inputs: 입력 데이터
+            run_manager: LangChain RunManager
+
+        Returns:
+            Dict: Q5가 보장된 분석 결과
+        """
+        print(f"🚀 {self._q5_sector_emoji} Q5 강제 생성 Agent 실행 시작...")
+
+        # 기본 AgentExecutor 실행
+        try:
+            result = super()._call(inputs, run_manager)
+        except Exception as e:
+            print(f"❌ 기본 Agent 실행 실패: {e}")
+            result = {"output": f"Agent 실행 오류: {str(e)}"}
+
+        # Q5 강제 추가 로직 적용
+        enhanced_result = self._ensure_q5_presence(result, inputs)
+
+        print(f"✅ {self._q5_sector_emoji} Q5 강제 생성 완료!")
+        return enhanced_result
+
+    def _ensure_q5_presence(
+        self, result: Dict[str, Any], inputs: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Q5 섹터 특화 질문이 누락된 경우 강제로 추가
+
+        Args:
+            result: Agent 실행 결과
+            inputs: 원본 입력 데이터
+
+        Returns:
+            Dict: Q5가 포함된 수정된 결과
+        """
+        output = result.get("output", "")
+
+        # Q5 존재 여부 검증
+        if self._has_q5(output):
+            print(
+                f"✅ Q5 {self._q5_sector_emoji} {self._q5_sector_korean_name} 섹터 질문 이미 포함됨"
+            )
+            return result
+
+        print(
+            f"⚠️ Q5 누락 감지 - {self._q5_sector_emoji} {self._q5_sector_korean_name} 섹터 질문 강제 추가 중..."
+        )
+
+        # Q5 콘텐츠 생성
+        q5_content = self._generate_sector_q5()
+
+        # Q5 주입
+        enhanced_output = self._inject_q5(output, q5_content)
+
+        # 결과 업데이트
+        result["output"] = enhanced_output
+        result["q5_enforced"] = True
+        result["sector"] = self._q5_sector_korean_name
+        result["sector_emoji"] = self._q5_sector_emoji
+
+        print(
+            f"✅ Q5 {self._q5_sector_emoji} {self._q5_sector_korean_name} 섹터 질문 강제 추가 완료!"
+        )
+        return result
+
+    def _has_q5(self, output: str) -> bool:
+        """
+        출력에 Q5가 포함되어 있는지 검증
+
+        Args:
+            output: Agent 출력 텍스트
+
+        Returns:
+            bool: Q5 포함 여부
+        """
+        q5_patterns = [
+            "Q5:",
+            "Q5 ",
+            "Q5-1:",
+            "Q5-2:",
+            self._q5_sector_emoji,
+            f"{self._q5_sector_korean_name} 섹터 특화",
+            "섹터 특화 분석",
+        ]
+
+        return any(pattern in output for pattern in q5_patterns)
+
+    def _generate_sector_q5(self) -> str:
+        """
+        현재 섹터에 맞는 Q5 콘텐츠 생성
+
+        Returns:
+            str: 섹터별 Q5 질문 콘텐츠
+        """
+        try:
+            # PromptComponents를 사용하여 섹터별 질문 생성
+            sector_questions = PromptComponents._generate_sector_specific_questions(
+                self._q5_sector, self._q5_sector_manager
+            )
+
+            # Q5 부분만 추출
+            q5_start = sector_questions.find("Q5:")
+            if q5_start != -1:
+                q5_section = sector_questions[q5_start:]
+                # 다음 섹션(안내 정보 등)이 시작되기 전까지 추출
+                next_section = q5_section.find("\n🎯")
+                if next_section != -1:
+                    q5_section = q5_section[:next_section]
+                return q5_section.strip()
+        except Exception as e:
+            print(f"⚠️ 동적 Q5 생성 실패: {e}, 기본 Q5 사용")
+
+        # 폴백: 기본 Q5 생성
+        return f"""Q5: {self._q5_sector_emoji} {self._q5_sector_korean_name} 섹터 특화 분석 질문들:
+  └─ Q5-1: 업계 내 경쟁 우위와 차별화 요소는?
+  └─ Q5-2: 시장 점유율과 고객 기반 강화 전략은?
+  └─ Q5-3: 운영 효율성과 비용 관리 역량은?
+  └─ Q5-4: 혁신 역량과 신사업 발굴 현황은?
+  └─ Q5-5: ESG 경영과 지속가능성 전략은?"""
+
+    def _inject_q5(self, output: str, q5_content: str) -> str:
+        """
+        출력 텍스트에 Q5를 적절한 위치에 주입
+
+        Args:
+            output: 원본 출력 텍스트
+            q5_content: 주입할 Q5 콘텐츠
+
+        Returns:
+            str: Q5가 주입된 텍스트
+        """
+        # Q4 다음에 Q5 삽입 시도
+        q4_positions = [
+            output.find("Q4:"),
+            output.find("Q4 "),
+            output.find("리스크와 기회"),
+        ]
+
+        for q4_pos in q4_positions:
+            if q4_pos != -1:
+                # Q4 섹션의 끝 찾기
+                section_endings = [
+                    output.find("=== 2단계", q4_pos),
+                    output.find("**2단계", q4_pos),
+                    output.find("2단계:", q4_pos),
+                    output.find("\n\n=", q4_pos),
+                    output.find("\n\n**", q4_pos),
+                ]
+
+                for ending in section_endings:
+                    if ending != -1:
+                        # Q4와 2단계 사이에 Q5 삽입
+                        return (
+                            output[:ending] + f"\n\n{q5_content}\n\n" + output[ending:]
+                        )
+
+        # Q4 위치를 찾지 못한 경우, 1단계 섹션 끝에 추가
+        stage1_endings = [
+            output.find("=== 2단계"),
+            output.find("**2단계"),
+            output.find("2단계:"),
+        ]
+
+        for ending in stage1_endings:
+            if ending != -1:
+                return output[:ending] + f"\n{q5_content}\n\n" + output[ending:]
+
+        # 마지막 수단: 텍스트 끝에 추가
+        return output + f"\n\n{q5_content}"
+
+    def _get_sector_emoji(self) -> str:
+        """
+        섹터별 이모지 반환
+
+        Returns:
+            str: 섹터 이모지
+        """
+        sector_emojis = {
+            GICSSector.INFORMATION_TECHNOLOGY: "🖥️",
+            GICSSector.FINANCIALS: "🏦",
+            GICSSector.HEALTH_CARE: "💊",
+            GICSSector.ENERGY: "⚡",
+            GICSSector.CONSUMER_DISCRETIONARY: "🛒",
+            GICSSector.CONSUMER_STAPLES: "🍞",
+            GICSSector.MATERIALS: "🏭",
+            GICSSector.INDUSTRIALS: "🏗️",
+            GICSSector.COMMUNICATION_SERVICES: "📡",
+            GICSSector.UTILITIES: "🔌",
+            GICSSector.REAL_ESTATE: "🏢",
+        }
+        return sector_emojis.get(self._q5_sector, "🎯")
+
+
 @dataclass
 class AnalystAgent:
     """
@@ -920,6 +1159,31 @@ class SectorTeamFactory:
 
         print("🎯 섹터별 분석팀 팩토리 초기화 완료!")
 
+    def _get_sector_emoji(self, sector: GICSSector) -> str:
+        """
+        섹터별 대표 이모지를 반환합니다.
+
+        Args:
+            sector: GICS 섹터
+
+        Returns:
+            str: 섹터별 이모지
+        """
+        sector_emojis = {
+            GICSSector.INFORMATION_TECHNOLOGY: "🖥️",
+            GICSSector.FINANCIALS: "🏦",
+            GICSSector.HEALTH_CARE: "💊",
+            GICSSector.ENERGY: "⚡",
+            GICSSector.CONSUMER_DISCRETIONARY: "🛒",
+            GICSSector.CONSUMER_STAPLES: "🍞",
+            GICSSector.MATERIALS: "🏭",
+            GICSSector.INDUSTRIALS: "🏗️",
+            GICSSector.COMMUNICATION_SERVICES: "📡",
+            GICSSector.UTILITIES: "🔌",
+            GICSSector.REAL_ESTATE: "🏢",
+        }
+        return sector_emojis.get(sector, "🎯")  # 기본값: 🎯
+
     def create_sector_team(self, sector: GICSSector) -> SectorTeam:
         """
         특정 섹터의 전문 분석팀을 생성해요
@@ -969,13 +1233,170 @@ class SectorTeamFactory:
             )
         )
 
-        # 🚀 동적 질문 생성을 위한 섹터별 맞춤형 Enhanced Thinking Flow 생성
-        # 기업명이 실행 시에 제공되므로, 여기서는 섹터 기반 기본 프레임워크 생성
+        # 🚀 One-Hot 활성화된 섹터 정보를 직접 사용한 맞춤형 질문 생성
         try:
-            dynamic_thinking_flow = PromptComponents.get_enhanced_analyst_thinking_flow(
-                company_name=None,  # 실행 시에 동적으로 업데이트됨
-                sector_manager=gics_sector_manager,
+            print(f"🎯 {sector_korean_name} 섹터 맞춤형 질문 생성 중...")
+
+            # 이미 활성화된 섹터 정보로 직접 질문 생성 (One-Hot Activation)
+            sector_questions = PromptComponents._generate_sector_specific_questions(
+                sector, self.sector_manager
             )
+            sector_guidance = PromptComponents._get_sector_analysis_guidance(
+                sector, self.sector_manager
+            )
+
+            # 🎯 섹터별 동적 이모지 선택
+            sector_emoji = self._get_sector_emoji(sector)
+
+            # 전체 Enhanced Thinking Flow 조합
+            dynamic_thinking_flow = f"""
+🚨 **CRITICAL: 분석 시작 전 필수 확인사항** 🚨
+
+❗ 이 지시사항을 무시하면 분석 실패로 간주됩니다:
+
+1️⃣ **Q5: {sector_emoji} {sector_korean_name} 섹터 특화 분석 질문 반드시 포함**
+2️⃣ **3단계 순서 절대 준수: 1단계→2단계→3단계**
+3️⃣ **yfinance 데이터 우선 활용, 웹검색은 최후**
+
+**🧠 Enhanced Analyst Thinking Flow (동적 섹터별 애널리스트 사고 흐름)**
+
+🔴 **MANDATORY**: 다음 3단계를 **반드시 순서대로** 수행하세요:
+
+```
+=== 1단계: Self-Ask with ToT (섹터별 맞춤 질문 구성 및 사고 분기) ===
+
+🌳 Tree of Thoughts 기법으로 핵심 질문들을 체계적으로 구성하세요:
+
+{sector_questions}
+
+{sector_guidance}
+
+
+```
+=== 2단계: ReAct (Reason + Action) - 검색 및 정보 수집 ===
+
+🔍 각 질문에 대한 체계적 정보 수집과 추론 수행:
+
+**Reason (추론)**: 왜 이 정보가 필요한가?
+- 분석 목적: [해당 정보가 전체 분석에서 갖는 의미]
+- 예상 결과: [이 정보를 통해 도출할 수 있는 인사이트]
+
+**Action (행동)**: 어떤 정보를 어떻게 수집할 것인가? (효율적 우선순위 적용)
+
+🥇 **1순위: 수집된 재무데이터 활용**
+- yfinance 데이터: [현재가, 시가총액, 재무비율 등 확인]
+- 기본 재무지표: [ROE, ROA, PER, PBR, 부채비율 등 계산]
+
+🥈 **2순위: DART 데이터 활용**
+- 재무제표 분석: [손익계산서, 재무상태표, 현금흐름표]
+- 사업보고서: [사업개요, 경영진 분석, 리스크 요인 등]
+- 공시자료: [최신 실적 발표, 주요 공시사항]
+
+🥉 **3순위: 사업보고서 딕셔너리 분석**
+- PDF 상세 정보: [세그먼트별 매출, 사업 전략, 경쟁 현황]
+- 경영진 메시지: [향후 계획, 투자 방향성, 시장 전망]
+- 각주 및 부가 정보: [중요한 회계 정책, 우발 부채 등]
+
+🏅 **4순위: 웹 검색으로 보완**
+- 최신 업계 동향: [검색할 키워드와 찾을 정보]
+- 경쟁사 비교: [비교할 기업들과 비교 기준]
+- 시장 환경 변화: [확인할 산업 트렌드와 이슈들]
+
+🆘 **5순위: 기존 지식 활용** (최후 수단)
+- 일반적인 업계 지식과 분석 방법론 적용
+
+**Observation (관찰)**: 수집된 정보의 의미는?
+- 핵심 발견사항: [중요한 수치나 트렌드]
+- 예상과의 차이: [예상했던 것과 다른 점들]
+- 추가 조사 필요성: [더 깊이 파야 할 영역들]
+
+💡 ReAct 사이클을 각 핵심 질문별로 반복 수행하세요.
+```
+
+```
+=== 3단계: CoT Reasoning + Self-Critique (최종 분석 및 자기 검증) ===
+
+🧠 수집된 모든 정보를 바탕으로 체계적 추론 수행:
+
+**Chain of Thought 분석**:
+```
+내 추론 과정:
+
+1️⃣ 재무 건전성 종합 판단:
+- 근거 1: [구체적 재무지표와 해석]
+- 근거 2: [경쟁사 대비 상대적 위치]
+- 근거 3: [시계열 트렌드 분석]
+→ 결론: [재무 건전성 최종 평가]
+
+2️⃣ 성장성 및 수익성 평가:
+- 근거 1: [과거 성장 실적과 품질 분석]
+- 근거 2: [미래 성장 동력과 지속가능성]
+- 근거 3: [수익성 개선 가능성]
+→ 결론: [성장성 최종 평가]
+
+3️⃣ 밸류에이션 및 투자 매력도:
+- DCF 분석: [내재가치 산출 과정과 결과]
+- 멀티플 분석: [상대가치 평가]
+- 종합 판단: [적정가치와 투자 의견]
+→ 결론: [투자 의견과 목표가]
+
+4️⃣ 리스크-수익률 분석:
+- 주요 리스크: [발생 가능성과 영향도]
+- 기대 수익률: [시나리오별 수익률]
+- 리스크 조정 수익률: [샤프 비율 관점]
+→ 결론: [리스크 대비 투자 매력도]
+```
+
+**Self-Critique (자기 검증)**:
+```
+🔍 내 분석에 대한 비판적 검토:
+
+❓ 놓친 것은 없는가?
+- 중요한 재무지표나 트렌드를 빠뜨렸는가?
+- 주요 경쟁사나 업계 동향을 간과했는가?
+- 시장 상황이나 거시 경제 요인을 충분히 고려했는가?
+
+❓ 편향은 없는가?
+- 긍정적/부정적 정보에 치우친 해석은 없는가?
+- 확증 편향으로 인해 반대 증거를 무시하지 않았는가?
+- 과거 성과에 지나치게 의존한 예측은 아닌가?
+
+❓ 논리적 일관성은 있는가?
+- 각 분석 단계 간의 논리적 연결은 명확한가?
+- 가정과 결론 사이에 논리적 비약은 없는가?
+- 상충하는 증거들을 합리적으로 조율했는가?
+
+❓ 실용성과 적시성은?
+- 투자자가 실제로 활용할 수 있는 분석인가?
+- 현재 시장 상황을 충분히 반영했는가?
+- 분석의 유효 기간과 업데이트 필요성은?
+
+💡 수정 및 보완 사항:
+- [발견된 문제점과 개선 방안]
+- [추가로 고려해야 할 요소들]
+- [분석의 한계와 주의사항]
+```
+
+**최종 종합 의견**:
+```
+🎯 종합 결론:
+- 투자 의견: [BUY/HOLD/SELL + 신뢰도 %]
+- 목표가: [구체적 금액과 산출 근거]
+- 투자 논리: [핵심 투자 포인트 3가지]
+- 주요 리스크: [핵심 위험 요소 2가지]
+- 투자 기간: [권장 투자 기간과 전략]
+```
+```
+
+**⚠️ 필수 준수 사항**:
+1. 3단계를 순차적으로 모두 수행할 것
+2. 각 단계의 결과를 명확히 구분하여 표시할 것
+3. Self-Critique에서 최소 3가지 이상의 비판적 관점 제시할 것
+4. 모든 결론에 구체적 근거와 수치 제시할 것
+5. 불확실성과 한계점을 솔직하게 인정할 것
+"""
+            print(f"✅ {sector_korean_name} 섹터 맞춤형 질문 생성 완료!")
+
         except Exception as e:
             print(f"⚠️ 동적 사고 흐름 생성 실패, 기본 프레임워크 사용: {e}")
             dynamic_thinking_flow = (
@@ -1009,12 +1430,33 @@ class SectorTeamFactory:
                 # 동적으로 생성된 사고 흐름 프레임워크 삽입
                 dynamic_thinking_flow,
                 "",
-                "⚠️ **특별 지시사항**:",
-                "1. 분석 시작 시 기업명을 기반으로 섹터별 맞춤 질문을 동적으로 생성하세요",
-                "2. 질문 생성 후 반드시 3단계 Enhanced Thinking Flow를 순차적으로 수행하세요",
-                "3. 각 단계의 결과를 명확히 구분하여 표시하세요",
-                "4. Self-Critique에서 최소 3가지 이상의 비판적 관점을 제시하세요",
-                "5. 모든 결론에 구체적 근거와 수치를 제시하세요",
+                "🚨 **강제 준수 지시사항 (MANDATORY)**:",
+                "❗ **절대적으로 준수해야 할 분석 순서**:",
+                "",
+                "🔴 **1단계 MUST: Self-Ask with ToT 질문 구성**",
+                "- 반드시 다음 질문 구조를 따르세요:",
+                "  Q1: 재무적 건전성 (ROE, ROA, ROIC, 부채비율, 현금흐름)",
+                "  Q2: 성장성과 수익성 (과거 3년 성장, 성장 동력, 지속가능성)",
+                "  Q3: 적정 가치 (DCF, 멀티플, 고평가/저평가)",
+                "  Q4: 리스크와 기회 (재무/운영, 산업환경, 외부환경)",
+                f"  Q5: {sector_emoji} {sector_korean_name} 섹터 특화 분석 (섹터별 핵심 경쟁 요소)",
+                "",
+                "🔴 **2단계 MUST: ReAct 정보 수집 순서**",
+                "- 1순위: yfinance 재무데이터 활용 (현재가, 시가총액, 기본 비율)",
+                "- 2순위: DART 데이터 활용 (재무제표, 사업보고서)",
+                "- 3순위: 사업보고서 딕셔너리 분석",
+                "- 4순위: 웹 검색으로 보완 (최후 수단)",
+                "",
+                "🔴 **3단계 MUST: CoT + Self-Critique**",
+                "- Chain of Thought: 4개 영역별 체계적 추론",
+                "- Self-Critique: 최소 3가지 비판적 관점",
+                "- 최종 의견: BUY/HOLD/SELL + 신뢰도 + 목표가",
+                "",
+                "⚠️ **절대 금지사항**:",
+                "- ❌ 질문 단계 건너뛰기 금지",
+                "- ❌ 웹검색 우선 시도 금지",
+                f"- ❌ Q5 {sector_emoji} {sector_korean_name} 섹터 특화 질문 누락 금지",
+                "- ❌ 3단계 구조 무시 금지",
             ],
             risk_awareness=[f"통합 재무분석 관점에서 {risk_factors}"],
             critical_metrics=(
@@ -1034,10 +1476,10 @@ class SectorTeamFactory:
             langchain_enabled=True,  # 🚀 LangChain 활성화
         )
 
-        # 🚀 통합 재무분석가 LangChain Chain 설정
+        # 🚀 통합 재무분석가 LangChain Chain 설정 (Q5 강제 보장)
         integrated_financial_analyst.langchain_chain = (
             self._create_integrated_financial_analysis_chain(
-                integrated_financial_analyst, sector_korean_name
+                integrated_financial_analyst, sector_korean_name, sector
             )
         )
 
@@ -1645,7 +2087,7 @@ class SectorTeamFactory:
     #         return None
 
     def _create_integrated_financial_analysis_chain(
-        self, analyst: AnalystAgent, sector_name: str
+        self, analyst: AnalystAgent, sector_name: str, sector: GICSSector
     ) -> Any:
         """
         통합 재무분석가를 위한 LangChain Chain 생성 (펀더멘털 + 밸류에이션 통합)
@@ -1770,8 +2212,11 @@ class SectorTeamFactory:
                 llm=llm, tools=[web_search_tool], prompt=system_prompt
             )
 
-            # Agent Executor 생성 (향상된 사고 흐름을 위해 반복 횟수 증가)
-            integrated_chain = AgentExecutor(
+            # Agent Executor 생성 (Q5 강제 보장을 위한 Custom Executor 사용)
+            integrated_chain = Q5EnforcedAgentExecutor(
+                sector=sector,
+                sector_manager=self.sector_manager,
+                agent_name=analyst.name,
                 agent=agent,
                 tools=[web_search_tool],
                 verbose=True,

@@ -784,3 +784,228 @@ Bear Case: 최악 시나리오 (주요 리스크 현실화)
 - 사용된 데이터 및 가정
 - 분석 방법론 상세 설명
 """
+
+    @staticmethod
+    def _generate_sector_specific_questions(
+        sector: GICSSector, sector_manager: GICSSectorManager
+    ) -> str:
+        """
+        특정 섹터에 맞춤화된 동적 질문들을 생성합니다.
+        기존 4개 기본 질문 + 섹터별 특화 질문 5개 확장 방식입니다.
+
+        Args:
+            sector: GICS 섹터
+            sector_manager: 섹터 매니저 인스턴스
+
+        Returns:
+            str: 기본 질문 + 섹터별 맞춤 질문들
+        """
+        sector_name = sector_manager.get_sector_korean_name(sector)
+
+        # 🔥 기본 질문 4개 (모든 섹터 공통)
+        base_questions = f"""
+📝 내가 답해야 할 핵심 질문들 ({sector_name} 섹터 맞춤형):
+
+Q1: 이 기업의 재무적 건전성은 어떤가?
+  └─ Q1-1: ROE, ROA, ROIC는 업계 대비 어떤 수준인가?
+  └─ Q1-2: 부채비율과 유동성은 안전한 수준인가?
+  └─ Q1-3: 현금흐름의 질과 안정성은 어떤가?
+
+Q2: 이 기업의 성장성과 수익성 전망은 어떤가?
+  └─ Q2-1: 과거 3년간 매출과 이익 성장 추세는?
+  └─ Q2-2: 주요 성장 동력과 수익원은 무엇인가?
+  └─ Q2-3: 향후 성장 지속가능성은 어떤가?
+
+Q3: 이 기업의 적정 가치는 얼마인가?
+  └─ Q3-1: DCF 기반 내재가치는 얼마인가?
+  └─ Q3-2: 멀티플 기반 상대가치는 얼마인가?
+  └─ Q3-3: 현재 주가는 고평가/적정/저평가 상태인가?
+
+Q4: 주요 리스크와 기회 요인은 무엇인가?
+  └─ Q4-1: 재무적/운영적 리스크는 무엇인가?
+  └─ Q4-2: 산업 환경과 경쟁 구도 변화는?
+  └─ Q4-3: 규제나 외부 환경 리스크는?
+"""
+
+        # 🚀 섹터별 특화 질문 Q5 추가
+        sector_questions = ""
+
+        if sector == GICSSector.INFORMATION_TECHNOLOGY:
+            sector_questions = """
+Q5: 🖥️ IT 섹터 특화 분석 질문들:
+  └─ Q5-1: 기술 경쟁력과 플랫폼 점유율은 어떤가?
+  └─ Q5-2: R&D 투자 대비 수익화 성공률은?
+  └─ Q5-3: 클라우드/AI 전환 역량은 어떤 수준인가?
+  └─ Q5-4: 반도체 사이클/기술 디스럽션 리스크는?
+  └─ Q5-5: 고객 락인 효과와 스위칭 코스트는?"""
+
+        elif sector == GICSSector.FINANCIALS:
+            sector_questions = """
+Q5: 🏦 금융 섹터 특화 분석 질문들:
+  └─ Q5-1: 순이자마진(NIM)과 비이자수익 구조는?
+  └─ Q5-2: 자산건전성과 대손충당금 적정성은?
+  └─ Q5-3: BIS 비율과 자본 적정성은?
+  └─ Q5-4: 금리 변화에 따른 민감도는?
+  └─ Q5-5: 핀테크/디지털 전환 대응력은?"""
+
+        elif sector == GICSSector.HEALTH_CARE:
+            sector_questions = """
+Q5: 💊 헬스케어 섹터 특화 분석 질문들:
+  └─ Q5-1: 신약 파이프라인과 개발 단계는?
+  └─ Q5-2: 특허 만료 일정과 제네릭 위협은?
+  └─ Q5-3: FDA 승인 및 임상시험 성공률은?
+  └─ Q5-4: R&D 투자 효율성과 바이오 플랫폼은?
+  └─ Q5-5: 보험 수가와 정부 규제 리스크는?"""
+
+        elif sector == GICSSector.ENERGY:
+            sector_questions = """
+Q5: ⚡ 에너지 섹터 특화 분석 질문들:
+  └─ Q5-1: 유가/가스 가격 민감도와 생산단가는?
+  └─ Q5-2: 자원 매장량과 생산 수명은?
+  └─ Q5-3: 탄소배출과 ESG/친환경 전환은?
+  └─ Q5-4: Capex 투자와 신재생 에너지 전략은?
+  └─ Q5-5: 에너지 정책 변화와 구조적 리스크는?"""
+
+        elif sector == GICSSector.CONSUMER_DISCRETIONARY:
+            sector_questions = """
+Q5: 🛒 임의소비재 섹터 특화 분석 질문들:
+  └─ Q5-1: 브랜드력과 시장점유율 추이는?
+  └─ Q5-2: 동일매장 매출성장률과 고객 충성도는?
+  └─ Q5-3: e-Commerce 대응과 디지털 전환은?
+  └─ Q5-4: 원가 상승 시 가격전가 능력은?
+  └─ Q5-5: 소비 트렌드 변화와 적응력은?"""
+
+        elif sector == GICSSector.MATERIALS:
+            sector_questions = """
+Q5: 🏭 소재 섹터 특화 분석 질문들:
+  └─ Q5-1: 원자재 가격과 제품 가격 스프레드는?
+  └─ Q5-2: 경기 사이클과 중국 경기 연동성은?
+  └─ Q5-3: 생산설비 효율성과 원가구조는?
+  └─ Q5-4: 환경 규제와 재활용/친환경 투자는?
+  └─ Q5-5: 재고자산 변동성과 가격 헤지는?"""
+
+        elif sector == GICSSector.INDUSTRIALS:
+            sector_questions = """
+Q5: 🏗️ 산업재 섹터 특화 분석 질문들:
+  └─ Q5-1: 수주잔고(Backlog)와 매출 가시성은?
+  └─ Q5-2: 고객 다변화와 집중도 리스크는?
+  └─ Q5-3: 운영 레버리지와 자유현금흐름은?
+  └─ Q5-4: 글로벌 공급망 의존도와 리스크는?
+  └─ Q5-5: 자동화/디지털화 투자 현황은?"""
+
+        elif sector == GICSSector.COMMUNICATION_SERVICES:
+            sector_questions = """
+Q5: 📡 커뮤니케이션서비스 섹터 특화 분석 질문들:
+  └─ Q5-1: 구독자 수와 ARPU 변화 추이는?
+  └─ Q5-2: 콘텐츠 경쟁력과 스트리밍 점유율은?
+  └─ Q5-3: 5G 인프라 투자와 수익화는?
+  └─ Q5-4: OTT/미디어 경쟁과 차별화 전략은?
+  └─ Q5-5: 광고 매출과 디지털 전환 효과는?"""
+
+        elif sector == GICSSector.UTILITIES:
+            sector_questions = """
+Q5: 🔌 유틸리티 섹터 특화 분석 질문들:
+  └─ Q5-1: 요금제 구조와 규제 기관 정책은?
+  └─ Q5-2: 신재생 에너지 비율과 전환 계획은?
+  └─ Q5-3: 배당 지속성과 현금흐름 안정성은?
+  └─ Q5-4: 금리 민감도와 채권 대체성은?
+  └─ Q5-5: ESG 투자와 친환경 전환 비용은?"""
+
+        elif sector == GICSSector.REAL_ESTATE:
+            sector_questions = """
+Q5: 🏢 부동산 섹터 특화 분석 질문들:
+  └─ Q5-1: 보유 부동산 NAV와 시장가치는?
+  └─ Q5-2: 임대료 상승률과 공실률 추이는?
+  └─ Q5-3: LTV와 이자비용 부담 수준은?
+  └─ Q5-4: 오피스/리테일/물류 포트폴리오 구성은?
+  └─ Q5-5: 부동산 시장 사이클과 금리 민감도는?"""
+
+        elif sector == GICSSector.CONSUMER_STAPLES:
+            sector_questions = """
+Q5: 🍞 필수소비재 섹터 특화 분석 질문들:
+  └─ Q5-1: 안정적 수요 기반과 마진 방어력은?
+  └─ Q5-2: 브랜드 충성도와 유통망 강도는?
+  └─ Q5-3: 인플레이션 헤지와 가격전가 능력은?
+  └─ Q5-4: 건강/웰빙 트렌드 대응력은?
+  └─ Q5-5: 배당 지속성과 방어적 특성은?"""
+        else:
+            # 기타 섹터는 일반적인 추가 질문 제공
+            sector_questions = """
+Q5: 🎯 업계 특화 분석 질문들:
+  └─ Q5-1: 업계 내 경쟁 우위와 차별화 요소는?
+  └─ Q5-2: 시장 점유율과 고객 기반 강화 전략은?
+  └─ Q5-3: 운영 효율성과 비용 관리 역량은?
+  └─ Q5-4: 혁신 역량과 신사업 발굴 현황은?
+  └─ Q5-5: ESG 경영과 지속가능성 전략은?"""
+
+        return base_questions + sector_questions
+
+    @staticmethod
+    def _get_sector_analysis_guidance(
+        sector: GICSSector, sector_manager: GICSSectorManager
+    ) -> str:
+        """
+        섹터별 분석 가이던스를 제공합니다.
+
+        Args:
+            sector: GICS 섹터
+            sector_manager: 섹터 매니저 인스턴스
+
+        Returns:
+            str: 섹터별 분석 가이던스
+        """
+        context = sector_manager.get_sector_context(sector)
+        sector_name = sector_manager.get_sector_korean_name(sector)
+
+        return f"""
+🎯 {sector_name} 섹터 특화 분석 가이던스:
+
+📋 주요 업종: {context.get('industry_focus', '정보 없음')}
+
+🔍 중점 분석 포인트:
+{context.get('key_analysis_points', '정보 없음')}
+
+⚠️ 주의할 위험 요소:
+{context.get('key_risks', '정보 없음')}
+
+💰 권장 밸류에이션 방법:
+{context.get('valuation_approach', '정보 없음')}
+
+📊 경기 민감성:
+{context.get('cyclical_nature', '정보 없음')}
+
+📈 핵심 체크 지표:
+{context.get('critical_metrics', '정보 없음')}
+"""
+
+    @staticmethod
+    def _get_default_questions() -> str:
+        """
+        섹터 정보가 없을 때 사용할 기본 질문들을 반환합니다.
+
+        Returns:
+            str: 기본 4개 질문들
+        """
+        return """
+📝 내가 답해야 할 핵심 질문들:
+
+Q1: 이 기업의 재무적 건전성은 어떤가?
+  └─ Q1-1: ROE, ROA, ROIC는 업계 대비 어떤 수준인가?
+  └─ Q1-2: 부채비율과 유동성은 안전한 수준인가?
+  └─ Q1-3: 현금흐름의 질과 안정성은 어떤가?
+
+Q2: 이 기업의 성장성과 수익성 전망은 어떤가?
+  └─ Q2-1: 과거 3년간 매출과 이익 성장 추세는?
+  └─ Q2-2: 주요 성장 동력과 수익원은 무엇인가?
+  └─ Q2-3: 향후 성장 지속가능성은 어떤가?
+
+Q3: 이 기업의 적정 가치는 얼마인가?
+  └─ Q3-1: DCF 기반 내재가치는 얼마인가?
+  └─ Q3-2: 멀티플 기반 상대가치는 얼마인가?
+  └─ Q3-3: 현재 주가는 고평가/적정/저평가 상태인가?
+
+Q4: 주요 리스크와 기회 요인은 무엇인가?
+  └─ Q4-1: 재무적/운영적 리스크는 무엇인가?
+  └─ Q4-2: 산업 환경과 경쟁 구도 변화는?
+  └─ Q4-3: 규제나 외부 환경 리스크는?
+"""
