@@ -354,16 +354,18 @@ async def test_enhanced_thinking_flow():
                 print(result_output)
                 print("=" * 80)
 
-                # 전체 성공률 계산 (데이터 활용 우선순위 검증 포함)
+                # 전체 성공률 계산 (섹터별 맞춤형 질문 검증 포함)
                 total_checks = (
                     len(thinking_flow_checks)
                     + len(quality_checks)
                     + len(data_utilization_checks)
+                    + len(sector_specific_checks)
                 )
                 passed_checks = (
                     sum(thinking_flow_checks.values())
                     + sum(quality_checks.values())
                     + sum(data_utilization_checks.values())
+                    + sum(sector_specific_checks.values())
                 )
                 success_rate = (passed_checks / total_checks) * 100
 
@@ -374,14 +376,17 @@ async def test_enhanced_thinking_flow():
                 print(f"   - 분석 소요 시간: {analysis_duration:.1f}초")
 
                 if success_rate >= 80:
-                    print("✅ Enhanced Thinking Flow가 성공적으로 구현되었습니다!")
+                    print(
+                        "✅ Dynamic Enhanced Thinking Flow가 성공적으로 구현되었습니다!"
+                    )
+                    print("🚀 섹터별 맞춤형 질문 생성 기능이 정상 작동합니다!")
                 elif success_rate >= 60:
                     print(
-                        "⚠️ Enhanced Thinking Flow가 부분적으로 구현되었습니다. 추가 개선이 필요합니다."
+                        "⚠️ Dynamic Enhanced Thinking Flow가 부분적으로 구현되었습니다. 추가 개선이 필요합니다."
                     )
                 else:
                     print(
-                        "❌ Enhanced Thinking Flow 구현에 문제가 있습니다. 프롬프트 수정이 필요합니다."
+                        "❌ Dynamic Enhanced Thinking Flow 구현에 문제가 있습니다. 프롬프트 수정이 필요합니다."
                     )
 
             except Exception as e:
