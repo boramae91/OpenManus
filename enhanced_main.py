@@ -84,7 +84,7 @@ class EnhancedStockAnalysisSystem:
     """
     개선된 주식 분석 시스템 클래스
     실제 재무데이터를 기반으로 정확한 분석을 수행해요!
-    + 🚀 One-Hot Sector Activation으로 90% 비용 절감!
+    + One-Hot Sector Activation!
     """
 
     def __init__(self):
@@ -3033,10 +3033,10 @@ class EnhancedStockAnalysisSystem:
 
     async def create_senior_report_from_analysis(self, results: Dict[str, Any]) -> str:
         """
-        🚀 통합 개선: 전문가 의견 종합 + 시니어 리포트 생성
+        🚀 통합 개선: 전문가 의견 종합 + 리포트 생성
 
-        CoT/5Why/통합 분석 결과를 바탕으로 시니어 애널리스트 스타일의 최종 투자 리포트를 생성합니다.
-        새로운 PromptComponents의 시니어 리포트 프레임워크를 활용하여 더 체계적이고 전문적인 리포트를 생성합니다.
+        CoT/5Why/통합 분석 결과를 바탕으로 애널리스트 스타일의 최종 투자 리포트를 생성합니다.
+        새로운 PromptComponents의 리포트 프레임워크를 활용하여 더 체계적이고 전문적인 리포트를 생성합니다.
         """
         # 🚀 PromptComponents import (동적 import로 순환 참조 방지)
         from app.crew.prompt_components import PromptComponents
@@ -3067,7 +3067,7 @@ class EnhancedStockAnalysisSystem:
 
         # 🚀 강화된 프롬프트 구성 (의견 종합 + 리포트 생성 통합)
         enhanced_senior_report_prompt = f"""
-당신은 20년 경력의 시니어 애널리스트입니다.
+당신은 20년 경력의 애널리스트입니다.
 다음은 여러 전문가가 분석한 결과를 종합하여 실제 투자은행/증권사 수준의 전문적인 리포트를 작성하는 작업입니다.
 
 {senior_report_template}
@@ -3100,12 +3100,12 @@ class EnhancedStockAnalysisSystem:
 **⚠️ 중요: 위의 템플릿 형식을 정확히 따라 전문적이고 체계적인 리포트를 작성해주세요.**
 """
 
-        # 🎯 LLM 호출 시 더 적절한 매개변수 사용 (오류 처리 강화)
+        # 🎯 LLM 호출 시 올바른 매개변수 사용 (오류 처리 강화)
         try:
             return await self.llm.ask(
-                [{"role": "user", "content": enhanced_senior_report_prompt}],
+                messages=[{"role": "user", "content": enhanced_senior_report_prompt}],
                 temperature=0.1,  # 일관성을 위해 낮은 온도
-                max_tokens=6000,  # 충분한 토큰으로 완전한 리포트 생성
+                stream=False,  # 리포트 생성은 스트리밍 비활성화
             )
         except Exception as llm_error:
             logger.error(f"❌ 시니어 리포트 LLM 호출 실패: {llm_error}")
@@ -3133,7 +3133,7 @@ class EnhancedStockAnalysisSystem:
 
     def _extract_key_analysis_for_senior_report(self, results: Dict[str, Any]) -> str:
         """
-        시니어 리포트 생성을 위해 핵심 분석 데이터만 추출합니다.
+        리포트 생성을 위해 핵심 분석 데이터만 추출합니다.
         토큰 제한 문제를 해결하기 위해 전체 결과 대신 핵심 정보만 사용합니다.
         """
         key_data = {}
