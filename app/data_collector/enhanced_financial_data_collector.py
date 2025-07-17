@@ -1398,7 +1398,7 @@ class EnhancedDartDataCollector:
 
     # ==================== 1️⃣ 상세한 재무정보 ====================
 
-    async def get_detailed_financial_data(
+    def get_detailed_financial_data(
         self, corp_code: str, bsns_year: str
     ) -> Dict[str, Any]:
         """
