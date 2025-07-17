@@ -633,10 +633,16 @@ class EnhancedStockAnalysisSystem:
             final_summary = self.create_comprehensive_summary_v2(results)
             results["final_summary"] = final_summary
 
-            # Step 5.5: 시니어 리포트 스타일 통합 보고서 생성
-            logger.info("📋 Step 5.5: 시니어 애널리스트 리포트 생성")
-            senior_report = await self.create_senior_report_from_analysis(results)
-            results["final_senior_report"] = senior_report
+            # Step 5.5:  리포트 스타일 통합 보고서 생성
+            logger.info("📋 Step 5.5: 애널리스트 리포트 생성")
+            try:
+                senior_report = await self.create_senior_report_from_analysis(results)
+                results["final_senior_report"] = senior_report
+            except Exception as senior_report_error:
+                logger.error(f"❌ 애널리스트 리포트 생성 실패: {senior_report_error}")
+                results["final_senior_report"] = (
+                    f"리포트 생성 실패: {str(senior_report_error)}"
+                )
 
             # Step 6: JSON 파일 저장
             logger.info("💾 Step 6: 결과 저장")
@@ -2360,16 +2366,20 @@ class EnhancedStockAnalysisSystem:
                         pdf_result["pdf_content"] = pdf_content
                         pdf_result["analysis_method"] = "large_pdf_analyzer_fallback"
                     else:
-                        # 더 상세한 오류 메시지 생성
+                        # 🔧 더 상세한 오류 메시지 생성 (타입 안전성 확보)
                         error_msg = "분석 결과 없음"
                         if analysis_result is None:
                             error_msg = "extract_raw_text_only가 None을 반환함"
+                        elif not isinstance(analysis_result, dict):
+                            error_msg = f"PDF 분석 결과가 예상된 dict 타입이 아님: {type(analysis_result)}"
                         elif not analysis_result.get("success"):
                             # error 필드 확인
                             if analysis_result.get("error"):
                                 error_msg = analysis_result.get("error")
                             # metadata에서 오류 확인
-                            elif analysis_result.get("metadata", {}).get("error"):
+                            elif isinstance(
+                                analysis_result.get("metadata"), dict
+                            ) and analysis_result.get("metadata", {}).get("error"):
                                 error_msg = analysis_result.get("metadata", {}).get(
                                     "error"
                                 )
@@ -3090,12 +3100,36 @@ class EnhancedStockAnalysisSystem:
 **⚠️ 중요: 위의 템플릿 형식을 정확히 따라 전문적이고 체계적인 리포트를 작성해주세요.**
 """
 
-        # 🎯 LLM 호출 시 더 적절한 매개변수 사용
-        return await self.llm.ask(
-            [{"role": "user", "content": enhanced_senior_report_prompt}],
-            temperature=0.1,  # 일관성을 위해 낮은 온도
-            max_tokens=6000,  # 충분한 토큰으로 완전한 리포트 생성
-        )
+        # 🎯 LLM 호출 시 더 적절한 매개변수 사용 (오류 처리 강화)
+        try:
+            return await self.llm.ask(
+                [{"role": "user", "content": enhanced_senior_report_prompt}],
+                temperature=0.1,  # 일관성을 위해 낮은 온도
+                max_tokens=6000,  # 충분한 토큰으로 완전한 리포트 생성
+            )
+        except Exception as llm_error:
+            logger.error(f"❌ 시니어 리포트 LLM 호출 실패: {llm_error}")
+            # 📋 간단한 대체 리포트 생성
+            fallback_report = f"""
+# {stock_name} 투자 리포트 (간소화 버전)
+
+## 📊 기본 정보
+- 종목명: {stock_name}
+- 섹터: {sector_name}
+- 분석일자: {datetime.now().strftime('%Y-%m-%d')}
+
+## ⚠️ 주의사항
+상세 분석 리포트 생성 중 오류가 발생했습니다: {str(llm_error)}
+
+## 📋 수집된 주요 데이터
+{key_analysis_data[:1000]}...
+
+## 🔧 해결방안
+- API 키 확인
+- 토큰 제한 확인
+- 네트워크 상태 확인
+"""
+            return fallback_report
 
     def _extract_key_analysis_for_senior_report(self, results: Dict[str, Any]) -> str:
         """

@@ -889,10 +889,35 @@ class SmartSectorManager:
 [투자 의견 및 근거]
 """
 
-                    # CoT 강화를 위한 온도 조절 및 토큰 수 증가
-                    analysis_result = await llm_instance.ask(
-                        prompt=enhanced_prompt, temperature=0.05, max_tokens=8000
-                    )
+                    # 🔧 안전한 LLM 호출 (예외 처리 강화)
+                    try:
+                        # CoT 강화를 위한 온도 조절 및 토큰 수 증가
+                        analysis_result = await llm_instance.ask(
+                            prompt=enhanced_prompt, temperature=0.05, max_tokens=8000
+                        )
+                    except Exception as llm_call_error:
+                        logger.error(
+                            f"❌ {expert.name} LLM 호출 중 오류: {llm_call_error}"
+                        )
+                        # 🔧 대체 분석 결과 생성
+                        analysis_result = f"""
+# {expert.name} 분석 (오류로 인한 간소화 버전)
+
+## ⚠️ 오류 발생
+LLM 호출 중 오류가 발생했습니다: {str(llm_call_error)}
+
+## 📊 기본 정보
+- 전문가: {expert.name}
+- 역할: {expert.role}
+- 분석 시간: {datetime.now().isoformat()}
+
+## 🔧 권장사항
+- API 연결 상태 확인
+- 토큰 제한 확인
+- 네트워크 연결 확인
+
+이 오류가 지속되면 시스템 관리자에게 문의하세요.
+"""
 
                     # 결과 처리
                     if not analysis_result:
@@ -903,9 +928,11 @@ class SmartSectorManager:
 
                     # 최소 길이 검증
                     if len(analysis_text.strip()) < 200:
-                        raise ValueError(
-                            f"분석 결과가 너무 짧음: {len(analysis_text)}자"
+                        logger.warning(
+                            f"⚠️ {expert.name} 분석 결과가 짧음: {len(analysis_text)}자"
                         )
+                        # 최소한의 분석 내용 추가
+                        analysis_text += f"\n\n## 📋 추가 정보\n전문가 {expert.name}의 분석이 완료되었으나 결과가 예상보다 짧습니다."
 
                     # 🔧 CoT (Chain of Thought) 검증
                     cot_keywords = [

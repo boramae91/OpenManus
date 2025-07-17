@@ -651,6 +651,7 @@ class LargePDFAnalyzer:
             except Exception as e:
                 logger.warning(f"⚠️ 목차 기반 청킹 중 오류: {e}")
                 chunking_method = "error_fallback"
+                contextual_chunks = []  # 오류 시 빈 리스트로 초기화
 
             # 3️⃣ 결과 구조 생성
             # 🔧 raw_content 구조 명확히 정의
@@ -2031,8 +2032,17 @@ class LargePDFAnalyzer:
                 pdf_path=pdf_path, company_name=company_name, save_to_json=False
             )
 
-            # 🔍 디버깅: 결과 구조 로그
+            # 🔍 디버깅: 결과 구조 로그 (안전한 타입 검증 추가)
             logger.info(f"🔍 extract_raw_text_only 결과 타입: {type(full_text_result)}")
+
+            # 🔧 안전한 결과 타입 검증
+            if not isinstance(full_text_result, dict):
+                error_msg = (
+                    f"PDF 분석 결과가 예상된 dict 타입이 아님: {type(full_text_result)}"
+                )
+                logger.error(f"❌ {error_msg}")
+                raise Exception(error_msg)
+
             if full_text_result:
                 logger.info(f"🔍 결과 키들: {list(full_text_result.keys())}")
                 logger.info(f"🔍 success 필드: {full_text_result.get('success')}")
@@ -2045,9 +2055,15 @@ class LargePDFAnalyzer:
                 )
                 raise Exception(f"PDF 텍스트 추출 실패: {error_msg}")
 
-            # extract_raw_text_only 결과 구조에 맞춰 수정
+            # extract_raw_text_only 결과 구조에 맞춰 수정 (안전한 접근)
             raw_content = full_text_result.get("raw_content", {})
-            full_text = raw_content.get("full_text", "")
+            if isinstance(raw_content, dict):
+                full_text = raw_content.get("full_text", "")
+            else:
+                logger.warning(
+                    f"⚠️ raw_content가 예상된 dict 타입이 아님: {type(raw_content)}"
+                )
+                full_text = ""
 
             # 🔍 디버깅: raw_content 구조 로그
             logger.info(
