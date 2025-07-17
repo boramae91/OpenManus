@@ -27,11 +27,18 @@ class AnalysisQualityEnhancer:
 
     def __init__(self):
         """분석 품질 향상 시스템 초기화"""
-        self.memory = ConversationBufferMemory(
-            memory_key="analysis_history",
-            return_messages=True,
-            max_token_limit=4000,  # 메모리 크기 제한
-        )
+        # 🔧 LangChain deprecation warning 억제
+        import warnings
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            warnings.simplefilter("ignore", UserWarning)
+
+            self.memory = ConversationBufferMemory(
+                memory_key="analysis_history",
+                return_messages=True,
+                max_token_limit=4000,  # 메모리 크기 제한
+            )
 
         # LLM 모델 설정
         self.llm = ChatOpenAI(
@@ -209,8 +216,8 @@ class AnalysisQualityEnhancer:
                 (
                     "system",
                     """
-당신은 시니어 애널리스트의 분석 보조자료 품질을 최종 검증하는 전문가입니다.
-보완된 분석이 시니어 애널리스트의 분석 보조자료로 사용하기에 적합한지 검증해주세요.
+당신은 애널리스트의 분석 보조자료 품질을 최종 검증하는 전문가입니다.
+보완된 분석이 애널리스트의 분석 보조자료로 사용하기에 적합한지 검증해주세요.
 
 **🔍 최종 검증 기준**
 

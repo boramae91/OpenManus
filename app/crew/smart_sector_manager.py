@@ -6478,3 +6478,97 @@ LLM 호출 중 오류가 발생했습니다: {str(llm_call_error)}
         except Exception as e:
             logger.error(f"웹 검색 데이터 추출 실패: {e}")
             return ""
+
+    def _filter_out_footnote_sections(self, sections: List[str]) -> List[str]:
+        """
+        주석(footnote) 섹션을 필터링하여 제거합니다.
+
+        Args:
+            sections: 필터링할 섹션 리스트
+
+        Returns:
+            List[str]: 주석 섹션이 제거된 섹션 리스트
+        """
+        # 주석 관련 키워드 목록
+        footnote_keywords = [
+            "주석",
+            "footnote",
+            "note",
+            "주석사항",
+            "회계처리방법",
+            "법적고지",
+            "부속명세서",
+            "notes",
+            "footnotes",
+            # 법적 고지사항
+            "법적고지사항",
+            "법적책임면책",
+            "공시의무",
+            "disclaimer",
+            "legal_notice",
+            "법적고지내용",
+            "법적고지서",
+            "책임면책",
+            "면책조항",
+            # 감사 관련
+            "감사인의의견서",
+            "감사의견",
+            "auditor_opinion",
+            "audit_report",
+            "감사보고서",
+            "감사범위",
+            "audit_scope",
+            "audit_opinion",
+            # 회계 처리 방법
+            "회계처리기준",
+            "회계처리방침",
+            "accounting_policies",
+            "accounting_standards",
+            "회계기준",
+            "회계방침",
+            "accounting_methods",
+            "accounting_principles",
+            # 부속 서류
+            "부속서류",
+            "부속서류서",
+            "supplementary_documents",
+            "attachments",
+            "부속명세",
+            "부속서류사항",
+            "supplementary_info",
+            "attached_documents",
+            # 기타 상세 설명
+            "상세설명",
+            "상세내용",
+            "detailed_description",
+            "detailed_content",
+            "상세기준",
+            "상세방법",
+            "detailed_standards",
+            "detailed_methods",
+            # 표준화된 문구
+            "본보고서는",
+            "이보고서는",
+            "위의내용은",
+            "this_report",
+            "the_above",
+            "보고서개요",
+            "보고서요약",
+            "report_summary",
+            "report_overview",
+        ]
+
+        filtered_sections = []
+
+        for section in sections:
+            # 섹션명에 주석 관련 키워드가 포함되어 있는지 확인
+            is_footnote = any(
+                keyword.lower() in section.lower() for keyword in footnote_keywords
+            )
+
+            if not is_footnote:
+                filtered_sections.append(section)
+            else:
+                logger.info(f"🔧 주석 섹션 제외: {section}")
+
+        return filtered_sections

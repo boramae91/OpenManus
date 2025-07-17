@@ -628,20 +628,29 @@ class LargePDFAnalyzer:
                 if contextual_chunks:
                     logger.info(f"✅ 청킹 성공: {len(contextual_chunks)}개 청크 생성")
 
-                    # 목차 구조 로그 출력
-                    toc_chunks = [
-                        c
-                        for c in contextual_chunks
-                        if c.get("chunk_type") == "toc_based"
-                    ]
+                    # 🔧 목차 구조 로그 출력 (타입 안전성 확보)
+                    toc_chunks = []
+                    for c in contextual_chunks:
+                        # 🔧 안전한 타입 검증
+                        if isinstance(c, dict) and c.get("chunk_type") == "toc_based":
+                            toc_chunks.append(c)
+
                     if toc_chunks:
                         logger.info("📑 목차 구조:")
                         for chunk in toc_chunks[:5]:  # 처음 5개만 출력
-                            level = chunk.get("metadata", {}).get("toc_level", 1)
-                            title = chunk.get("section_title", "제목없음")
-                            length = chunk.get("content_length", 0)
-                            indent = "  " * (level - 1)
-                            logger.info(f"  {indent}📄 {title} ({length:,}자)")
+                            if isinstance(chunk, dict):  # 🔧 추가 안전성 검증
+                                metadata = chunk.get("metadata", {})
+                                level = (
+                                    metadata.get("toc_level", 1)
+                                    if isinstance(metadata, dict)
+                                    else 1
+                                )
+                                title = chunk.get("section_title", "제목없음")
+                                length = chunk.get("content_length", 0)
+                                indent = (
+                                    "  " * (level - 1) if isinstance(level, int) else ""
+                                )
+                                logger.info(f"  {indent}📄 {title} ({length:,}자)")
                         if len(toc_chunks) > 5:
                             logger.info(f"  ... 외 {len(toc_chunks) - 5}개 목차 청크")
                 else:
@@ -669,13 +678,14 @@ class LargePDFAnalyzer:
                         set(
                             chunk.get("chunk_type", "unknown")
                             for chunk in contextual_chunks
+                            if isinstance(chunk, dict)  # 🔧 타입 안전성 확보
                         )
                     )
                     if contextual_chunks
                     else []
                 ),
                 "toc_available": any(
-                    chunk.get("chunk_type") == "toc_based"
+                    isinstance(chunk, dict) and chunk.get("chunk_type") == "toc_based"
                     for chunk in contextual_chunks
                 ),
                 "chunk_summary": {
@@ -683,20 +693,28 @@ class LargePDFAnalyzer:
                         [
                             c
                             for c in contextual_chunks
-                            if c.get("chunk_type") == "toc_based"
+                            if isinstance(c, dict)
+                            and c.get("chunk_type") == "toc_based"  # 🔧 타입 안전성
                         ]
                     ),
                     "fallback_chunks": len(
                         [
                             c
                             for c in contextual_chunks
-                            if c.get("chunk_type") in ["toc_fallback", "toc_split"]
+                            if isinstance(c, dict)
+                            and c.get("chunk_type")
+                            in ["toc_fallback", "toc_split"]  # 🔧 타입 안전성
                         ]
                     ),
                     "average_chunk_size": (
-                        sum(c.get("content_length", 0) for c in contextual_chunks)
-                        // len(contextual_chunks)
+                        sum(
+                            c.get("content_length", 0)
+                            for c in contextual_chunks
+                            if isinstance(c, dict)
+                        )  # 🔧 타입 안전성
+                        // len([c for c in contextual_chunks if isinstance(c, dict)])
                         if contextual_chunks
+                        and any(isinstance(c, dict) for c in contextual_chunks)
                         else 0
                     ),
                 },
