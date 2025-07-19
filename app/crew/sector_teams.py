@@ -1483,7 +1483,7 @@ class SectorTeamFactory:
             langchain_enabled=True,  # 🚀 LangChain 활성화
         )
 
-        # 🚀 통합 재무분석가 LangChain Chain 설정 (Q5 강제 보장)
+        # 🚀 통합 재무분석가 LangChain Chain 설정 (Q5 강제 보장 + 섹터 직접 활용)
         integrated_financial_analyst.langchain_chain = (
             self._create_integrated_financial_analysis_chain(
                 integrated_financial_analyst, sector_korean_name, sector
@@ -2094,7 +2094,10 @@ class SectorTeamFactory:
     #         return None
 
     def _create_integrated_financial_analysis_chain(
-        self, analyst: AnalystAgent, sector_name: str, sector: GICSSector
+        self,
+        analyst: AnalystAgent,
+        sector_name: str,
+        sector: GICSSector,
     ) -> Any:
         """
         통합 재무분석가를 위한 LangChain Chain 생성 (펀더멘털 + 밸류에이션 통합)
@@ -2136,9 +2139,11 @@ class SectorTeamFactory:
 
             output_format = PromptComponents.get_output_format_template("통합 재무분석")
 
-            # 🚀 향상된 애널리스트 사고 흐름 프레임워크 적용
+            # 🚀 향상된 애널리스트 사고 흐름 프레임워크 적용 (섹터 직접 활용으로 효율성 향상)
             enhanced_thinking_flow = (
-                PromptComponents.get_enhanced_analyst_thinking_flow()
+                PromptComponents.get_enhanced_analyst_thinking_flow(
+                    sector=sector, sector_manager=self.sector_manager
+                )
             )
 
             # 시스템 프롬프트 생성 (향상된 애널리스트 사고 흐름 적용)

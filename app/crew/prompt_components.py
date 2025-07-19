@@ -29,7 +29,8 @@ class PromptComponents:
 
     @staticmethod
     def get_enhanced_analyst_thinking_flow(
-        company_name: str = None, sector_manager: Optional[GICSSectorManager] = None
+        sector: Optional[GICSSector] = None,
+        sector_manager: Optional[GICSSectorManager] = None,
     ) -> str:
         """
         🧠 섹터별 맞춤형 애널리스트 사고 흐름을 동적으로 생성합니다.
@@ -39,19 +40,19 @@ class PromptComponents:
         3. CoT Reasoning + Self-Critique - 최종 분석
 
         Args:
-            company_name: 분석 대상 기업명 (섹터 감지용)
+            sector: GICS 섹터 (이미 감지된 섹터 직접 활용)
             sector_manager: GICS 섹터 매니저 인스턴스
 
         Returns:
             str: 섹터별 맞춤형 애널리스트 사고 흐름 프레임워크
         """
-        # 섹터별 맞춤 질문 생성
+        # 섹터별 맞춤 질문 생성 (직접 섹터 활용으로 효율성 향상)
         dynamic_questions = ""
         sector_specific_info = ""
 
-        if company_name and sector_manager:
+        if sector and sector_manager:
             try:
-                sector = sector_manager.detect_sector_from_stock(company_name)
+                # 이미 감지된 섹터를 직접 활용 (중복 감지 로직 제거)
                 dynamic_questions = (
                     PromptComponents._generate_sector_specific_questions(
                         sector, sector_manager
@@ -60,11 +61,13 @@ class PromptComponents:
                 sector_specific_info = PromptComponents._get_sector_analysis_guidance(
                     sector, sector_manager
                 )
+                print(f"✅ 섹터별 동적 질문 생성 성공: {sector.name}")
             except Exception as e:
                 print(f"⚠️ 섹터별 질문 생성 실패, 기본 질문 사용: {e}")
                 dynamic_questions = PromptComponents._get_default_questions()
                 sector_specific_info = ""
         else:
+            print("⚠️ 섹터 정보 없음, 기본 질문 사용")
             dynamic_questions = PromptComponents._get_default_questions()
 
         return f"""
