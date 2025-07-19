@@ -1288,7 +1288,7 @@ class SectorTeamFactory:
 - 분석 목적: [해당 정보가 전체 분석에서 갖는 의미]
 - 예상 결과: [이 정보를 통해 도출할 수 있는 인사이트]
 
-**Action (행동)**: 어떤 정보를 어떻게 수집할 것인가? (효율적 우선순위 적용)
+**Action (행동)**: 어떤 정보를 어떻게 수집할 것인가? (모든 데이터 종합 활용)
 
 🥇 **1순위: 수집된 재무데이터 활용**
 - yfinance 데이터: [현재가, 시가총액, 재무비율 등 확인]
@@ -1417,7 +1417,7 @@ class SectorTeamFactory:
             analysis_focus=f"{sector_korean_name} 기업을 섹터 특성 기반 Self-Ask with ToT → ReAct → CoT+Self-Critique 흐름으로 심층 분석하여 시니어 애널리스트 수준의 투자 인사이트 제공",
             key_methods=[
                 "🧠 Sector-Specific Self-Ask with ToT: 섹터별 맞춤 질문 동적 생성",
-                "📊 ReAct 루프: 데이터 우선순위 기반 정보 수집 (yfinance→DART→PDF→웹검색)",
+                "📊 ReAct 루프: 모든 데이터 종합 활용 정보 수집 (yfinance→DART→PDF→웹검색)",
                 "🔍 Chain of Thought: 논리적 단계별 추론",
                 "🎯 Self-Critique: 다각도 자기 검증",
                 "💰 Enhanced DCF 모델링: 가정 명시 및 민감도 분석",
