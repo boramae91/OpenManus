@@ -1411,11 +1411,43 @@ LLM 호출 중 오류가 발생했습니다: {str(llm_call_error)}
                     dart_reports_dictionary,
                 )
 
-                # 📝 기존 LLM 방식 사용 (CoT 검증 과정 삭제)
+                # 🚀 LangChain Chain 우선 사용 (Dynamic Enhanced Thinking Flow 활성화)
                 logger.info(f"📝 {expert.name} LLM 분석 시작")
-                analysis_result = await self._call_llm_for_analysis(
-                    comprehensive_prompt
-                )
+
+                # expert.langchain_chain이 있으면 우선 사용 (Q5EnforcedAgentExecutor 포함)
+                if hasattr(expert, "langchain_chain") and expert.langchain_chain:
+                    logger.info(
+                        f"🔗 {expert.name}: LangChain Chain 사용 (Dynamic Enhanced Thinking Flow)"
+                    )
+                    try:
+                        # LangChain Chain 실행 (Q5 강제 생성 + 3단계 구조)
+                        chain_result = expert.langchain_chain.invoke(
+                            {"input": comprehensive_prompt, "chat_history": []}
+                        )
+                        # 결과 추출
+                        if isinstance(chain_result, dict):
+                            analysis_result = chain_result.get(
+                                "output", str(chain_result)
+                            )
+                        else:
+                            analysis_result = str(chain_result)
+                        logger.info(f"✅ {expert.name}: LangChain Chain 실행 완료")
+                    except Exception as chain_error:
+                        logger.error(
+                            f"❌ {expert.name}: LangChain Chain 실행 실패: {chain_error}"
+                        )
+                        # 폴백: 기존 LLM 방식
+                        analysis_result = await self._call_llm_for_analysis(
+                            comprehensive_prompt
+                        )
+                else:
+                    logger.info(
+                        f"⚠️ {expert.name}: LangChain Chain 없음, 기존 LLM 방식 사용"
+                    )
+                    # 폴백: 기존 LLM 방식
+                    analysis_result = await self._call_llm_for_analysis(
+                        comprehensive_prompt
+                    )
 
                 # ✅ 분석 완료 (CoT 검증 과정 삭제로 중복 출력 문제 해결)
                 logger.info(f"✅ {expert.name} 분석 완료")
