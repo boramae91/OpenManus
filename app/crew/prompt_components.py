@@ -973,13 +973,50 @@ Q5: {sector_name} 섹터 특화 경쟁력과 차별화 요소는?
     @staticmethod
     def _get_sector_analysis_guidance(sector, sector_manager) -> str:
         """섹터별 분석 가이드라인을 반환합니다."""
-        return f"""
+        try:
+            # 섹터 특성 정보 가져오기 (안전하게)
+            sector_description = ""
+            if hasattr(sector, "description"):
+                sector_description = sector.description
+            elif sector_manager and hasattr(sector_manager, "get_sector_context"):
+                try:
+                    sector_context = sector_manager.get_sector_context(sector)
+                    sector_description = sector_context.get("description", "")
+                except:
+                    sector_description = f"{sector.name} 섹터의 특성"
+            else:
+                sector_description = f"{sector.name} 섹터의 특성"
+
+            # 경쟁사 정보 가져오기 (안전하게)
+            competitors_info = "해당 섹터 주요 기업들"
+            if sector_manager and hasattr(sector_manager, "get_competitors"):
+                try:
+                    competitors = sector_manager.get_competitors(sector)
+                    if competitors:
+                        competitors_info = ", ".join(competitors)
+                except:
+                    pass
+
+            return f"""
 **🏭 {sector.name} 섹터 특화 분석 가이드**
 
 이 기업은 {sector.name} 섹터에 속하며, 다음 섹터 특화 요소들을 고려하여 분석하세요:
 
-- **섹터 특성**: {sector.description}
-- **주요 경쟁사**: {', '.join(sector_manager.get_competitors(sector)) if sector_manager else '해당 섹터 주요 기업들'}
+- **섹터 특성**: {sector_description}
+- **주요 경쟁사**: {competitors_info}
+- **섹터 트렌드**: 최신 업계 동향과 기술 발전 방향
+- **규제 환경**: 해당 섹터에 적용되는 특별한 규제나 정책
+- **성장 동력**: 섹터 내 주요 성장 요인과 기회 요소
+"""
+        except Exception as e:
+            logger.warning(f"⚠️ 섹터 분석 가이드 생성 실패: {e}")
+            return f"""
+**🏭 {sector.name} 섹터 특화 분석 가이드**
+
+이 기업은 {sector.name} 섹터에 속하며, 다음 섹터 특화 요소들을 고려하여 분석하세요:
+
+- **섹터 특성**: {sector.name} 섹터의 특성
+- **주요 경쟁사**: 해당 섹터 주요 기업들
 - **섹터 트렌드**: 최신 업계 동향과 기술 발전 방향
 - **규제 환경**: 해당 섹터에 적용되는 특별한 규제나 정책
 - **성장 동력**: 섹터 내 주요 성장 요인과 기회 요소

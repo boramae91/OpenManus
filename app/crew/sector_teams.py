@@ -1251,12 +1251,13 @@ class SectorTeamFactory:
                 sector, self.sector_manager
             )
 
-            # 🎯 섹터별 동적 이모지 선택
+            # 🎯 섹터별 동적 이모지 선택 (안전한 초기화)
+            sector_emoji = "🎯"  # 기본값으로 초기화
             try:
                 sector_emoji = self._get_sector_emoji(sector)
             except Exception as e:
                 logger.warning(f"⚠️ 섹터 이모지 생성 실패: {e}")
-                sector_emoji = "🎯"  # 기본 이모지
+                # 기본값이 이미 설정되어 있으므로 추가 설정 불필요
 
             # 전체 Enhanced Thinking Flow 조합
             dynamic_thinking_flow = f"""
