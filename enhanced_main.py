@@ -633,17 +633,6 @@ class EnhancedStockAnalysisSystem:
             final_summary = self.create_comprehensive_summary_v2(results)
             results["final_summary"] = final_summary
 
-            # Step 5.5:  리포트 스타일 통합 보고서 생성
-            logger.info("📋 Step 5.5: 애널리스트 리포트 생성")
-            try:
-                senior_report = await self.create_senior_report_from_analysis(results)
-                results["final_senior_report"] = senior_report
-            except Exception as senior_report_error:
-                logger.error(f"❌ 애널리스트 리포트 생성 실패: {senior_report_error}")
-                results["final_senior_report"] = (
-                    f"리포트 생성 실패: {str(senior_report_error)}"
-                )
-
             # Step 6: JSON 파일 저장
             logger.info("💾 Step 6: 결과 저장")
             saved_file = self.save_enhanced_results(results, stock_info)
@@ -663,21 +652,6 @@ class EnhancedStockAnalysisSystem:
         saved_file = results.get("saved_file")
         if saved_file and not saved_file.startswith("저장 실패"):
             print(f"💾 결과 파일: {saved_file}")
-
-        # 🚀 애널리스트 리포트 출력 추가
-        final_senior_report = results.get("final_senior_report")
-        if final_senior_report and not final_senior_report.startswith(
-            "리포트 생성 실패"
-        ):
-            print("\n" + "=" * 80)
-            print("📋 시니어 애널리스트 리포트")
-            print("=" * 80)
-            print(final_senior_report)
-            print("=" * 80)
-        elif final_senior_report and final_senior_report.startswith("리포트 생성 실패"):
-            print(f"\n⚠️ 애널리스트 리포트 생성 중 오류: {final_senior_report}")
-        else:
-            print("\n⚠️ 애널리스트 리포트가 생성되지 않았습니다.")
 
         print("\n📋 분석 요약:")
 
@@ -3047,106 +3021,6 @@ class EnhancedStockAnalysisSystem:
 
         return min(completeness_score, 100.0)
 
-    async def create_senior_report_from_analysis(self, results: Dict[str, Any]) -> str:
-        """
-        🚀 통합 개선: 전문가 의견 종합 + 리포트 생성
-
-        CoT/5Why/통합 분석 결과를 바탕으로 애널리스트 스타일의 최종 투자 리포트를 생성합니다.
-        새로운 PromptComponents의 리포트 프레임워크를 활용하여 더 체계적이고 전문적인 리포트를 생성합니다.
-        """
-        # 🚀 PromptComponents import (동적 import로 순환 참조 방지)
-        from app.crew.prompt_components import PromptComponents
-
-        # 핵심 분석 결과만 추출하여 토큰 제한 문제 해결
-        key_analysis_data = self._extract_key_analysis_for_senior_report(results)
-
-        # 🎯 종목 정보 추출
-        stock_info = results.get("steps", {}).get("step1_stock_detection", {})
-        stock_name = stock_info.get("stock_name", "분석대상")
-        sector_name = stock_info.get("gics_sector", "일반")
-
-        # 🚀 전문가 분석 결과 추출 (CrewAI 종합 분석 결과)
-        crewai_analysis = results.get("steps", {}).get(
-            "step4_crewai_comprehensive_analysis", {}
-        )
-        expert_insights = crewai_analysis.get("expert_insights", {})
-        synthesis_result = (
-            expert_insights.get("synthesis_result", {}) if expert_insights else {}
-        )
-
-        # 🎯 새로운 통합 시니어 리포트 템플릿 생성
-        senior_report_template = PromptComponents.create_senior_report_template(
-            stock_name=stock_name,
-            sector_name=sector_name,
-            expert_insights=expert_insights,
-        )
-
-        # 🚀 강화된 프롬프트 구성 (의견 종합 + 리포트 생성 통합)
-        enhanced_senior_report_prompt = f"""
-당신은 20년 경력의 애널리스트입니다.
-다음은 여러 전문가가 분석한 결과를 종합하여 실제 투자은행/증권사 수준의 전문적인 리포트를 작성하는 작업입니다.
-
-{senior_report_template}
-
-**📊 실제 수집된 분석 데이터:**
-{key_analysis_data}
-
-**🎯 전문가 종합 분석 결과:**
-{synthesis_result.get('synthesis_content', '전문가 종합 분석 결과 없음')}
-
-**📋 추가 지침:**
-
-1. **의견 통합 우선순위**
-   - 정량적 재무 분석 > 기술적 분석 > 정성적 평가 순으로 가중치 적용
-   - 전문가 간 의견 불일치 시 데이터 품질과 논리적 일관성을 기준으로 판단
-   - 모든 결론에 대해 구체적인 근거와 신뢰도 점수 제시
-
-2. **투자은행 품질 기준**
-   - 모든 수치: 정확한 단위와 소수점 표기 (예: "목표가 65,000원", "PER 12.3배")
-   - 투자 의견: BUY/HOLD/SELL + 신뢰도 % 병기
-   - 목표가: 상승/하락 여력 % 명시
-   - 리스크: 발생 확률과 주가 영향도 정량화
-
-3. **실용성 강화**
-   - 투자자가 즉시 실행할 수 있는 구체적 전략 제시
-   - 매수/매도 타이밍과 조건 명시
-   - 포트폴리오 내 적정 비중 권고
-   - 모니터링 지표와 의견 변경 시점 안내
-
-**⚠️ 중요: 위의 템플릿 형식을 정확히 따라 전문적이고 체계적인 리포트를 작성해주세요.**
-"""
-
-        # 🎯 LLM 호출 시 올바른 매개변수 사용 (오류 처리 강화)
-        try:
-            return await self.llm.ask(
-                messages=[{"role": "user", "content": enhanced_senior_report_prompt}],
-                temperature=0.1,  # 일관성을 위해 낮은 온도
-                stream=False,  # 리포트 생성은 스트리밍 비활성화
-            )
-        except Exception as llm_error:
-            logger.error(f"❌ 시니어 리포트 LLM 호출 실패: {llm_error}")
-            # 📋 간단한 대체 리포트 생성
-            fallback_report = f"""
-# {stock_name} 투자 리포트 (간소화 버전)
-
-## 📊 기본 정보
-- 종목명: {stock_name}
-- 섹터: {sector_name}
-- 분석일자: {datetime.now().strftime('%Y-%m-%d')}
-
-## ⚠️ 주의사항
-상세 분석 리포트 생성 중 오류가 발생했습니다: {str(llm_error)}
-
-## 📋 수집된 주요 데이터
-{key_analysis_data[:1000]}...
-
-## 🔧 해결방안
-- API 키 확인
-- 토큰 제한 확인
-- 네트워크 상태 확인
-"""
-            return fallback_report
-
     def _extract_key_analysis_for_senior_report(self, results: Dict[str, Any]) -> str:
         """
         리포트 생성을 위해 핵심 분석 데이터만 추출합니다.
@@ -3274,23 +3148,6 @@ async def main():
             saved_file = results.get("saved_file")
             if saved_file and not saved_file.startswith("저장 실패"):
                 print(f"💾 결과 파일: {saved_file}")
-
-            # 🚀 애널리스트 리포트 출력 추가
-            final_senior_report = results.get("final_senior_report")
-            if final_senior_report and not final_senior_report.startswith(
-                "리포트 생성 실패"
-            ):
-                print("\n" + "=" * 80)
-                print("📋 시니어 애널리스트 리포트")
-                print("=" * 80)
-                print(final_senior_report)
-                print("=" * 80)
-            elif final_senior_report and final_senior_report.startswith(
-                "리포트 생성 실패"
-            ):
-                print(f"\n⚠️ 애널리스트 리포트 생성 중 오류: {final_senior_report}")
-            else:
-                print("\n⚠️ 애널리스트 리포트가 생성되지 않았습니다.")
 
             print("\n📋 분석 요약:")
             final_summary = results.get("final_summary", {})
