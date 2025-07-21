@@ -1414,40 +1414,133 @@ LLM 호출 중 오류가 발생했습니다: {str(llm_call_error)}
                 # 🚀 LangChain Chain 우선 사용 (Dynamic Enhanced Thinking Flow 활성화)
                 logger.info(f"📝 {expert.name} LLM 분석 시작")
 
-                # expert.langchain_chain이 있으면 우선 사용 (Q5EnforcedAgentExecutor 포함)
-                if hasattr(expert, "langchain_chain") and expert.langchain_chain:
-                    logger.info(
-                        f"🔗 {expert.name}: LangChain Chain 사용 (Dynamic Enhanced Thinking Flow)"
-                    )
+                # 🎯 전문가별 맞춤 분석 실행
+                if "기술적 분석가" in expert.name or "기술적" in expert.role:
+                    # 기술적 분석가: run_full_technical_analysis 사용
+                    logger.info(f"📊 {expert.name}: 기술적 분석 전용 메서드 사용")
                     try:
-                        # LangChain Chain 실행 (Q5 강제 생성 + 3단계 구조)
-                        chain_result = expert.langchain_chain.invoke(
-                            {"input": comprehensive_prompt, "chat_history": []}
+                        # 기술적 분석용 입력 데이터 구성
+                        technical_input_data = {
+                            "company_name": stock_name,
+                            "sector_name": (
+                                comprehensive_prompt.split("섹터 전문")[0].split(
+                                    "당신은 "
+                                )[-1]
+                                if "섹터 전문" in comprehensive_prompt
+                                else "정보기술"
+                            ),
+                            "price_data": (
+                                technical_analysis_data
+                                if technical_analysis_data
+                                else "가격 데이터 없음"
+                            ),
+                            "market_data": (
+                                manus_collected_data.get("market_data", {})
+                                if manus_collected_data
+                                else {}
+                            ),
+                            "technical_indicators": (
+                                technical_analysis_data.get("technical_indicators", {})
+                                if technical_analysis_data
+                                else {}
+                            ),
+                            "trading_signals": (
+                                technical_analysis_data.get("trading_signals", {})
+                                if technical_analysis_data
+                                else {}
+                            ),
+                            "comprehensive_prompt": comprehensive_prompt,
+                        }
+
+                        # 기술적 분석 전용 메서드 실행
+                        technical_result = expert.run_full_technical_analysis(
+                            technical_input_data
                         )
-                        # 결과 추출
-                        if isinstance(chain_result, dict):
-                            analysis_result = chain_result.get(
-                                "output", str(chain_result)
+
+                        if "error" in technical_result:
+                            logger.error(
+                                f"❌ {expert.name}: 기술적 분석 실패, 기본 LangChain Chain으로 폴백"
                             )
+                            # 폴백: 기본 LangChain Chain 사용
+                            chain_result = expert.langchain_chain.invoke(
+                                {"input": comprehensive_prompt, "chat_history": []}
+                            )
+                            if isinstance(chain_result, dict):
+                                analysis_result = chain_result.get(
+                                    "output", str(chain_result)
+                                )
+                            else:
+                                analysis_result = str(chain_result)
                         else:
-                            analysis_result = str(chain_result)
-                        logger.info(f"✅ {expert.name}: LangChain Chain 실행 완료")
-                    except Exception as chain_error:
+                            # 기술적 분석 결과 추출
+                            analysis_result = (
+                                technical_result.get("enhanced_cot_analysis", "")
+                                + "\n\n"
+                                + technical_result.get("enhanced_five_why_analysis", "")
+                            )
+                            if not analysis_result.strip():
+                                analysis_result = str(technical_result)
+
+                        logger.info(f"✅ {expert.name}: 기술적 분석 완료")
+
+                    except Exception as technical_error:
                         logger.error(
-                            f"❌ {expert.name}: LangChain Chain 실행 실패: {chain_error}"
+                            f"❌ {expert.name}: 기술적 분석 실패: {technical_error}"
+                        )
+                        # 폴백: 기본 LangChain Chain 사용
+                        if (
+                            hasattr(expert, "langchain_chain")
+                            and expert.langchain_chain
+                        ):
+                            chain_result = expert.langchain_chain.invoke(
+                                {"input": comprehensive_prompt, "chat_history": []}
+                            )
+                            if isinstance(chain_result, dict):
+                                analysis_result = chain_result.get(
+                                    "output", str(chain_result)
+                                )
+                            else:
+                                analysis_result = str(chain_result)
+                        else:
+                            analysis_result = await self._call_llm_for_analysis(
+                                comprehensive_prompt
+                            )
+
+                else:
+                    # 재무분석가: 기존 LangChain Chain 사용
+                    if hasattr(expert, "langchain_chain") and expert.langchain_chain:
+                        logger.info(
+                            f"🔗 {expert.name}: LangChain Chain 사용 (Dynamic Enhanced Thinking Flow)"
+                        )
+                        try:
+                            # LangChain Chain 실행 (Q5 강제 생성 + 3단계 구조)
+                            chain_result = expert.langchain_chain.invoke(
+                                {"input": comprehensive_prompt, "chat_history": []}
+                            )
+                            # 결과 추출
+                            if isinstance(chain_result, dict):
+                                analysis_result = chain_result.get(
+                                    "output", str(chain_result)
+                                )
+                            else:
+                                analysis_result = str(chain_result)
+                            logger.info(f"✅ {expert.name}: LangChain Chain 실행 완료")
+                        except Exception as chain_error:
+                            logger.error(
+                                f"❌ {expert.name}: LangChain Chain 실행 실패: {chain_error}"
+                            )
+                            # 폴백: 기존 LLM 방식
+                            analysis_result = await self._call_llm_for_analysis(
+                                comprehensive_prompt
+                            )
+                    else:
+                        logger.info(
+                            f"⚠️ {expert.name}: LangChain Chain 없음, 기존 LLM 방식 사용"
                         )
                         # 폴백: 기존 LLM 방식
                         analysis_result = await self._call_llm_for_analysis(
                             comprehensive_prompt
                         )
-                else:
-                    logger.info(
-                        f"⚠️ {expert.name}: LangChain Chain 없음, 기존 LLM 방식 사용"
-                    )
-                    # 폴백: 기존 LLM 방식
-                    analysis_result = await self._call_llm_for_analysis(
-                        comprehensive_prompt
-                    )
 
                 # ✅ 분석 완료 (CoT 검증 과정 삭제로 중복 출력 문제 해결)
                 logger.info(f"✅ {expert.name} 분석 완료")
@@ -1481,12 +1574,45 @@ LLM 호출 중 오류가 발생했습니다: {str(llm_call_error)}
                     }
                 )
 
-        # 🚀 전문가 분석 결과 종합
-        synthesis_result = await self._synthesize_expert_insights(
-            expert_results, prompt
-        )
+        # 🎯 2명 체제 단순화: 전문가 분석 결과 직접 반환 (종합 과정 제거)
+        logger.info("✅ 2명 체제 분석 완료 - 종합 과정 생략")
 
-        return synthesis_result
+        # 전문가별 분석 결과를 직접 반환
+        return {
+            "analysis_success": True,
+            "analysis_type": "simplified_2_expert_analysis",
+            "expert_count": len(expert_results),
+            "expert_results": expert_results,
+            "total_analysis_time": sum(
+                result.get("analysis_time", 0) for result in expert_results
+            ),
+            "data_sources_used": self._identify_used_data_sources(
+                financial_data,
+                enhanced_dart_data,
+                manus_collected_data,
+                technical_analysis_data,
+                dart_reports_dictionary,
+            ),
+            "simplified_summary": {
+                "financial_analyst": next(
+                    (
+                        result
+                        for result in expert_results
+                        if "재무" in result.get("expert_name", "")
+                    ),
+                    {},
+                ),
+                "technical_analyst": next(
+                    (
+                        result
+                        for result in expert_results
+                        if "기술적" in result.get("expert_name", "")
+                    ),
+                    {},
+                ),
+            },
+            "synthesis_note": "2명 체제로 단순화되어 종합 과정이 생략되었습니다. 각 전문가의 분석 결과를 직접 참조하세요.",
+        }
 
     def _validate_required_data(
         self,
@@ -1893,155 +2019,17 @@ LLM 호출 중 오류가 발생했습니다: {str(llm_call_error)}
 
         return list(set(used_sources))  # 중복 제거
 
-    async def _synthesize_expert_insights(
-        self, expert_results: List[Dict], user_prompt: str
-    ) -> Dict[str, Any]:
-        """
-        전문가들의 분석 결과를 종합합니다.
-
-        Args:
-            expert_results: 전문가별 분석 결과 리스트
-            user_prompt: 사용자 원본 질문
-
-        Returns:
-            Dict: 종합된 분석 결과
-        """
-        try:
-            logger.info("🔄 전문가 분석 결과 종합 시작...")
-
-            # 성공한 분석만 필터링
-            successful_analyses = [
-                result for result in expert_results if not result.get("error", False)
-            ]
-
-            if not successful_analyses:
-                return {
-                    "synthesis_success": False,
-                    "error": "성공한 전문가 분석이 없습니다",
-                    "expert_count": len(expert_results),
-                    "successful_count": 0,
-                }
-
-            # 종합 분석용 프롬프트 구성
-            synthesis_prompt = f"""
-다음은 {len(successful_analyses)}명의 전문가가 분석한 결과입니다.
-사용자의 원본 질문: {user_prompt}
-
-전문가 분석 결과들:
-"""
-
-            for i, result in enumerate(successful_analyses, 1):
-                expert_name = result.get("expert_name", f"전문가{i}")
-                expertise = result.get("expertise_area", "일반")
-                analysis = result.get("analysis_result", "")
-
-                synthesis_prompt += f"""
-
-=== {expert_name} ({expertise}) ===
-{analysis}
-
-"""
-
-            synthesis_prompt += """
-
-🎯 위 전문가들의 분석을 종합하여 다음과 같이 정리해주세요 :
-
-
-### 1. **전문가 간 분석 결과 일관성 검토**
-- **일치하는 의견**: 여러 전문가가 동일하게 제시한 강점/약점 (신뢰도 높음)
-- **상반된 의견**: 전문가 간 모순되는 결론과 그 원인 분석
-  * 예: 기술적 분석(단기 하락) vs 밸류에이션(매수 권장)의 차이점
-- **의견 불일치 해결**: 상반된 의견에 대한 종합적 판단과 우선순위
-
-### 2. **시간적 프레임별 투자 전략**
-- **단기 전략 (1-3개월)**: 기술적 분석 + 이벤트 기반 요인
-- **중기 전략 (3-12개월)**: 펀더멘털 + 산업 트렌드 + 밸류에이션
-- **장기 전략 (1-3년)**: 구조적 경쟁력 + ESG + 기술 혁신 주기
-
-### 3. **시나리오별 대응 전략**
-- **Bull Case ([분석 기반 확률]% 확률)**: 최적 시나리오에서의 목표가와 대응 전략
-- **Base Case ([분석 기반 확률]% 확률)**: 기본 시나리오에서의 투자 접근법
-- **Bear Case ([분석 기반 확률]% 확률)**: 악재 시나리오에서의 리스크 관리 방안
-
-**📊 시나리오 확률 계산 기준**:
-- **Bull Case**: 긍정적 요인들의 강도와 발생 가능성을 종합하여 확률 산정
-- **Base Case**: 현재 추세가 지속될 가능성을 기반으로 확률 산정
-- **Bear Case**: 부정적 요인들의 위험도와 발생 가능성을 종합하여 확률 산정
-- **총합 100%**: 세 시나리오 확률의 합이 100%가 되도록 조정
-
-### 4. **핵심 투자 포인트** (정량 지표 장기 추세 포함)
-- **정량적 우위**: 경쟁사 대비 ROE, ROIC, 마진율 우위와 지속성
-- **정성적 강점**: 경영진, 기술력, 브랜드 파워 등
-- **성장 동력**: 신사업, 신제품, 신시장 진출 가능성
-
-### 5. **주요 리스크 요인** (비재무 리스크 확대)
-- **재무 리스크**: 부채, 현금흐름, 수익성 악화 위험
-- **비재무 리스크**: ESG, 지정학, 기술 혁신, 규제 변화
-- **시장 리스크**: 경쟁 심화, 수요 변화, 사이클 리스크
-
-### 6. **종합 투자 의견** (시간적 프레임 명확화)
-- **12개월 투자 의견**: 매수/보유/매도 + 신뢰도 (%)
-- **목표가 산출**: 전문가별 목표가의 가중평균과 근거
-- **핵심 모니터링 지표**: 투자 의견 변경을 위한 핵심 변수들
-
-### 7. **전문가 의견 가중치** (신뢰도 기반)
-- **높은 신뢰도**: 데이터 기반 정량 분석 (펀더멘털, 밸류에이션)
-- **중간 신뢰도**: 시장 기반 분석 (기술적, 산업)
-- **참고 수준**: 정성적 평가 (리스크, 주석)
-
-**🔍 분석 품질 검증**:
-- 각 결론에 대한 전문가별 근거 일치도 확인
-- 정량적 수치의 일관성 검토 (재무비율, 목표가 등)
-- 시간적 일관성 확인 (단기 vs 장기 전망의 논리적 연결)
-
-각 항목별로 구체적인 근거와 함께 명확하게 제시해주세요.
-"""
-
-            # LLM을 통한 종합 분석 수행
-            synthesis_result = await self._call_llm_for_analysis(synthesis_prompt)
-
-            # 🎯 종합 분석에서 실제 사용된 데이터 출처 추적
-            all_used_sources = set()
-            for result in expert_results:
-                sources = result.get("data_sources_used", [])
-                all_used_sources.update(sources)
-
-            # 데이터 출처 정보를 종합 결과에 동적으로 추가
-            data_source_summary = f"""
-
-📊 **종합 분석에서 실제 사용된 데이터 출처**:
-{', '.join(all_used_sources) if all_used_sources else '데이터 출처 정보 없음'}
-
-"""
-
-            # 종합 결과에 데이터 출처 정보 추가
-            enhanced_synthesis_result = synthesis_result + data_source_summary
-
-            return {
-                "synthesis_success": True,
-                "expert_count": len(expert_results),
-                "successful_count": len(successful_analyses),
-                "failed_count": len(expert_results) - len(successful_analyses),
-                "synthesis_content": enhanced_synthesis_result,
-                "synthesis_timestamp": time.time(),
-                "data_sources_integrated": self._count_unique_data_sources(
-                    expert_results
-                ),
-                "all_data_sources_used": list(
-                    all_used_sources
-                ),  # 전체 사용된 데이터 출처 추가
-            }
-
-        except Exception as e:
-            logger.error(f"❌ 전문가 결과 종합 실패: {e}")
-            return {
-                "synthesis_success": False,
-                "error": str(e),
-                "expert_count": len(expert_results),
-                "successful_count": len(
-                    [r for r in expert_results if not r.get("error")]
-                ),
-            }
+    # 🚫 전문가 분석 결과 종합 메서드 (2명 체제로 단순화되어 비활성화됨)
+    # async def _synthesize_expert_insights(
+    #     self, expert_results: List[Dict], user_prompt: str
+    # ) -> Dict[str, Any]:
+    #     """
+    #     🚀 전문가 분석 결과 종합 (2명 체제로 단순화되어 사용되지 않음)
+    #
+    #     현재 2명 체제에서는 각 전문가의 분석 결과를 직접 반환하므로
+    #     종합 과정이 불필요합니다.
+    #     """
+    #     pass
 
     def _count_unique_data_sources(self, expert_results: List[Dict]) -> int:
         """전문가 분석에서 사용된 고유 데이터 소스 개수를 계산합니다."""
