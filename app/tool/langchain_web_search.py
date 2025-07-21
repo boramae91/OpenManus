@@ -173,6 +173,61 @@ class LangChainWebSearchTool:
                         "total_results": len(results),
                         "search_url": f"https://duckduckgo.com/?q={encoded_query}",
                     }
+                elif response.status_code == 202:
+                    # HTTP 202 Accepted - 요청이 처리 중이므로 잠시 대기 후 재시도
+                    logger.warning(
+                        f"⚠️ DuckDuckGo API가 처리 중입니다 (HTTP 202). 잠시 대기 후 재시도..."
+                    )
+                    import time
+
+                    time.sleep(2)  # 2초 대기
+
+                    # 재시도
+                    retry_response = self.session.get(search_url, timeout=15)
+                    if retry_response.status_code == 200:
+                        data = retry_response.json()
+                        # 위와 동일한 처리 로직
+                        results = []
+                        if data.get("Abstract"):
+                            results.append(
+                                {
+                                    "title": data.get(
+                                        "AbstractText", f"{query} 검색 결과"
+                                    ),
+                                    "url": data.get(
+                                        "AbstractURL",
+                                        f"https://duckduckgo.com/?q={encoded_query}",
+                                    ),
+                                    "snippet": data.get(
+                                        "Abstract", f"{query}에 대한 정보입니다."
+                                    ),
+                                    "source": "duckduckgo",
+                                }
+                            )
+
+                        if not results:
+                            results = [
+                                {
+                                    "title": f"{query} 검색 결과",
+                                    "url": f"https://duckduckgo.com/?q={encoded_query}",
+                                    "snippet": f"{query}에 대한 검색 결과입니다. 더 자세한 정보는 링크를 확인하세요.",
+                                    "source": "duckduckgo",
+                                }
+                            ]
+
+                        return {
+                            "success": True,
+                            "query": query,
+                            "engine": "duckduckgo",
+                            "language": language,
+                            "results": results[:max_results],
+                            "total_results": len(results),
+                            "search_url": f"https://duckduckgo.com/?q={encoded_query}",
+                        }
+                    else:
+                        raise Exception(
+                            f"재시도 후에도 실패: HTTP {retry_response.status_code}"
+                        )
                 else:
                     raise Exception(f"HTTP {response.status_code}: {response.reason}")
             else:

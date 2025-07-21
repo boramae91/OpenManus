@@ -573,6 +573,15 @@ class LargePDFAnalyzer:
                 # 🔧 URL과 로컬 파일 구분하여 처리 - _direct_pdf_extraction 직접 호출
                 pdf_result = await self._direct_pdf_extraction(pdf_path)
 
+                # 🔧 결과 타입 검증 강화
+                if not isinstance(pdf_result, dict):
+                    error_msg = (
+                        f"PDF 추출 결과가 예상된 dict 타입이 아님: {type(pdf_result)}"
+                    )
+                    logger.error(f"❌ {error_msg}")
+                    result["error"] = error_msg
+                    return result
+
                 if pdf_result.get("success"):
                     full_text = pdf_result.get("full_text", "")
                     extraction_method = pdf_result.get("extraction_method", "unknown")
@@ -585,6 +594,13 @@ class LargePDFAnalyzer:
 
             except Exception as e:
                 error_msg = f"PDF 처리 중 오류: {str(e)}"
+                logger.error(f"❌ {error_msg}")
+                result["error"] = error_msg
+                return result
+
+            # 🔧 텍스트 타입 안전성 검증 추가
+            if not isinstance(full_text, str):
+                error_msg = f"추출된 텍스트가 문자열이 아님: {type(full_text)}"
                 logger.error(f"❌ {error_msg}")
                 result["error"] = error_msg
                 return result
@@ -664,132 +680,164 @@ class LargePDFAnalyzer:
 
             # 3️⃣ 결과 구조 생성
             # 🔧 raw_content 구조 명확히 정의
-            result["raw_content"] = {
-                "full_text": full_text,
-                "text_length": len(full_text),
-                "note": "원문 그대로 추출됨 (AI 분석/요약 없음)",
-                # 🔖 목차 기반 청킹 정보 추가
-                "contextual_chunks": contextual_chunks,
-                "chunking_applied": len(contextual_chunks) > 0,
-                "chunking_method": chunking_method,
-                "total_chunks": len(contextual_chunks),
-                "chunk_types": (
-                    list(
-                        set(
-                            chunk.get("chunk_type", "unknown")
-                            for chunk in contextual_chunks
-                            if isinstance(chunk, dict)  # 🔧 타입 안전성 확보
-                        )
+            try:
+                # 🔧 contextual_chunks 타입 안전성 확보
+                if not isinstance(contextual_chunks, list):
+                    logger.warning(
+                        f"⚠️ contextual_chunks가 list가 아님: {type(contextual_chunks)}"
                     )
-                    if contextual_chunks
-                    else []
-                ),
-                "toc_available": any(
-                    isinstance(chunk, dict) and chunk.get("chunk_type") == "toc_based"
-                    for chunk in contextual_chunks
-                ),
-                "chunk_summary": {
-                    "toc_based_chunks": len(
-                        [
-                            c
-                            for c in contextual_chunks
-                            if isinstance(c, dict)
-                            and c.get("chunk_type") == "toc_based"  # 🔧 타입 안전성
-                        ]
-                    ),
-                    "fallback_chunks": len(
-                        [
-                            c
-                            for c in contextual_chunks
-                            if isinstance(c, dict)
-                            and c.get("chunk_type")
-                            in ["toc_fallback", "toc_split"]  # 🔧 타입 안전성
-                        ]
-                    ),
-                    "average_chunk_size": (
-                        sum(
-                            c.get("content_length", 0)
-                            for c in contextual_chunks
-                            if isinstance(c, dict)
-                        )  # 🔧 타입 안전성
-                        // len([c for c in contextual_chunks if isinstance(c, dict)])
+                    contextual_chunks = []
+
+                # 🔧 각 청크가 딕셔너리인지 확인
+                safe_contextual_chunks = []
+                for chunk in contextual_chunks:
+                    if isinstance(chunk, dict):
+                        safe_contextual_chunks.append(chunk)
+                    else:
+                        logger.warning(f"⚠️ 잘못된 청크 타입 발견: {type(chunk)}")
+
+                contextual_chunks = safe_contextual_chunks
+
+                result["raw_content"] = {
+                    "full_text": full_text,
+                    "text_length": len(full_text),
+                    "note": "원문 그대로 추출됨 (AI 분석/요약 없음)",
+                    # 🔖 목차 기반 청킹 정보 추가
+                    "contextual_chunks": contextual_chunks,
+                    "chunking_applied": len(contextual_chunks) > 0,
+                    "chunking_method": chunking_method,
+                    "total_chunks": len(contextual_chunks),
+                    "chunk_types": (
+                        list(
+                            set(
+                                chunk.get("chunk_type", "unknown")
+                                for chunk in contextual_chunks
+                                if isinstance(chunk, dict)  # 🔧 타입 안전성 확보
+                            )
+                        )
                         if contextual_chunks
-                        and any(isinstance(c, dict) for c in contextual_chunks)
-                        else 0
+                        else []
                     ),
-                },
-            }
+                    "toc_available": any(
+                        isinstance(chunk, dict)
+                        and chunk.get("chunk_type") == "toc_based"
+                        for chunk in contextual_chunks
+                    ),
+                    "chunk_summary": {
+                        "toc_based_chunks": len(
+                            [
+                                c
+                                for c in contextual_chunks
+                                if isinstance(c, dict)
+                                and c.get("chunk_type") == "toc_based"  # 🔧 타입 안전성
+                            ]
+                        ),
+                        "fallback_chunks": len(
+                            [
+                                c
+                                for c in contextual_chunks
+                                if isinstance(c, dict)
+                                and c.get("chunk_type")
+                                in ["toc_fallback", "toc_split"]  # 🔧 타입 안전성
+                            ]
+                        ),
+                        "average_chunk_size": (
+                            sum(
+                                c.get("content_length", 0)
+                                for c in contextual_chunks
+                                if isinstance(c, dict)
+                            )  # 🔧 타입 안전성
+                            // len(
+                                [c for c in contextual_chunks if isinstance(c, dict)]
+                            )
+                            if contextual_chunks
+                            and any(isinstance(c, dict) for c in contextual_chunks)
+                            else 0
+                        ),
+                    },
+                }
 
-            # 메타데이터 생성
-            result["metadata"] = {
-                "original_file": pdf_path,
-                "company_name": company_name,
-                "total_text_length": len(full_text),
-                "extraction_method": extraction_method,
-                "chunking_method": chunking_method,
-                "chunk_count": len(contextual_chunks),
-                "processing_time_seconds": time.time() - start_time,
-                "creation_timestamp": datetime.now().isoformat(),
-                "has_table_of_contents": any(
-                    chunk.get("chunk_type") == "toc_based"
-                    for chunk in contextual_chunks
-                ),
-            }
+                # 메타데이터 생성
+                result["metadata"] = {
+                    "original_file": pdf_path,
+                    "company_name": company_name,
+                    "total_text_length": len(full_text),
+                    "extraction_method": extraction_method,
+                    "chunking_method": chunking_method,
+                    "chunk_count": len(contextual_chunks),
+                    "processing_time_seconds": time.time() - start_time,
+                    "creation_timestamp": datetime.now().isoformat(),
+                    "has_table_of_contents": any(
+                        chunk.get("chunk_type") == "toc_based"
+                        for chunk in contextual_chunks
+                    ),
+                }
 
-            # 내용 미리보기 생성 (처음 500자)
-            result["content_preview"] = (
-                full_text[:500] + "..." if len(full_text) > 500 else full_text
-            )
+                # 내용 미리보기 생성 (처음 500자)
+                result["content_preview"] = (
+                    full_text[:500] + "..." if len(full_text) > 500 else full_text
+                )
 
-            # 4️⃣ JSON 파일 저장 (옵션)
-            if save_to_json:
-                try:
-                    # 저장용 데이터 준비
-                    save_data = {
-                        "extraction_info": {
-                            "pdf_path": pdf_path,
-                            "company_name": company_name,
-                            "extraction_timestamp": result["extraction_timestamp"],
-                            "processing_time": result["metadata"][
-                                "processing_time_seconds"
-                            ],
-                        },
-                        "metadata": result["metadata"],
-                        "raw_text": full_text,
-                        "contextual_chunks": contextual_chunks,
-                        "content_preview": result["content_preview"],
-                    }
+                # 4️⃣ JSON 파일 저장 (옵션)
+                if save_to_json:
+                    try:
+                        # 저장용 데이터 준비
+                        save_data = {
+                            "extraction_info": {
+                                "pdf_path": pdf_path,
+                                "company_name": company_name,
+                                "extraction_timestamp": result["extraction_timestamp"],
+                                "processing_time": result["metadata"][
+                                    "processing_time_seconds"
+                                ],
+                            },
+                            "metadata": result["metadata"],
+                            "raw_text": full_text,
+                            "contextual_chunks": contextual_chunks,
+                            "content_preview": result["content_preview"],
+                        }
 
-                    # 파일명 생성
-                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                    safe_company_name = "".join(
-                        c for c in company_name if c.isalnum() or c in (" ", "-", "_")
-                    ).rstrip()
-                    filename = f"pdf_raw_extract_{safe_company_name}_{timestamp}.json"
+                        # 파일명 생성
+                        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                        safe_company_name = "".join(
+                            c
+                            for c in company_name
+                            if c.isalnum() or c in (" ", "-", "_")
+                        ).rstrip()
+                        filename = (
+                            f"pdf_raw_extract_{safe_company_name}_{timestamp}.json"
+                        )
 
-                    results_dir = "results"
-                    if not os.path.exists(results_dir):
-                        os.makedirs(results_dir)
+                        results_dir = "results"
+                        if not os.path.exists(results_dir):
+                            os.makedirs(results_dir)
 
-                    filepath = os.path.join(results_dir, filename)
+                        filepath = os.path.join(results_dir, filename)
 
-                    # UTF-8 인코딩으로 저장
-                    with open(filepath, "w", encoding="utf-8") as f:
-                        json.dump(save_data, f, ensure_ascii=False, indent=2)
+                        # UTF-8 인코딩으로 저장
+                        with open(filepath, "w", encoding="utf-8") as f:
+                            json.dump(save_data, f, ensure_ascii=False, indent=2)
 
-                    result["saved_file"] = filepath
-                    logger.info(f"💾 추출 결과 저장: {filepath}")
+                        result["saved_file"] = filepath
+                        logger.info(f"💾 추출 결과 저장: {filepath}")
 
-                except Exception as e:
-                    logger.warning(f"⚠️ JSON 저장 실패: {e}")
+                    except Exception as e:
+                        logger.warning(f"⚠️ JSON 저장 실패: {e}")
 
-            # 🔧 성공 상태로 설정
-            result["success"] = True
-            logger.info(
-                f"✅ 원문 추출 완료: {len(full_text):,}자 (처리시간: {time.time() - start_time:.1f}초)"
-            )
+                # 🔧 성공 상태로 설정
+                result["success"] = True
+                logger.info(
+                    f"✅ 원문 추출 완료: {len(full_text):,}자 (처리시간: {time.time() - start_time:.1f}초)"
+                )
 
-            return result
+                return result
+
+            except Exception as e:
+                error_msg = f"PDF 원문 추출 실패: {str(e)}"
+                logger.error(f"❌ {error_msg}")
+                result["error"] = error_msg
+                result["success"] = False
+                return result
 
         except Exception as e:
             error_msg = f"PDF 원문 추출 실패: {str(e)}"
@@ -2074,19 +2122,25 @@ class LargePDFAnalyzer:
                 raise Exception(f"PDF 텍스트 추출 실패: {error_msg}")
 
             # extract_raw_text_only 결과 구조에 맞춰 수정 (안전한 접근)
+            # raw_content가 문자열인 경우와 딕셔너리인 경우를 모두 처리
             raw_content = full_text_result.get("raw_content", {})
             if isinstance(raw_content, dict):
                 full_text = raw_content.get("full_text", "")
+            elif isinstance(raw_content, str):
+                # raw_content가 문자열인 경우 직접 사용
+                full_text = raw_content
+                logger.info(f"🔍 raw_content가 문자열로 반환됨: {len(full_text)}자")
             else:
                 logger.warning(
-                    f"⚠️ raw_content가 예상된 dict 타입이 아님: {type(raw_content)}"
+                    f"⚠️ raw_content가 예상된 타입이 아님: {type(raw_content)}"
                 )
                 full_text = ""
 
             # 🔍 디버깅: raw_content 구조 로그
-            logger.info(
-                f"🔍 raw_content 키들: {list(raw_content.keys()) if raw_content else 'None'}"
-            )
+            if isinstance(raw_content, dict):
+                logger.info(
+                    f"🔍 raw_content 키들: {list(raw_content.keys()) if raw_content else 'None'}"
+                )
             logger.info(
                 f"🔍 추출된 텍스트 길이: {len(full_text) if full_text else 0}자"
             )

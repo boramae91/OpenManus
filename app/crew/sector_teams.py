@@ -113,7 +113,7 @@ class Q5EnforcedAgentExecutor(AgentExecutor):
         """
         output = result.get("output", "")
 
-        # Q5 존재 여부 검증
+        # Q5 존재 여부 검증 (기본 검증으로 복원)
         if self._has_q5(output):
             print(
                 f"✅ Q5 {self._q5_sector_emoji} {self._q5_sector_korean_name} 섹터 질문 이미 포함됨"
@@ -124,7 +124,7 @@ class Q5EnforcedAgentExecutor(AgentExecutor):
             f"⚠️ Q5 누락 감지 - {self._q5_sector_emoji} {self._q5_sector_korean_name} 섹터 질문 강제 추가 중..."
         )
 
-        # Q5 콘텐츠 생성
+        # Q5 콘텐츠 생성 (기본 질문만)
         q5_content = self._generate_sector_q5()
 
         # Q5 주입
@@ -163,39 +163,6 @@ class Q5EnforcedAgentExecutor(AgentExecutor):
 
         return any(pattern in output for pattern in q5_patterns)
 
-    def _generate_sector_q5(self) -> str:
-        """
-        현재 섹터에 맞는 Q5 콘텐츠 생성
-
-        Returns:
-            str: 섹터별 Q5 질문 콘텐츠
-        """
-        try:
-            # PromptComponents를 사용하여 섹터별 질문 생성
-            sector_questions = PromptComponents._generate_sector_specific_questions(
-                self._q5_sector, self._q5_sector_manager
-            )
-
-            # Q5 부분만 추출
-            q5_start = sector_questions.find("Q5:")
-            if q5_start != -1:
-                q5_section = sector_questions[q5_start:]
-                # 다음 섹션(안내 정보 등)이 시작되기 전까지 추출
-                next_section = q5_section.find("\n🎯")
-                if next_section != -1:
-                    q5_section = q5_section[:next_section]
-                return q5_section.strip()
-        except Exception as e:
-            print(f"⚠️ 동적 Q5 생성 실패: {e}, 기본 Q5 사용")
-
-        # 폴백: 기본 Q5 생성
-        return f"""Q5: {self._q5_sector_emoji} {self._q5_sector_korean_name} 섹터 특화 분석 질문들:
-  └─ Q5-1: 업계 내 경쟁 우위와 차별화 요소는?
-  └─ Q5-2: 시장 점유율과 고객 기반 강화 전략은?
-  └─ Q5-3: 운영 효율성과 비용 관리 역량은?
-  └─ Q5-4: 혁신 역량과 신사업 발굴 현황은?
-  └─ Q5-5: ESG 경영과 지속가능성 전략은?"""
-
     def _inject_q5(self, output: str, q5_content: str) -> str:
         """
         출력 텍스트에 Q5를 적절한 위치에 주입
@@ -227,12 +194,11 @@ class Q5EnforcedAgentExecutor(AgentExecutor):
 
                 for ending in section_endings:
                     if ending != -1:
-                        # Q4와 2단계 사이에 Q5 삽입
                         return (
                             output[:ending] + f"\n\n{q5_content}\n\n" + output[ending:]
                         )
 
-        # Q4 위치를 찾지 못한 경우, 1단계 섹션 끝에 추가
+        # 1단계 섹션 끝에 추가
         stage1_endings = [
             output.find("=== 2단계"),
             output.find("**2단계"),
@@ -267,6 +233,39 @@ class Q5EnforcedAgentExecutor(AgentExecutor):
             GICSSector.REAL_ESTATE: "🏢",
         }
         return sector_emojis.get(self._q5_sector, "🎯")
+
+    def _generate_sector_q5(self) -> str:
+        """
+        현재 섹터에 맞는 Q5 콘텐츠 생성
+
+        Returns:
+            str: 섹터별 Q5 질문 콘텐츠
+        """
+        try:
+            # PromptComponents를 사용하여 섹터별 질문 생성
+            sector_questions = PromptComponents._generate_sector_specific_questions(
+                self._q5_sector, self._q5_sector_manager
+            )
+
+            # Q5 부분만 추출
+            q5_start = sector_questions.find("Q5:")
+            if q5_start != -1:
+                q5_section = sector_questions[q5_start:]
+                # 다음 섹션(안내 정보 등)이 시작되기 전까지 추출
+                next_section = q5_section.find("\n🎯")
+                if next_section != -1:
+                    q5_section = q5_section[:next_section]
+                return q5_section.strip()
+        except Exception as e:
+            print(f"⚠️ 동적 Q5 생성 실패: {e}, 기본 Q5 사용")
+
+        # 폴백: 기본 Q5 생성
+        return f"""Q5: {self._q5_sector_emoji} {self._q5_sector_korean_name} 섹터 특화 분석 질문들:
+  └─ Q5-1: 업계 내 경쟁 우위와 차별화 요소는?
+  └─ Q5-2: 시장 점유율과 고객 기반 강화 전략은?
+  └─ Q5-3: 운영 효율성과 비용 관리 역량은?
+  └─ Q5-4: 혁신 역량과 신사업 발굴 현황은?
+  └─ Q5-5: ESG 경영과 지속가능성 전략은?"""
 
 
 @dataclass
