@@ -3,7 +3,7 @@
 """
 
 
-class PromptComponents:
+class PromptComponentsSimple:
     @staticmethod
     def get_enhanced_analyst_thinking_flow(
         sector=None,
@@ -14,11 +14,11 @@ class PromptComponents:
         기존의 복잡한 4단계 구조를 실용적인 8단계로 단순화했습니다.
         """
 
-        dynamic_questions = PromptComponents._get_default_questions()
+        dynamic_questions = PromptComponentsSimple._get_default_questions()
         sector_specific_info = ""
 
         if sector and sector_manager:
-            sector_specific_info = PromptComponents._get_sector_analysis_guidance(
+            sector_specific_info = PromptComponentsSimple._get_sector_analysis_guidance(
                 sector, sector_manager
             )
 
