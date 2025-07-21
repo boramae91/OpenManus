@@ -1441,8 +1441,8 @@ class SectorTeamFactory:
                 # 동적으로 생성된 사고 흐름 프레임워크 삽입
                 dynamic_thinking_flow,
                 "",
-                "🚨 **강제 준수 지시사항 (MANDATORY)**:",
-                "❗ **절대적으로 준수해야 할 분석 순서**:",
+                "🚨 **강제 준수 지시사항 (8단계 Enhanced Framework)**:",
+                "❗ **절대적으로 준수해야 할 8단계 분석 순서**:",
                 "",
                 "🔴 **1단계 MUST: Self-Ask with ToT 질문 구성**",
                 "- 반드시 다음 질문 구조를 따르세요:",
@@ -1458,16 +1458,43 @@ class SectorTeamFactory:
                 "- 3순위: 사업보고서 딕셔너리 분석",
                 "- 4순위: 웹 검색으로 보완 (최후 수단)",
                 "",
-                "🔴 **3단계 MUST: CoT + Self-Critique**",
-                "- Chain of Thought: 4개 영역별 체계적 추론",
-                "- Self-Critique: 최소 3가지 비판적 관점",
-                "- 최종 의견: BUY/HOLD/SELL + 신뢰도 + 목표가",
+                "🔴 **3단계 MUST: Fact Layer (객관적 사실 분리)**",
+                "- 모든 객관적 사실을 출처와 함께 명시",
+                "- 모든 수치에 **[출처]** 명시 필수",
+                "- 해석이나 추론 없이 순수 사실만 기록",
+                "",
+                "🔴 **4단계 MUST: Interpretation Layer (주관적 해석)**",
+                "- Fact Layer의 데이터를 바탕으로 한 해석",
+                "- 데이터의 의미와 시사점",
+                "- 트렌드 분석과 패턴 인식",
+                "",
+                "🔴 **5단계 MUST: Chain of Reasoning (추론 과정)**",
+                "- 모든 결론의 논리적 추론 과정을 단계별로 기록",
+                "- A → B → C 형태의 명확한 논리 체인",
+                "- 각 단계별 근거와 가정 명시",
+                "",
+                "🔴 **6단계 MUST: Peer Benchmark (동종업계 비교)**",
+                "- 업계 평균 및 경쟁사 대비 위치 분석",
+                "- 동종업계 평균과의 비교",
+                "- 주요 경쟁사 대비 상대적 위치",
+                "",
+                "🔴 **7단계 MUST: Assumption Ledger (가정 명시)**",
+                "- 모든 분석에서 사용된 가정을 명시",
+                "- DCF 모델의 가정 (성장률, 할인율 등)",
+                "- 멀티플 비교의 기준",
+                "",
+                "🔴 **8단계 MUST: Chain of Verification (결론 검증)**",
+                "- 각 핵심 결론에 대한 검증 수행",
+                "- 출처의 신뢰성 검증",
+                "- 수치 기반 타당성 검증",
                 "",
                 "⚠️ **절대 금지사항**:",
-                "- ❌ 질문 단계 건너뛰기 금지",
+                "- ❌ 8단계 중 어느 단계도 건너뛰기 금지",
+                "- ❌ 3단계에서 멈추기 금지 (8단계 완료 필수)",
                 "- ❌ 웹검색 우선 시도 금지",
                 f"- ❌ Q5 {sector_emoji} {sector_korean_name} 섹터 특화 질문 누락 금지",
-                "- ❌ 3단계 구조 무시 금지",
+                "- ❌ Fact Layer와 Interpretation Layer 혼동 금지",
+                "- ❌ 출처 명시 누락 금지",
             ],
             risk_awareness=[f"통합 재무분석 관점에서 {risk_factors}"],
             critical_metrics=(
@@ -2160,10 +2187,7 @@ class SectorTeamFactory:
                         f"""
 당신은 {sector_name} 섹터 전문 통합 재무분석가입니다.
 
-🎯 **중요**: 반드시 다음 3단계 구조를 따라 분석하세요:
-=== 1단계: Self-Ask with ToT ===
-=== 2단계: ReAct ===
-=== 3단계: CoT Reasoning + Self-Critique ===
+🎯 **중요**: 반드시 다음 8단계 Enhanced Framework를 따라 분석하세요:
 
 {enhanced_thinking_flow}
 
@@ -2171,10 +2195,12 @@ class SectorTeamFactory:
 
 **요구사항**:
 1. 제공된 데이터를 우선 활용하세요
-2. 반드시 3단계 구조를 따르세요
+2. 반드시 8단계 Enhanced Framework를 순서대로 따르세요
 3. Q5 섹터 특화 질문을 1단계에 포함하세요
-4. Self-Critique를 3단계에 포함하세요
-5. 투자 의견과 목표가를 명확히 제시하세요
+4. 3단계에서 멈추지 말고 8단계까지 완료하세요
+5. Fact Layer와 Interpretation Layer를 명확히 구분하세요
+6. 모든 수치에 출처를 명시하세요
+7. 투자 의견과 목표가를 명확히 제시하세요
 
 {output_format}
 """,
