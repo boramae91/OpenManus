@@ -32,9 +32,21 @@ class PromptComponents:
         return f"""
 **🧠 Enhanced Analyst Thinking Flow (8단계 체계적 분석 프레임워크)**
 
-모든 분석에서 다음 8단계 애널리스트 사고 흐름을 **반드시 순서대로** 수행하세요:
+⚠️ **중요**: 다음 8단계를 **반드시 순서대로 모두 수행**하세요. 3단계에서 멈추지 마세요!
 
-=== 1단계: Self-Ask (핵심 질문 구성) ===
+**📋 8단계 실행 체크리스트:**
+- [ ] 1단계: Self-Ask (핵심 질문 구성)
+- [ ] 2단계: ReAct (정보 수집 및 추론)
+- [ ] 3단계: Fact Layer (객관적 사실 분리)
+- [ ] 4단계: Interpretation Layer (주관적 해석)
+- [ ] 5단계: Chain of Reasoning (추론 과정)
+- [ ] 6단계: Peer Benchmark (동종업계 비교)
+- [ ] 7단계: Assumption Ledger (가정 명시)
+- [ ] 8단계: Chain of Verification (결론 검증)
+
+---
+
+### **1단계: Self-Ask (핵심 질문 구성)**
 
 🎯 각 분석 영역별 핵심 질문을 체계적으로 구성하세요:
 
@@ -42,7 +54,9 @@ class PromptComponents:
 
 {sector_specific_info}
 
-=== 2단계: ReAct (Reason + Action) - 정보 수집 ===
+---
+
+### **2단계: ReAct (Reason + Action) - 정보 수집**
 
 🔍 각 질문에 대한 체계적 정보 수집과 추론 수행:
 
@@ -58,58 +72,88 @@ class PromptComponents:
 **Observation (관찰)**: 수집된 정보의 의미는?
 - 핵심 발견사항, 예상과의 차이, 추가 조사 필요성
 
-=== 3단계: Fact Layer (객관적 사실 분리) ===
+---
+
+### **3단계: Fact Layer (객관적 사실 분리)**
 
 📊 **모든 객관적 사실을 출처와 함께 명시**:
 - 재무지표, 시장 데이터, 공시 정보 등
 - 모든 수치에 **[출처]** 명시 필수
 - 해석이나 추론 없이 순수 사실만 기록
 
-=== 4단계: Interpretation Layer (주관적 해석) ===
+---
+
+### **4단계: Interpretation Layer (주관적 해석)**
 
 🧠 **Fact Layer의 데이터를 바탕으로 한 해석**:
 - 데이터의 의미와 시사점
 - 트렌드 분석과 패턴 인식
 - 업계 특성을 고려한 해석
 
-=== 5단계: Chain of Reasoning (추론 과정) ===
+---
+
+### **5단계: Chain of Reasoning (추론 과정)**
 
 🔗 **모든 결론의 논리적 추론 과정을 단계별로 기록**:
 - A → B → C 형태의 명확한 논리 체인
 - 각 단계별 근거와 가정 명시
 - 대안적 시나리오 고려
 
-=== 6단계: Peer Benchmark (동종업계 비교) ===
+---
+
+### **6단계: Peer Benchmark (동종업계 비교)**
 
 📈 **업계 평균 및 경쟁사 대비 위치 분석**:
 - 동종업계 평균과의 비교
 - 주요 경쟁사 대비 상대적 위치
 - 글로벌 기준 비교 (해당 시)
 
-=== 7단계: Assumption Ledger (가정 명시) ===
+---
+
+### **7단계: Assumption Ledger (가정 명시)**
 
 📝 **모든 분석에서 사용된 가정을 명시**:
 - DCF 모델의 가정 (성장률, 할인율 등)
 - 멀티플 비교의 기준
 - 리스크 평가의 가정
 
-=== 8단계: Chain of Verification (결론 검증) ===
+---
+
+### **8단계: Chain of Verification (결론 검증)**
 
 ✅ **각 핵심 결론에 대한 검증 수행**:
 - 출처의 신뢰성 검증
 - 수치 기반 타당성 검증
 - 상대 비교의 논리적 적절성 검증
 
+---
+
+### **🎯 최종 투자 의견 및 목표가**
+
+위의 8단계 분석을 바탕으로 최종 투자 의견을 제시하세요:
+
+```
+🎯 투자 의견: [BUY/HOLD/SELL]
+💰 목표가: [구체적 금액]
+📊 신뢰도: [0-100점]
+🔍 핵심 근거: [3가지 주요 근거]
+⚠️ 주요 리스크: [주요 위험 요소]
+```
+
 **⚠️ 필수 준수 사항 (8단계 Enhanced Framework)**:
 
+🚨 **절대 금지**: 3단계에서 멈추지 마세요! 8단계를 모두 완료해야 합니다!
+
 1. **8단계 구조 완전 준수**: 1단계 Self-Ask → 2단계 ReAct → 3단계 Fact Layer → 4단계 Interpretation Layer → 5단계 Chain of Reasoning → 6단계 Peer Benchmark → 7단계 Assumption Ledger → 8단계 Chain of Verification
-2. **각 단계별 명확한 구분**: 각 단계마다 제목과 구분선 필수
+2. **각 단계별 명확한 구분**: 각 단계마다 "### **N단계: 제목**" 형식으로 제목 필수
 3. **Fact Layer ↔ Interpretation Layer 분리**: 객관적 사실과 주관적 해석을 명확히 구분
 4. **Chain of Reasoning 기록**: 모든 추론 과정을 단계별로 기록
 5. **Peer Benchmark Layer**: 동종업계 비교 필수 포함
 6. **Assumption Ledger**: DCF/밸류에이션의 모든 가정 명시
 7. **출처 명시 의무**: 모든 수치와 결론에 **[출처]** 명시 (재무데이터/DART/웹검색)
 8. **신뢰도 점수화**: 최종 분석에 0-100점 신뢰도 점수 제시
+
+**✅ 성공 기준**: 위의 8단계를 모두 완료하고 최종 투자 의견을 제시해야 합니다!
 """
 
     @staticmethod
