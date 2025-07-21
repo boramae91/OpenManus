@@ -1072,7 +1072,7 @@ class LargePDFAnalyzer:
 
     async def _download_pdf_from_url(self, url: str) -> Optional[io.BytesIO]:
         """
-        URL에서 PDF 파일을 다운로드하여 메모리 스트림으로 반환
+        🌐 URL에서 PDF 파일을 다운로드합니다.
 
         Args:
             url: PDF 파일 URL
@@ -1085,17 +1085,39 @@ class LargePDFAnalyzer:
 
             import aiohttp
 
+            # 헤더 추가로 웹사이트 차단 우회 시도
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+                "Accept": "application/pdf,application/octet-stream,*/*",
+                "Accept-Language": "ko-KR,ko;q=0.9,en;q=0.8",
+                "Referer": "https://securities.miraeasset.com/",
+                "Connection": "keep-alive",
+            }
+
             async with aiohttp.ClientSession() as session:
-                async with session.get(url) as response:
+                async with session.get(url, headers=headers, timeout=30) as response:
                     if response.status == 200:
                         pdf_data = await response.read()
+
+                        # 빈 데이터 체크
+                        if len(pdf_data) == 0:
+                            logger.warning(f"⚠️ PDF 다운로드 결과: 빈 파일 (0 bytes)")
+                            return None
+
                         pdf_stream = io.BytesIO(pdf_data)
                         logger.info(f"✅ PDF 다운로드 완료: {len(pdf_data):,} bytes")
                         return pdf_stream
                     else:
                         logger.error(f"❌ PDF 다운로드 실패: HTTP {response.status}")
+                        logger.error(f"❌ 응답 헤더: {dict(response.headers)}")
                         return None
 
+        except aiohttp.ClientTimeout:
+            logger.error(f"❌ PDF 다운로드 타임아웃: {url}")
+            return None
+        except aiohttp.ClientError as e:
+            logger.error(f"❌ PDF 다운로드 네트워크 오류: {e}")
+            return None
         except Exception as e:
             logger.error(f"❌ PDF URL 다운로드 오류: {e}")
             return None

@@ -1252,7 +1252,11 @@ class SectorTeamFactory:
             )
 
             # 🎯 섹터별 동적 이모지 선택
-            sector_emoji = self._get_sector_emoji(sector)
+            try:
+                sector_emoji = self._get_sector_emoji(sector)
+            except Exception as e:
+                logger.warning(f"⚠️ 섹터 이모지 생성 실패: {e}")
+                sector_emoji = "🎯"  # 기본 이모지
 
             # 전체 Enhanced Thinking Flow 조합
             dynamic_thinking_flow = f"""

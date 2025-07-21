@@ -2,6 +2,11 @@
 간단하고 실용적인 8단계 분석 프레임워크
 """
 
+import logging
+from typing import List, Optional
+
+logger = logging.getLogger(__name__)
+
 
 class PromptComponents:
     @staticmethod
@@ -14,7 +19,9 @@ class PromptComponents:
         기존의 복잡한 4단계 구조를 실용적인 8단계로 단순화했습니다.
         """
 
-        dynamic_questions = PromptComponents._get_default_questions()
+        dynamic_questions = PromptComponents._get_default_questions(
+            sector, sector_manager
+        )
         sector_specific_info = ""
 
         if sector and sector_manager:
@@ -106,9 +113,291 @@ class PromptComponents:
 """
 
     @staticmethod
-    def _get_default_questions() -> str:
-        """기본 분석 질문들을 반환합니다."""
+    def create_unified_analysis_framework(
+        analysis_type: str, sector_name: str, specific_methods: List[str] = None
+    ) -> str:
+        """
+        통합 분석 프레임워크를 생성합니다.
+
+        분석 타입에 따라 적절한 AI 강화 기법들을 조합하여
+        일관된 분석 프레임워크를 제공합니다.
+
+        Args:
+            analysis_type: 분석 타입 ('financial', 'technical', 'risk' 등)
+            sector_name: 섹터 이름
+            specific_methods: 특화된 분석 방법들
+
+        Returns:
+            str: 통합 분석 프레임워크
+        """
+        if specific_methods is None:
+            specific_methods = []
+
+        framework = f"""
+**🚀 {sector_name} 섹터 {analysis_type} 분석 AI 강화 프레임워크**
+
+{PromptComponents.get_enhanced_analyst_thinking_flow()}
+
+{PromptComponents.get_cot_framework()}
+
+{PromptComponents.get_self_critique_template()}
+
+{PromptComponents.get_multi_perspective_framework()}
+
+{PromptComponents.get_reasoning_validation_framework()}
+
+{PromptComponents.get_confidence_scoring_framework()}
+
+{PromptComponents.get_web_search_integration_guide()}
+
+**🎯 {analysis_type} 분석 특화 방법론:**
+"""
+
+        for i, method in enumerate(specific_methods, 1):
+            framework += f"\n{i}. {method}"
+
+        framework += """
+
+**📋 분석 품질 체크리스트:**
+- [ ] 8단계 Enhanced Framework 적용: 모든 단계 순서대로 수행
+- [ ] Chain of Thought 적용: 모든 분석에 3단계 추론 과정 포함
+- [ ] Self-Critique 수행: 분석 결과에 대한 자기 비판 완료
+- [ ] Multi-Perspective 검토: 최소 3가지 관점에서 분석 수행
+- [ ] Reasoning 검증: 논리적 오류 및 편향 검토 완료
+- [ ] Confidence Score 부여: 모든 결론에 신뢰도 점수 제시
+- [ ] 웹 검색 활용: 최신 정보 반영 및 출처 명시 완료
+
+**🎯 최종 출력 품질 기준:**
+- 모든 수치: 소수점 둘째 자리까지 + 신뢰도 점수 병기
+- 계산 과정: 단계별 명시 + CoT 추론 과정 포함
+- 비교 분석: 구체적 수치 + 통계적 근거 제시
+- 최종 결론: 정량적 근거 + 신뢰구간 + Self-Critique 결과 포함
+"""
+
+        return framework
+
+    @staticmethod
+    def get_cot_framework() -> str:
+        """Chain of Thought 프레임워크를 반환합니다."""
         return """
+**🔗 Chain of Thought (CoT) 프레임워크**
+
+모든 분석에서 다음 3단계 추론 과정을 반드시 수행하세요:
+
+**1단계: 문제 정의 (Problem Definition)**
+- 분석 목표와 범위 명확화
+- 필요한 정보와 데이터 소스 식별
+- 분석 방법론 선택 및 근거 제시
+
+**2단계: 논리적 추론 (Logical Reasoning)**
+- 단계별 계산 과정 명시
+- 가정과 전제 조건 명확화
+- 중간 결론 도출 과정 기록
+
+**3단계: 결론 검증 (Conclusion Validation)**
+- 결과의 타당성 검토
+- 대안적 해석 고려
+- 한계점과 불확실성 명시
+"""
+
+    @staticmethod
+    def get_self_critique_template() -> str:
+        """Self-Critique 템플릿을 반환합니다."""
+        return """
+**🔍 Self-Critique 템플릿**
+
+분석 완료 후 다음 항목들을 반드시 검토하세요:
+
+**1. 분석의 한계점**
+- 사용된 데이터의 한계
+- 가정의 현실성
+- 모델의 제약사항
+
+**2. 편향 가능성**
+- 확인 편향 (Confirmation Bias)
+- 앵커링 편향 (Anchoring Bias)
+- 과신 편향 (Overconfidence Bias)
+
+**3. 대안적 해석**
+- 반대 관점에서의 해석
+- 다른 가정 하에서의 결과
+- 경쟁적 가설 검토
+
+**4. 추가 검토 필요사항**
+- 추가 데이터 수집 필요성
+- 더 정교한 모델 적용 가능성
+- 외부 전문가 검토 필요성
+"""
+
+    @staticmethod
+    def get_multi_perspective_framework() -> str:
+        """Multi-Perspective 프레임워크를 반환합니다."""
+        return """
+**👥 Multi-Perspective 분석 프레임워크**
+
+최소 3가지 관점에서 분석을 수행하세요:
+
+**1. 낙관적 관점 (Optimistic View)**
+- 최선의 시나리오 가정
+- 긍정적 요인들의 최대 영향
+- 상승 가능성 분석
+
+**2. 보수적 관점 (Conservative View)**
+- 최악의 시나리오 가정
+- 부정적 요인들의 최대 영향
+- 하락 가능성 분석
+
+**3. 중립적 관점 (Neutral View)**
+- 가장 현실적인 시나리오
+- 균형잡힌 가정과 예측
+- 객관적 근거 기반 분석
+
+**4. 전문가 관점 (Expert View)**
+- 업계 전문가들의 일반적 견해
+- 학술적 연구 결과 반영
+- 베스트 프랙티스 적용
+"""
+
+    @staticmethod
+    def get_reasoning_validation_framework() -> str:
+        """추론 검증 프레임워크를 반환합니다."""
+        return """
+**✅ 추론 검증 프레임워크**
+
+모든 추론 과정에서 다음 검증을 수행하세요:
+
+**1. 논리적 일관성 검증**
+- 전제와 결론의 논리적 연결
+- 모순되는 주장이 없는지 확인
+- 인과관계의 타당성 검토
+
+**2. 수치적 정확성 검증**
+- 계산 과정의 정확성
+- 단위와 스케일의 일관성
+- 통계적 유의성 검토
+
+**3. 가정의 현실성 검증**
+- 가정의 현실 가능성
+- 극단적 가정의 영향 분석
+- 대안 가정의 결과 비교
+
+**4. 외부 검증**
+- 다른 분석가들의 견해와 비교
+- 역사적 데이터와의 일치성
+- 업계 표준과의 비교
+"""
+
+    @staticmethod
+    def get_confidence_scoring_framework() -> str:
+        """신뢰도 점수화 프레임워크를 반환합니다."""
+        return """
+**📊 신뢰도 점수화 프레임워크**
+
+모든 결론에 대해 0-100점 신뢰도 점수를 부여하세요:
+
+**신뢰도 평가 기준:**
+- **90-100점**: 매우 높은 신뢰도 (강력한 증거, 일관된 결과)
+- **80-89점**: 높은 신뢰도 (충분한 증거, 논리적 일관성)
+- **70-79점**: 중간 신뢰도 (적절한 증거, 일부 불확실성)
+- **60-69점**: 낮은 신뢰도 (제한적 증거, 상당한 불확실성)
+- **50-59점**: 매우 낮은 신뢰도 (약한 증거, 높은 불확실성)
+- **0-49점**: 신뢰할 수 없음 (증거 부족, 논리적 오류)
+
+**신뢰도 영향 요인:**
+- 데이터 품질과 양
+- 분석 방법론의 적절성
+- 가정의 현실성
+- 외부 검증 결과
+- 전문가 합의도
+"""
+
+    @staticmethod
+    def get_web_search_integration_guide() -> str:
+        """웹 검색 통합 가이드를 반환합니다."""
+        return """
+**🌐 웹 검색 통합 가이드**
+
+최신 정보를 반영하기 위해 웹 검색을 활용하세요:
+
+**검색 키워드 예시:**
+- "[기업명] 최신 실적 발표"
+- "[섹터명] 2024년 전망"
+- "[기업명] 경쟁사 비교"
+- "[섹터명] 규제 변화"
+- "[기업명] ESG 평가"
+
+**검색 결과 활용 방법:**
+- 최신 실적과 전망 반영
+- 경쟁사 비교 정보 보완
+- 업계 트렌드 분석
+- 리스크 요인 업데이트
+- 투자자 관심사 파악
+
+**출처 명시 규칙:**
+- 모든 웹 검색 결과에 **[웹검색]** 태그 추가
+- 구체적인 출처 URL 또는 언론사 명시
+- 검색 날짜와 정보의 시점 명시
+- 정보의 신뢰도 평가 포함
+"""
+
+    @staticmethod
+    def get_output_format_template(analysis_type: str) -> str:
+        """
+        분석 타입별 출력 형식 템플릿을 반환합니다.
+
+        Args:
+            analysis_type: 분석 타입
+
+        Returns:
+            str: 출력 형식 템플릿
+        """
+        return f"""
+**📊 {analysis_type} 분석 결과 출력 형식**
+
+**1. 핵심 요약 (Executive Summary)**
+- 주요 발견사항 3가지 (정량적 근거 포함)
+- 투자 의견 및 신뢰도 점수
+- 핵심 리스크 요인
+
+**2. 8단계 상세 분석 결과**
+- 각 단계별 분석 내용
+- Fact Layer와 Interpretation Layer 구분
+- Chain of Reasoning 과정
+- Peer Benchmark 비교
+- Assumption Ledger 명시
+- Chain of Verification 결과
+
+**3. Self-Critique 결과**
+- 분석의 한계점 및 편향 가능성
+- 반대 의견 및 대안적 해석
+- 추가 검토 필요 사항
+
+**4. 신뢰도 평가**
+- 각 분석 요소별 신뢰도 점수 (1-10점)
+- 종합 신뢰도 및 해석
+- 불확실성 요인 및 민감도 분석
+
+**5. 투자 시사점**
+- 구체적인 투자 권고사항
+- 목표가 및 투자 기간
+- 리스크 관리 방안
+
+**6. 최종 출력 형식**
+```
+🎯 투자 의견: [BUY/HOLD/SELL]
+💰 목표가: [구체적 금액]
+📊 신뢰도: [0-100점]
+🔍 핵심 근거: [3가지 주요 근거]
+⚠️ 주요 리스크: [주요 위험 요소]
+```
+"""
+
+    @staticmethod
+    def _get_default_questions(sector=None, sector_manager=None) -> str:
+        """기본 분석 질문들을 반환합니다. 섹터 정보가 있으면 동적으로 Q5를 생성합니다."""
+
+        # Q1-Q4는 모든 섹터 공통
+        base_questions = """
 Q1: 이 기업의 재무적 건전성은 어떤가?
   └─ Q1-1: ROE, ROA, ROIC는 업계 대비 어떤 수준인가?
     • [Fact Layer] ROE: [구체적 수치]% vs 업계 평균 [수치]% **[출처]**
@@ -206,15 +495,26 @@ Q4: 주요 리스크와 기회 요인은 무엇인가?
     • [Interpretation Layer] 외부 리스크 영향도 평가: [구체적 분석] **[출처]**
     • [Peer Benchmark] 업계 평균 대비 외부 리스크 노출도: [구체적 비교] **[출처]**
     • [Chain of Reasoning] 외부 리스크가 기업 가치에 미치는 영향: [구체적 분석] **[출처]**
+"""
 
+        # Q5는 섹터별로 동적 생성
+        if sector and sector_manager:
+            q5_questions = PromptComponents._get_sector_specific_q5_questions(
+                sector, sector_manager
+            )
+            if q5_questions:
+                return base_questions + q5_questions
+            else:
+                # 섹터별 Q5 생성 실패 시 기본 Q5 사용
+                default_q5 = """
 Q5: 섹터 특화 경쟁력과 차별화 요소는?
-  └─ Q5-1: 기술력과 시장 경쟁력은?
-    • [Fact Layer] R&D 투자 규모: [구체적 수치] **[출처]**
-    • [Fact Layer] 특허 보유 현황: [구체적 내용] **[출처]**
+  └─ Q5-1: 핵심 경쟁력과 시장 포지션은?
+    • [Fact Layer] 핵심 사업 영역: [구체적 내용] **[출처]**
     • [Fact Layer] 시장 점유율: [구체적 수치] **[출처]**
-    • [Interpretation Layer] 기술 경쟁력 평가: [구체적 분석] **[출처]**
-    • [Peer Benchmark] 경쟁사 대비 기술력: [구체적 비교] **[출처]**
-    • [Chain of Reasoning] 기술력이 미래 성장에 미치는 영향: [구체적 분석] **[출처]**
+    • [Fact Layer] 경쟁 우위 요소: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 경쟁력 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 경쟁사 대비 경쟁력: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 경쟁력이 미래 성장에 미치는 영향: [구체적 분석] **[출처]**
   └─ Q5-2: 핵심 성장 동력과 차별화 요소는?
     • [Fact Layer] 핵심 사업 영역: [구체적 내용] **[출처]**
     • [Fact Layer] 차별화 요소: [구체적 내용] **[출처]**
@@ -230,6 +530,445 @@ Q5: 섹터 특화 경쟁력과 차별화 요소는?
     • [Peer Benchmark] 경쟁사 대비 운영 효율성: [구체적 비교] **[출처]**
     • [Chain of Reasoning] 운영 우위가 수익성에 미치는 영향: [구체적 분석] **[출처]**
 """
+                return base_questions + default_q5
+        else:
+            # 섹터 정보가 없으면 기본 Q5 사용
+            default_q5 = """
+Q5: 섹터 특화 경쟁력과 차별화 요소는?
+  └─ Q5-1: 핵심 경쟁력과 시장 포지션은?
+    • [Fact Layer] 핵심 사업 영역: [구체적 내용] **[출처]**
+    • [Fact Layer] 시장 점유율: [구체적 수치] **[출처]**
+    • [Fact Layer] 경쟁 우위 요소: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 경쟁력 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 경쟁사 대비 경쟁력: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 경쟁력이 미래 성장에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-2: 핵심 성장 동력과 차별화 요소는?
+    • [Fact Layer] 핵심 사업 영역: [구체적 내용] **[출처]**
+    • [Fact Layer] 차별화 요소: [구체적 내용] **[출처]**
+    • [Fact Layer] 브랜드 가치: [구체적 수치] **[출처]**
+    • [Interpretation Layer] 차별화 요소의 지속가능성: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 경쟁사 대비 차별화 요소: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 차별화 요소가 기업 가치에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-3: 운영 효율성과 전략적 우위는?
+    • [Fact Layer] 운영 효율성 지표: [구체적 수치] **[출처]**
+    • [Fact Layer] 비용 구조: [구체적 분석] **[출처]**
+    • [Fact Layer] 전략적 파트너십: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 운영 우위 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 경쟁사 대비 운영 효율성: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 운영 우위가 수익성에 미치는 영향: [구체적 분석] **[출처]**
+"""
+            return base_questions + default_q5
+
+    @staticmethod
+    def _generate_sector_specific_questions(sector=None, sector_manager=None) -> str:
+        """
+        특정 섹터에 맞춤화된 동적 질문들을 생성합니다.
+        기존 4개 기본 질문 + 섹터별 특화 질문 5개 확장 방식입니다.
+
+        Args:
+            sector: GICS 섹터
+            sector_manager: 섹터 매니저 인스턴스
+
+        Returns:
+            str: 기본 질문 + 섹터별 맞춤 질문들
+        """
+        try:
+            # 기본 질문 가져오기 (섹터 정보 포함)
+            base_questions = PromptComponents._get_default_questions(
+                sector, sector_manager
+            )
+
+            # 섹터별 특화 질문 추가 (Q6-Q8)
+            sector_specific = ""
+            if sector and sector_manager:
+                sector_name = getattr(
+                    sector_manager, "get_sector_korean_name", lambda x: str(x)
+                )(sector)
+                sector_specific = f"""
+
+**🏭 {sector_name} 섹터 특화 분석 질문:**
+
+Q6: {sector_name} 섹터 특화 경쟁력 분석
+  └─ Q6-1: 섹터 내 기술적 우위는?
+    • [Fact Layer] 핵심 기술 보유 현황: [구체적 내용] **[출처]**
+    • [Fact Layer] 기술 개발 투자 규모: [구체적 수치] **[출처]**
+    • [Interpretation Layer] 기술적 경쟁력 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 기술력 순위: [구체적 순위] **[출처]**
+  └─ Q6-2: 섹터 트렌드 대응력은?
+    • [Fact Layer] 최신 트렌드 대응 현황: [구체적 내용] **[출처]**
+    • [Fact Layer] 신기술 도입 속도: [구체적 평가] **[출처]**
+    • [Interpretation Layer] 트렌드 대응력 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 경쟁사 대비 대응 속도: [구체적 비교] **[출처]**
+  └─ Q6-3: 섹터 규제 환경 대응은?
+    • [Fact Layer] 관련 규제 현황: [구체적 내용] **[출처]**
+    • [Fact Layer] 규제 대응 전략: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 규제 리스크 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 업계 평균 대비 규제 대응력: [구체적 비교] **[출처]**
+
+Q7: {sector_name} 섹터 성장 동력 분석
+  └─ Q7-1: 섹터 성장 요인 활용도는?
+    • [Fact Layer] 주요 성장 요인: [구체적 내용] **[출처]**
+    • [Fact Layer] 기업의 활용 현황: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 성장 요인 활용도 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 경쟁사 대비 활용도: [구체적 비교] **[출처]**
+  └─ Q7-2: 섹터 내 시장 점유율 전략은?
+    • [Fact Layer] 현재 시장 점유율: [구체적 수치] **[출처]**
+    • [Fact Layer] 점유율 확대 전략: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 시장 점유율 전망: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 경쟁사 대비 점유율: [구체적 비교] **[출처]**
+
+Q8: {sector_name} 섹터 리스크 관리
+  └─ Q8-1: 섹터 특화 리스크 노출도는?
+    • [Fact Layer] 섹터 주요 리스크: [구체적 내용] **[출처]**
+    • [Fact Layer] 기업의 리스크 노출도: [구체적 수치] **[출처]**
+    • [Interpretation Layer] 리스크 관리 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 업계 평균 대비 리스크: [구체적 비교] **[출처]**
+  └─ Q8-2: 섹터 변화 대응 전략은?
+    • [Fact Layer] 섹터 변화 요인: [구체적 내용] **[출처]**
+    • [Fact Layer] 기업의 대응 전략: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 변화 대응력 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 경쟁사 대비 대응력: [구체적 비교] **[출처]**
+"""
+
+            return base_questions + sector_specific
+
+        except Exception as e:
+            logger.warning(f"⚠️ 섹터별 질문 생성 실패: {e}")
+            return PromptComponents._get_default_questions()
+
+    @staticmethod
+    def _get_sector_specific_q5_questions(sector=None, sector_manager=None) -> str:
+        """섹터별 Q5 특화 질문을 반환합니다."""
+        if not sector or not sector_manager:
+            return ""
+
+        try:
+            # 섹터가 문자열인지 객체인지 확인
+            if isinstance(sector, str):
+                sector_name = sector
+            else:
+                sector_name = getattr(
+                    sector_manager, "get_sector_korean_name", lambda x: str(x)
+                )(sector)
+
+            # 섹터별 특화 질문 매핑 (GICS 섹터 이름과 일치)
+            sector_specific_questions = {
+                "INFORMATION_TECHNOLOGY": f"""
+Q5: {sector_name} 섹터 특화 경쟁력과 차별화 요소는?
+  └─ Q5-1: {sector_name} 섹터 내 기술력과 시장 경쟁력은?
+    • [Fact Layer] R&D 투자 규모: [구체적 수치] **[출처]**
+    • [Fact Layer] 특허 보유 현황: [구체적 내용] **[출처]**
+    • [Fact Layer] 기술 혁신 속도: [구체적 평가] **[출처]**
+    • [Fact Layer] 시장 점유율: [구체적 수치] **[출처]**
+    • [Interpretation Layer] 섹터 내 기술 경쟁력 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 기술력: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 기술력이 미래 성장에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-2: {sector_name} 섹터 핵심 성장 동력과 차별화 요소는?
+    • [Fact Layer] AI/클라우드/반도체 등 핵심 기술 영역: [구체적 내용] **[출처]**
+    • [Fact Layer] 소프트웨어/하드웨어 비중: [구체적 비중] **[출처]**
+    • [Fact Layer] 글로벌 시장 진출 현황: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 특화 차별화 요소의 지속가능성: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 차별화 요소: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 차별화 요소가 기업 가치에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-3: {sector_name} 섹터 운영 효율성과 전략적 우위는?
+    • [Fact Layer] 개발 효율성 (인력당 매출): [구체적 수치] **[출처]**
+    • [Fact Layer] 연구개발 투자 효율성: [구체적 분석] **[출처]**
+    • [Fact Layer] 기술 파트너십 및 생태계: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 내 운영 우위 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 운영 효율성: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 운영 우위가 수익성에 미치는 영향: [구체적 분석] **[출처]**
+""",
+                "FINANCIALS": f"""
+Q5: {sector_name} 섹터 특화 경쟁력과 차별화 요소는?
+  └─ Q5-1: {sector_name} 섹터 내 금융 서비스 경쟁력은?
+    • [Fact Layer] 자본 적정성 비율 (BIS): [구체적 수치] **[출처]**
+    • [Fact Layer] 대출 품질 지표: [구체적 내용] **[출처]**
+    • [Fact Layer] 수수료 수익 비중: [구체적 비중] **[출처]**
+    • [Fact Layer] 디지털 뱅킹 점유율: [구체적 수치] **[출처]**
+    • [Interpretation Layer] 섹터 내 금융 경쟁력 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 금융 서비스 품질: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 금융 경쟁력이 미래 성장에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-2: {sector_name} 섹터 핵심 성장 동력과 차별화 요소는?
+    • [Fact Layer] 핵심 금융 상품 영역: [구체적 내용] **[출처]**
+    • [Fact Layer] 핀테크 투자 및 혁신: [구체적 내용] **[출처]**
+    • [Fact Layer] 해외 진출 및 글로벌 네트워크: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 특화 차별화 요소의 지속가능성: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 차별화 요소: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 차별화 요소가 기업 가치에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-3: {sector_name} 섹터 운영 효율성과 전략적 우위는?
+    • [Fact Layer] 비용 대비 수익 비율 (CIR): [구체적 수치] **[출처]**
+    • [Fact Layer] 디지털 전환 투자 효율성: [구체적 분석] **[출처]**
+    • [Fact Layer] 규제 대응 및 리스크 관리: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 내 운영 우위 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 운영 효율성: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 운영 우위가 수익성에 미치는 영향: [구체적 분석] **[출처]**
+""",
+                "CONSUMER_DISCRETIONARY": f"""
+Q5: {sector_name} 섹터 특화 경쟁력과 차별화 요소는?
+  └─ Q5-1: {sector_name} 섹터 내 브랜드 경쟁력은?
+    • [Fact Layer] 브랜드 가치 및 인지도: [구체적 수치] **[출처]**
+    • [Fact Layer] 고객 충성도 지표: [구체적 내용] **[출처]**
+    • [Fact Layer] 제품 품질 및 디자인: [구체적 평가] **[출처]**
+    • [Fact Layer] 시장 점유율: [구체적 수치] **[출처]**
+    • [Interpretation Layer] 섹터 내 브랜드 경쟁력 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 브랜드력: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 브랜드 경쟁력이 미래 성장에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-2: {sector_name} 섹터 핵심 성장 동력과 차별화 요소는?
+    • [Fact Layer] 핵심 제품/서비스 영역: [구체적 내용] **[출처]**
+    • [Fact Layer] 온라인/오프라인 채널 전략: [구체적 내용] **[출처]**
+    • [Fact Layer] 글로벌 시장 진출 현황: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 특화 차별화 요소의 지속가능성: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 차별화 요소: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 차별화 요소가 기업 가치에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-3: {sector_name} 섹터 운영 효율성과 전략적 우위는?
+    • [Fact Layer] 매장당 매출 효율성: [구체적 수치] **[출처]**
+    • [Fact Layer] 공급망 및 재고 관리: [구체적 분석] **[출처]**
+    • [Fact Layer] 디지털 전환 및 고객 경험: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 내 운영 우위 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 운영 효율성: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 운영 우위가 수익성에 미치는 영향: [구체적 분석] **[출처]**
+""",
+                "HEALTH_CARE": f"""
+Q5: {sector_name} 섹터 특화 경쟁력과 차별화 요소는?
+  └─ Q5-1: {sector_name} 섹터 내 의료 기술 경쟁력은?
+    • [Fact Layer] R&D 투자 규모: [구체적 수치] **[출처]**
+    • [Fact Layer] 의료 특허 보유 현황: [구체적 내용] **[출처]**
+    • [Fact Layer] 임상시험 성공률: [구체적 수치] **[출처]**
+    • [Fact Layer] 의료 기기/제약 품질: [구체적 평가] **[출처]**
+    • [Interpretation Layer] 섹터 내 의료 기술 경쟁력 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 의료 기술력: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 의료 기술력이 미래 성장에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-2: {sector_name} 섹터 핵심 성장 동력과 차별화 요소는?
+    • [Fact Layer] 핵심 의료 분야: [구체적 내용] **[출처]**
+    • [Fact Layer] 바이오/디지털 헬스 혁신: [구체적 내용] **[출처]**
+    • [Fact Layer] 글로벌 의료 시장 진출: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 특화 차별화 요소의 지속가능성: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 차별화 요소: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 차별화 요소가 기업 가치에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-3: {sector_name} 섹터 운영 효율성과 전략적 우위는?
+    • [Fact Layer] 의료 서비스 효율성: [구체적 수치] **[출처]**
+    • [Fact Layer] 규제 승인 및 인증: [구체적 분석] **[출처]**
+    • [Fact Layer] 의료 파트너십 및 네트워크: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 내 운영 우위 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 운영 효율성: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 운영 우위가 수익성에 미치는 영향: [구체적 분석] **[출처]**
+""",
+                "INDUSTRIALS": f"""
+Q5: {sector_name} 섹터 특화 경쟁력과 차별화 요소는?
+  └─ Q5-1: {sector_name} 섹터 내 제조 기술 경쟁력은?
+    • [Fact Layer] 제조 기술 수준: [구체적 평가] **[출처]**
+    • [Fact Layer] 자동화 및 스마트팩토리: [구체적 내용] **[출처]**
+    • [Fact Layer] 품질 관리 시스템: [구체적 평가] **[출처]**
+    • [Fact Layer] 시장 점유율: [구체적 수치] **[출처]**
+    • [Interpretation Layer] 섹터 내 제조 기술 경쟁력 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 제조 기술력: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 제조 기술력이 미래 성장에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-2: {sector_name} 섹터 핵심 성장 동력과 차별화 요소는?
+    • [Fact Layer] 핵심 제조 분야: [구체적 내용] **[출처]**
+    • [Fact Layer] 글로벌 공급망: [구체적 내용] **[출처]**
+    • [Fact Layer] 지속가능 제조 및 ESG: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 특화 차별화 요소의 지속가능성: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 차별화 요소: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 차별화 요소가 기업 가치에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-3: {sector_name} 섹터 운영 효율성과 전략적 우위는?
+    • [Fact Layer] 생산성 및 효율성 지표: [구체적 수치] **[출처]**
+    • [Fact Layer] 공급망 최적화: [구체적 분석] **[출처]**
+    • [Fact Layer] 고객 서비스 및 유지보수: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 내 운영 우위 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 운영 효율성: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 운영 우위가 수익성에 미치는 영향: [구체적 분석] **[출처]**
+""",
+                "ENERGY": f"""
+Q5: {sector_name} 섹터 특화 경쟁력과 차별화 요소는?
+  └─ Q5-1: {sector_name} 섹터 내 에너지 자원 경쟁력은?
+    • [Fact Layer] 원유/가스 매장량 및 생산량: [구체적 수치] **[출처]**
+    • [Fact Layer] 탐사 및 개발 기술력: [구체적 평가] **[출처]**
+    • [Fact Layer] 글로벌 에너지 자원 포트폴리오: [구체적 내용] **[출처]**
+    • [Fact Layer] 시장 점유율: [구체적 수치] **[출처]**
+    • [Interpretation Layer] 섹터 내 에너지 자원 경쟁력 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 자원 보유량: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 에너지 자원 경쟁력이 미래 성장에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-2: {sector_name} 섹터 핵심 성장 동력과 차별화 요소는?
+    • [Fact Layer] 신재생에너지 투자 및 포트폴리오: [구체적 내용] **[출처]**
+    • [Fact Layer] 에너지 효율성 및 친환경 기술: [구체적 내용] **[출처]**
+    • [Fact Layer] 글로벌 에너지 시장 진출: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 특화 차별화 요소의 지속가능성: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 차별화 요소: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 차별화 요소가 기업 가치에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-3: {sector_name} 섹터 운영 효율성과 전략적 우위는?
+    • [Fact Layer] 생산 효율성 및 비용 구조: [구체적 수치] **[출처]**
+    • [Fact Layer] 에너지 가격 변동 리스크 관리: [구체적 분석] **[출처]**
+    • [Fact Layer] 정부 정책 및 규제 대응: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 내 운영 우위 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 운영 효율성: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 운영 우위가 수익성에 미치는 영향: [구체적 분석] **[출처]**
+""",
+                "MATERIALS": f"""
+Q5: {sector_name} 섹터 특화 경쟁력과 차별화 요소는?
+  └─ Q5-1: {sector_name} 섹터 내 소재 기술 경쟁력은?
+    • [Fact Layer] 신소재 개발 및 특허 보유: [구체적 내용] **[출처]**
+    • [Fact Layer] 원자재 확보 및 공급망: [구체적 평가] **[출처]**
+    • [Fact Layer] 제품 품질 및 기술력: [구체적 평가] **[출처]**
+    • [Fact Layer] 시장 점유율: [구체적 수치] **[출처]**
+    • [Interpretation Layer] 섹터 내 소재 기술 경쟁력 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 소재 기술력: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 소재 기술력이 미래 성장에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-2: {sector_name} 섹터 핵심 성장 동력과 차별화 요소는?
+    • [Fact Layer] 핵심 소재 분야: [구체적 내용] **[출처]**
+    • [Fact Layer] 친환경 소재 및 ESG 대응: [구체적 내용] **[출처]**
+    • [Fact Layer] 글로벌 시장 진출 및 수출: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 특화 차별화 요소의 지속가능성: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 차별화 요소: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 차별화 요소가 기업 가치에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-3: {sector_name} 섹터 운영 효율성과 전략적 우위는?
+    • [Fact Layer] 생산 효율성 및 원가 관리: [구체적 수치] **[출처]**
+    • [Fact Layer] 원자재 가격 변동 대응: [구체적 분석] **[출처]**
+    • [Fact Layer] 고객 파트너십 및 장기 계약: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 내 운영 우위 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 운영 효율성: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 운영 우위가 수익성에 미치는 영향: [구체적 분석] **[출처]**
+""",
+                "CONSUMER_STAPLES": f"""
+Q5: {sector_name} 섹터 특화 경쟁력과 차별화 요소는?
+  └─ Q5-1: {sector_name} 섹터 내 브랜드 및 제품 경쟁력은?
+    • [Fact Layer] 브랜드 가치 및 시장 인지도: [구체적 수치] **[출처]**
+    • [Fact Layer] 제품 품질 및 안전성: [구체적 평가] **[출처]**
+    • [Fact Layer] 고객 충성도 및 재구매율: [구체적 수치] **[출처]**
+    • [Fact Layer] 시장 점유율: [구체적 수치] **[출처]**
+    • [Interpretation Layer] 섹터 내 브랜드 경쟁력 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 브랜드력: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 브랜드 경쟁력이 미래 성장에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-2: {sector_name} 섹터 핵심 성장 동력과 차별화 요소는?
+    • [Fact Layer] 핵심 제품 카테고리: [구체적 내용] **[출처]**
+    • [Fact Layer] 유통 채널 및 공급망: [구체적 내용] **[출처]**
+    • [Fact Layer] 건강식품 및 프리미엄 제품: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 특화 차별화 요소의 지속가능성: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 차별화 요소: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 차별화 요소가 기업 가치에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-3: {sector_name} 섹터 운영 효율성과 전략적 우위는?
+    • [Fact Layer] 매장당 매출 및 운영 효율성: [구체적 수치] **[출처]**
+    • [Fact Layer] 공급망 및 재고 관리: [구체적 분석] **[출처]**
+    • [Fact Layer] 원가 관리 및 마진 최적화: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 내 운영 우위 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 운영 효율성: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 운영 우위가 수익성에 미치는 영향: [구체적 분석] **[출처]**
+""",
+                "COMMUNICATION_SERVICES": f"""
+Q5: {sector_name} 섹터 특화 경쟁력과 차별화 요소는?
+  └─ Q5-1: {sector_name} 섹터 내 콘텐츠 및 플랫폼 경쟁력은?
+    • [Fact Layer] 콘텐츠 포트폴리오 및 IP 보유: [구체적 내용] **[출처]**
+    • [Fact Layer] 플랫폼 사용자 수 및 참여도: [구체적 수치] **[출처]**
+    • [Fact Layer] 광고 수익 및 수익화 모델: [구체적 평가] **[출처]**
+    • [Fact Layer] 시장 점유율: [구체적 수치] **[출처]**
+    • [Interpretation Layer] 섹터 내 콘텐츠 경쟁력 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 콘텐츠력: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 콘텐츠 경쟁력이 미래 성장에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-2: {sector_name} 섹터 핵심 성장 동력과 차별화 요소는?
+    • [Fact Layer] 핵심 서비스 영역: [구체적 내용] **[출처]**
+    • [Fact Layer] 디지털 전환 및 기술 혁신: [구체적 내용] **[출처]**
+    • [Fact Layer] 글로벌 시장 진출: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 특화 차별화 요소의 지속가능성: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 차별화 요소: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 차별화 요소가 기업 가치에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-3: {sector_name} 섹터 운영 효율성과 전략적 우위는?
+    • [Fact Layer] 사용자당 수익 (ARPU): [구체적 수치] **[출처]**
+    • [Fact Layer] 콘텐츠 제작 및 운영 효율성: [구체적 분석] **[출처]**
+    • [Fact Layer] 파트너십 및 생태계 구축: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 내 운영 우위 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 운영 효율성: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 운영 우위가 수익성에 미치는 영향: [구체적 분석] **[출처]**
+""",
+                "UTILITIES": f"""
+Q5: {sector_name} 섹터 특화 경쟁력과 차별화 요소는?
+  └─ Q5-1: {sector_name} 섹터 내 인프라 및 서비스 경쟁력은?
+    • [Fact Layer] 발전 설비 용량 및 효율성: [구체적 수치] **[출처]**
+    • [Fact Layer] 송배전 네트워크 및 안정성: [구체적 평가] **[출처]**
+    • [Fact Layer] 고객 서비스 품질: [구체적 평가] **[출처]**
+    • [Fact Layer] 시장 점유율: [구체적 수치] **[출처]**
+    • [Interpretation Layer] 섹터 내 인프라 경쟁력 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 인프라력: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 인프라 경쟁력이 미래 성장에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-2: {sector_name} 섹터 핵심 성장 동력과 차별화 요소는?
+    • [Fact Layer] 신재생에너지 포트폴리오: [구체적 내용] **[출처]**
+    • [Fact Layer] 스마트그리드 및 디지털화: [구체적 내용] **[출처]**
+    • [Fact Layer] 에너지 효율성 서비스: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 특화 차별화 요소의 지속가능성: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 차별화 요소: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 차별화 요소가 기업 가치에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-3: {sector_name} 섹터 운영 효율성과 전략적 우위는?
+    • [Fact Layer] 운영 효율성 및 비용 관리: [구체적 수치] **[출처]**
+    • [Fact Layer] 규제 대응 및 정책 리스크: [구체적 분석] **[출처]**
+    • [Fact Layer] 장기 계약 및 수익 안정성: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 내 운영 우위 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 운영 효율성: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 운영 우위가 수익성에 미치는 영향: [구체적 분석] **[출처]**
+""",
+                "REAL_ESTATE": f"""
+Q5: {sector_name} 섹터 특화 경쟁력과 차별화 요소는?
+  └─ Q5-1: {sector_name} 섹터 내 부동산 포트폴리오 경쟁력은?
+    • [Fact Layer] 부동산 자산 가치 및 수익률: [구체적 수치] **[출처]**
+    • [Fact Layer] 입지 및 접근성: [구체적 평가] **[출처]**
+    • [Fact Layer] 임차인 품질 및 임대료 안정성: [구체적 평가] **[출처]**
+    • [Fact Layer] 시장 점유율: [구체적 수치] **[출처]**
+    • [Interpretation Layer] 섹터 내 부동산 포트폴리오 경쟁력 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 포트폴리오 품질: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 부동산 경쟁력이 미래 성장에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-2: {sector_name} 섹터 핵심 성장 동력과 차별화 요소는?
+    • [Fact Layer] 핵심 부동산 분야: [구체적 내용] **[출처]**
+    • [Fact Layer] 개발 및 재개발 프로젝트: [구체적 내용] **[출처]**
+    • [Fact Layer] 디지털 부동산 서비스: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 특화 차별화 요소의 지속가능성: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 차별화 요소: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 차별화 요소가 기업 가치에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-3: {sector_name} 섹터 운영 효율성과 전략적 우위는?
+    • [Fact Layer] 임대 수익률 및 운영 효율성: [구체적 수치] **[출처]**
+    • [Fact Layer] 자산 관리 및 유지보수: [구체적 분석] **[출처]**
+    • [Fact Layer] 금융 구조 및 부채 관리: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 내 운영 우위 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 운영 효율성: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 운영 우위가 수익성에 미치는 영향: [구체적 분석] **[출처]**
+""",
+            }
+
+            # 섹터별 특화 질문 반환 (GICS 섹터 이름 매칭)
+            # 섹터가 문자열인 경우 GICS 섹터 이름으로 변환
+            if isinstance(sector, str):
+                sector_key = sector.upper()
+            else:
+                sector_key = sector.name
+
+            if sector_key in sector_specific_questions:
+                return sector_specific_questions[sector_key]
+            else:
+                # 기본 섹터 특화 질문 (새로운 섹터용)
+                return f"""
+Q5: {sector_name} 섹터 특화 경쟁력과 차별화 요소는?
+  └─ Q5-1: {sector_name} 섹터 내 핵심 경쟁력은?
+    • [Fact Layer] 섹터 핵심 역량: [구체적 내용] **[출처]**
+    • [Fact Layer] 시장 점유율: [구체적 수치] **[출처]**
+    • [Fact Layer] 경쟁 우위 요소: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 내 경쟁력 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 경쟁력: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 경쟁력이 미래 성장에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-2: {sector_name} 섹터 핵심 성장 동력과 차별화 요소는?
+    • [Fact Layer] 섹터 핵심 사업 영역: [구체적 내용] **[출처]**
+    • [Fact Layer] 섹터 차별화 요소: [구체적 내용] **[출처]**
+    • [Fact Layer] 브랜드 가치: [구체적 수치] **[출처]**
+    • [Interpretation Layer] 섹터 특화 차별화 요소의 지속가능성: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 차별화 요소: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 차별화 요소가 기업 가치에 미치는 영향: [구체적 분석] **[출처]**
+  └─ Q5-3: {sector_name} 섹터 운영 효율성과 전략적 우위는?
+    • [Fact Layer] 섹터 운영 효율성 지표: [구체적 수치] **[출처]**
+    • [Fact Layer] 섹터 비용 구조: [구체적 분석] **[출처]**
+    • [Fact Layer] 섹터 전략적 파트너십: [구체적 내용] **[출처]**
+    • [Interpretation Layer] 섹터 내 운영 우위 평가: [구체적 분석] **[출처]**
+    • [Peer Benchmark] 섹터 내 경쟁사 대비 운영 효율성: [구체적 비교] **[출처]**
+    • [Chain of Reasoning] 섹터 특화 운영 우위가 수익성에 미치는 영향: [구체적 분석] **[출처]**
+"""
+
+        except Exception as e:
+            logger.warning(f"⚠️ 섹터별 Q5 질문 생성 실패: {e}")
+            return ""
 
     @staticmethod
     def _get_sector_analysis_guidance(sector, sector_manager) -> str:

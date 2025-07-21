@@ -4515,39 +4515,75 @@ LLM 호출 중 오류가 발생했습니다: {str(llm_call_error)}
                     logger.warning(
                         f"⚠️ 여전히 토큰 제한 초과: {total_estimated_tokens:,} > {target_token_limit:,}"
                     )
-                    # 🔧 추가 긴급 압축 적용
-                    emergency_ratio = (
-                        target_token_limit / total_estimated_tokens * 0.8
-                    )  # 80% 안전 마진
-                    logger.info(f"🚨 긴급 추가 압축 적용: {emergency_ratio:.3f} 비율")
 
-                    # 모든 데이터에 긴급 압축 적용
-                    for key in [
-                        "financial_data",
-                        "enhanced_dart_data",
-                        "manus_collected_data",
-                        "dart_reports_dictionary",
-                    ]:
-                        if optimized_data[key]:
-                            if key == "financial_data":
-                                optimized_data[key] = self._compress_financial_data(
-                                    optimized_data[key], emergency_ratio
+                    # 🔧 지능적 압축 전략 적용
+                    remaining_tokens = total_estimated_tokens - target_token_limit
+                    logger.info(f"🔧 추가 압축 필요: {remaining_tokens:,} 토큰")
+
+                    # 우선순위 기반 압축 (중요도 순서)
+                    compression_priority = [
+                        ("manus_collected_data", 0.3),  # Manus 데이터 30% 압축
+                        ("enhanced_dart_data", 0.2),  # DART 데이터 20% 압축
+                        ("financial_data", 0.15),  # 재무데이터 15% 압축
+                    ]
+
+                    for data_key, compression_ratio in compression_priority:
+                        if optimized_data[data_key]:
+                            logger.info(
+                                f"🔧 {data_key} 지능적 압축 적용: {compression_ratio:.1%}"
+                            )
+
+                            if data_key == "financial_data":
+                                optimized_data[data_key] = (
+                                    self._compress_financial_data(
+                                        optimized_data[data_key],
+                                        1.0 - compression_ratio,
+                                    )
                                 )
-                            elif key == "enhanced_dart_data":
-                                optimized_data[key] = self._compress_dart_data(
-                                    optimized_data[key], emergency_ratio
+                            elif data_key == "enhanced_dart_data":
+                                optimized_data[data_key] = self._compress_dart_data(
+                                    optimized_data[data_key], 1.0 - compression_ratio
                                 )
-                            elif key == "manus_collected_data":
-                                optimized_data[key] = self._compress_manus_data(
-                                    optimized_data[key], emergency_ratio
+                            elif data_key == "manus_collected_data":
+                                optimized_data[data_key] = self._compress_manus_data(
+                                    optimized_data[data_key], 1.0 - compression_ratio
                                 )
-                            elif key == "dart_reports_dictionary":
-                                # 🚨 DART 딕셔너리는 이미 필터링된 데이터이므로 긴급 압축에서 제외
-                                logger.info(
-                                    "🚨 DART 딕셔너리는 이미 필터링된 데이터이므로 긴급 압축에서 제외"
-                                )
-                                # 원본 데이터 유지 (압축하지 않음)
-                                continue
+
+                    # DART 딕셔너리는 이미 필터링된 핵심 데이터이므로 압축하지 않음
+                    logger.info("🔧 DART 딕셔너리는 핵심 데이터로 압축 제외")
+
+                    # 최종 토큰 재계산
+                    final_tokens = self._estimate_tokens(str(optimized_data))
+                    logger.info(
+                        f"🔧 최종 토큰: {final_tokens:,} (목표: {target_token_limit:,})"
+                    )
+
+                    if final_tokens > target_token_limit:
+                        logger.warning(
+                            f"⚠️ 여전히 초과: {final_tokens:,} > {target_token_limit:,}"
+                        )
+                        # 마지막 수단: 긴급 압축
+                        emergency_ratio = target_token_limit / final_tokens * 0.9
+                        logger.info(f"🚨 긴급 압축 적용: {emergency_ratio:.3f} 비율")
+
+                        for key in [
+                            "financial_data",
+                            "enhanced_dart_data",
+                            "manus_collected_data",
+                        ]:
+                            if optimized_data[key]:
+                                if key == "financial_data":
+                                    optimized_data[key] = self._compress_financial_data(
+                                        optimized_data[key], emergency_ratio
+                                    )
+                                elif key == "enhanced_dart_data":
+                                    optimized_data[key] = self._compress_dart_data(
+                                        optimized_data[key], emergency_ratio
+                                    )
+                                elif key == "manus_collected_data":
+                                    optimized_data[key] = self._compress_manus_data(
+                                        optimized_data[key], emergency_ratio
+                                    )
 
                 # 압축이 너무 과도한 경우 경고
                 if compression_achieved < 0.15:  # 15% 미만으로 압축된 경우
