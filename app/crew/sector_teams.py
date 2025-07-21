@@ -953,7 +953,12 @@ class AnalystAgent:
             try:
                 # LLMChain의 run 메서드 사용
                 chain_result = self.langchain_chain.run(input_data)
-                analysis_result = str(chain_result)
+                raw_analysis = str(chain_result)
+
+                # 분석 결과를 간단하게 정리
+                analysis_result = self._simplify_technical_analysis(
+                    raw_analysis, input_data
+                )
                 print(f"✅ {self.name} 기술적 분석 완료")
 
             except Exception as analysis_error:
@@ -985,6 +990,122 @@ class AnalystAgent:
         except Exception as e:
             print(f"❌ {self.name} 기술적 분석 실패: {e}")
             return {"error": str(e)}
+
+    def _simplify_technical_analysis(
+        self, raw_analysis: str, input_data: Dict[str, Any]
+    ) -> str:
+        """
+        기술적 분석 결과를 간단하고 읽기 쉽게 정리해요
+
+        Args:
+            raw_analysis: 원본 분석 결과
+            input_data: 입력 데이터
+
+        Returns:
+            str: 간단하게 정리된 분석 결과
+        """
+        try:
+            # 입력 데이터에서 핵심 정보 추출
+            price_data = input_data.get("price_data", {})
+            technical_indicators = input_data.get("technical_indicators", {})
+            trading_signals = input_data.get("trading_signals", {})
+
+            # 간단한 분석 결과 생성
+            simplified_result = f"""
+**📊 {input_data.get('company_name', '분석대상')} 기술적 분석 요약**
+
+**1. 핵심 기술적 지표**
+"""
+
+            # 현재가 정보
+            if isinstance(price_data, dict) and "current_snapshot" in price_data:
+                current_price = price_data["current_snapshot"].get("price", "N/A")
+                simplified_result += f"- 현재가: {current_price:,}원\n"
+
+            # RSI 정보
+            if isinstance(technical_indicators, dict) and "rsi" in technical_indicators:
+                rsi_data = technical_indicators["rsi"]
+                rsi_value = rsi_data.get("current_value", "N/A")
+                rsi_interpretation = rsi_data.get("interpretation", "N/A")
+                simplified_result += f"- RSI: {rsi_value:.1f} ({rsi_interpretation})\n"
+
+            # MACD 정보
+            if (
+                isinstance(technical_indicators, dict)
+                and "macd" in technical_indicators
+            ):
+                macd_data = technical_indicators["macd"]
+                macd_line = macd_data.get("MACD_line", "N/A")
+                signal_interpretation = macd_data.get("signal_interpretation", "N/A")
+                simplified_result += (
+                    f"- MACD: {macd_line:.0f} ({signal_interpretation})\n"
+                )
+
+            # 이동평균 정보
+            if (
+                isinstance(technical_indicators, dict)
+                and "moving_averages" in technical_indicators
+            ):
+                ma_data = technical_indicators["moving_averages"]
+                ma_5 = ma_data.get("MA_5", "N/A")
+                ma_20 = ma_data.get("MA_20", "N/A")
+                ma_60 = ma_data.get("MA_60", "N/A")
+                simplified_result += f"- 이동평균: 5일 {ma_5:,.0f}원, 20일 {ma_20:,.0f}원, 60일 {ma_60:,.0f}원\n"
+
+            # 볼린저밴드 정보
+            if (
+                isinstance(technical_indicators, dict)
+                and "bollinger_bands" in technical_indicators
+            ):
+                bb_data = technical_indicators["bollinger_bands"]
+                position_analysis = bb_data.get("position_analysis", "N/A")
+                signal = bb_data.get("signal", "N/A")
+                simplified_result += f"- 볼린저밴드: {position_analysis} ({signal})\n"
+
+            # 매매 신호 정보
+            simplified_result += "\n**2. 매매 신호**\n"
+            if isinstance(trading_signals, dict):
+                overall_signal = trading_signals.get("overall_signal", "N/A")
+                recommendation = trading_signals.get("recommendation", "N/A")
+                simplified_result += f"- 종합 신호: {overall_signal}\n"
+                simplified_result += f"- 권고: {recommendation}\n"
+
+            # 지지/저항 정보
+            simplified_result += "\n**3. 지지/저항 레벨**\n"
+            if isinstance(price_data, dict) and "support_resistance" in price_data:
+                sr_data = price_data["support_resistance"]
+                nearest_support = sr_data.get("nearest_support", "N/A")
+                nearest_resistance = sr_data.get("nearest_resistance", "N/A")
+                if nearest_support != "N/A":
+                    simplified_result += f"- 지지선: {nearest_support:,.0f}원\n"
+                if nearest_resistance != "N/A":
+                    simplified_result += f"- 저항선: {nearest_resistance:,.0f}원\n"
+
+            # 거래량 정보
+            simplified_result += "\n**4. 거래량 분석**\n"
+            if (
+                isinstance(technical_indicators, dict)
+                and "volume_indicators" in technical_indicators
+            ):
+                volume_data = technical_indicators["volume_indicators"]
+                volume_ratio = volume_data.get("volume_ratio", "N/A")
+                if volume_ratio != "N/A":
+                    volume_status = "평균 이상" if volume_ratio > 1.0 else "평균 이하"
+                    simplified_result += (
+                        f"- 거래량: {volume_status} (평균 대비 {volume_ratio:.1f}배)\n"
+                    )
+
+            # 원본 분석 결과의 핵심 내용 추가
+            if raw_analysis and len(raw_analysis) > 100:
+                simplified_result += f"\n**5. 상세 분석**\n{raw_analysis[:500]}..."
+
+            return simplified_result
+
+        except Exception as e:
+            # 오류 발생시 원본 결과 반환
+            return (
+                f"분석 결과 정리 중 오류 발생: {str(e)}\n\n원본 결과:\n{raw_analysis}"
+            )
 
     # def run_full_footnote_analysis(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
     #     """
@@ -2093,13 +2214,37 @@ class SectorTeamFactory:
 - 밸류에이션 분석 금지
 - 오직 차트와 기술적 지표만 분석
 
-**📈 출력 형식**
-1. **차트 패턴 분석**: [주요 패턴과 의미]
-2. **기술적 지표**: [RSI, MACD, 이동평균 등]
-3. **거래량 분석**: [거래량 패턴과 신호]
-4. **지지/저항**: [주요 레벨과 목표가]
-5. **매매 신호**: [매수/매도/홀드 권고]
-6. **리스크 관리**: [손절가, 익절가]
+**📈 출력 형식 (간단하고 명확하게)**
+
+**1. 핵심 기술적 지표**
+- 현재가: [가격]
+- RSI: [수치] ([해석])
+- MACD: [수치] ([신호])
+- 이동평균: 5일 [수치], 20일 [수치], 60일 [수치]
+- 볼린저밴드: [위치] ([신호])
+
+**2. 차트 패턴**
+- 주요 패턴: [패턴명]
+- 추세: [상승/하락/횡보]
+- 변동성: [수준]
+
+**3. 지지/저항 레벨**
+- 지지선: [가격]
+- 저항선: [가격]
+- 목표가: [가격]
+
+**4. 거래량 분석**
+- 거래량: [수준] ([평균 대비])
+- OBV: [추세]
+
+**5. 매매 신호**
+- 종합 신호: [매수/매도/홀드]
+- 신뢰도: [수준]
+- 권고: [구체적 행동]
+
+**6. 리스크 관리**
+- 손절가: [가격]
+- 익절가: [가격]
 
 **분석 데이터:**
 - 회사명: {{company_name}}
@@ -2108,6 +2253,8 @@ class SectorTeamFactory:
 - 시장 데이터: {{market_data}}
 - 기술적 지표: {{technical_indicators}}
 - 매매 신호: {{trading_signals}}
+
+**🔴 중요**: 딕셔너리 형태가 아닌 간단한 텍스트로 분석 결과를 제시하세요. 각 지표의 수치와 해석을 명확하게 표시하되, 복잡한 JSON 구조는 피하세요.
 
 웹 검색을 통해 최신 기술적 트렌드를 반영하되, 재무 분석은 하지 마세요.
 """,

@@ -57,14 +57,39 @@ async def test_technical_analysis_fix():
         # 5. 기술적 분석 테스트
         print("\n📈 5단계: 기술적 분석 테스트...")
 
-        # 테스트용 입력 데이터
+        # 테스트용 입력 데이터 (실제 데이터 구조와 유사하게)
         test_input_data = {
             "company_name": "삼성전자",
             "sector_name": "정보기술",
-            "price_data": "최근 주가: 70,000원, 20일 이동평균: 68,000원, RSI: 65",
-            "market_data": "KOSPI 지수: 2,500, 섹터 상대강도: 1.2",
-            "technical_indicators": "RSI: 65, MACD: 양수, 볼린저밴드: 중간",
-            "trading_signals": "매수 신호: 3개, 매도 신호: 1개",
+            "price_data": {
+                "current_snapshot": {"price": 67800.0},
+                "support_resistance": {
+                    "nearest_support": 60200.0,
+                    "nearest_resistance": None,
+                },
+            },
+            "market_data": {"kospi": 2500},
+            "technical_indicators": {
+                "rsi": {"current_value": 76.0, "interpretation": "과매수"},
+                "macd": {
+                    "MACD_line": 2021.9,
+                    "signal_interpretation": "상승 추세 지속",
+                },
+                "moving_averages": {
+                    "MA_5": 66000.0,
+                    "MA_20": 62515.0,
+                    "MA_60": 58651.7,
+                },
+                "bollinger_bands": {
+                    "position_analysis": "상단 밴드 근처",
+                    "signal": "매도 고려",
+                },
+                "volume_indicators": {"volume_ratio": 0.86},
+            },
+            "trading_signals": {
+                "overall_signal": "중립",
+                "recommendation": "관망 또는 기존 포지션 유지",
+            },
         }
 
         print("🔍 기술적 분석 실행 중...")
