@@ -42,15 +42,19 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 # 모듈 import
 # Manus 에이전트를 다시 활성화해요 - 웹 검색과 다양한 도구 사용을 위해 필요해요
 from app.agent.manus import Manus
+
 # 종목 분류 기능 제거 - from app.agent.stock_classifier import StockClassifier
 from app.agent.stock_name_extractor import StockNameExtractor
+
 # 🚀 One-Hot Sector Activation 시스템 import
 from app.crew.smart_sector_manager import AnalysisDepth, SmartSectorManager
 from app.data_collector import FinancialDataCollector
-from app.data_collector.enhanced_financial_data_collector import \
-    EnhancedDartDataCollector
+from app.data_collector.enhanced_financial_data_collector import (
+    EnhancedDartDataCollector,
+)
 from app.llm import LLM
 from app.logger import logger
+
 # 🚀 io_logger 모듈을 import해서 일관된 로그 저장을 위해 사용해요
 from io_logger import save_interaction_log
 
@@ -65,9 +69,10 @@ except ImportError as e:
     DYNAMIC_EXTRACTOR_AVAILABLE = False
 
 from app.utils.large_pdf_analyzer import LargePDFAnalyzer
+
 # 성능 모니터링 도구를 불러와요
-from app.utils.performance_monitor import (get_performance_monitor,
-                                           monitor_performance)
+from app.utils.performance_monitor import get_performance_monitor, monitor_performance
+
 # 🔢 토큰 계산기 import (섹션별 토큰 수 계산용)
 from app.utils.token_calculator import SectionTokenCalculator
 
@@ -661,12 +666,14 @@ class EnhancedStockAnalysisSystem:
 
         # 🚀 애널리스트 리포트 출력 추가
         final_senior_report = results.get("final_senior_report")
-        if final_senior_report and not final_senior_report.startswith("리포트 생성 실패"):
-            print("\n" + "="*80)
+        if final_senior_report and not final_senior_report.startswith(
+            "리포트 생성 실패"
+        ):
+            print("\n" + "=" * 80)
             print("📋 시니어 애널리스트 리포트")
-            print("="*80)
+            print("=" * 80)
             print(final_senior_report)
-            print("="*80)
+            print("=" * 80)
         elif final_senior_report and final_senior_report.startswith("리포트 생성 실패"):
             print(f"\n⚠️ 애널리스트 리포트 생성 중 오류: {final_senior_report}")
         else:
@@ -3270,13 +3277,17 @@ async def main():
 
             # 🚀 애널리스트 리포트 출력 추가
             final_senior_report = results.get("final_senior_report")
-            if final_senior_report and not final_senior_report.startswith("리포트 생성 실패"):
-                print("\n" + "="*80)
+            if final_senior_report and not final_senior_report.startswith(
+                "리포트 생성 실패"
+            ):
+                print("\n" + "=" * 80)
                 print("📋 시니어 애널리스트 리포트")
-                print("="*80)
+                print("=" * 80)
                 print(final_senior_report)
-                print("="*80)
-            elif final_senior_report and final_senior_report.startswith("리포트 생성 실패"):
+                print("=" * 80)
+            elif final_senior_report and final_senior_report.startswith(
+                "리포트 생성 실패"
+            ):
                 print(f"\n⚠️ 애널리스트 리포트 생성 중 오류: {final_senior_report}")
             else:
                 print("\n⚠️ 애널리스트 리포트가 생성되지 않았습니다.")
@@ -3307,15 +3318,6 @@ async def main():
 if __name__ == "__main__":
     """
     스크립트가 직접 실행될 때 main 함수를 실행합니다.
-    """
-    print("🔥 Enhanced Stock Analysis System v2.0")
-    print("🚀 AI 기반 종합 주식 분석 시스템")
-    print("💡 ManusAgent + CrewAI + Enhanced DART API")
-    print()
-
-    # 비동기 함수 실행
-    asyncio.run(main())
-
     """
     print("🔥 Enhanced Stock Analysis System v2.0")
     print("🚀 AI 기반 종합 주식 분석 시스템")

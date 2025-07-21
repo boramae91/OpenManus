@@ -178,10 +178,37 @@ class FinancialDataCollector:
                 except Exception as e:
                     self.logger.error(f"❌ 실제 데이터 계산 실패: {e}")
 
-            # 현재가 정보
+            # 🚀 실시간 주가 정보 강화
             current_price = info.get("regularMarketPrice", 0)
+            previous_close = info.get("previousClose", 0)
+            open_price = info.get("open", 0)
+            day_high = info.get("dayHigh", 0)
+            day_low = info.get("dayLow", 0)
+            volume = info.get("volume", 0)
+
+            # 현재가가 없으면 최신 거래 데이터에서 가져오기
+            if not current_price or current_price == 0:
+                try:
+                    # 최신 거래 데이터 가져오기
+                    latest_data = ticker.history(period="1d")
+                    if not latest_data.empty:
+                        current_price = float(latest_data["Close"].iloc[-1])
+                        self.logger.info(
+                            f"✅ 최신 거래 데이터에서 현재가 추출: {current_price:,.0f}원"
+                        )
+                except Exception as e:
+                    self.logger.warning(f"⚠️ 최신 거래 데이터 추출 실패: {e}")
+
             if current_price:
                 self.logger.info(f"💰 현재가: {current_price:,.0f}원")
+                if previous_close:
+                    change = current_price - previous_close
+                    change_pct = (
+                        (change / previous_close * 100) if previous_close else 0
+                    )
+                    self.logger.info(
+                        f"📈 전일대비: {change:+,.0f}원 ({change_pct:+.2f}%)"
+                    )
 
             # 시가총액 정보
             market_cap = info.get("marketCap", 0)
@@ -204,7 +231,13 @@ class FinancialDataCollector:
 
             return {
                 "success": True,
+                # 🚀 강화된 실시간 주가 정보
                 "current_price": current_price,
+                "previous_close": previous_close,
+                "open_price": open_price,
+                "day_high": day_high,
+                "day_low": day_low,
+                "volume": volume,
                 "market_cap": market_cap,
                 "earnings_growth": earnings_growth,
                 "revenue_growth": revenue_growth,
@@ -216,10 +249,20 @@ class FinancialDataCollector:
                 "pb_ratio": info.get("priceToBook"),
                 "dividend_yield": info.get("dividendYield"),
                 "beta": info.get("beta"),
-                "volume": info.get("volume"),
                 "avg_volume": info.get("averageVolume"),
                 "high_52week": info.get("fiftyTwoWeekHigh"),
                 "low_52week": info.get("fiftyTwoWeekLow"),
+                # 🚀 추가 주가 변동 정보
+                "price_change": (
+                    current_price - previous_close
+                    if current_price and previous_close
+                    else None
+                ),
+                "price_change_pct": (
+                    ((current_price - previous_close) / previous_close * 100)
+                    if current_price and previous_close and previous_close != 0
+                    else None
+                ),
             }
 
         except Exception as e:
