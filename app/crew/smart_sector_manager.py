@@ -4566,24 +4566,24 @@ LLM 호출 중 오류가 발생했습니다: {str(llm_call_error)}
                         emergency_ratio = target_token_limit / final_tokens * 0.9
                         logger.info(f"🚨 긴급 압축 적용: {emergency_ratio:.3f} 비율")
 
-                        for key in [
-                            "financial_data",
-                            "enhanced_dart_data",
-                            "manus_collected_data",
-                        ]:
-                            if optimized_data[key]:
-                                if key == "financial_data":
-                                    optimized_data[key] = self._compress_financial_data(
-                                        optimized_data[key], emergency_ratio
-                                    )
-                                elif key == "enhanced_dart_data":
-                                    optimized_data[key] = self._compress_dart_data(
-                                        optimized_data[key], emergency_ratio
-                                    )
-                                elif key == "manus_collected_data":
-                                    optimized_data[key] = self._compress_manus_data(
-                                        optimized_data[key], emergency_ratio
-                                    )
+                    for key in [
+                        "financial_data",
+                        "enhanced_dart_data",
+                        "manus_collected_data",
+                    ]:
+                        if optimized_data[key]:
+                            if key == "financial_data":
+                                optimized_data[key] = self._compress_financial_data(
+                                    optimized_data[key], emergency_ratio
+                                )
+                            elif key == "enhanced_dart_data":
+                                optimized_data[key] = self._compress_dart_data(
+                                    optimized_data[key], emergency_ratio
+                                )
+                            elif key == "manus_collected_data":
+                                optimized_data[key] = self._compress_manus_data(
+                                    optimized_data[key], emergency_ratio
+                                )
 
                 # 압축이 너무 과도한 경우 경고
                 if compression_achieved < 0.15:  # 15% 미만으로 압축된 경우

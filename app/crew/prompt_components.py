@@ -1,5 +1,6 @@
 """
 간단하고 실용적인 8단계 분석 프레임워크
+모듈화된 프롬프트 컴포넌트로 중복 제거
 """
 
 import logging
@@ -9,6 +10,197 @@ logger = logging.getLogger(__name__)
 
 
 class PromptComponents:
+    # ===== 공통 프롬프트 컴포넌트 =====
+
+    @staticmethod
+    def get_8step_checklist() -> str:
+        """8단계 실행 체크리스트를 반환합니다."""
+        return """
+**📋 8단계 실행 체크리스트:**
+- [ ] 1단계: Self-Ask (핵심 질문 구성)
+- [ ] 2단계: ReAct (정보 수집 및 추론)
+- [ ] 3단계: Fact Layer (객관적 사실 분리)
+- [ ] 4단계: Interpretation Layer (주관적 해석)
+- [ ] 5단계: Chain of Reasoning (추론 과정)
+- [ ] 6단계: Peer Benchmark (동종업계 비교)
+- [ ] 7단계: Assumption Ledger (가정 명시)
+- [ ] 8단계: Chain of Verification (결론 검증)
+    """
+
+    @staticmethod
+    def get_8step_structure() -> str:
+        """8단계 구조 설명을 반환합니다."""
+        return """
+**8단계 구조 완전 준수**:
+1단계 Self-Ask → 2단계 ReAct → 3단계 Fact Layer → 4단계 Interpretation Layer →
+5단계 Chain of Reasoning → 6단계 Peer Benchmark → 7단계 Assumption Ledger → 8단계 Chain of Verification
+"""
+
+    @staticmethod
+    def get_layer_separation_rule() -> str:
+        """Fact Layer와 Interpretation Layer 분리 규칙을 반환합니다."""
+        return """
+**Fact Layer ↔ Interpretation Layer 분리**:
+객관적 사실과 주관적 해석을 명확히 구분
+- Fact Layer: 순수 사실만 기록, 모든 수치에 [출처] 명시
+- Interpretation Layer: Fact Layer 기반 해석, 트렌드와 패턴 분석
+"""
+
+    @staticmethod
+    def get_data_sources_guide() -> str:
+        """데이터 소스 활용 가이드를 반환합니다."""
+        return """
+📊 **모든 데이터 종합 활용**:
+✅ **재무데이터**: yfinance 데이터, 기본 재무지표 완전 분석
+✅ **DART 데이터**: 재무제표, 사업보고서, 공시자료 상세 분석
+✅ **사업보고서 딕셔너리**: PDF 상세 정보, 경영진 메시지 심층 분석
+✅ **웹 검색 보완**: 업계 동향, 경쟁사 비교 추가 분석
+"""
+
+    @staticmethod
+    def get_output_format() -> str:
+        """최종 출력 형식을 반환합니다."""
+        return """
+**🎯 최종 투자 의견 및 목표가**
+
+위의 8단계 분석을 바탕으로 최종 투자 의견을 제시하세요:
+
+```
+🎯 투자 의견: [BUY/HOLD/SELL]
+💰 목표가: [구체적 금액]
+📊 신뢰도: [0-100점]
+🔍 핵심 근거: [3가지 주요 근거]
+⚠️ 주요 리스크: [주요 위험 요소]
+```
+"""
+
+    @staticmethod
+    def get_critical_warnings() -> str:
+        """중요한 경고 메시지를 반환합니다."""
+        return """
+**⚠️ 필수 준수 사항 (8단계 Enhanced Framework)**:
+
+🚨 **절대 금지**: 3단계에서 멈추지 마세요! 8단계를 모두 완료해야 합니다!
+
+1. **8단계 구조 완전 준수**: {structure}
+2. **각 단계별 명확한 구분**: 각 단계마다 "### **N단계: 제목**" 형식으로 제목 필수
+3. **Fact Layer ↔ Interpretation Layer 분리**: {layer_rule}
+4. **Chain of Reasoning 기록**: 모든 추론 과정을 단계별로 기록
+5. **Peer Benchmark Layer**: 동종업계 비교 필수 포함
+6. **Assumption Ledger**: DCF/밸류에이션의 모든 가정 명시
+7. **출처 명시 의무**: 모든 수치와 결론에 **[출처]** 명시 (재무데이터/DART/웹검색)
+8. **신뢰도 점수화**: 최종 분석에 0-100점 신뢰도 점수 제시
+
+**✅ 성공 기준**: 위의 8단계를 모두 완료하고 최종 투자 의견을 제시해야 합니다!
+""".format(
+            structure=PromptComponents.get_8step_structure(),
+            layer_rule=PromptComponents.get_layer_separation_rule(),
+        )
+
+    # ===== 8단계별 상세 설명 =====
+
+    @staticmethod
+    def get_step1_self_ask() -> str:
+        """1단계 Self-Ask 설명을 반환합니다."""
+        return """
+### **1단계: Self-Ask (핵심 질문 구성)**
+
+🎯 각 분석 영역별 핵심 질문을 체계적으로 구성하세요:
+"""
+
+    @staticmethod
+    def get_step2_react() -> str:
+        """2단계 ReAct 설명을 반환합니다."""
+        return """
+### **2단계: ReAct (Reason + Action) - 정보 수집**
+
+🔍 각 질문에 대한 체계적 정보 수집과 추론 수행:
+
+**Reason (추론)**: 왜 이 정보가 필요한가?
+**Action (행동)**: 어떤 정보를 어떻게 수집할 것인가?
+
+{data_sources}
+
+**Observation (관찰)**: 수집된 정보의 의미는?
+- 핵심 발견사항, 예상과의 차이, 추가 조사 필요성
+""".format(
+            data_sources=PromptComponents.get_data_sources_guide()
+        )
+
+    @staticmethod
+    def get_step3_fact_layer() -> str:
+        """3단계 Fact Layer 설명을 반환합니다."""
+        return """
+### **3단계: Fact Layer (객관적 사실 분리)**
+
+📊 **모든 객관적 사실을 출처와 함께 명시**:
+- 재무지표, 시장 데이터, 공시 정보 등
+- 모든 수치에 **[출처]** 명시 필수
+- 해석이나 추론 없이 순수 사실만 기록
+"""
+
+    @staticmethod
+    def get_step4_interpretation_layer() -> str:
+        """4단계 Interpretation Layer 설명을 반환합니다."""
+        return """
+### **4단계: Interpretation Layer (주관적 해석)**
+
+🧠 **Fact Layer의 데이터를 바탕으로 한 해석**:
+- 데이터의 의미와 시사점
+- 트렌드 분석과 패턴 인식
+- 업계 특성을 고려한 해석
+"""
+
+    @staticmethod
+    def get_step5_chain_of_reasoning() -> str:
+        """5단계 Chain of Reasoning 설명을 반환합니다."""
+        return """
+### **5단계: Chain of Reasoning (추론 과정)**
+
+🔗 **모든 결론의 논리적 추론 과정을 단계별로 기록**:
+- A → B → C 형태의 명확한 논리 체인
+- 각 단계별 근거와 가정 명시
+- 대안적 시나리오 고려
+"""
+
+    @staticmethod
+    def get_step6_peer_benchmark() -> str:
+        """6단계 Peer Benchmark 설명을 반환합니다."""
+        return """
+### **6단계: Peer Benchmark (동종업계 비교)**
+
+📈 **업계 평균 및 경쟁사 대비 위치 분석**:
+- 동종업계 평균과의 비교
+- 주요 경쟁사 대비 상대적 위치
+- 글로벌 기준 비교 (해당 시)
+"""
+
+    @staticmethod
+    def get_step7_assumption_ledger() -> str:
+        """7단계 Assumption Ledger 설명을 반환합니다."""
+        return """
+### **7단계: Assumption Ledger (가정 명시)**
+
+📝 **모든 분석에서 사용된 가정을 명시**:
+- DCF 모델의 가정 (성장률, 할인율 등)
+- 멀티플 비교의 기준
+- 리스크 평가의 가정
+"""
+
+    @staticmethod
+    def get_step8_chain_of_verification() -> str:
+        """8단계 Chain of Verification 설명을 반환합니다."""
+        return """
+### **8단계: Chain of Verification (결론 검증)**
+
+✅ **각 핵심 결론에 대한 검증 수행**:
+- 출처의 신뢰성 검증
+- 수치 기반 타당성 검증
+- 상대 비교의 논리적 적절성 검증
+"""
+
+    # ===== 메인 프롬프트 생성 메서드 =====
+
     @staticmethod
     def get_enhanced_analyst_thinking_flow(
         sector=None,
@@ -16,7 +208,7 @@ class PromptComponents:
     ) -> str:
         """
         8단계 체계적 분석 프레임워크를 반환합니다.
-        기존의 복잡한 4단계 구조를 실용적인 8단계로 단순화했습니다.
+        모듈화된 컴포넌트를 조합하여 중복 없는 프롬프트를 생성합니다.
         """
 
         dynamic_questions = PromptComponents._get_default_questions(
@@ -34,21 +226,11 @@ class PromptComponents:
 
 ⚠️ **중요**: 다음 8단계를 **반드시 순서대로 모두 수행**하세요. 3단계에서 멈추지 마세요!
 
-**📋 8단계 실행 체크리스트:**
-- [ ] 1단계: Self-Ask (핵심 질문 구성)
-- [ ] 2단계: ReAct (정보 수집 및 추론)
-- [ ] 3단계: Fact Layer (객관적 사실 분리)
-- [ ] 4단계: Interpretation Layer (주관적 해석)
-- [ ] 5단계: Chain of Reasoning (추론 과정)
-- [ ] 6단계: Peer Benchmark (동종업계 비교)
-- [ ] 7단계: Assumption Ledger (가정 명시)
-- [ ] 8단계: Chain of Verification (결론 검증)
+{PromptComponents.get_8step_checklist()}
 
 ---
 
-### **1단계: Self-Ask (핵심 질문 구성)**
-
-🎯 각 분석 영역별 핵심 질문을 체계적으로 구성하세요:
+{PromptComponents.get_step1_self_ask()}
 
 {dynamic_questions}
 
@@ -56,104 +238,37 @@ class PromptComponents:
 
 ---
 
-### **2단계: ReAct (Reason + Action) - 정보 수집**
-
-🔍 각 질문에 대한 체계적 정보 수집과 추론 수행:
-
-**Reason (추론)**: 왜 이 정보가 필요한가?
-**Action (행동)**: 어떤 정보를 어떻게 수집할 것인가?
-
-📊 **모든 데이터 종합 활용**:
-✅ **재무데이터**: yfinance 데이터, 기본 재무지표 완전 분석
-✅ **DART 데이터**: 재무제표, 사업보고서, 공시자료 상세 분석
-✅ **사업보고서 딕셔너리**: PDF 상세 정보, 경영진 메시지 심층 분석
-✅ **웹 검색 보완**: 업계 동향, 경쟁사 비교 추가 분석
-
-**Observation (관찰)**: 수집된 정보의 의미는?
-- 핵심 발견사항, 예상과의 차이, 추가 조사 필요성
+{PromptComponents.get_step2_react()}
 
 ---
 
-### **3단계: Fact Layer (객관적 사실 분리)**
-
-📊 **모든 객관적 사실을 출처와 함께 명시**:
-- 재무지표, 시장 데이터, 공시 정보 등
-- 모든 수치에 **[출처]** 명시 필수
-- 해석이나 추론 없이 순수 사실만 기록
+{PromptComponents.get_step3_fact_layer()}
 
 ---
 
-### **4단계: Interpretation Layer (주관적 해석)**
-
-🧠 **Fact Layer의 데이터를 바탕으로 한 해석**:
-- 데이터의 의미와 시사점
-- 트렌드 분석과 패턴 인식
-- 업계 특성을 고려한 해석
+{PromptComponents.get_step4_interpretation_layer()}
 
 ---
 
-### **5단계: Chain of Reasoning (추론 과정)**
-
-🔗 **모든 결론의 논리적 추론 과정을 단계별로 기록**:
-- A → B → C 형태의 명확한 논리 체인
-- 각 단계별 근거와 가정 명시
-- 대안적 시나리오 고려
+{PromptComponents.get_step5_chain_of_reasoning()}
 
 ---
 
-### **6단계: Peer Benchmark (동종업계 비교)**
-
-📈 **업계 평균 및 경쟁사 대비 위치 분석**:
-- 동종업계 평균과의 비교
-- 주요 경쟁사 대비 상대적 위치
-- 글로벌 기준 비교 (해당 시)
+{PromptComponents.get_step6_peer_benchmark()}
 
 ---
 
-### **7단계: Assumption Ledger (가정 명시)**
-
-📝 **모든 분석에서 사용된 가정을 명시**:
-- DCF 모델의 가정 (성장률, 할인율 등)
-- 멀티플 비교의 기준
-- 리스크 평가의 가정
+{PromptComponents.get_step7_assumption_ledger()}
 
 ---
 
-### **8단계: Chain of Verification (결론 검증)**
-
-✅ **각 핵심 결론에 대한 검증 수행**:
-- 출처의 신뢰성 검증
-- 수치 기반 타당성 검증
-- 상대 비교의 논리적 적절성 검증
+{PromptComponents.get_step8_chain_of_verification()}
 
 ---
 
-### **🎯 최종 투자 의견 및 목표가**
+{PromptComponents.get_output_format()}
 
-위의 8단계 분석을 바탕으로 최종 투자 의견을 제시하세요:
-
-```
-🎯 투자 의견: [BUY/HOLD/SELL]
-💰 목표가: [구체적 금액]
-📊 신뢰도: [0-100점]
-🔍 핵심 근거: [3가지 주요 근거]
-⚠️ 주요 리스크: [주요 위험 요소]
-```
-
-**⚠️ 필수 준수 사항 (8단계 Enhanced Framework)**:
-
-🚨 **절대 금지**: 3단계에서 멈추지 마세요! 8단계를 모두 완료해야 합니다!
-
-1. **8단계 구조 완전 준수**: 1단계 Self-Ask → 2단계 ReAct → 3단계 Fact Layer → 4단계 Interpretation Layer → 5단계 Chain of Reasoning → 6단계 Peer Benchmark → 7단계 Assumption Ledger → 8단계 Chain of Verification
-2. **각 단계별 명확한 구분**: 각 단계마다 "### **N단계: 제목**" 형식으로 제목 필수
-3. **Fact Layer ↔ Interpretation Layer 분리**: 객관적 사실과 주관적 해석을 명확히 구분
-4. **Chain of Reasoning 기록**: 모든 추론 과정을 단계별로 기록
-5. **Peer Benchmark Layer**: 동종업계 비교 필수 포함
-6. **Assumption Ledger**: DCF/밸류에이션의 모든 가정 명시
-7. **출처 명시 의무**: 모든 수치와 결론에 **[출처]** 명시 (재무데이터/DART/웹검색)
-8. **신뢰도 점수화**: 최종 분석에 0-100점 신뢰도 점수 제시
-
-**✅ 성공 기준**: 위의 8단계를 모두 완료하고 최종 투자 의견을 제시해야 합니다!
+{PromptComponents.get_critical_warnings()}
 """
 
     @staticmethod
@@ -451,9 +566,9 @@ Q1: 이 기업의 재무적 건전성은 어떤가?
     • [Peer Benchmark] 동종업계 순위: [구체적 순위] **[출처]**
     • [Chain of Reasoning] 수익성 지표가 재무 건전성에 미치는 영향: [구체적 분석] **[출처]**
   └─ Q1-2: 부채비율과 유동성은 안전한 수준인가?
-    • [Fact Layer] 부채비율: [구체적 수치]% (안전 기준: 50% 이하) **[출처]**
-    • [Fact Layer] 유동비율: [구체적 수치] (안전 기준: 1.0 이상) **[출처]**
-    • [Fact Layer] 당좌비율: [구체적 수치] (안전 기준: 0.8 이상) **[출처]**
+    • [Fact Layer] 부채비율: [구체적 수치]%  **[출처]**
+    • [Fact Layer] 유동비율: [구체적 수치]  **[출처]**
+    • [Fact Layer] 당좌비율: [구체적 수치]  **[출처]**
     • [Interpretation Layer] 부채 및 유동성 위험도 평가: [구체적 분석] **[출처]**
     • [Peer Benchmark] 업계 평균 대비 부채 수준: [구체적 비교] **[출처]**
     • [Chain of Reasoning] 부채 구조가 기업 가치에 미치는 영향: [구체적 분석] **[출처]**
@@ -548,9 +663,14 @@ Q4: 주요 리스크와 기회 요인은 무엇인가?
             )
             if q5_questions:
                 return base_questions + q5_questions
-            else:
-                # 섹터별 Q5 생성 실패 시 기본 Q5 사용
-                default_q5 = """
+
+        # 섹터별 Q5 생성 실패 또는 섹터 정보가 없으면 기본 Q5 사용
+        return base_questions + PromptComponents._get_default_q5_questions()
+
+    @staticmethod
+    def _get_default_q5_questions() -> str:
+        """기본 Q5 질문을 반환합니다. 섹터별 Q5 생성 실패 시 사용됩니다."""
+        return """
 Q5: 섹터 특화 경쟁력과 차별화 요소는?
   └─ Q5-1: 핵심 경쟁력과 시장 포지션은?
     • [Fact Layer] 핵심 사업 영역: [구체적 내용] **[출처]**
@@ -574,107 +694,26 @@ Q5: 섹터 특화 경쟁력과 차별화 요소는?
     • [Peer Benchmark] 경쟁사 대비 운영 효율성: [구체적 비교] **[출처]**
     • [Chain of Reasoning] 운영 우위가 수익성에 미치는 영향: [구체적 분석] **[출처]**
 """
-                return base_questions + default_q5
-        else:
-            # 섹터 정보가 없으면 기본 Q5 사용
-            default_q5 = """
-Q5: 섹터 특화 경쟁력과 차별화 요소는?
-  └─ Q5-1: 핵심 경쟁력과 시장 포지션은?
-    • [Fact Layer] 핵심 사업 영역: [구체적 내용] **[출처]**
-    • [Fact Layer] 시장 점유율: [구체적 수치] **[출처]**
-    • [Fact Layer] 경쟁 우위 요소: [구체적 내용] **[출처]**
-    • [Interpretation Layer] 경쟁력 평가: [구체적 분석] **[출처]**
-    • [Peer Benchmark] 경쟁사 대비 경쟁력: [구체적 비교] **[출처]**
-    • [Chain of Reasoning] 경쟁력이 미래 성장에 미치는 영향: [구체적 분석] **[출처]**
-  └─ Q5-2: 핵심 성장 동력과 차별화 요소는?
-    • [Fact Layer] 핵심 사업 영역: [구체적 내용] **[출처]**
-    • [Fact Layer] 차별화 요소: [구체적 내용] **[출처]**
-    • [Fact Layer] 브랜드 가치: [구체적 수치] **[출처]**
-    • [Interpretation Layer] 차별화 요소의 지속가능성: [구체적 분석] **[출처]**
-    • [Peer Benchmark] 경쟁사 대비 차별화 요소: [구체적 비교] **[출처]**
-    • [Chain of Reasoning] 차별화 요소가 기업 가치에 미치는 영향: [구체적 분석] **[출처]**
-  └─ Q5-3: 운영 효율성과 전략적 우위는?
-    • [Fact Layer] 운영 효율성 지표: [구체적 수치] **[출처]**
-    • [Fact Layer] 비용 구조: [구체적 분석] **[출처]**
-    • [Fact Layer] 전략적 파트너십: [구체적 내용] **[출처]**
-    • [Interpretation Layer] 운영 우위 평가: [구체적 분석] **[출처]**
-    • [Peer Benchmark] 경쟁사 대비 운영 효율성: [구체적 비교] **[출처]**
-    • [Chain of Reasoning] 운영 우위가 수익성에 미치는 영향: [구체적 분석] **[출처]**
-"""
-            return base_questions + default_q5
 
     @staticmethod
     def _generate_sector_specific_questions(sector=None, sector_manager=None) -> str:
         """
         특정 섹터에 맞춤화된 동적 질문들을 생성합니다.
-        기존 4개 기본 질문 + 섹터별 특화 질문 5개 확장 방식입니다.
+        현재는 Q5만 사용하므로 Q5 섹터별 질문만 반환합니다.
 
         Args:
             sector: GICS 섹터
             sector_manager: 섹터 매니저 인스턴스
 
         Returns:
-            str: 기본 질문 + 섹터별 맞춤 질문들
+            str: 기본 질문 + 섹터별 Q5 질문
         """
         try:
             # 기본 질문 가져오기 (섹터 정보 포함)
             base_questions = PromptComponents._get_default_questions(
                 sector, sector_manager
             )
-
-            # 섹터별 특화 질문 추가 (Q6-Q8)
-            sector_specific = ""
-            if sector and sector_manager:
-                sector_name = getattr(
-                    sector_manager, "get_sector_korean_name", lambda x: str(x)
-                )(sector)
-                sector_specific = f"""
-
-**🏭 {sector_name} 섹터 특화 분석 질문:**
-
-Q6: {sector_name} 섹터 특화 경쟁력 분석
-  └─ Q6-1: 섹터 내 기술적 우위는?
-    • [Fact Layer] 핵심 기술 보유 현황: [구체적 내용] **[출처]**
-    • [Fact Layer] 기술 개발 투자 규모: [구체적 수치] **[출처]**
-    • [Interpretation Layer] 기술적 경쟁력 평가: [구체적 분석] **[출처]**
-    • [Peer Benchmark] 섹터 내 기술력 순위: [구체적 순위] **[출처]**
-  └─ Q6-2: 섹터 트렌드 대응력은?
-    • [Fact Layer] 최신 트렌드 대응 현황: [구체적 내용] **[출처]**
-    • [Fact Layer] 신기술 도입 속도: [구체적 평가] **[출처]**
-    • [Interpretation Layer] 트렌드 대응력 평가: [구체적 분석] **[출처]**
-    • [Peer Benchmark] 경쟁사 대비 대응 속도: [구체적 비교] **[출처]**
-  └─ Q6-3: 섹터 규제 환경 대응은?
-    • [Fact Layer] 관련 규제 현황: [구체적 내용] **[출처]**
-    • [Fact Layer] 규제 대응 전략: [구체적 내용] **[출처]**
-    • [Interpretation Layer] 규제 리스크 평가: [구체적 분석] **[출처]**
-    • [Peer Benchmark] 업계 평균 대비 규제 대응력: [구체적 비교] **[출처]**
-
-Q7: {sector_name} 섹터 성장 동력 분석
-  └─ Q7-1: 섹터 성장 요인 활용도는?
-    • [Fact Layer] 주요 성장 요인: [구체적 내용] **[출처]**
-    • [Fact Layer] 기업의 활용 현황: [구체적 내용] **[출처]**
-    • [Interpretation Layer] 성장 요인 활용도 평가: [구체적 분석] **[출처]**
-    • [Peer Benchmark] 경쟁사 대비 활용도: [구체적 비교] **[출처]**
-  └─ Q7-2: 섹터 내 시장 점유율 전략은?
-    • [Fact Layer] 현재 시장 점유율: [구체적 수치] **[출처]**
-    • [Fact Layer] 점유율 확대 전략: [구체적 내용] **[출처]**
-    • [Interpretation Layer] 시장 점유율 전망: [구체적 분석] **[출처]**
-    • [Peer Benchmark] 경쟁사 대비 점유율: [구체적 비교] **[출처]**
-
-Q8: {sector_name} 섹터 리스크 관리
-  └─ Q8-1: 섹터 특화 리스크 노출도는?
-    • [Fact Layer] 섹터 주요 리스크: [구체적 내용] **[출처]**
-    • [Fact Layer] 기업의 리스크 노출도: [구체적 수치] **[출처]**
-    • [Interpretation Layer] 리스크 관리 평가: [구체적 분석] **[출처]**
-    • [Peer Benchmark] 업계 평균 대비 리스크: [구체적 비교] **[출처]**
-  └─ Q8-2: 섹터 변화 대응 전략은?
-    • [Fact Layer] 섹터 변화 요인: [구체적 내용] **[출처]**
-    • [Fact Layer] 기업의 대응 전략: [구체적 내용] **[출처]**
-    • [Interpretation Layer] 변화 대응력 평가: [구체적 분석] **[출처]**
-    • [Peer Benchmark] 경쟁사 대비 대응력: [구체적 비교] **[출처]**
-"""
-
-            return base_questions + sector_specific
+            return base_questions
 
         except Exception as e:
             logger.warning(f"⚠️ 섹터별 질문 생성 실패: {e}")
@@ -1054,7 +1093,7 @@ Q5: {sector_name} 섹터 특화 경쟁력과 차별화 요소는?
 """
         except Exception as e:
             logger.warning(f"⚠️ 섹터 분석 가이드 생성 실패: {e}")
-            return f"""
+        return f"""
 **🏭 {sector.name} 섹터 특화 분석 가이드**
 
 이 기업은 {sector.name} 섹터에 속하며, 다음 섹터 특화 요소들을 고려하여 분석하세요:
