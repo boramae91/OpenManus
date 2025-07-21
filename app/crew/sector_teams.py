@@ -951,15 +951,9 @@ class AnalystAgent:
 
             # 🎯 기술적 분석 전용 처리
             try:
-                # 기본 LangChain Chain 사용 (기술적 분석 특화 프롬프트)
-                chain_result = self.langchain_chain.invoke(input_data)
-
-                # 결과 추출
-                if isinstance(chain_result, dict):
-                    analysis_result = chain_result.get("output", str(chain_result))
-                else:
-                    analysis_result = str(chain_result)
-
+                # LLMChain의 run 메서드 사용
+                chain_result = self.langchain_chain.run(input_data)
+                analysis_result = str(chain_result)
                 print(f"✅ {self.name} 기술적 분석 완료")
 
             except Exception as analysis_error:
@@ -2044,12 +2038,18 @@ class SectorTeamFactory:
                 max_tokens=4000,
             )
             web_search_tool = self.web_search_tool.create_langchain_tool()
-            system_prompt = ChatPromptTemplate.from_messages(
-                [
-                    (
-                        "system",
-                        f"""
-당신은 {sector_name} 섹터 전문 기술적 분석가입니다. 차트 패턴, 기술적 지표, 가격 움직임에만 집중하여 분석합니다.
+            # 기술적 분석 전용 프롬프트 템플릿 생성
+            technical_prompt = PromptTemplate(
+                input_variables=[
+                    "company_name",
+                    "sector_name",
+                    "price_data",
+                    "market_data",
+                    "technical_indicators",
+                    "trading_signals",
+                ],
+                template=f"""
+당신은 {{sector_name}} 섹터 전문 기술적 분석가입니다. 차트 패턴, 기술적 지표, 가격 움직임에만 집중하여 분석합니다.
 
 **🎯 기술적 분석 전문가 역할**
 - 재무제표나 펀더멘털 분석은 하지 않습니다
@@ -2077,7 +2077,7 @@ class SectorTeamFactory:
 - 거래량 프로파일 분석
 
 **4단계: 섹터 상대강도 분석**
-- {sector_name} 섹터 대비 상대적 성과 분석
+- {{sector_name}} 섹터 대비 상대적 성과 분석
 - 섹터 내 순위와 강도 평가
 - 섹터 로테이션 영향 분석
 
@@ -2101,20 +2101,19 @@ class SectorTeamFactory:
 5. **매매 신호**: [매수/매도/홀드 권고]
 6. **리스크 관리**: [손절가, 익절가]
 
+**분석 데이터:**
+- 회사명: {{company_name}}
+- 섹터: {{sector_name}}
+- 가격 데이터: {{price_data}}
+- 시장 데이터: {{market_data}}
+- 기술적 지표: {{technical_indicators}}
+- 매매 신호: {{trading_signals}}
+
 웹 검색을 통해 최신 기술적 트렌드를 반영하되, 재무 분석은 하지 마세요.
 """,
-                    ),
-                    MessagesPlaceholder(variable_name="chat_history"),
-                    ("human", "{input}"),
-                    MessagesPlaceholder(variable_name="agent_scratchpad"),
-                ]
             )
-            agent = create_openai_functions_agent(
-                llm=llm, tools=[web_search_tool], prompt=system_prompt
-            )
-            technical_chain = AgentExecutor(
-                agent=agent, tools=[web_search_tool], verbose=True, max_iterations=3
-            )
+            # 기술적 분석 전용 Chain 생성
+            technical_chain = LLMChain(llm=llm, prompt=technical_prompt, verbose=True)
             print(f"✅ {analyst.name} LangChain Chain 생성 완료 (기술적 분석 특화)!")
             return technical_chain
         except Exception as e:
