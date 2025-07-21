@@ -929,8 +929,8 @@ class AnalystAgent:
 
     def run_full_technical_analysis(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        기술적 분석가 5단계 전체 분석을 순차적으로 실행해요
-        (LangChain Chain 기반)
+        기술적 분석가 전용 분석을 실행해요
+        차트 패턴, 기술적 지표, 가격 움직임에만 집중합니다
 
         Args:
             input_data: {
@@ -939,7 +939,7 @@ class AnalystAgent:
                 'company_name': str(회사명)
             }
         Returns:
-            dict: 각 단계별 결과가 담긴 사전
+            dict: 기술적 분석 결과
         """
         if not self.langchain_enabled or self.langchain_chain is None:
             return {"error": "LangChain이 활성화되어 있지 않아요!"}
@@ -949,127 +949,47 @@ class AnalystAgent:
 
             start_time = datetime.now()
 
-            # 🚀 향상된 분석 시스템 (CoT + 5Why + 7Why) 사용
+            # 🎯 기술적 분석 전용 처리
             try:
-                # 향상된 분석 시스템 초기화 및 실행
-                from .enhanced_analysis_system import EnhancedAnalysisSystem
-                from .enhanced_seven_why_analyzer import EnhancedSevenWhyAnalyzer
+                # 기본 LangChain Chain 사용 (기술적 분석 특화 프롬프트)
+                chain_result = self.langchain_chain.invoke(input_data)
 
-                enhanced_analysis = EnhancedAnalysisSystem()
-                seven_why_analyzer = EnhancedSevenWhyAnalyzer()
-
-                # 통합 데이터 준비
-                company_name = input_data.get("company_name", "분석대상")
-                sector_name = input_data.get("sector_name", "정보기술")
-                price_data = input_data.get("price_data", "가격 데이터 없음")
-                market_data = input_data.get("market_data", "시장 데이터 없음")
-
-                # 1단계: CoT + 5Why 심층 분석
-                print(f"🧠 {self.name} CoT + 5Why 심층 분석 시작...")
-                deep_analysis_result = (
-                    enhanced_analysis.deep_analysis.perform_deep_analysis(
-                        company_name=company_name,
-                        sector_name=sector_name,
-                        financial_data=str(
-                            price_data
-                        ),  # 가격 데이터를 재무 데이터로 사용
-                        market_data=market_data,
-                        competitor_data={},
-                    )
-                )
-
-                if "error" in deep_analysis_result:
-                    print(
-                        f"⚠️ {self.name} 심층 분석 실패, 기본 LangChain Chain으로 진행"
-                    )
-                    # 폴백: 기존 LangChain Chain 사용
-                    chain_result = self.langchain_chain(input_data)
+                # 결과 추출
+                if isinstance(chain_result, dict):
+                    analysis_result = chain_result.get("output", str(chain_result))
                 else:
-                    # 2단계: 7Why 분석 (전문가 분석 텍스트 기반)
-                    print(f"🔍 {self.name} 7Why 분석 시작...")
+                    analysis_result = str(chain_result)
 
-                    # CoT 분석 결과를 7Why 분석의 입력으로 사용
-                    cot_analysis_text = deep_analysis_result.get("cot_analysis", "")
+                print(f"✅ {self.name} 기술적 분석 완료")
 
-                    seven_why_result = (
-                        seven_why_analyzer.perform_integrated_7why_analysis(
-                            expert_analysis_text=cot_analysis_text,
-                            financial_data=str(price_data),
-                            market_data=market_data,
-                            competitor_data={},
-                            web_search_data=input_data.get("web_search_data", ""),
-                        )
-                    )
-
-                    # 3단계: 통합 분석 결과 생성
-                    print(f"🔗 {self.name} 통합 분석 결과 생성...")
-
-                    # 기존 LangChain Chain 결과와 향상된 분석 결과를 통합
-                    basic_chain_result = self.langchain_chain(input_data)
-
-                    # 향상된 분석 결과를 기존 결과에 추가
-                    chain_result = {
-                        **basic_chain_result,
-                        "enhanced_cot_analysis": deep_analysis_result.get(
-                            "cot_analysis", ""
-                        ),
-                        "enhanced_five_why_analysis": deep_analysis_result.get(
-                            "five_why_analysis", ""
-                        ),
-                        "enhanced_seven_why_analysis": seven_why_result.get(
-                            "integrated_7why_analysis", ""
-                        ),
-                        "enhanced_root_cause_analysis": deep_analysis_result.get(
-                            "root_cause_analysis", ""
-                        ),
-                        "enhanced_implication_analysis": deep_analysis_result.get(
-                            "implication_analysis", ""
-                        ),
-                    }
-
-                    print(f"✅ {self.name} 향상된 분석 완료 (CoT + 5Why + 7Why)")
-
-            except Exception as enhanced_error:
-                print(f"❌ {self.name} 향상된 분석 실패: {enhanced_error}")
-                # 폴백: 기존 LangChain Chain 사용
-                chain_result = self.langchain_chain(input_data)
+            except Exception as analysis_error:
+                print(f"❌ {self.name} 기술적 분석 실패: {analysis_error}")
+                analysis_result = f"{self.name}의 기술적 분석 중 오류가 발생했습니다: {str(analysis_error)}"
 
             # 분석 시간 계산
             analysis_time = (datetime.now() - start_time).total_seconds()
 
-            # 단계별 결과를 dict로 정리 (향상된 분석 포함)
+            # 결과 정리 (기술적 분석 특화)
             result_dict = {
-                "step1_result": chain_result.get("step1_result"),
-                "step2_result": chain_result.get("step2_result"),
-                "step3_result": chain_result.get("step3_result"),
-                "step4_result": chain_result.get("step4_result"),
-                "step5_result": chain_result.get("step5_result"),
-                "enhanced_cot_analysis": chain_result.get("enhanced_cot_analysis", ""),
-                "enhanced_five_why_analysis": chain_result.get(
-                    "enhanced_five_why_analysis", ""
-                ),
-                "enhanced_seven_why_analysis": chain_result.get(
-                    "enhanced_seven_why_analysis", ""
-                ),
-                "enhanced_root_cause_analysis": chain_result.get(
-                    "enhanced_root_cause_analysis", ""
-                ),
-                "enhanced_implication_analysis": chain_result.get(
-                    "enhanced_implication_analysis", ""
-                ),
+                "technical_analysis": analysis_result,
                 "analysis_time": analysis_time,
                 "agent_name": self.name,
                 "role": self.role,
-                "analysis_method": "Enhanced Technical Analysis (CoT + 5Why + 7Why)",
+                "analysis_method": "Technical Analysis Only",
+                "analysis_focus": "차트 패턴, 기술적 지표, 가격 움직임",
+                "restrictions": [
+                    "재무제표 분석 금지",
+                    "펀더멘털 분석 금지",
+                    "밸류에이션 분석 금지",
+                ],
             }
+
             # 분석 이력에 저장
             self.analysis_history.append(result_dict)
-            print(
-                f"✅ {self.name} 5단계 전체 분석 완료! (소요시간: {analysis_time:.2f}초)"
-            )
+            print(f"✅ {self.name} 기술적 분석 완료! (소요시간: {analysis_time:.2f}초)")
             return result_dict
         except Exception as e:
-            print(f"❌ {self.name} 5단계 전체 분석 실패: {e}")
+            print(f"❌ {self.name} 기술적 분석 실패: {e}")
             return {"error": str(e)}
 
     # def run_full_footnote_analysis(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -1999,131 +1919,6 @@ class SectorTeamFactory:
         print(f"🎉 총 {len(all_teams)}개 섹터팀 생성 완료!")
         return all_teams
 
-    # def _create_fundamental_analysis_chain(
-    #     self, analyst: AnalystAgent, sector_name: str
-    # ) -> Any:
-    #     """
-    #     펀더멘털 분석가를 위한 LangChain Chain 생성 (비활성화됨 - 통합 재무분석가로 대체)
-
-    #     Args:
-    #         analyst: 분석가 객체
-    #         sector_name: 섹터 이름
-
-    #     Returns:
-    #         Chain: 단일 단계 분석 Chain
-    #     """
-    #     try:
-    #         # LLM 모델 설정 (환경변수에서 API 키 가져오기)
-    #         llm = ChatOpenAI(
-    #             model="gpt-4o",
-    #             temperature=0.1,  # 분석의 일관성을 위해 낮은 temperature
-    #             max_tokens=4000,
-    #         )
-
-    #         # 단일 단계: 종합 재무 분석 Chain
-    #         fundamental_analysis_prompt = PromptTemplate(
-    #             input_variables=["financial_data", "sector_name", "company_name"],
-    #             template="""
-    # 당신은 {sector_name} 섹터 전문 펀더멘털 분석가입니다.
-
-    # **종합 재무 분석**
-
-    # 제공된 재무데이터를 바탕으로 종합적인 재무 분석을 수행하세요:
-
-    # **입력 데이터:**
-    # {financial_data}
-
-    # **회사명:** {company_name}
-
-    # **분석 요구사항:**
-    # 1. 데이터 검증 및 정규화
-    # 2. 핵심 재무비율 계산 (ROE, ROA, ROIC, 유동비율, 부채비율 등)
-    # 3. 3년간 트렌드 분석 및 변화 패턴 식별
-    # 4. CAGR 계산 (매출, 영업이익, 순이익)
-    # 5. 현금흐름 안정성 분석
-    # 6. DuPont 분석을 통한 ROE 분해
-    # 7. 경쟁사 비교 분석 (업계 평균 대비)
-    # 8. 종합 평가 및 투자 의견
-
-    # **출력 형식:**
-    # - 데이터 검증 결과: [통과/부분 통과/실패]
-    # - 재무비율 분석: [구체적 수치와 계산 과정]
-    # - 트렌드 분석: [3년간 변화 추이와 패턴]
-    # - 성장성 평가: [CAGR과 지속가능성]
-    # - 현금흐름 평가: [안정성과 품질]
-    # - 경쟁사 비교: [업계 내 상대적 위치]
-    # - 종합 평가: [재무 건전성과 투자 매력도]
-    # - 투자 의견: [명확한 권고와 근거]
-
-    # 단계별로 사고 과정을 명시하고, 정량적 근거를 제시하세요.
-    # """,
-    #         )
-
-    #         # 🚀 웹 검색 도구를 포함한 LangChain Chain 생성
-    #         from langchain.agents import AgentExecutor, create_openai_functions_agent
-    #         from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-
-    #         # 웹 검색 도구 생성
-    #         web_search_tool = self.web_search_tool.create_langchain_tool()
-
-    #         # 시스템 프롬프트 생성 (AgentExecutor 호환)
-    #         system_prompt = ChatPromptTemplate.from_messages(
-    #             [
-    #                 (
-    #                     "system",
-    #                     """
-    # 당신은 정보기술 섹터 전문 펀더멘털 분석가입니다.
-
-    # **종합 재무 분석**
-
-    # 사용자의 요청을 바탕으로 종합적인 재무 분석을 수행하세요.
-
-    # **분석 요구사항:**
-    # 1. 데이터 검증 및 정규화
-    # 2. 핵심 재무비율 계산 (ROE, ROA, ROIC, 유동비율, 부채비율 등)
-    # 3. 3년간 트렌드 분석 및 변화 패턴 식별
-    # 4. CAGR 계산 (매출, 영업이익, 순이익)
-    # 5. 현금흐름 안정성 분석
-    # 6. DuPont 분석을 통한 ROE 분해
-    # 7. 경쟁사 비교 분석 (업계 평균 대비)
-    # 8. 종합 평가 및 투자 의견
-
-    # **출력 형식:**
-    # - 데이터 검증 결과: [통과/부분 통과/실패]
-    # - 재무비율 분석: [구체적 수치와 계산 과정]
-    # - 트렌드 분석: [3년간 변화 추이와 패턴]
-    # - 성장성 평가: [CAGR과 지속가능성]
-    # - 현금흐름 평가: [안정성과 품질]
-    # - 경쟁사 비교: [업계 내 상대적 위치]
-    # - 종합 평가: [재무 건전성과 투자 매력도]
-    # - 투자 의견: [명확한 권고와 근거]
-
-    # 웹 검색을 통해 최신 정보를 확인하고, 단계별로 사고 과정을 명시하며, 정량적 근거를 제시하세요.
-    # """,
-    #                 ),
-    #                 MessagesPlaceholder(variable_name="chat_history"),
-    #                 ("human", "{input}"),
-    #                 MessagesPlaceholder(variable_name="agent_scratchpad"),
-    #             ]
-    #         )
-
-    #         # Agent 생성 (웹 검색 도구 포함)
-    #         agent = create_openai_functions_agent(
-    #             llm=llm, tools=[web_search_tool], prompt=system_prompt
-    #         )
-
-    #         # Agent Executor 생성
-    #         fundamental_chain = AgentExecutor(
-    #             agent=agent, tools=[web_search_tool], verbose=True, max_iterations=3
-    #         )
-
-    #         print(f"✅ {analyst.name} LangChain Chain 생성 완료 (웹 검색 도구 포함)!")
-    #         return fundamental_chain
-
-    #     except Exception as e:
-    #         print(f"❌ {analyst.name} LangChain Chain 생성 실패: {e}")
-    #         return None
-
     def _create_integrated_financial_analysis_chain(
         self,
         analyst: AnalystAgent,
@@ -2236,421 +2031,6 @@ class SectorTeamFactory:
             print(f"❌ {analyst.name} 통합 재무분석 LangChain Chain 생성 실패: {e}")
             return None
 
-    # def _create_valuation_analysis_chain(
-    #     self, analyst: AnalystAgent, sector_name: str
-    # ) -> Any:
-    #     """
-    #     밸류에이션 전문가를 위한 LangChain Chain 생성 (비활성화됨 - 통합 재무분석가로 대체)
-
-    #     Args:
-    #         analyst: 분석가 객체
-    #         sector_name: 섹터 이름
-
-    #     Returns:
-    #         Chain: 단일 단계 분석 Chain
-    #     """
-    #     try:
-    #         # LLM 모델 설정 (OpenAI GPT-4o)
-    #         llm = ChatOpenAI(
-    #             model="gpt-4o",
-    #             temperature=0.1,  # 분석의 일관성을 위해 낮은 값
-    #             max_tokens=4000,
-    #         )
-
-    #         # 단일 단계: 종합 밸류에이션 분석 프롬프트
-    #         valuation_analysis_prompt = PromptTemplate(
-    #             input_variables=["financial_data", "sector_name", "company_name"],
-    #             template="""
-    # 당신은 {sector_name} 섹터 전문 밸류에이션 전문가입니다.
-
-    # **종합 밸류에이션 분석**
-
-    # 제공된 재무데이터를 바탕으로 종합적인 밸류에이션 분석을 수행하세요:
-
-    # **입력 데이터:**
-    # {financial_data}
-
-    # **회사명:** {company_name}
-
-    # **분석 요구사항:**
-    # 1. 시계열 멀티플 분석:
-    #    - 과거 3년간 PER, PBR, EV/EBITDA 계산 및 추세 분석
-    #    - 현재 멀티플의 역사적 Percentile 순위 산출
-    #    - 밸류에이션 사이클 분석 (고평가/저평가 구간 패턴)
-
-    # 2. 경쟁사 비교 분석:
-    #    - 동종업계 상위 5개 경쟁사 현재 멀티플 비교
-    #    - 업계 평균 대비 밸류에이션 프리미엄/디스카운트율 계산
-    #    - 글로벌 동종업계 평균 멀티플과 비교
-
-    # 3. DCF 모델링:
-    #    - WACC 계산 (구체적 계산 과정 포함)
-    #    - 향후 5년 FCF 예측
-    #    - Terminal Value 계산
-    #    - 내재가치 산출
-
-    # 4. 목표가 산출:
-    #    - DCF 기반 목표가
-    #    - 멀티플 기반 목표가 (PER, PBR, EV/EBITDA)
-    #    - 가중평균 목표가 계산
-
-    # 5. 시나리오별 민감도 분석:
-    #    - 낙관/기본/비관 3시나리오 분석
-    #    - 주요 변수별 민감도 분석
-
-    # **출력 형식:**
-    # - 멀티플 분석: [계산된 멀티플과 트렌드]
-    # - 경쟁사 비교: [업계 대비 상대적 위치]
-    # - DCF 모델링: [내재가치와 계산 과정]
-    # - 목표가 산출: [최종 목표가와 근거]
-    # - 시나리오 분석: [3시나리오별 전망]
-    # - 투자 의견: [매수/보유/매도 권고]
-
-    # 모든 계산 과정을 명시하고, 정량적 근거를 제시하세요.
-    # """,
-    #         )
-
-    #         # 🚀 웹 검색 도구를 포함한 LangChain Chain 생성
-    #         from langchain.agents import AgentExecutor, create_openai_functions_agent
-    #         from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-
-    #         # 웹 검색 도구 생성
-    #         web_search_tool = self.web_search_tool.create_langchain_tool()
-
-    #         # 시스템 프롬프트 생성 (AgentExecutor 호환)
-    #         system_prompt = ChatPromptTemplate.from_messages(
-    #             [
-    #                 (
-    #                     "system",
-    #                     """
-    # 당신은 정보기술 섹터 전문 밸류에이션 전문가입니다.
-
-    # **종합 밸류에이션 분석**
-
-    # 사용자의 요청을 바탕으로 종합적인 밸류에이션 분석을 수행하세요.
-
-    # **분석 요구사항:**
-    # 1. 시계열 멀티플 분석:
-    #    - 과거 3년간 PER, PBR, EV/EBITDA 계산 및 추세 분석
-    #    - 현재 멀티플의 역사적 Percentile 순위 산출
-    #    - 밸류에이션 사이클 분석 (고평가/저평가 구간 패턴)
-
-    # 2. 경쟁사 비교 분석:
-    #    - 동종업계 상위 5개 경쟁사 현재 멀티플 비교
-    #    - 업계 평균 대비 밸류에이션 프리미엄/디스카운트율 계산
-    #    - 글로벌 동종업계 평균 멀티플과 비교
-
-    # 3. DCF 모델링:
-    #    - WACC 계산 (구체적 계산 과정 포함)
-    #    - 향후 5년 FCF 예측
-    #    - Terminal Value 계산
-    #    - 내재가치 산출
-
-    # 4. 목표가 산출:
-    #    - DCF 기반 목표가
-    #    - 멀티플 기반 목표가 (PER, PBR, EV/EBITDA)
-    #    - 가중평균 목표가 계산
-
-    # 5. 시나리오별 민감도 분석:
-    #    - 낙관/기본/비관 3시나리오 분석
-    #    - 주요 변수별 민감도 분석
-
-    # **출력 형식:**
-    # - 멀티플 분석: [계산된 멀티플과 트렌드]
-    # - 경쟁사 비교: [업계 대비 상대적 위치]
-    # - DCF 모델링: [내재가치와 계산 과정]
-    # - 목표가 산출: [최종 목표가와 근거]
-    # - 시나리오 분석: [3시나리오별 전망]
-    # - 투자 의견: [매수/보유/매도 권고]
-
-    # 웹 검색을 통해 최신 정보를 확인하고, 모든 계산 과정을 명시하며, 정량적 근거를 제시하세요.
-    # """,
-    #                 ),
-    #                 MessagesPlaceholder(variable_name="chat_history"),
-    #                 ("human", "{input}"),
-    #                 MessagesPlaceholder(variable_name="agent_scratchpad"),
-    #             ]
-    #         )
-
-    #         # Agent 생성 (웹 검색 도구 포함)
-    #         agent = create_openai_functions_agent(
-    #             llm=llm, tools=[web_search_tool], prompt=system_prompt
-    #         )
-
-    #         # Agent Executor 생성
-    #         valuation_chain = AgentExecutor(
-    #             agent=agent, tools=[web_search_tool], verbose=True, max_iterations=3
-    #         )
-
-    #         print(f"✅ {analyst.name} LangChain Chain 생성 완료 (웹 검색 도구 포함)!")
-    #         return valuation_chain
-
-    #     except Exception as e:
-    #         print(f"❌ {analyst.name} LangChain Chain 생성 실패: {e}")
-    #         return None
-
-    # def _create_risk_analysis_chain(
-    #     self, analyst: AnalystAgent, sector_name: str
-    # ) -> Any:
-    #     """
-    #     리스크 평가자를 위한 LangChain Chain 생성 (비활성화됨)
-
-    #     Args:
-    #         analyst: 분석가 객체
-    #         sector_name: 섹터 이름
-
-    #     Returns:
-    #         Chain: 단일 단계 분석 Chain
-    #     """
-    #     try:
-    #         llm = ChatOpenAI(
-    #             model="gpt-4o",
-    #             temperature=0.1,
-    #             max_tokens=4000,
-    #         )
-    #         risk_analysis_prompt = PromptTemplate(
-    #             input_variables=["financial_data", "sector_name", "company_name"],
-    #             template="""
-    # 당신은 {sector_name} 섹터 전문 리스크 평가자입니다.
-
-    # **종합 리스크 분석**
-
-    # 제공된 재무데이터를 바탕으로 종합적인 리스크 분석을 수행하세요:
-
-    # **입력 데이터:**
-    # {financial_data}
-
-    # **회사명:** {company_name}
-
-    # **분석 요구사항:**
-    # 1. 재무 리스크 분석:
-    #    - 부채비율, 유동비율, 이자보상배율 분석
-    #    - 현금흐름 안정성 평가
-    #    - 신용 리스크 스코어링
-    # 2. 사업 리스크 분석:
-    #    - 시장점유율 변화 리스크
-    #    - 경쟁사 대응 리스크
-    #    - 기술 변화 리스크
-    # 3. 시장 리스크 분석:
-    #    - 주가 변동성 분석
-    #    - 베타 계수 계산
-    #    - 시장 대비 상대적 리스크
-    # 4. ESG 리스크 분석:
-    #    - 환경 리스크 (규제, 기후변화)
-    #    - 사회 리스크 (인권, 노동환경)
-    #    - 지배구조 리스크 (투명성, 독립성)
-    # 5. 종합 리스크 평가:
-    #    - 주요 리스크 요인별 영향도 분석
-    #    - 시나리오별 리스크 시뮬레이션
-    #    - 리스크 대응 전략 제시
-
-    # **출력 형식:**
-    # - 재무 리스크: [부채 및 유동성 리스크 평가]
-    # - 사업 리스크: [경쟁 및 시장 리스크 분석]
-    # - 시장 리스크: [주가 변동성 및 베타 분석]
-    # - ESG 리스크: [환경, 사회, 지배구조 리스크]
-    # - 종합 평가: [전체 리스크 수준과 대응 방안]
-    # - 투자 권고: [리스크 대비 수익률 평가]
-
-    # 웹 검색을 통해 최신 리스크 이슈와 업계 동향도 참고하세요.
-    # """,
-    #         )
-    #         from langchain.agents import AgentExecutor, create_openai_functions_agent
-    #         from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-
-    #         web_search_tool = self.web_search_tool.create_langchain_tool()
-    #         system_prompt = ChatPromptTemplate.from_messages(
-    #             [
-    #                 (
-    #                     "system",
-    #                     f"""
-    # 당신은 {sector_name} 섹터 전문 리스크 평가자입니다.
-
-    # **종합 리스크 분석**
-
-    # 사용자의 요청을 바탕으로 종합적인 리스크 분석을 수행하세요.
-
-    # **분석 요구사항:**
-    # 1. 재무 리스크 분석:
-    #    - 부채비율, 유동비율, 이자보상배율 분석
-    #    - 현금흐름 안정성 평가
-    #    - 신용 리스크 스코어링
-    # 2. 사업 리스크 분석:
-    #    - 시장점유율 변화 리스크
-    #    - 경쟁사 대응 리스크
-    #    - 기술 변화 리스크
-    # 3. 시장 리스크 분석:
-    #    - 주가 변동성 분석
-    #    - 베타 계수 계산
-    #    - 시장 대비 상대적 리스크
-    # 4. ESG 리스크 분석:
-    #    - 환경 리스크 (규제, 기후변화)
-    #    - 사회 리스크 (인권, 노동환경)
-    #    - 지배구조 리스크 (투명성, 독립성)
-    # 5. 종합 리스크 평가:
-    #    - 주요 리스크 요인별 영향도 분석
-    #    - 시나리오별 리스크 시뮬레이션
-    #    - 리스크 대응 전략 제시
-
-    # **출력 형식:**
-    # - 재무 리스크: [부채 및 유동성 리스크 평가]
-    # - 사업 리스크: [경쟁 및 시장 리스크 분석]
-    # - 시장 리스크: [주가 변동성 및 베타 분석]
-    # - ESG 리스크: [환경, 사회, 지배구조 리스크]
-    # - 종합 평가: [전체 리스크 수준과 대응 방안]
-    # - 투자 권고: [리스크 대비 수익률 평가]
-
-    # 웹 검색을 통해 최신 리스크 이슈와 업계 동향도 참고하세요.
-    # """,
-    #                 ),
-    #                 MessagesPlaceholder(variable_name="chat_history"),
-    #                 ("human", "{input}"),
-    #                 MessagesPlaceholder(variable_name="agent_scratchpad"),
-    #             ]
-    #         )
-    #         agent = create_openai_functions_agent(
-    #             llm=llm, tools=[web_search_tool], prompt=system_prompt
-    #         )
-    #         risk_chain = AgentExecutor(
-    #             agent=agent, tools=[web_search_tool], verbose=True, max_iterations=3
-    #         )
-    #         print(f"✅ {analyst.name} LangChain Chain 생성 완료 (웹 검색 도구 포함)!")
-    #         return risk_chain
-    #     except Exception as e:
-    #         print(f"❌ {analyst.name} LangChain Chain 생성 실패: {e}")
-    #         return None
-
-    # def _create_industry_analysis_chain(
-    #     self, analyst: AnalystAgent, sector_name: str
-    # ) -> Any:
-    #     """
-    #     산업 전문가를 위한 LangChain Chain 생성 (비활성화됨)
-
-    #     Args:
-    #         analyst: 분석가 객체
-    #         sector_name: 섹터 이름
-
-    #     Returns:
-    #         Chain: 단일 단계 분석 Chain
-    #     """
-    #     try:
-    #         llm = ChatOpenAI(
-    #             model="gpt-4o",
-    #             temperature=0.1,
-    #             max_tokens=4000,
-    #         )
-    #         industry_analysis_prompt = PromptTemplate(
-    #             input_variables=["financial_data", "sector_name", "company_name"],
-    #             template="""
-    # 당신은 {sector_name} 섹터 전문 산업 전문가입니다.
-
-    # **종합 산업 분석**
-
-    # 제공된 재무데이터를 바탕으로 종합적인 산업 분석을 수행하세요:
-
-    # **입력 데이터:**
-    # {financial_data}
-
-    # **회사명:** {company_name}
-
-    # **분석 요구사항:**
-    # 1. 산업 구조 분석:
-    #    - 산업의 성숙도와 성장 단계 평가
-    #    - 시장 규모와 성장률 분석
-    #    - 진입장벽과 경쟁 강도 평가
-    # 2. 시장 동향 및 성장성 분석:
-    #    - 주요 성장 동력과 트렌드 분석
-    #    - 기술 혁신과 디지털 전환 영향
-    #    - 규제 환경 변화와 정책 영향
-    # 3. 경쟁사 분석:
-    #    - 주요 경쟁사 시장점유율 분석
-    #    - 경쟁 우위 요인과 차별화 전략
-    #    - 신규 진입자와 대체재 위협
-    # 4. 규제 및 정책 환경 분석:
-    #    - 관련 법규와 규제 동향
-    #    - 정부 정책과 지원 방안
-    #    - ESG 규제와 준수 현황
-    # 5. 산업 전망 및 기회/위험 분석:
-    #    - 단기/중장기 산업 전망
-    #    - 주요 기회 요인과 위험 요소
-    #    - 투자 전략적 시사점
-
-    # **출력 형식:**
-    # - 산업 구조: [성숙도, 규모, 경쟁 강도 분석]
-    # - 시장 동향: [성장 동력과 트렌드 분석]
-    # - 경쟁 환경: [경쟁사와 시장점유율 분석]
-    # - 규제 환경: [법규와 정책 영향 분석]
-    # - 산업 전망: [기회와 위험 요소 분석]
-    # - 투자 시사점: [산업 관점에서의 투자 권고]
-
-    # 웹 검색을 통해 최신 산업 동향과 경쟁사 정보를 참고하세요.
-    # """,
-    #         )
-    #         from langchain.agents import AgentExecutor, create_openai_functions_agent
-    #         from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-
-    #         web_search_tool = self.web_search_tool.create_langchain_tool()
-    #         system_prompt = ChatPromptTemplate.from_messages(
-    #             [
-    #                 (
-    #                     "system",
-    #                     f"""
-    # 당신은 {sector_name} 섹터 전문 산업 전문가입니다.
-
-    # **종합 산업 분석**
-
-    # 사용자의 요청을 바탕으로 종합적인 산업 분석을 수행하세요.
-
-    # **분석 요구사항:**
-    # 1. 산업 구조 분석:
-    #    - 산업의 성숙도와 성장 단계 평가
-    #    - 시장 규모와 성장률 분석
-    #    - 진입장벽과 경쟁 강도 평가
-    # 2. 시장 동향 및 성장성 분석:
-    #    - 주요 성장 동력과 트렌드 분석
-    #    - 기술 혁신과 디지털 전환 영향
-    #    - 규제 환경 변화와 정책 영향
-    # 3. 경쟁사 분석:
-    #    - 주요 경쟁사 시장점유율 분석
-    #    - 경쟁 우위 요인과 차별화 전략
-    #    - 신규 진입자와 대체재 위협
-    # 4. 규제 및 정책 환경 분석:
-    #    - 관련 법규와 규제 동향
-    #    - 정부 정책과 지원 방안
-    #    - ESG 규제와 준수 현황
-    # 5. 산업 전망 및 기회/위험 분석:
-    #    - 단기/중장기 산업 전망
-    #    - 주요 기회 요인과 위험 요소
-    #    - 투자 전략적 시사점
-
-    # **출력 형식:**
-    # - 산업 구조: [성숙도, 규모, 경쟁 강도 분석]
-    # - 시장 동향: [성장 동력과 트렌드 분석]
-    # - 경쟁 환경: [경쟁사와 시장점유율 분석]
-    # - 규제 환경: [법규와 정책 영향 분석]
-    # - 산업 전망: [기회와 위험 요소 분석]
-    # - 투자 시사점: [산업 관점에서의 투자 권고]
-
-    # 웹 검색을 통해 최신 산업 동향과 경쟁사 정보를 참고하세요.
-    # """,
-    #                 ),
-    #                 MessagesPlaceholder(variable_name="chat_history"),
-    #                 ("human", "{input}"),
-    #                 MessagesPlaceholder(variable_name="agent_scratchpad"),
-    #             ]
-    #         )
-    #         agent = create_openai_functions_agent(
-    #             llm=llm, tools=[web_search_tool], prompt=system_prompt
-    #         )
-    #         industry_chain = AgentExecutor(
-    #             agent=agent, tools=[web_search_tool], verbose=True, max_iterations=3
-    #         )
-    #         print(f"✅ {analyst.name} LangChain Chain 생성 완료 (웹 검색 도구 포함)!")
-    #         return industry_chain
-    #     except Exception as e:
-    #         print(f"❌ {analyst.name} LangChain Chain 생성 실패: {e}")
-    #         return None
-
     def _create_technical_analysis_chain(
         self, analyst: AnalystAgent, sector_name: str
     ) -> Any:
@@ -2661,71 +2041,67 @@ class SectorTeamFactory:
             llm = ChatOpenAI(
                 model="gpt-4o",
                 temperature=0.1,
-                max_tokens=8000,  # 2명 체제에 맞게 증가 (기존 4K → 8K)
+                max_tokens=4000,
             )
-
-            # 모듈화된 AI 강화 프롬프트 생성 (기술적 분석용)
-            unified_framework = PromptComponents.create_unified_analysis_framework(
-                analysis_type="기술적 분석",
-                sector_name=sector_name,
-                specific_methods=[
-                    "이동평균선 분석 (5,20,60,120일선 배열과 Golden/Dead Cross 신호)",
-                    "MACD/RSI 분석 (MACD(12,26,9) 히스토그램과 RSI(14) Divergence 패턴)",
-                    "볼린저 밴드 분석 (20일 이평±2표준편차, 밴드폭 확장/수축 해석)",
-                    "지지저항선 분석 (Fibonacci Retracement 38.2%, 50%, 61.8% 레벨)",
-                    "거래량 분석 (OBV, Volume Profile, Accumulation/Distribution Line)",
-                    "섹터 로테이션 분석 (상대강도 vs KOSPI, 섹터 모멘텀 지표)",
-                    "캔들패턴 분석 (Doji, Hammer, Engulfing 등 반전신호 해석)",
-                    "스토캐스틱 분석 (%K, %D 교차와 과매수/과매도 구간 판별)",
-                    "Price Action 분석 (Higher High/Low, Lower High/Low 트렌드 구조)",
-                ],
-            )
-
-            output_format = PromptComponents.get_output_format_template("기술적 분석")
-
             web_search_tool = self.web_search_tool.create_langchain_tool()
             system_prompt = ChatPromptTemplate.from_messages(
                 [
                     (
                         "system",
                         f"""
-당신은 {sector_name} 섹터 전문 기술적 분석가입니다. 시니어 애널리스트를 보조할 수 있는 수준의 깊이 있는 기술적 분석을 제공하는 것이 목표입니다.
+당신은 {sector_name} 섹터 전문 기술적 분석가입니다. 차트 패턴, 기술적 지표, 가격 움직임에만 집중하여 분석합니다.
 
-{unified_framework}
+**🎯 기술적 분석 전문가 역할**
+- 재무제표나 펀더멘털 분석은 하지 않습니다
+- 오직 차트, 가격, 거래량, 기술적 지표만 분석합니다
+- 매매 타이밍과 가격 전망에 집중합니다
 
-**📊 5단계 기술적 분석 프로세스 (AI 강화 기법 적용)**
+**📊 기술적 분석 5단계 프로세스**
 
 **1단계: 차트 패턴 분석**
-   - 주요 차트 패턴 식별 (헤드앤숄더, 더블탑/바텀 등)
-- 각 패턴별 Chain of Thought 적용
-   - 추세선과 채널 분석
-   - 지지선과 저항선 레벨 분석
+- 헤드앤숄더, 더블탑/바텀, 삼각형 패턴 식별
+- 추세선과 채널 분석
+- 지지선과 저항선 레벨 분석
+- 캔들 패턴 분석 (Doji, Hammer, Engulfing 등)
 
 **2단계: 기술적 지표 분석**
-   - 이동평균선 분석 (20일, 60일, 200일)
-   - RSI, MACD, 스토캐스틱 등 오실레이터 분석
-   - 볼린저 밴드와 피벗 포인트 분석
-- 웹 검색을 통한 최신 기술적 트렌드 반영
+- 이동평균선 분석 (5일, 20일, 60일, 200일선)
+- RSI, MACD, 스토캐스틱 오실레이터 분석
+- 볼린저 밴드 분석 (밴드폭, %B 지표)
+- 피벗 포인트와 피보나치 되돌림 분석
 
 **3단계: 거래량 분석**
-   - 거래량 추세와 가격 변동의 관계
-   - 거래량 가중 평균가격(VWAP) 분석
-   - 거래량 프로파일 분석
+- 거래량 추세와 가격 변동의 관계
+- 거래량 가중 평균가격(VWAP) 분석
+- OBV(On-Balance Volume) 분석
+- 거래량 프로파일 분석
 
 **4단계: 섹터 상대강도 분석**
-   - 섹터 대비 상대적 성과 분석
-   - 섹터 내 순위와 강도 평가
-   - 섹터 로테이션 영향 분석
+- {sector_name} 섹터 대비 상대적 성과 분석
+- 섹터 내 순위와 강도 평가
+- 섹터 로테이션 영향 분석
 
-**5단계: 기술적 전망 및 투자 권고**
-   - 단기/중기 기술적 전망
-   - 주요 지지/저항 레벨과 목표가
-   - 매수/매도 시점 권고
-- Self-Critique 결과 포함
+**5단계: 기술적 전망 및 매매 권고**
+- 단기/중기 기술적 전망
+- 주요 지지/저항 레벨과 목표가
+- 매수/매도 시점 권고
+- 리스크 관리 방안
 
-{output_format}
+**🔴 중요: 기술적 분석만 수행**
+- 재무제표 분석 금지
+- 펀더멘털 분석 금지
+- 밸류에이션 분석 금지
+- 오직 차트와 기술적 지표만 분석
 
-모든 분석에서 AI 강화 기법을 적용하고, 웹 검색을 통해 최신 기술적 트렌드를 반영하세요.
+**📈 출력 형식**
+1. **차트 패턴 분석**: [주요 패턴과 의미]
+2. **기술적 지표**: [RSI, MACD, 이동평균 등]
+3. **거래량 분석**: [거래량 패턴과 신호]
+4. **지지/저항**: [주요 레벨과 목표가]
+5. **매매 신호**: [매수/매도/홀드 권고]
+6. **리스크 관리**: [손절가, 익절가]
+
+웹 검색을 통해 최신 기술적 트렌드를 반영하되, 재무 분석은 하지 마세요.
 """,
                     ),
                     MessagesPlaceholder(variable_name="chat_history"),
@@ -2739,101 +2115,8 @@ class SectorTeamFactory:
             technical_chain = AgentExecutor(
                 agent=agent, tools=[web_search_tool], verbose=True, max_iterations=3
             )
-            print(f"✅ {analyst.name} LangChain Chain 생성 완료 (웹 검색 도구 포함)!")
+            print(f"✅ {analyst.name} LangChain Chain 생성 완료 (기술적 분석 특화)!")
             return technical_chain
         except Exception as e:
             print(f"❌ {analyst.name} LangChain Chain 생성 실패: {e}")
             return None
-
-    # 🚫 주석 분석 전문가 LangChain Chain 생성 함수 (비활성화됨 - 개발 시간 절약)
-    # def _create_footnote_analysis_chain(
-    #     self, analyst: AnalystAgent, sector_name: str
-    # ) -> Any:
-    #     """
-    #     주석 전문가를 위한 LangChain Chain 생성 (웹서치 도구 포함)
-    #     """
-    #     try:
-    #         llm = ChatOpenAI(
-    #             model="gpt-4o",
-    #             temperature=0.1,
-    #             max_tokens=4000,
-    #         )
-    #         footnote_analysis_prompt = PromptTemplate(
-    #             input_variables=["financial_data", "sector_name", "company_name"],
-    #             template="""
-    # 당신은 {sector_name} 섹터 전문 재무제표 주석 전문가입니다.
-
-    # **종합 주석 분석**
-
-    # 제공된 재무제표 주석 데이터를 바탕으로 종합적인 주석 분석을 수행하세요:
-
-    # **입력 데이터:**
-    # {financial_data}
-
-    # **회사명:** {company_name}
-
-    # **분석 요구사항:**
-    # 1. 주요 회계정책 및 변경사항 분석
-    # 2. 특이사항 및 잠재적 리스크 식별
-    # 3. 연결/별도 재무제표 차이점 분석
-    # 4. 관련 당사자 거래 및 특수관계자 이슈 분석
-    # 5. 기타 투자자 주의사항 정리
-
-    # **출력 형식:**
-    # - 회계정책: [주요 정책 및 변경사항]
-    # - 특이사항: [잠재적 리스크 및 이슈]
-    # - 연결/별도 차이: [주요 차이점]
-    # - 특수관계자 거래: [관련 이슈]
-    # - 기타: [기타 투자자 참고사항]
-
-    # 웹 검색을 통해 최신 회계 이슈와 주석 관련 사례도 참고하세요.
-    # """,
-    #         )
-    #         from langchain.agents import AgentExecutor, create_openai_functions_agent
-    #         from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-
-    #         web_search_tool = self.web_search_tool.create_langchain_tool()
-    #         system_prompt = ChatPromptTemplate.from_messages(
-    #             [
-    #                 (
-    #                     "system",
-    #                     f"""
-    # 당신은 {sector_name} 섹터 전문 재무제표 주석 전문가입니다.
-
-    # **종합 주석 분석**
-
-    # 사용자의 요청을 바탕으로 종합적인 주석 분석을 수행하세요.
-
-    # **분석 요구사항:**
-    # 1. 주요 회계정책 및 변경사항 분석
-    # 2. 특이사항 및 잠재적 리스크 식별
-    # 3. 연결/별도 재무제표 차이점 분석
-    # 4. 관련 당사자 거래 및 특수관계자 이슈 분석
-    # 5. 기타 투자자 주의사항 정리
-
-    # **출력 형식:**
-    # - 회계정책: [주요 정책 및 변경사항]
-    # - 특이사항: [잠재적 리스크 및 이슈]
-    # - 연결/별도 차이: [주요 차이점]
-    # - 특수관계자 거래: [관련 이슈]
-    # - 기타: [기타 투자자 참고사항]
-
-    # 웹 검색을 통해 최신 회계 이슈와 주석 관련 사례도 참고하세요.
-    # """,
-    #                 ),
-    #                 MessagesPlaceholder(variable_name="chat_history"),
-    #                 ("human", "{input}"),
-    #                 MessagesPlaceholder(variable_name="agent_scratchpad"),
-    #             ]
-    #         )
-    #         agent = create_openai_functions_agent(
-    #             llm=llm, tools=[web_search_tool], prompt=system_prompt
-    #         )
-    #         footnote_chain = AgentExecutor(
-    #             agent=agent, tools=[web_search_tool], verbose=True, max_iterations=3
-    #         )
-    #         print(f"✅ {analyst.name} LangChain Chain 생성 완료 (웹 검색 도구 포함)!")
-    #         return footnote_chain
-    #     except Exception as e:
-    #         print(f"❌ {analyst.name} LangChain Chain 생성 실패: {e}")
-    #         return None
