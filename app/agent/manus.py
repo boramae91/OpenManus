@@ -60,8 +60,9 @@ class Manus(ToolCallAgent):
         # 대시보드 모드가 아닐 때만 AskHuman 도구 추가
         dashboard_mode = os.getenv("DASHBOARD_MODE", "false").lower() == "true"
         streamlit_mode = os.getenv("STREAMLIT_MODE", "false").lower() == "true"
+        disable_ask_human = os.getenv("DISABLE_ASK_HUMAN", "false").lower() == "true"
 
-        if not (dashboard_mode or streamlit_mode):
+        if not (dashboard_mode or streamlit_mode or disable_ask_human):
             self.available_tools.add_tools(AskHuman())
 
         return self

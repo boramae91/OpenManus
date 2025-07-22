@@ -13,6 +13,7 @@ OpenManus Streamlit 대시보드 - 개선된 버전
 """
 
 import asyncio
+import base64
 import glob
 import json
 import os
@@ -27,6 +28,13 @@ from typing import Any, Dict, List, Optional
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Streamlit 모드 환경변수 설정 (AskHuman 도구 비활성화)
+os.environ["STREAMLIT_MODE"] = "true"
+os.environ["DASHBOARD_MODE"] = "true"
+
+# AskHuman 도구 완전 비활성화를 위한 추가 설정
+os.environ["DISABLE_ASK_HUMAN"] = "true"
 
 import numpy as np
 import pandas as pd
@@ -204,38 +212,66 @@ if "analysis_results" not in st.session_state:
 if "enhanced_system" not in st.session_state:
     st.session_state.enhanced_system = None
 
+
 # 헤더 섹션
-col1, col2 = st.columns([6, 1])
-with col1:
-    st.markdown(
-        """
-        <h1 style="color: #2c3e50; font-size: 28px; font-weight: 700; margin: 0;">
-            Financial Analysis Agent
-        </h1>
-        <p style="color: #7f8c8d; font-size: 16px; margin: 5px 0 0 0;">
-            AI 기반 종합 주식 분석 및 투자 전략 리포트
-        </p>
-        """,
-        unsafe_allow_html=True,
-    )
-with col2:
-    st.markdown(
-        """
-    <div style="text-align: right;">
-        <div style="width:70px; height:70px; background: linear-gradient(135deg, #4CAF50, #45a049); display: inline-flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px; border-radius:10px; border:1px solid #e0e0e0;">OM</div>
+# 로고 이미지 파일 경로
+logo_path = "assets/logo.png"
+
+# 로고 이미지 표시 (우측 상단 맨 끝에 위치)
+try:
+    logo_html = f'<img src="data:image/png;base64,{base64.b64encode(open(logo_path, "rb").read()).decode()}" style="width:70px; height:70px; border-radius:10px; border:1px solid #e0e0e0;">'
+except:
+    logo_html = """
+    <div style="width:70px; height:70px; background: linear-gradient(135deg, #4CAF50, #45a049); display: inline-flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px; border-radius:10px; border:1px solid #e0e0e0;">LE</div>
+    """
+
+st.markdown(
+    """
+    <div style="position: relative; width: 100%;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="flex: 1;">
+                <h1 style="color: #2c3e50; font-size: 28px; font-weight: 700; margin: 0;">
+                    Financial Analysis Agent
+                </h1>
+                <p style="color: #7f8c8d; font-size: 16px; margin: 5px 0 0 0;">
+                    AI 기반 종합 주식 분석 및 투자 전략 리포트
+                </p>
+            </div>
+            <div style="text-align: right; min-width: 70px;">
+                """
+    + logo_html
+    + """
+                <div style="height: 10px;"></div>
+                <div style="color: #2c3e50; font-weight: 600; font-size: 14px;">
+                    작성기준일 | """
+    + datetime.now().strftime("%Y-%m-%d")
+    + """
+                </div>
+            </div>
+        </div>
     </div>
     """,
-        unsafe_allow_html=True,
-    )
-    current_date = datetime.now().strftime("%Y-%m-%d")
-    st.markdown(
-        f'<div style="text-align:right; color:#2c3e50; font-weight:600; font-size:14px; margin-top:4px;">작성기준일 | {current_date}</div>',
-        unsafe_allow_html=True,
-    )
+    unsafe_allow_html=True,
+)
 
 # 사이드바 - 분석 옵션
 with st.sidebar:
     st.markdown("### ⚙️ 분석 설정")
+
+    # 로고 업로드 기능 (개발자용)
+    with st.expander("🔧 로고 설정", expanded=False):
+        uploaded_logo = st.file_uploader(
+            "로고 이미지 업로드", type=["png", "jpg", "jpeg"], key="logo_uploader"
+        )
+        if uploaded_logo is not None:
+            # assets 폴더가 없으면 생성
+            os.makedirs("assets", exist_ok=True)
+
+            # 이미지 저장
+            with open("assets/logo.png", "wb") as f:
+                f.write(uploaded_logo.getbuffer())
+            st.success("로고가 성공적으로 업로드되었습니다!")
+            st.rerun()
 
     # 분석 모드 선택
     analysis_mode = st.selectbox(
@@ -416,6 +452,24 @@ async def run_analysis(prompt: str, mode: str = "enhanced"):
             if st.session_state.enhanced_system is None:
                 st.session_state.enhanced_system = EnhancedStockAnalysisSystem()
 
+                # Enhanced 시스템의 Manus 에이전트에서도 AskHuman 도구 비활성화
+                if hasattr(st.session_state.enhanced_system, "manus_agent"):
+                    agent = st.session_state.enhanced_system.manus_agent
+                    if hasattr(agent, "available_tools"):
+                        tools_to_remove = []
+                        for tool in agent.available_tools.tools:
+                            if (
+                                hasattr(tool, "name")
+                                and "ask_human" in tool.name.lower()
+                            ):
+                                tools_to_remove.append(tool)
+
+                        for tool in tools_to_remove:
+                            agent.available_tools.tools.remove(tool)
+                            logger.info(
+                                f"Enhanced 시스템에서 AskHuman 도구 비활성화: {tool.name}"
+                            )
+
             def progress_callback(step: str):
                 st.session_state.current_steps.append(step)
 
@@ -425,8 +479,20 @@ async def run_analysis(prompt: str, mode: str = "enhanced"):
             return result
 
         elif mode == "manus":
-            # Manus 에이전트 사용
+            # Manus 에이전트 사용 (AskHuman 도구 비활성화)
             agent = await Manus.create()
+
+            # AskHuman 도구가 있다면 제거
+            if hasattr(agent, "available_tools"):
+                # AskHuman 도구 찾아서 제거
+                tools_to_remove = []
+                for tool in agent.available_tools.tools:
+                    if hasattr(tool, "name") and "ask_human" in tool.name.lower():
+                        tools_to_remove.append(tool)
+
+                for tool in tools_to_remove:
+                    agent.available_tools.tools.remove(tool)
+                    logger.info(f"AskHuman 도구 비활성화: {tool.name}")
 
             def on_step_update(step, max_steps):
                 step_msg = f"단계 {step}/{max_steps} 실행 중..."
