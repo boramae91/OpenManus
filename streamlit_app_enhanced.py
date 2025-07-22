@@ -102,6 +102,17 @@ st.markdown(
         margin-bottom: 0;
     }
 
+    /* 전문가 분석 결과 헤더 통일 */
+    .analysis-result h2 {
+        font-size: 18px !important;
+        font-weight: 700 !important;
+        color: #2c3e50 !important;
+        margin-top: 20px !important;
+        margin-bottom: 15px !important;
+        padding-bottom: 8px !important;
+        border-bottom: 2px solid #e0e0e0 !important;
+    }
+
     /* 섹션 컨테이너 */
     .section-container {
         border: 1px solid #e0e0e0;
@@ -443,6 +454,72 @@ if st.session_state.waiting_for_response:
         st.markdown("</div>", unsafe_allow_html=True)
 
 
+def filter_analysis_result(result: str) -> str:
+    """분석 결과에서 LangChain 전문가 분석 내용을 추출"""
+    try:
+        # JSON 형태의 결과인지 확인
+        if isinstance(result, str) and result.strip().startswith("{"):
+            try:
+                result_dict = json.loads(result)
+            except json.JSONDecodeError:
+                # JSON이 아니면 원본 반환
+                return result
+        elif isinstance(result, dict):
+            result_dict = result
+        else:
+            # 문자열이지만 JSON이 아니면 원본 반환
+            return result
+
+        # LangChain 전문가 분석 결과 추출
+        expert_insights = result_dict.get("expert_insights", {})
+        expert_results = expert_insights.get("expert_results", [])
+
+        if not expert_results:
+            # expert_results가 없으면 다른 형태 확인
+            simplified_summary = expert_insights.get("simplified_summary", {})
+            if simplified_summary:
+                financial_analyst = simplified_summary.get("financial_analyst", {})
+                technical_analyst = simplified_summary.get("technical_analyst", {})
+
+                filtered_result = ""
+
+                # 통합재무분석 전문가 결과
+                if financial_analyst and financial_analyst.get("analysis_result"):
+                    filtered_result += f"## 📊 통합재무분석 전문가\n\n{financial_analyst['analysis_result']}\n\n"
+
+                # 기술적 분석 전문가 결과
+                if technical_analyst and technical_analyst.get("analysis_result"):
+                    filtered_result += f"## 📈 기술적 분석 전문가\n\n{technical_analyst['analysis_result']}\n\n"
+
+                return filtered_result if filtered_result else str(result)
+            else:
+                return str(result)
+
+                # 전문가별 분석 결과 조합
+        filtered_result = ""
+
+        for expert_result in expert_results:
+            expert_name = expert_result.get("expert_name", "")
+            analysis_result = expert_result.get("analysis_result", "")
+
+            if not analysis_result:
+                continue
+
+            # 전문가 이름에 따라 섹션 구분 (모든 섹션을 ##으로 통일)
+            if "재무" in expert_name or "통합" in expert_name:
+                filtered_result += f"## 📊 {expert_name}\n\n{analysis_result}\n\n"
+            elif "기술적" in expert_name or "기술" in expert_name:
+                filtered_result += f"## 📈 {expert_name}\n\n{analysis_result}\n\n"
+            else:
+                filtered_result += f"## 🔍 {expert_name}\n\n{analysis_result}\n\n"
+
+        return filtered_result if filtered_result else str(result)
+
+    except Exception as e:
+        logger.error(f"분석 결과 필터링 중 오류: {e}")
+        return str(result)
+
+
 # 분석 실행 함수
 async def run_analysis(prompt: str, mode: str = "enhanced"):
     """분석을 실행하는 함수"""
@@ -471,12 +548,38 @@ async def run_analysis(prompt: str, mode: str = "enhanced"):
                             )
 
             def progress_callback(step: str):
-                st.session_state.current_steps.append(step)
+                # 중복된 단계는 업데이트, 새로운 단계는 추가
+                if st.session_state.current_steps and st.session_state.current_steps[
+                    -1
+                ].startswith(step.split()[0]):
+                    st.session_state.current_steps[-1] = step
+                else:
+                    st.session_state.current_steps.append(step)
 
             result = await st.session_state.enhanced_system.run_enhanced_analysis(
                 prompt
             )
-            return result
+
+            # 결과가 성공적으로 완료되었는지 확인
+            if result and result.get("success"):
+                # CrewAI 분석 결과에서 전문가 분석 내용 추출
+                sector_analysis = result.get("steps", {}).get(
+                    "step4_crewai_comprehensive_analysis", {}
+                )
+                if sector_analysis and sector_analysis.get("success"):
+                    # 전문가 분석 결과 필터링
+                    return filter_analysis_result(sector_analysis)
+                else:
+                    # CrewAI 분석이 실패한 경우 전체 결과 반환
+                    return f"분석이 완료되었지만 전문가 분석 결과를 찾을 수 없습니다.\n\n전체 결과: {str(result)}"
+            else:
+                # 분석 실패 시 오류 메시지 반환
+                error_msg = (
+                    result.get("error", "알 수 없는 오류")
+                    if result
+                    else "분석 결과가 없습니다"
+                )
+                return f"분석 중 오류가 발생했습니다: {error_msg}"
 
         elif mode == "manus":
             # Manus 에이전트 사용 (AskHuman 도구 비활성화)
@@ -505,7 +608,8 @@ async def run_analysis(prompt: str, mode: str = "enhanced"):
 
             result = await agent.run(prompt, on_step_update=on_step_update)
             await agent.cleanup()
-            return result
+            # Manus 결과는 직접 반환 (이미 분석된 형태)
+            return str(result)
 
         else:
             # 기본 기술적 분석
