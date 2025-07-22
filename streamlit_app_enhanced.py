@@ -104,7 +104,29 @@ st.markdown(
 
     /* 전문가 분석 결과 헤더 통일 */
     .analysis-result h2 {
-        font-size: 18px !important;
+        font-size: 24px !important;
+        font-weight: 700 !important;
+        color: #2c3e50 !important;
+        margin-top: 20px !important;
+        margin-bottom: 15px !important;
+        padding-bottom: 8px !important;
+        border-bottom: 2px solid #e0e0e0 !important;
+    }
+
+    /* Streamlit 마크다운 헤더 강제 스타일 적용 */
+    .stMarkdown h2 {
+        font-size: 24px !important;
+        font-weight: 700 !important;
+        color: #2c3e50 !important;
+        margin-top: 20px !important;
+        margin-bottom: 15px !important;
+        padding-bottom: 8px !important;
+        border-bottom: 2px solid #e0e0e0 !important;
+    }
+
+    /* 모든 h2 헤더에 대한 강제 스타일 */
+    h2 {
+        font-size: 24px !important;
         font-weight: 700 !important;
         color: #2c3e50 !important;
         margin-top: 20px !important;
@@ -485,11 +507,11 @@ def filter_analysis_result(result: str) -> str:
 
                 # 통합재무분석 전문가 결과
                 if financial_analyst and financial_analyst.get("analysis_result"):
-                    filtered_result += f"## 📊 통합재무분석 전문가\n\n{financial_analyst['analysis_result']}\n\n"
+                    filtered_result += f'<h2 style="font-size: 24px; font-weight: 700; color: #2c3e50; margin-top: 20px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #e0e0e0;">📊 통합재무분석 전문가</h2>\n\n{financial_analyst["analysis_result"]}\n\n'
 
-                # 기술적 분석 전문가 결과
-                if technical_analyst and technical_analyst.get("analysis_result"):
-                    filtered_result += f"## 📈 기술적 분석 전문가\n\n{technical_analyst['analysis_result']}\n\n"
+                # 기술적 분석 전문가 결과 (주석처리로 비활성화)
+                # if technical_analyst and technical_analyst.get("analysis_result"):
+                #     filtered_result += f'<h2 style="font-size: 24px; font-weight: 700; color: #2c3e50; margin-top: 20px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #e0e0e0;">📈 기술적 분석 전문가</h2>\n\n{technical_analyst["analysis_result"]}\n\n'
 
                 return filtered_result if filtered_result else str(result)
             else:
@@ -505,13 +527,13 @@ def filter_analysis_result(result: str) -> str:
             if not analysis_result:
                 continue
 
-            # 전문가 이름에 따라 섹션 구분 (모든 섹션을 ##으로 통일)
+            # 전문가 이름에 따라 섹션 구분 (HTML 태그로 강제 스타일 적용) - 기술적 분석가 비활성화
             if "재무" in expert_name or "통합" in expert_name:
-                filtered_result += f"## 📊 {expert_name}\n\n{analysis_result}\n\n"
-            elif "기술적" in expert_name or "기술" in expert_name:
-                filtered_result += f"## 📈 {expert_name}\n\n{analysis_result}\n\n"
+                filtered_result += f'<h2 style="font-size: 24px; font-weight: 700; color: #2c3e50; margin-top: 20px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #e0e0e0;">📊 {expert_name}</h2>\n\n{analysis_result}\n\n'
+            # elif "기술적" in expert_name or "기술" in expert_name:
+            #     filtered_result += f'<h2 style="font-size: 24px; font-weight: 700; color: #2c3e50; margin-top: 20px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #e0e0e0;">📈 {expert_name}</h2>\n\n{analysis_result}\n\n'
             else:
-                filtered_result += f"## 🔍 {expert_name}\n\n{analysis_result}\n\n"
+                filtered_result += f'<h2 style="font-size: 24px; font-weight: 700; color: #2c3e50; margin-top: 20px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #e0e0e0;">🔍 {expert_name}</h2>\n\n{analysis_result}\n\n'
 
         return filtered_result if filtered_result else str(result)
 

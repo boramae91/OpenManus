@@ -454,10 +454,10 @@ class SmartSectorManager:
         return self.current_active_team
 
     def _select_experts_by_depth(self, team, depth: AnalysisDepth, prompt: str) -> List:
-        """분석 깊이와 무관하게 항상 2명의 핵심 전문가만 선택 (통합 재무분석가 + 기술적 분석가)"""
+        """분석 깊이와 무관하게 항상 1명의 핵심 전문가만 선택 (통합 재무분석가만)"""
         all_experts = team.experts
 
-        # 분석 깊이와 무관하게 항상 통합 재무분석가와 기술적 분석가 2명만 선택
+        # 분석 깊이와 무관하게 항상 통합 재무분석가만 선택 (기술적 분석가 비활성화)
         selected = []
 
         # 통합 재무분석가 찾기
@@ -467,27 +467,29 @@ class SmartSectorManager:
         if integrated_financial_analyst:
             selected.append(integrated_financial_analyst)
 
-        # 기술적 분석가 찾기
-        technical_analyst = next(
-            (expert for expert in all_experts if "기술적 분석가" in expert.name), None
-        )
-        if technical_analyst:
-            selected.append(technical_analyst)
+        # 기술적 분석가 찾기 (주석처리로 비활성화)
+        # technical_analyst = next(
+        #     (expert for expert in all_experts if "기술적 분석가" in expert.name), None
+        # )
+        # if technical_analyst:
+        #     selected.append(technical_analyst)
 
-        # 2명이 모두 없으면 기본적으로 처음 2명 선택
-        if len(selected) < 2:
+        # 1명이 없으면 기본적으로 처음 1명 선택
+        if len(selected) < 1:
             for expert in all_experts:
-                if expert not in selected and len(selected) < 2:
+                if expert not in selected and len(selected) < 1:
                     selected.append(expert)
 
-        logger.info(f"🎯 2명 체제: {len(selected)}명 전문가 선택 (분석 깊이 무관)")
+        logger.info(
+            f"🎯 1명 체제: {len(selected)}명 전문가 선택 (기술적 분석가 비활성화)"
+        )
         logger.info(f"   선택된 전문가: {[expert.name for expert in selected]}")
 
         return selected
 
     def _select_by_keywords(self, experts: List, prompt: str, count: int) -> List:
-        """키워드 기반 전문가 선택 (2명 체제로 단순화)"""
-        # 2명 체제에서는 키워드와 무관하게 항상 통합 재무분석가와 기술적 분석가 선택
+        """키워드 기반 전문가 선택 (1명 체제로 단순화)"""
+        # 1명 체제에서는 키워드와 무관하게 항상 통합 재무분석가만 선택 (기술적 분석가 비활성화)
         selected = []
 
         # 통합 재무분석가 찾기
@@ -497,20 +499,20 @@ class SmartSectorManager:
         if integrated_financial_analyst:
             selected.append(integrated_financial_analyst)
 
-        # 기술적 분석가 찾기
-        technical_analyst = next(
-            (expert for expert in experts if "기술적 분석가" in expert.name), None
-        )
-        if technical_analyst:
-            selected.append(technical_analyst)
+        # 기술적 분석가 찾기 (주석처리로 비활성화)
+        # technical_analyst = next(
+        #     (expert for expert in experts if "기술적 분석가" in expert.name), None
+        # )
+        # if technical_analyst:
+        #     selected.append(technical_analyst)
 
-        # 2명이 모두 없으면 기본적으로 처음 2명 선택
-        if len(selected) < 2:
+        # 1명이 없으면 기본적으로 처음 1명 선택
+        if len(selected) < 1:
             for expert in experts:
-                if expert not in selected and len(selected) < 2:
+                if expert not in selected and len(selected) < 1:
                     selected.append(expert)
 
-        logger.info(f"🎯 키워드 선택: {len(selected)}명 전문가 선택 (2명 체제)")
+        logger.info(f"🎯 키워드 선택: {len(selected)}명 전문가 선택 (1명 체제)")
         logger.info(f"   선택된 전문가: {[expert.name for expert in selected]}")
 
         return selected[:count]
@@ -1574,13 +1576,13 @@ LLM 호출 중 오류가 발생했습니다: {str(llm_call_error)}
                     }
                 )
 
-        # 🎯 2명 체제 단순화: 전문가 분석 결과 직접 반환 (종합 과정 제거)
-        logger.info("✅ 2명 체제 분석 완료 - 종합 과정 생략")
+        # 🎯 1명 체제 단순화: 전문가 분석 결과 직접 반환 (종합 과정 제거)
+        logger.info("✅ 1명 체제 분석 완료 - 종합 과정 생략")
 
         # 전문가별 분석 결과를 직접 반환
         return {
             "analysis_success": True,
-            "analysis_type": "simplified_2_expert_analysis",
+            "analysis_type": "simplified_1_expert_analysis",
             "expert_count": len(expert_results),
             "expert_results": expert_results,
             "total_analysis_time": sum(
@@ -1602,16 +1604,16 @@ LLM 호출 중 오류가 발생했습니다: {str(llm_call_error)}
                     ),
                     {},
                 ),
-                "technical_analyst": next(
-                    (
-                        result
-                        for result in expert_results
-                        if "기술적" in result.get("expert_name", "")
-                    ),
-                    {},
-                ),
+                # "technical_analyst": next(
+                #     (
+                #         result
+                #         for result in expert_results
+                #         if "기술적" in result.get("expert_name", "")
+                #     ),
+                #     {},
+                # ),
             },
-            "synthesis_note": "2명 체제로 단순화되어 종합 과정이 생략되었습니다. 각 전문가의 분석 결과를 직접 참조하세요.",
+            "synthesis_note": "1명 체제로 단순화되어 종합 과정이 생략되었습니다. 통합 재무분석가의 분석 결과를 직접 참조하세요.",
         }
 
     def _validate_required_data(

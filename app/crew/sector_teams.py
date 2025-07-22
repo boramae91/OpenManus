@@ -2076,7 +2076,7 @@ class SectorTeamFactory:
             # 간소화된 출력 형식
             output_format = """
 **최종 출력 형식**:
-- 투자 의견: BUY/HOLD/SELL (신뢰도 %)
+- 투자 의견: BUY/HOLD/SELL
 - 목표가: 구체적 금액과 산출 근거
 - 핵심 근거: 3가지 이내
 - 주요 리스크: 2가지 이내
